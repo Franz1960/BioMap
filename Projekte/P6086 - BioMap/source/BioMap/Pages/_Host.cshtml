@@ -1,0 +1,79 @@
+﻿@page "/"
+@namespace BioMap.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+  Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BioMap</title>
+  <base href="~/" />
+  <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+  <link href="css/site.css" rel="stylesheet" />
+  <!-- -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAj_oZeq6z3BnWFtE2Fwmh8RmquS5ar5xA&libraries=geometry"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script language="javascript" type="text/javascript" src="lib/exif-js/exif.js"></script>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="lib/c3/c3.css">
+  <script language="javascript" type="text/javascript" src="lib/glmatrix/gl-matrix-min.js"></script>
+  <script language="javascript" type="text/javascript" src="lib/d3/d3.js"></script>
+  <script language="javascript" type="text/javascript" src="lib/c3/c3.js"></script>
+  <script language="javascript" type="text/javascript" src="lib/fhlib/fhutils.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/usermgt.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/element.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/place.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/preppic.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/identify.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/geolocation.js"></script>
+  <script>
+    function InitMap() {
+      var mapProp = {
+        center: new google.maps.LatLng(48.994249, 12.190451),
+        zoom: 12,
+        mapTypeControlOptions: {
+          mapTypeIds: ['roadmap', 'satellite', 'terrain', 'empty']
+        },
+        streetViewControl: false,
+      };
+      map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+      var emptyMapType = new google.maps.ImageMapType({
+        getTileUrl: function (coord, zoom) {
+          return null;
+        },
+        tileSize: new google.maps.Size(256, 256),
+        maxZoom: 24,
+        minZoom: 12,
+        radius: 6300000,
+        name: 'Gebiet'
+      });
+      map.mapTypes.set('empty', emptyMapType);
+      PicMapElementMgr.setMap(map);
+      PicMapElementMgr.refreshElementMarkers();
+    }
+  </script>
+</head>
+<body>
+  <app>
+    <component type="typeof(App)" render-mode="ServerPrerendered" />
+  </app>
+
+  <div id="blazor-error-ui">
+    <environment include="Staging,Production">
+      An error has occurred. This application may no longer respond until reloaded.
+    </environment>
+    <environment include="Development">
+      An unhandled exception has occurred. See browser dev tools for details.
+    </environment>
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+  </div>
+
+  <script src="_framework/blazor.server.js"></script>
+</body>
+</html>
