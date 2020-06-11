@@ -1,0 +1,85 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+
+<div class="top-row pl-4 navbar navbar-dark">
+  <a class="navbar-brand" href="">BioMap</a>
+  <button class="navbar-toggler" @onclick="ToggleNavMenu">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+  <ul class="nav flex-column">
+    <li class="nav-item px-2">
+      <NavLink class="nav-link" href="/">
+        <span class="oi oi-home" aria-hidden="true"></span> @Localize["Home"]
+      </NavLink>
+    </li>
+    <li class="nav-item px-2">
+      <NavLink class="nav-link" href="/Map">
+        <span class="oi oi-map" aria-hidden="true"></span> @Localize["Map"]
+      </NavLink>
+    </li>
+    <li class="nav-item px-2">
+      <NavLink class="nav-link" @onclick='()=>toggleSubNav("Add")'>
+        <span class="oi oi-plus" aria-hidden="true"></span> @Localize["Add"]
+      </NavLink>
+      @if (expandedSubNav == "Add")
+      {
+        <ul class="nav flex-column">
+          <li class="nav-item px-4">
+            <NavLink class="expand-menu" href="/add/image">
+              <span class="oi oi-image" aria-hidden="true"></span> @Localize["Image"]
+            </NavLink>
+          </li>
+        </ul>
+      }
+    </li>
+    <li class="nav-item px-2">
+      <NavLink class="nav-link" @onclick='()=>toggleSubNav("Lists")'>
+        <span class="oi oi-list" aria-hidden="true"></span> @Localize["Lists"]
+      </NavLink>
+      @if (expandedSubNav == "Lists")
+      {
+        <ul class="nav flex-column">
+          <li class="nav-item px-4">
+            <NavLink class="expand-menu" href="/lists/all_elements">
+              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Elements"]
+            </NavLink>
+          </li>
+          <li class="nav-item px-4">
+            <NavLink class="expand-menu" href="/lists/all_individuals">
+              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Individuals"]
+            </NavLink>
+          </li>
+        </ul>
+      }
+    </li>
+    <li class="nav-item px-2">
+      <NavLink class="nav-link" href="/impressum">
+        <span class="oi oi-document" aria-hidden="true"></span> @Localize["Impressum"]
+      </NavLink>
+    </li>
+  </ul>
+</div>
+
+@code {
+  private static string expandedSubNav = "";
+  private static void toggleSubNav(string navId)
+  {
+    if (string.CompareOrdinal(expandedSubNav, navId) == 0)
+    {
+      expandedSubNav = "";
+    }
+    else
+    {
+      expandedSubNav = navId;
+    }
+  }
+
+  private bool collapseNavMenu = true;
+  private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+  private void ToggleNavMenu()
+  {
+    collapseNavMenu = !collapseNavMenu;
+  }
+}
