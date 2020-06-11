@@ -94,32 +94,46 @@ namespace BioMap
           "action TEXT)";
           command.CommandText = "CREATE TABLE IF NOT EXISTS elements (" +
           "name TEXT PRIMARY KEY NOT NULL," +
-          "creationtime DATETIME NOT NULL," +
-          "creator TEXT NOT NULL," +
-          "uploadtime DATETIME NOT NULL," +
-          "uploader TEXT NOT NULL," +
           "category INT NOT NULL," +
           "markerposlat REAL," +
           "markerposlng REAL," +
-          "iid INT)";
+          "uploadtime DATETIME NOT NULL," +
+          "uploader TEXT NOT NULL," +
+          "creationtime DATETIME NOT NULL)";
           command.ExecuteNonQuery();
           command.CommandText = "CREATE TABLE IF NOT EXISTS photos (" +
           "name TEXT PRIMARY KEY NOT NULL," +
           "origname TEXT NOT NULL," +
-          "uploadtime DATETIME NOT NULL," +
-          "uploader TEXT NOT NULL," +
-          "category INT NOT NULL," +
-          "markerposlat REAL," +
-          "markerposlng REAL," +
-          "iid INT," +
+          "filename TEXT NOT NULL," +
           "exifdata TEXT)";
+          command.ExecuteNonQuery();
+          command.CommandText = "CREATE TABLE IF NOT EXISTS normedphotos (" +
+          "name TEXT PRIMARY KEY NOT NULL," +
+          "normcirclepos0x REAL," +
+          "normcirclepos0y REAL," +
+          "normcirclepos1x REAL," +
+          "normcirclepos1y REAL," +
+          "normcirclepos2x REAL," +
+          "normcirclepos2y REAL," +
+          "headposx REAL," +
+          "headposy REAL," +
+          "backposx REAL," +
+          "backposy REAL," +
+          "origheadposx REAL," +
+          "origheadposy REAL," +
+          "origbackposx REAL," +
+          "origbackposy REAL," +
+          "headbodylength REAL," +
+          "yearofbirth INT," +
+          "gender TEXT," +
+          "iid INT)";
           command.ExecuteNonQuery();
           #endregion
         });
         //
         this.AddLogEntry("System", "Web service started");
         //
-        Migration.MigrateData();
+        //Migration.MigrateData();
         //
         lock (this.lockInitialized)
         {

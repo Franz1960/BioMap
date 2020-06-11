@@ -1,9 +1,10 @@
 ﻿@page "/Map"
-
+@inject DataService DS
 @inject IJSRuntime JSRuntime
 
 <div id="googleMap" style="height:1000px;width:100%;">
 </div>
+<button @onclick="()=>OnEditClick()">Edit AOI</button>
 
 @code{
 
@@ -12,8 +13,17 @@
     if (firstRender)
     {
       await JSRuntime.InvokeVoidAsync("InitMap", null);
+      await JSRuntime.InvokeVoidAsync("InitAoiBounds", System.IO.File.ReadAllText(DS.DataDir + "conf/aoi.json"));
       StateHasChanged();
     }
+  }
 
+  private async void OnEditClick()
+  {
+    var sAoiBounds=await JSRuntime.InvokeAsync<string>("ToggleEditAoiBounds");
+    if (sAoiBounds != null)
+    {
+      System.IO.File.WriteAllText(DS.DataDir + "conf/aoi.json", sAoiBounds);
+    }
   }
 }
