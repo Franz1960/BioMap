@@ -5,24 +5,12 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SQLite;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BioMap
 {
   public class Migration
   {
-    [JsonObject(MemberSerialization.Fields)]
-    internal class LatLng_t
-    {
-      public double lat;
-      public double lng;
-    }
-    internal class Place_t
-    {
-      public string Name;
-      public double Radius = 150;
-      public LatLng_t LatLng;
-    }
-    [JsonObject(MemberSerialization.Fields)]
     internal class ProtocolContent_t
     {
       public string Timestamp;
@@ -33,38 +21,6 @@ namespace BioMap
     {
       public string Name;
       public ProtocolContent_t Content;
-    }
-    [JsonObject(MemberSerialization.Fields)]
-    internal class UploadInfo_t
-    {
-      public string Timestamp;
-      public string UserId;
-    }
-    [JsonObject(MemberSerialization.Fields)]
-    internal class MarkerInfo_t
-    {
-      public int category;
-      public LatLng_t position;
-    }
-    [JsonObject(MemberSerialization.Fields)]
-    internal class ExifData_t
-    {
-      public string Make;
-      public string Model;
-      public string DateTimeOriginal;
-    }
-    [JsonObject(MemberSerialization.Fields)]
-    internal class ElementProp_t
-    {
-      public MarkerInfo_t MarkerInfo;
-      public UploadInfo_t UploadInfo;
-      public ExifData_t ExifData;
-
-    }
-    internal class Element_t
-    {
-      public string ElementName;
-      public ElementProp_t ElementProp;
     }
     static string ToString(double d)
     {
@@ -82,7 +38,7 @@ namespace BioMap
       {
         var sr = new System.IO.StreamReader(System.IO.Path.Combine(sMigSrcDir, "places.json"));
         var sJson = sr.ReadToEnd();
-        var aPlaces = JsonConvert.DeserializeObject<Place_t[]>(sJson);
+        var aPlaces = JsonConvert.DeserializeObject<Place[]>(sJson);
         sr.Close();
         ds.OperateOnDb((command) =>
         {
@@ -131,8 +87,119 @@ namespace BioMap
               {
                 var sr = new System.IO.StreamReader(sFileName);
                 var sJson = sr.ReadToEnd();
-                var el = JsonConvert.DeserializeObject<Element_t>(sJson);
                 sr.Close();
+                var jel = JObject.Parse(sJson);
+                var exifData = new Element.ExifData_t {
+                };
+                if (jel["ElementProp"]["ExifData"]!=null)
+                {
+                  exifData = new Element.ExifData_t
+                  {
+                    Make = jel["ElementProp"]["ExifData"]["Make"]?.Value<string>(),
+                    Model = jel["ElementProp"]["ExifData"]["Model"]?.Value<string>(),
+                    DateTimeOriginal = jel["ElementProp"]["ExifData"]["DateTimeOriginal"]?.Value<string>(),
+                  };
+                }
+                var indivData = new Element.IndivData_t {
+                };
+                if (jel["ElementProp"]["IndivData"]!=null)
+                {
+                  var measuredData = new Element.IndivData_t.MeasuredData_t
+                  {
+                  };
+                  if (
+                  jel["ElementProp"]["IndivData"]["MeasuredData"] != null
+                  &&
+                  jel["ElementProp"]["IndivData"]["MeasuredData"]["HeadBodyLength"]!=null
+                  &&
+                  jel["ElementProp"]["IndivData"]["MeasuredData"]["OrigHeadPosition"]!=null
+                  &&
+                  jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"]!=null
+                  )
+                  {
+                    measuredData = new Element.IndivData_t.MeasuredData_t
+                    {
+                      HeadPosition = new System.Numerics.Vector2
+                      {
+                        X = jel["ElementProp"]["IndivData"]["MeasuredData"]["HeadPosition"]["x"].Value<float>(),
+                        Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["HeadPosition"]["y"].Value<float>(),
+                      },
+                      BackPosition = new System.Numerics.Vector2
+                      {
+                        X = jel["ElementProp"]["IndivData"]["MeasuredData"]["BackPosition"]["x"].Value<float>(),
+                        Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["BackPosition"]["y"].Value<float>(),
+                      },
+                      HeadBodyLength = jel["ElementProp"]["IndivData"]["MeasuredData"]["HeadBodyLength"].Value<float>(),
+                      OrigHeadPosition = new System.Numerics.Vector2
+                      {
+                        X = jel["ElementProp"]["IndivData"]["MeasuredData"]["OrigHeadPosition"]["x"].Value<float>(),
+                        Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["OrigHeadPosition"]["y"].Value<float>(),
+                      },
+                      OrigBackPosition = new System.Numerics.Vector2
+                      {
+                        X = jel["ElementProp"]["IndivData"]["MeasuredData"]["OrigBackPosition"]["x"].Value<float>(),
+                        Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["OrigBackPosition"]["y"].Value<float>(),
+                      },
+                      PtsOnCircle = new System.Numerics.Vector2[]
+                      {
+                        new System.Numerics.Vector2
+                        {
+                          X = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][0]["x"].Value<float>(),
+                          Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][0]["y"].Value<float>(),
+                        },
+                        new System.Numerics.Vector2
+                        {
+                          X = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][1]["x"].Value<float>(),
+                          Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][1]["y"].Value<float>(),
+                        },
+                        new System.Numerics.Vector2
+                        {
+                          X = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][2]["x"].Value<float>(),
+                          Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][2]["y"].Value<float>(),
+                        },
+                      },
+                    };
+                  }
+                  indivData = new Element.IndivData_t
+                  {
+                      IId = ConvInvar.ToInt(jel["ElementProp"]["IndivData"]["IId"]?.Value<string>()),
+                      Gender = jel["ElementProp"]["IndivData"]?["Gender"]?.Value<string>(),
+                      MeasuredData = measuredData,
+                  };
+                  if (jel["ElementProp"]["IndivData"]["TraitValues"] != null)
+                  {
+                    var jTraitValues = jel["ElementProp"]["IndivData"]["TraitValues"];
+                    foreach (var jTraitValue in jTraitValues)
+                    {
+                      if (jTraitValue is JProperty jProperty)
+                      {
+                        indivData.TraitValues.Add(jProperty.Name, jTraitValues[jProperty.Name].Value<int>());
+                      }
+                    }
+                  }
+                }
+                var el = new Element
+                {
+                  ElementName = jel["ElementName"].Value<string>(),
+                  ElementProp = new Element.ElementProp_t
+                  {
+                    MarkerInfo = new Element.MarkerInfo_t
+                    {
+                      category = jel["ElementProp"]["MarkerInfo"]["category"].Value<int>(),
+                      position = new LatLng {
+                        lat = jel["ElementProp"]["MarkerInfo"]["position"]["lat"].Value<double>(),
+                        lng = jel["ElementProp"]["MarkerInfo"]["position"]["lng"].Value<double>(),
+                      },
+                    },
+                    UploadInfo=new Element.UploadInfo_t
+                    {
+                      Timestamp = jel["ElementProp"]["UploadInfo"]["Timestamp"].Value<string>(),
+                      UserId = jel["ElementProp"]["UploadInfo"]["UserId"].Value<string>(),
+                    },
+                    ExifData = exifData,
+                    IndivData = indivData,
+                  },
+                };
                 command.CommandText =
                   "INSERT INTO elements (name,category,markerposlat,markerposlng,uploadtime,uploader,creationtime) " +
                   "VALUES ('" + el.ElementName +
@@ -145,11 +212,13 @@ namespace BioMap
                   "')";
                 command.ExecuteNonQuery();
                 // Bilder verarbeiten.
+                bool bPhotoFound = false;
                 {
                   var sImageFile = System.IO.Path.Combine(sElementsDir, el.ElementName);
                   var sImageOrigFile = sImageFile + ".orig.jpg";
                   if (System.IO.File.Exists(sImageFile))
                   {
+                    bPhotoFound = true;
                     System.IO.File.Copy(sImageFile, System.IO.Path.Combine(sImagesDir, el.ElementName), true);
                     if (System.IO.File.Exists(sImageOrigFile))
                     {
@@ -157,7 +226,57 @@ namespace BioMap
                     }
                   } else if (System.IO.File.Exists(sImageOrigFile))
                   {
+                    bPhotoFound = true;
                     System.IO.File.Copy(sImageOrigFile, System.IO.Path.Combine(sImagesDir, el.ElementName), true);
+                  }
+                }
+                if (bPhotoFound)
+                {
+                  command.CommandText =
+                    "INSERT INTO photos (name,filename,exifmake,exifmodel,exifdatetimeoriginal) " +
+                    "VALUES ('" + el.ElementName +
+                    "','" + el.ElementName +
+                    "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Make) +
+                    "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Model) +
+                    "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.DateTimeOriginal) +
+                    "')";
+                  command.ExecuteNonQuery();
+                  if (el.ElementProp.MarkerInfo.category==350 || el.ElementProp.MarkerInfo.category==351)
+                  {
+                    command.CommandText =
+                      "INSERT INTO indivdata (name,normcirclepos0x,normcirclepos0y,normcirclepos1x,normcirclepos1y,normcirclepos2x,normcirclepos2y" +
+                      ",headposx,headposy,backposx,backposy,origheadposx,origheadposy,origbackposx,origbackposy,headbodylength,yearofbirth,gender,iid" +
+                      ",traitYellowDominance" +
+                      ",traitBlackDominance" +
+                      ",traitVertBlackBreastCenterStrip" +
+                      ",traitHorizBlackBreastBellyStrip" +
+                      ",traitManyIsolatedBlackBellyDots" +
+                      ") VALUES ('" + el.ElementName + "'" +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].X) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].Y) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].X) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].Y) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].X) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].Y) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadPosition.X) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadPosition.Y) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.BackPosition.X) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.BackPosition.Y) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.X) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.Y) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigBackPosition.X) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigBackPosition.Y) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadBodyLength) +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.YearOfBirth) +
+                      ",'" + el.ElementProp.IndivData.Gender+"'" +
+                      "," + ConvInvar.ToString(el.ElementProp.IndivData.IId) +
+                      ",'" + ConvInvar.ToString(el.ElementProp.IndivData.TraitValues["YellowDominance"]) +
+                      "','" + ConvInvar.ToString(el.ElementProp.IndivData.TraitValues["BlackDominance"]) +
+                      "','" + ConvInvar.ToString(el.ElementProp.IndivData.TraitValues["VertBlackBreastCenterStrip"]) +
+                      "','" + ConvInvar.ToString(el.ElementProp.IndivData.TraitValues["HorizBlackBreastBellyStrip"]) +
+                      "','" + ConvInvar.ToString(el.ElementProp.IndivData.TraitValues["ManyIsolatedBlackBellyDots"]) +
+                      "')";
+                    command.ExecuteNonQuery();
                   }
                 }
               }

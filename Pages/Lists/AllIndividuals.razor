@@ -1,7 +1,13 @@
 ﻿@page "/lists/all_individuals"
-
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
-
+@inject DataService DS
+@inject IJSRuntime JSRuntime
 @using BioMap
 
 <h1>@Localize["All Individuals"]</h1>
+
+@foreach (var el in DS.GetNormedElements())
+{
+  <p>@el.ElementName: @el.ElementProp.MarkerInfo.category</p>
+}
+

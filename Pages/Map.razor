@@ -1,10 +1,11 @@
 ﻿@page "/Map"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
 @inject IJSRuntime JSRuntime
 
 <div id="googleMap" style="height:1000px;width:100%;">
 </div>
-<button @onclick="()=>OnEditClick()">Edit AOI</button>
+<button @onclick="()=>OnEditClick()">@Localize["Edit AOI"]</button>
 
 @code{
 
@@ -20,7 +21,7 @@
 
   private async void OnEditClick()
   {
-    var sAoiBounds=await JSRuntime.InvokeAsync<string>("ToggleEditAoiBounds");
+    var sAoiBounds = await JSRuntime.InvokeAsync<string>("ToggleEditAoiBounds");
     if (sAoiBounds != null)
     {
       System.IO.File.WriteAllText(DS.DataDir + "conf/aoi.json", sAoiBounds);
