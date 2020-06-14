@@ -66,6 +66,7 @@ namespace BioMap
     {
       return Task.Run(() =>
       {
+        bool bMigrate = true;
         this.DbConnection = new SQLiteConnection();
         this.DbConnection.ConnectionString = "Data Source="+System.IO.Path.Combine(this.DataDir,"biomap.sqlite");
         this.OperateOnDb((command) =>
@@ -103,11 +104,12 @@ namespace BioMap
           command.ExecuteNonQuery();
           command.CommandText = "CREATE TABLE IF NOT EXISTS photos (" +
           "name TEXT PRIMARY KEY NOT NULL," +
-          "origname TEXT NOT NULL," +
           "filename TEXT NOT NULL," +
-          "exifdata TEXT)";
+          "exifmake TEXT," +
+          "exifmodel TEXT," +
+          "exifdatetimeoriginal TEXT)";
           command.ExecuteNonQuery();
-          command.CommandText = "CREATE TABLE IF NOT EXISTS normedphotos (" +
+          command.CommandText = "CREATE TABLE IF NOT EXISTS indivdata (" +
           "name TEXT PRIMARY KEY NOT NULL," +
           "normcirclepos0x REAL," +
           "normcirclepos0y REAL," +
@@ -124,16 +126,36 @@ namespace BioMap
           "origbackposx REAL," +
           "origbackposy REAL," +
           "headbodylength REAL," +
+          "traitYellowDominance TEXT," +
+          "traitBlackDominance TEXT," +
+          "traitVertBlackBreastCenterStrip TEXT," +
+          "traitHorizBlackBreastBellyStrip TEXT," +
+          "traitManyIsolatedBlackBellyDots TEXT," +
           "yearofbirth INT," +
           "gender TEXT," +
           "iid INT)";
           command.ExecuteNonQuery();
           #endregion
+          #region Prüfen, ob leer, also Migration notwendig.
+          {
+            command.CommandText = "SELECT name FROM elements";
+            var dr = command.ExecuteReader();
+            while (dr.Read())
+            {
+              bMigrate = false;
+              break;
+            }
+            dr.Close();
+          }
+          #endregion
         });
         //
         this.AddLogEntry("System", "Web service started");
         //
-        //Migration.MigrateData();
+        if (bMigrate)
+        {
+          Migration.MigrateData();
+        }
         //
         lock (this.lockInitialized)
         {
@@ -152,5 +174,44 @@ namespace BioMap
       });
     }
 
+    public Element[] GetNormedElements()
+    {
+      var lElements = new List<Element>();
+      this.OperateOnDb((command) =>
+      {
+        command.CommandText = "SELECT elements.name" +
+          ",elements.category" +
+          ",elements.markerposlat" +
+          ",elements.markerposlng" +
+          ",elements.uploadtime" +
+          ",elements.uploader" +
+          ",elements.creationtime" +
+          " FROM indivdata INNER JOIN elements ON (elements.name=indivdata.name) WHERE (iid>=1)" +
+          //" INNER JOIN photos ON (photos.name=indivdata.name)" +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read())
+        {
+          var el = new Element
+          {
+            ElementName = dr.GetString(0),
+            ElementProp=new Element.ElementProp_t
+            {
+              MarkerInfo=new Element.MarkerInfo_t
+              {
+                category=dr.GetInt32(1),
+                position=new LatLng {
+                  lat=ConvInvar.ToDouble(dr.GetString(2)),
+                  lng=ConvInvar.ToDouble(dr.GetString(3)),
+                },
+              },
+            },
+          };
+          lElements.Add(el);
+        }
+        dr.Close();
+      });
+      return lElements.ToArray();
+    }
   }
 }
