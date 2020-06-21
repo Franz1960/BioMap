@@ -28,5 +28,9 @@ namespace BioMap
     {
       return Convert.ToString(value, System.Globalization.NumberFormatInfo.InvariantInfo);
     }
+    public static string ToString(DateTime value)
+    {
+      return value.ToString("yyyy-MM-dd HH:mm:ss.fff");
+    }
   }
 }

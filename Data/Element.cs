@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace BioMap
@@ -7,7 +8,7 @@ namespace BioMap
   {
     public class UploadInfo_t
     {
-      public string Timestamp;
+      public DateTime Timestamp;
       public string UserId;
     }
     [JsonObject(MemberSerialization.Fields)]
@@ -21,7 +22,7 @@ namespace BioMap
     {
       public string Make;
       public string Model;
-      public string DateTimeOriginal;
+      public DateTime? DateTimeOriginal;
     }
     [JsonObject(MemberSerialization.Fields)]
     public class IndivData_t
@@ -40,11 +41,12 @@ namespace BioMap
       public string Gender;
       public int YearOfBirth;
       public MeasuredData_t MeasuredData;
-      public readonly Dictionary<string, int> TraitValues = new Dictionary<string, int>();
+      public Dictionary<string, int> TraitValues = new Dictionary<string, int>();
     }
     [JsonObject(MemberSerialization.Fields)]
     public class ElementProp_t
     {
+      public DateTime CreationTime;
       public MarkerInfo_t MarkerInfo;
       public UploadInfo_t UploadInfo;
       public ExifData_t ExifData;
