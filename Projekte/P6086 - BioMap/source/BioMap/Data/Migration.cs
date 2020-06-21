@@ -93,11 +93,21 @@ namespace BioMap
                 };
                 if (jel["ElementProp"]["ExifData"]!=null)
                 {
+                  var sDateTimeOriginal = jel["ElementProp"]["ExifData"]["DateTimeOriginal"]?.Value<string>();
+                  DateTime dtOriginal;
+                  if (!DateTime.TryParse(sDateTimeOriginal,out dtOriginal))
+                  {
+                    if (sDateTimeOriginal!=null && sDateTimeOriginal.Length>=18 && sDateTimeOriginal[4]==':')
+                    {
+                      // Fehlerhaftes Datumsformat in Exif-Daten ('2020:06:21 16:27:00') korrigieren.
+                      sDateTimeOriginal = sDateTimeOriginal.Substring(0, 4) + "-" + sDateTimeOriginal.Substring(5, 2) + "-" + sDateTimeOriginal.Substring(8, 2) + sDateTimeOriginal.Substring(10);
+                    }
+                  }
                   exifData = new Element.ExifData_t
                   {
                     Make = jel["ElementProp"]["ExifData"]["Make"]?.Value<string>(),
                     Model = jel["ElementProp"]["ExifData"]["Model"]?.Value<string>(),
-                    DateTimeOriginal = jel["ElementProp"]["ExifData"]["DateTimeOriginal"]?.Value<string>(),
+                    DateTimeOriginal = DateTime.TryParse(sDateTimeOriginal, out DateTime dt)?dt:(DateTime?)null,
                   };
                 }
                 var indivData = new Element.IndivData_t {
@@ -193,22 +203,36 @@ namespace BioMap
                     },
                     UploadInfo=new Element.UploadInfo_t
                     {
-                      Timestamp = jel["ElementProp"]["UploadInfo"]["Timestamp"].Value<string>(),
+                      Timestamp = jel["ElementProp"]["UploadInfo"]["Timestamp"].Value<DateTime>(),
                       UserId = jel["ElementProp"]["UploadInfo"]["UserId"].Value<string>(),
                     },
                     ExifData = exifData,
                     IndivData = indivData,
                   },
                 };
+                el.ElementProp.CreationTime = ((el.ElementProp.ExifData != null && el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? el.ElementProp.ExifData.DateTimeOriginal.Value : el.ElementProp.UploadInfo.Timestamp);
+                if (indivData.Gender!=null && indivData.Gender.StartsWith("j"))
+                {
+                  int yob = 2016;
+                  if (int.TryParse(indivData.Gender.Substring(1), out int age))
+                  {
+                    yob = el.ElementProp.CreationTime.Year - age;
+                  }
+                  indivData.YearOfBirth = yob;
+                }
+                else
+                {
+                  indivData.YearOfBirth = 2016;
+                }
                 command.CommandText =
                   "INSERT INTO elements (name,category,markerposlat,markerposlng,uploadtime,uploader,creationtime) " +
                   "VALUES ('" + el.ElementName +
-                  "','" + el.ElementProp.MarkerInfo.category +
-                  "','" + el.ElementProp.MarkerInfo.position.lat +
-                  "','" + el.ElementProp.MarkerInfo.position.lng +
-                  "','" + el.ElementProp.UploadInfo.Timestamp +
+                  "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
+                  "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lat) +
+                  "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lng) +
+                  "','" + ConvInvar.ToString(el.ElementProp.UploadInfo.Timestamp) +
                   "','" + el.ElementProp.UploadInfo.UserId +
-                  "','" + ((el.ElementProp.ExifData != null) ? el.ElementProp.ExifData.DateTimeOriginal : el.ElementProp.UploadInfo.Timestamp) +
+                  "','" + ConvInvar.ToString(el.ElementProp.CreationTime) +
                   "')";
                 command.ExecuteNonQuery();
                 // Bilder verarbeiten.
@@ -238,7 +262,7 @@ namespace BioMap
                     "','" + el.ElementName +
                     "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Make) +
                     "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Model) +
-                    "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.DateTimeOriginal) +
+                    "','" + ((el.ElementProp.ExifData == null || !el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? "" : ConvInvar.ToString(el.ElementProp.ExifData.DateTimeOriginal.Value)) +
                     "')";
                   command.ExecuteNonQuery();
                   if (el.ElementProp.MarkerInfo.category==350 || el.ElementProp.MarkerInfo.category==351)

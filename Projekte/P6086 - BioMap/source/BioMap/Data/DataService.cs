@@ -107,7 +107,7 @@ namespace BioMap
           "filename TEXT NOT NULL," +
           "exifmake TEXT," +
           "exifmodel TEXT," +
-          "exifdatetimeoriginal TEXT)";
+          "exifdatetimeoriginal DATETIME)";
           command.ExecuteNonQuery();
           command.CommandText = "CREATE TABLE IF NOT EXISTS indivdata (" +
           "name TEXT PRIMARY KEY NOT NULL," +
@@ -126,11 +126,11 @@ namespace BioMap
           "origbackposx REAL," +
           "origbackposy REAL," +
           "headbodylength REAL," +
-          "traitYellowDominance TEXT," +
-          "traitBlackDominance TEXT," +
-          "traitVertBlackBreastCenterStrip TEXT," +
-          "traitHorizBlackBreastBellyStrip TEXT," +
-          "traitManyIsolatedBlackBellyDots TEXT," +
+          "traitYellowDominance INT," +
+          "traitBlackDominance INT," +
+          "traitVertBlackBreastCenterStrip INT," +
+          "traitHorizBlackBreastBellyStrip INT," +
+          "traitManyIsolatedBlackBellyDots INT," +
           "yearofbirth INT," +
           "gender TEXT," +
           "iid INT)";
@@ -186,8 +186,36 @@ namespace BioMap
           ",elements.uploadtime" +
           ",elements.uploader" +
           ",elements.creationtime" +
-          " FROM indivdata INNER JOIN elements ON (elements.name=indivdata.name) WHERE (iid>=1)" +
-          //" INNER JOIN photos ON (photos.name=indivdata.name)" +
+          ",photos.exifmake" +
+          ",photos.exifmodel" +
+          ",photos.exifdatetimeoriginal" +
+          ",indivdata.iid" +
+          ",indivdata.gender" +
+          ",indivdata.yearofbirth" +
+          ",indivdata.traitYellowDominance" +
+          ",indivdata.traitBlackDominance" +
+          ",indivdata.traitVertBlackBreastCenterStrip" +
+          ",indivdata.traitHorizBlackBreastBellyStrip" +
+          ",indivdata.traitManyIsolatedBlackBellyDots" +
+          ",indivdata.headbodylength" +
+          ",indivdata.origheadposx" +
+          ",indivdata.origheadposy" +
+          ",indivdata.origbackposx" +
+          ",indivdata.origbackposy" +
+          ",indivdata.headposx" +
+          ",indivdata.headposy" +
+          ",indivdata.backposx" +
+          ",indivdata.backposy" +
+          ",indivdata.normcirclepos0x" +
+          ",indivdata.normcirclepos0y" +
+          ",indivdata.normcirclepos1x" +
+          ",indivdata.normcirclepos1y" +
+          ",indivdata.normcirclepos2x" +
+          ",indivdata.normcirclepos2y" +
+          " FROM indivdata" +
+          " INNER JOIN elements ON (elements.name=indivdata.name)" +
+          " INNER JOIN photos ON (photos.name=indivdata.name)" +
+          " WHERE (indivdata.iid>=1)" +
           "";
         var dr = command.ExecuteReader();
         while (dr.Read())
@@ -201,12 +229,52 @@ namespace BioMap
               {
                 category=dr.GetInt32(1),
                 position=new LatLng {
-                  lat=ConvInvar.ToDouble(dr.GetString(2)),
-                  lng=ConvInvar.ToDouble(dr.GetString(3)),
+                  lat=dr.GetDouble(2),
+                  lng=dr.GetDouble(3),
+                },
+              },
+              UploadInfo=new Element.UploadInfo_t
+              {
+                Timestamp=dr.GetDateTime(4),
+                UserId=dr.GetString(5),
+              },
+              ExifData=new Element.ExifData_t
+              {
+                Make=dr.GetString(7),
+                Model=dr.GetString(8),
+                DateTimeOriginal=dr.GetDateTime(9),
+              },
+              IndivData=new Element.IndivData_t
+              {
+                IId=dr.GetInt32(10),
+                Gender=dr.GetString(11),
+                YearOfBirth=dr.GetInt32(12),
+                TraitValues = new Dictionary<string, int>
+                {
+                  { "YellowDominance",dr.GetInt32(13) },
+                  { "BlackDominance",dr.GetInt32(14) },
+                  { "VertBlackBreastCenterStrip",dr.GetInt32(15) },
+                  { "HorizBlackBreastBellyStrip",dr.GetInt32(16) },
+                  { "ManyIsolatedBlackBellyDots",dr.GetInt32(17) },
+                },
+                MeasuredData = new Element.IndivData_t.MeasuredData_t
+                {
+                  HeadBodyLength = dr.GetDouble(18),
+                  OrigHeadPosition = new System.Numerics.Vector2(dr.GetFloat(19), dr.GetFloat(20)),
+                  OrigBackPosition = new System.Numerics.Vector2(dr.GetFloat(21), dr.GetFloat(22)),
+                  HeadPosition = new System.Numerics.Vector2(dr.GetFloat(23), dr.GetFloat(24)),
+                  BackPosition = new System.Numerics.Vector2(dr.GetFloat(25), dr.GetFloat(26)),
+                  PtsOnCircle = new System.Numerics.Vector2[]
+                  {
+                    new System.Numerics.Vector2(dr.GetFloat(27), dr.GetFloat(28)),
+                    new System.Numerics.Vector2(dr.GetFloat(29), dr.GetFloat(30)),
+                    new System.Numerics.Vector2(dr.GetFloat(31), dr.GetFloat(32)),
+                  },
                 },
               },
             },
           };
+
           lElements.Add(el);
         }
         dr.Close();
