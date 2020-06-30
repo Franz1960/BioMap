@@ -24,7 +24,35 @@ function InitMap() {
     });
     map.mapTypes.set('empty', emptyMapType);
 }
-function InitAoiBounds(sAoiBounds, onChanged) {
+function InitPlaces(sPlaces) {
+    let json = JSON.parse(sPlaces);
+    json.forEach((place) => {
+        let circle = new google.maps.Circle({
+            center: place.LatLng,
+            radius: place.Radius,
+            strokeColor: 'ORANGE',
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: 'ORANGE',
+            fillOpacity: 0.02
+        });
+        circle.setMap(map);
+        circle.addListener('click', function () {
+            PicMapElementMgr.hideInfoWindow();
+        });
+        let marker = new google.maps.Marker({
+            map: map,
+            // position: {lat:place.LatLng.lat,lng:place.LatLng.lng},
+            position: new google.maps.LatLng(place.LatLng.lat - 0.0000096 * place.Radius, place.LatLng.lng),
+            icon: {
+                path: 'M -15,10 L 15,10 z',
+                strokeColor: 'DARKORANGE',
+            },
+        });
+        marker.setLabel({ text: place.Name, fontSize: '18px', fontWeight: 'bold', color: 'DARKORANGE', });
+    });
+}
+function InitAoiBounds(sAoiBounds) {
     // Draw bounds of area of interest.
     let json = JSON.parse(sAoiBounds);
     var aVertices = json.vertices;

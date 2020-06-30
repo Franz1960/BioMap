@@ -14,6 +14,7 @@
     if (firstRender)
     {
       await JSRuntime.InvokeVoidAsync("InitMap", null);
+      await JSRuntime.InvokeVoidAsync("InitPlaces", Newtonsoft.Json.JsonConvert.SerializeObject(DS.AllPlaces));
       await JSRuntime.InvokeVoidAsync("InitAoiBounds", System.IO.File.ReadAllText(DS.DataDir + "conf/aoi.json"));
       StateHasChanged();
     }
