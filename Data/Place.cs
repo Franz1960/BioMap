@@ -2,6 +2,7 @@
 
 namespace BioMap
 {
+  [JsonObject(MemberSerialization.Fields)]
   public class Place
   {
     public string Name;

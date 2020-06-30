@@ -8,6 +8,6 @@
 
 @foreach (var el in DS.GetNormedElements())
 {
-  <p>@el.ElementName: @el.ElementProp.MarkerInfo.category</p>
+  <p>@el.ElementName: @el.ElementProp.MarkerInfo.category @el.ElementProp.UploadInfo.UserId</p>
 }
 

@@ -156,6 +156,7 @@ namespace BioMap
         {
           Migration.MigrateData();
         }
+        this.RefreshAllPlaces();
         //
         lock (this.lockInitialized)
         {
@@ -172,6 +173,41 @@ namespace BioMap
         command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('now','localtime'),'" + sUser + "','" + sAction + "')";
         command.ExecuteNonQuery();
       });
+    }
+
+    public Place[] AllPlaces
+    {
+      get;
+      private set;
+    }
+
+    public void RefreshAllPlaces()
+    {
+      var lPlaces = new List<Place>();
+      this.OperateOnDb((command) =>
+      {
+        command.CommandText = "SELECT name,radius,lat,lng" +
+          " FROM places" +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read())
+        {
+          var place = new Place
+          {
+            Name = dr.GetString(0),
+            Radius = dr.GetDouble(1),
+            LatLng = new LatLng
+            {
+              lat = dr.GetDouble(2),
+              lng = dr.GetDouble(3),
+            },
+          };
+
+          lPlaces.Add(place);
+        }
+        dr.Close();
+      });
+      this.AllPlaces=lPlaces.ToArray();
     }
 
     public Element[] GetNormedElements()
@@ -223,32 +259,33 @@ namespace BioMap
           var el = new Element
           {
             ElementName = dr.GetString(0),
-            ElementProp=new Element.ElementProp_t
+            ElementProp = new Element.ElementProp_t
             {
-              MarkerInfo=new Element.MarkerInfo_t
+              MarkerInfo = new Element.MarkerInfo_t
               {
-                category=dr.GetInt32(1),
-                position=new LatLng {
-                  lat=dr.GetDouble(2),
-                  lng=dr.GetDouble(3),
+                category = dr.GetInt32(1),
+                position = new LatLng
+                {
+                  lat = dr.GetDouble(2),
+                  lng = dr.GetDouble(3),
                 },
               },
-              UploadInfo=new Element.UploadInfo_t
+              UploadInfo = new Element.UploadInfo_t
               {
-                Timestamp=dr.GetDateTime(4),
-                UserId=dr.GetString(5),
+                Timestamp = dr.GetDateTime(4),
+                UserId = dr.GetString(5),
               },
-              ExifData=new Element.ExifData_t
+              ExifData = new Element.ExifData_t
               {
-                Make=dr.GetString(7),
-                Model=dr.GetString(8),
-                DateTimeOriginal=dr.GetDateTime(9),
+                Make = dr.GetString(7),
+                Model = dr.GetString(8),
+                DateTimeOriginal = dr.GetDateTime(9),
               },
-              IndivData=new Element.IndivData_t
+              IndivData = new Element.IndivData_t
               {
-                IId=dr.GetInt32(10),
-                Gender=dr.GetString(11),
-                YearOfBirth=dr.GetInt32(12),
+                IId = dr.GetInt32(10),
+                Gender = dr.GetString(11),
+                YearOfBirth = dr.GetInt32(12),
                 TraitValues = new Dictionary<string, int>
                 {
                   { "YellowDominance",dr.GetInt32(13) },
