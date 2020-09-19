@@ -40,18 +40,23 @@
       </NavLink>
       @if (expandedSubNav == "Lists")
       {
-        <ul class="nav flex-column">
-          <li class="nav-item px-4">
-            <NavLink class="expand-menu" href="/lists/all_elements">
-              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Elements"]
-            </NavLink>
-          </li>
-          <li class="nav-item px-4">
-            <NavLink class="expand-menu" href="/lists/all_individuals">
-              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Individuals"]
-            </NavLink>
-          </li>
-        </ul>
+    <ul class="nav flex-column">
+      <li class="nav-item px-4">
+        <NavLink class="expand-menu" href="/lists/all_elements">
+          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Elements"]
+        </NavLink>
+      </li>
+      <li class="nav-item px-4">
+        <NavLink class="expand-menu" href="/lists/all_individuals">
+          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Individuals"]
+        </NavLink>
+      </li>
+      <li class="nav-item px-4">
+        <NavLink class="expand-menu" href="/lists/size_time_chart">
+          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["Length / Time Chart"]
+        </NavLink>
+      </li>
+    </ul>
       }
     </li>
     <li class="nav-item px-2">
