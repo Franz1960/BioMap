@@ -1,0 +1,47 @@
+﻿@page "/lists/size_time_chart"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject IJSRuntime JSRuntime
+@using BioMap
+@using ChartJs.Blazor.Charts
+@using ChartJs.Blazor.ChartJS.LineChart
+@using ChartJs.Blazor.ChartJS.Common.Properties
+@using ChartJs.Blazor.Util
+
+<h1>@Localize["Length / Time Chart"]</h1>
+
+<ChartJsLineChart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+
+@code {
+  private LineConfig _config;
+  private ChartJsLineChart _chartJs;
+
+  protected override void OnInitialized() {
+    _config = new LineConfig
+    {
+      Options = new LineOptions
+      {
+        Title = new OptionsTitle
+        {
+          Text="XXX",
+        }
+      }
+    };
+
+    var lineSet = new LineDataset<ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>>
+    {
+      BackgroundColor = ColorUtil.RandomColorString(),
+      BorderWidth = 0,
+      BorderColor = "#ffffff",
+    };
+
+    foreach (var el in DS.GetNormedElements()) {
+      try {
+        var t = new ChartJs.Blazor.ChartJS.Common.Time.Moment(el.ElementProp.CreationTime);
+        var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
+        lineSet.Data.Append<ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>>(new ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>(t,l));
+      } catch { }
+    }
+    _config.Data.Datasets.Add(lineSet);
+  }
+}
