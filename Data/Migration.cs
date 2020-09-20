@@ -261,8 +261,8 @@ namespace BioMap
                     "INSERT INTO photos (name,filename,exifmake,exifmodel,exifdatetimeoriginal) " +
                     "VALUES ('" + el.ElementName +
                     "','" + el.ElementName +
-                    "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Make) +
-                    "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Model) +
+                    "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Make?.TrimEnd('\0')) +
+                    "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Model?.TrimEnd('\0')) +
                     "','" + ((el.ElementProp.ExifData == null || !el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? "" : ConvInvar.ToString(el.ElementProp.ExifData.DateTimeOriginal.Value)) +
                     "')";
                   command.ExecuteNonQuery();
