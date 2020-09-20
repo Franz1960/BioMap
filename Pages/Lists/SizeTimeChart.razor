@@ -4,8 +4,13 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 @using ChartJs.Blazor.Charts
-@using ChartJs.Blazor.ChartJS.LineChart
 @using ChartJs.Blazor.ChartJS.Common.Properties
+@using ChartJs.Blazor.ChartJS.Common.Enums
+@using ChartJs.Blazor.ChartJS.Common.Axes
+@using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
+@using ChartJs.Blazor.ChartJS.Common
+@using ChartJs.Blazor.ChartJS.Common.Time
+@using ChartJs.Blazor.ChartJS.LineChart
 @using ChartJs.Blazor.Util
 
 <h1>@Localize["Length / Time Chart"]</h1>
@@ -24,24 +29,52 @@
         Title = new OptionsTitle
         {
           Text="XXX",
-        }
+        },
+        Scales = new Scales
+        {
+          xAxes = new List<CartesianAxis>
+          {
+            new TimeAxis
+            {
+              Distribution = TimeDistribution.Linear,
+              Time = new TimeOptions
+              {
+                Unit = TimeMeasurement.Month,
+                Round = TimeMeasurement.Day,
+                TooltipFormat = "DD.MM.YYYY HH:mm:ss",
+              },
+              ScaleLabel = new ScaleLabel
+              {
+                LabelString = "Time"
+              }
+            }
+          }
+        },
+      },
+    };
+
+    var aaIndisByIId = DS.GetIndividuals();
+    foreach (var idx in aaIndisByIId.Keys) {
+      var lineSet = new LineDataset<ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>>
+      {
+        //BackgroundColor = ColorUtil.RandomColorString(),
+        //BorderWidth = 0,
+        //BorderColor = "#ffffff",
+        PointRadius = 3,
+        //ShowLine = true,
+      };
+      foreach (var el in aaIndisByIId[idx]) {
+        try {
+          var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
+          if (l!=0) {
+            var t = new ChartJs.Blazor.ChartJS.Common.Time.Moment(el.ElementProp.CreationTime);
+            lineSet.Add(new ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>(t,l));
+          }
+        } catch { }
       }
-    };
-
-    var lineSet = new LineDataset<ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>>
-    {
-      BackgroundColor = ColorUtil.RandomColorString(),
-      BorderWidth = 0,
-      BorderColor = "#ffffff",
-    };
-
-    foreach (var el in DS.GetNormedElements()) {
-      try {
-        var t = new ChartJs.Blazor.ChartJS.Common.Time.Moment(el.ElementProp.CreationTime);
-        var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
-        lineSet.Data.Append<ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>>(new ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>(t,l));
-      } catch { }
+      if (lineSet.Data.Count>=2) {
+        _config.Data.Datasets.Add(lineSet);
+      }
     }
-    _config.Data.Datasets.Add(lineSet);
   }
 }
