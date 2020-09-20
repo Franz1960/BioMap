@@ -112,73 +112,74 @@ namespace BioMap
                 }
                 var indivData = new Element.IndivData_t {
                 };
-                if (jel["ElementProp"]["IndivData"]!=null)
+                var jIndivData = jel["ElementProp"]["IndivData"];
+                if (jIndivData!=null && jIndivData.HasValues)
                 {
                   var measuredData = new Element.IndivData_t.MeasuredData_t
                   {
                   };
                   if (
-                  jel["ElementProp"]["IndivData"]["MeasuredData"] != null
+                  jIndivData["MeasuredData"] != null
                   &&
-                  jel["ElementProp"]["IndivData"]["MeasuredData"]["HeadBodyLength"]!=null
+                  jIndivData["MeasuredData"]["HeadBodyLength"]!=null
                   &&
-                  jel["ElementProp"]["IndivData"]["MeasuredData"]["OrigHeadPosition"]!=null
+                  jIndivData["MeasuredData"]["OrigHeadPosition"]!=null
                   &&
-                  jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"]!=null
+                  jIndivData["MeasuredData"]["PtsOnCircle"]!=null
                   )
                   {
                     measuredData = new Element.IndivData_t.MeasuredData_t
                     {
                       HeadPosition = new System.Numerics.Vector2
                       {
-                        X = jel["ElementProp"]["IndivData"]["MeasuredData"]["HeadPosition"]["x"].Value<float>(),
-                        Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["HeadPosition"]["y"].Value<float>(),
+                        X = jIndivData["MeasuredData"]["HeadPosition"]["x"].Value<float>(),
+                        Y = jIndivData["MeasuredData"]["HeadPosition"]["y"].Value<float>(),
                       },
                       BackPosition = new System.Numerics.Vector2
                       {
-                        X = jel["ElementProp"]["IndivData"]["MeasuredData"]["BackPosition"]["x"].Value<float>(),
-                        Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["BackPosition"]["y"].Value<float>(),
+                        X = jIndivData["MeasuredData"]["BackPosition"]["x"].Value<float>(),
+                        Y = jIndivData["MeasuredData"]["BackPosition"]["y"].Value<float>(),
                       },
-                      HeadBodyLength = jel["ElementProp"]["IndivData"]["MeasuredData"]["HeadBodyLength"].Value<float>(),
+                      HeadBodyLength = jIndivData["MeasuredData"]["HeadBodyLength"].Value<float>(),
                       OrigHeadPosition = new System.Numerics.Vector2
                       {
-                        X = jel["ElementProp"]["IndivData"]["MeasuredData"]["OrigHeadPosition"]["x"].Value<float>(),
-                        Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["OrigHeadPosition"]["y"].Value<float>(),
+                        X = jIndivData["MeasuredData"]["OrigHeadPosition"]["x"].Value<float>(),
+                        Y = jIndivData["MeasuredData"]["OrigHeadPosition"]["y"].Value<float>(),
                       },
                       OrigBackPosition = new System.Numerics.Vector2
                       {
-                        X = jel["ElementProp"]["IndivData"]["MeasuredData"]["OrigBackPosition"]["x"].Value<float>(),
-                        Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["OrigBackPosition"]["y"].Value<float>(),
+                        X = jIndivData["MeasuredData"]["OrigBackPosition"]["x"].Value<float>(),
+                        Y = jIndivData["MeasuredData"]["OrigBackPosition"]["y"].Value<float>(),
                       },
                       PtsOnCircle = new System.Numerics.Vector2[]
                       {
                         new System.Numerics.Vector2
                         {
-                          X = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][0]["x"].Value<float>(),
-                          Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][0]["y"].Value<float>(),
+                          X = jIndivData["MeasuredData"]["PtsOnCircle"][0]["x"].Value<float>(),
+                          Y = jIndivData["MeasuredData"]["PtsOnCircle"][0]["y"].Value<float>(),
                         },
                         new System.Numerics.Vector2
                         {
-                          X = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][1]["x"].Value<float>(),
-                          Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][1]["y"].Value<float>(),
+                          X = jIndivData["MeasuredData"]["PtsOnCircle"][1]["x"].Value<float>(),
+                          Y = jIndivData["MeasuredData"]["PtsOnCircle"][1]["y"].Value<float>(),
                         },
                         new System.Numerics.Vector2
                         {
-                          X = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][2]["x"].Value<float>(),
-                          Y = jel["ElementProp"]["IndivData"]["MeasuredData"]["PtsOnCircle"][2]["y"].Value<float>(),
+                          X = jIndivData["MeasuredData"]["PtsOnCircle"][2]["x"].Value<float>(),
+                          Y = jIndivData["MeasuredData"]["PtsOnCircle"][2]["y"].Value<float>(),
                         },
                       },
                     };
                   }
                   indivData = new Element.IndivData_t
                   {
-                      IId = ConvInvar.ToInt(jel["ElementProp"]["IndivData"]["IId"]?.Value<string>()),
-                      Gender = jel["ElementProp"]["IndivData"]?["Gender"]?.Value<string>(),
+                      IId = ConvInvar.ToInt(jIndivData["IId"]?.Value<string>()),
+                      Gender = jIndivData?["Gender"]?.Value<string>(),
                       MeasuredData = measuredData,
                   };
-                  if (jel["ElementProp"]["IndivData"]["TraitValues"] != null)
+                  if (jIndivData["TraitValues"] != null)
                   {
-                    var jTraitValues = jel["ElementProp"]["IndivData"]["TraitValues"];
+                    var jTraitValues = jIndivData["TraitValues"];
                     foreach (var jTraitValue in jTraitValues)
                     {
                       if (jTraitValue is JProperty jProperty)
@@ -294,12 +295,12 @@ namespace BioMap
                       "," + ConvInvar.ToString(el.ElementProp.IndivData.YearOfBirth) +
                       ",'" + el.ElementProp.IndivData.Gender+"'" +
                       "," + ConvInvar.ToString(el.ElementProp.IndivData.IId) +
-                      ",'" + ConvInvar.ToString(el.ElementProp.IndivData.TraitValues["YellowDominance"]) +
-                      "','" + ConvInvar.ToString(el.ElementProp.IndivData.TraitValues["BlackDominance"]) +
-                      "','" + ConvInvar.ToString(el.ElementProp.IndivData.TraitValues["VertBlackBreastCenterStrip"]) +
-                      "','" + ConvInvar.ToString(el.ElementProp.IndivData.TraitValues["HorizBlackBreastBellyStrip"]) +
-                      "','" + ConvInvar.ToString(el.ElementProp.IndivData.TraitValues["ManyIsolatedBlackBellyDots"]) +
-                      "')";
+                      ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("YellowDominance",out int nYD) ? ConvInvar.ToString(nYD) : "") + "'" +
+                      ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("BlackDominance",out int nBD) ? ConvInvar.ToString(nBD) : "") + "'" +
+                      ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("VertBlackBreastCenterStrip",out int nVBBCS) ? ConvInvar.ToString(nVBBCS) : "") + "'" +
+                      ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("HorizBlackBreastBellyStrip",out int nHBBCS) ? ConvInvar.ToString(nHBBCS) : "") + "'" +
+                      ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("ManyIsolatedBlackBellyDots",out int nMIBBD) ? ConvInvar.ToString(nMIBBD) : "") + "'" +
+                      ")";
                     command.ExecuteNonQuery();
                   }
                 }

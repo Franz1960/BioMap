@@ -254,69 +254,91 @@ namespace BioMap
           " WHERE (indivdata.iid>=1)" +
           "";
         var dr = command.ExecuteReader();
-        while (dr.Read())
-        {
-          var el = new Element
-          {
-            ElementName = dr.GetString(0),
-            ElementProp = new Element.ElementProp_t
+        while (dr.Read()) {
+          try {
+            var sElementName = dr.GetString(0);
+            DateTime dtDateTimeOriginal = dr.GetDateTime(4);
+            var sDateTimeOriginal = dr.GetString(9);
+            DateTime.TryParse(sDateTimeOriginal,out dtDateTimeOriginal);
+            var el = new Element
             {
-              MarkerInfo = new Element.MarkerInfo_t
+              ElementName = sElementName,
+              ElementProp = new Element.ElementProp_t
               {
-                category = dr.GetInt32(1),
-                position = new LatLng
+                MarkerInfo = new Element.MarkerInfo_t
                 {
-                  lat = dr.GetDouble(2),
-                  lng = dr.GetDouble(3),
-                },
-              },
-              UploadInfo = new Element.UploadInfo_t
-              {
-                Timestamp = dr.GetDateTime(4),
-                UserId = dr.GetString(5),
-              },
-              ExifData = new Element.ExifData_t
-              {
-                Make = dr.GetString(7),
-                Model = dr.GetString(8),
-                DateTimeOriginal = dr.GetDateTime(9),
-              },
-              IndivData = new Element.IndivData_t
-              {
-                IId = dr.GetInt32(10),
-                Gender = dr.GetString(11),
-                YearOfBirth = dr.GetInt32(12),
-                TraitValues = new Dictionary<string, int>
-                {
-                  { "YellowDominance",dr.GetInt32(13) },
-                  { "BlackDominance",dr.GetInt32(14) },
-                  { "VertBlackBreastCenterStrip",dr.GetInt32(15) },
-                  { "HorizBlackBreastBellyStrip",dr.GetInt32(16) },
-                  { "ManyIsolatedBlackBellyDots",dr.GetInt32(17) },
-                },
-                MeasuredData = new Element.IndivData_t.MeasuredData_t
-                {
-                  HeadBodyLength = dr.GetDouble(18),
-                  OrigHeadPosition = new System.Numerics.Vector2(dr.GetFloat(19), dr.GetFloat(20)),
-                  OrigBackPosition = new System.Numerics.Vector2(dr.GetFloat(21), dr.GetFloat(22)),
-                  HeadPosition = new System.Numerics.Vector2(dr.GetFloat(23), dr.GetFloat(24)),
-                  BackPosition = new System.Numerics.Vector2(dr.GetFloat(25), dr.GetFloat(26)),
-                  PtsOnCircle = new System.Numerics.Vector2[]
+                  category = dr.GetInt32(1),
+                  position = new LatLng
                   {
-                    new System.Numerics.Vector2(dr.GetFloat(27), dr.GetFloat(28)),
-                    new System.Numerics.Vector2(dr.GetFloat(29), dr.GetFloat(30)),
-                    new System.Numerics.Vector2(dr.GetFloat(31), dr.GetFloat(32)),
+                    lat = dr.GetDouble(2),
+                    lng = dr.GetDouble(3),
+                  },
+                },
+                UploadInfo = new Element.UploadInfo_t
+                {
+                  Timestamp = dr.GetDateTime(4),
+                  UserId = dr.GetString(5),
+                },
+                CreationTime = dr.GetDateTime(6),
+                ExifData = new Element.ExifData_t
+                {
+                  Make = dr.GetString(7),
+                  Model = dr.GetString(8),
+                  DateTimeOriginal = dtDateTimeOriginal,
+                },
+                IndivData = new Element.IndivData_t
+                {
+                  IId = dr.GetInt32(10),
+                  Gender = dr.GetString(11),
+                  YearOfBirth = dr.GetInt32(12),
+                  TraitValues = new Dictionary<string,int>(),
+                  MeasuredData = new Element.IndivData_t.MeasuredData_t
+                  {
+                    HeadBodyLength = dr.GetDouble(18),
+                    OrigHeadPosition = new System.Numerics.Vector2(dr.GetFloat(19),dr.GetFloat(20)),
+                    OrigBackPosition = new System.Numerics.Vector2(dr.GetFloat(21),dr.GetFloat(22)),
+                    HeadPosition = new System.Numerics.Vector2(dr.GetFloat(23),dr.GetFloat(24)),
+                    BackPosition = new System.Numerics.Vector2(dr.GetFloat(25),dr.GetFloat(26)),
+                    PtsOnCircle = new System.Numerics.Vector2[]
+                    {
+                      new System.Numerics.Vector2(dr.GetFloat(27), dr.GetFloat(28)),
+                      new System.Numerics.Vector2(dr.GetFloat(29), dr.GetFloat(30)),
+                      new System.Numerics.Vector2(dr.GetFloat(31), dr.GetFloat(32)),
+                    },
                   },
                 },
               },
-            },
-          };
-
-          lElements.Add(el);
+            };
+            {
+              int nIdx = 13;
+              foreach (var sTraitName in new string[] { "YellowDominance","BlackDominance","VertBlackBreastCenterStrip","HorizBlackBreastBellyStrip","ManyIsolatedBlackBellyDots" }) {
+                var oValue = dr.GetValue(nIdx++);
+                var sValue = oValue as string;
+                if (int.TryParse(sValue,out int nValue)) {
+                  el.ElementProp.IndivData.TraitValues.Add(sTraitName,nValue);
+                }
+              }
+            }
+            lElements.Add(el);
+          } catch { }
         }
         dr.Close();
       });
       return lElements.ToArray();
+    }
+    public Dictionary<int,List<Element>> GetIndividuals() {
+      var aaIndisByIId = new Dictionary<int,List<Element>>();
+      var aNormedElements = this.GetNormedElements();
+      foreach (var el in aNormedElements) {
+        if (el.ElementProp.MarkerInfo.category==350 && el.ElementProp.IndivData!=null) {
+          var idx = el.ElementProp.IndivData.IId;
+          if (!aaIndisByIId.ContainsKey(idx)) {
+            aaIndisByIId.Add(idx,new List<Element>());
+          }
+          aaIndisByIId[idx].Add(el);
+        }
+      }
+      return aaIndisByIId;
     }
   }
 }
