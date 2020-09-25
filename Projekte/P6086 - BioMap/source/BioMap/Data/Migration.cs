@@ -122,10 +122,6 @@ namespace BioMap
                   jIndivData["MeasuredData"] != null
                   &&
                   jIndivData["MeasuredData"]["HeadBodyLength"]!=null
-                  &&
-                  jIndivData["MeasuredData"]["OrigHeadPosition"]!=null
-                  &&
-                  jIndivData["MeasuredData"]["PtsOnCircle"]!=null
                   )
                   {
                     measuredData = new Element.IndivData_t.MeasuredData_t
@@ -141,17 +137,24 @@ namespace BioMap
                         Y = jIndivData["MeasuredData"]["BackPosition"]["y"].Value<float>(),
                       },
                       HeadBodyLength = jIndivData["MeasuredData"]["HeadBodyLength"].Value<float>(),
-                      OrigHeadPosition = new System.Numerics.Vector2
+                    };
+                    if (
+                      jIndivData["MeasuredData"]["OrigHeadPosition"]!=null
+                      &&
+                      jIndivData["MeasuredData"]["PtsOnCircle"]!=null
+                    )
+                    try {
+                      measuredData.OrigHeadPosition = new System.Numerics.Vector2
                       {
                         X = jIndivData["MeasuredData"]["OrigHeadPosition"]["x"].Value<float>(),
                         Y = jIndivData["MeasuredData"]["OrigHeadPosition"]["y"].Value<float>(),
-                      },
-                      OrigBackPosition = new System.Numerics.Vector2
+                      };
+                      measuredData.OrigBackPosition = new System.Numerics.Vector2
                       {
                         X = jIndivData["MeasuredData"]["OrigBackPosition"]["x"].Value<float>(),
                         Y = jIndivData["MeasuredData"]["OrigBackPosition"]["y"].Value<float>(),
-                      },
-                      PtsOnCircle = new System.Numerics.Vector2[]
+                      };
+                      measuredData.PtsOnCircle = new System.Numerics.Vector2[]
                       {
                         new System.Numerics.Vector2
                         {
@@ -168,8 +171,8 @@ namespace BioMap
                           X = jIndivData["MeasuredData"]["PtsOnCircle"][2]["x"].Value<float>(),
                           Y = jIndivData["MeasuredData"]["PtsOnCircle"][2]["y"].Value<float>(),
                         },
-                      },
-                    };
+                      };
+                    } catch { }
                   }
                   indivData = new Element.IndivData_t
                   {
