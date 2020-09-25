@@ -6,8 +6,14 @@
 
 <h1>@Localize["All Individuals"]</h1>
 
-@foreach (var el in DS.GetNormedElements())
-{
-  <p>@el.ElementName: @el.ElementProp.MarkerInfo.category @el.ElementProp.UploadInfo.UserId</p>
+<p>Anzahl Individuen: @Individuals.Count</p>
+
+@foreach (var el in NormedElements) {
+  <p>@(i++): @el.ElementName: @el.ElementProp.MarkerInfo.category @el.ElementProp.UploadInfo.UserId</p>
 }
 
+@code {
+  private int i = 0;
+  private Element[] NormedElements = DataService.Instance.GetNormedElements();
+  private Dictionary<int,List<Element>> Individuals = DataService.Instance.GetIndividuals();
+}
