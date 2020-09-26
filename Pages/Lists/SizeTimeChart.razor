@@ -9,6 +9,7 @@
 @using ChartJs.Blazor.ChartJS.Common.Axes
 @using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
 @using ChartJs.Blazor.ChartJS.Common
+@using ChartJs.Blazor.ChartJS.Common.Handlers
 @using ChartJs.Blazor.ChartJS.Common.Time
 @using ChartJs.Blazor.ChartJS.LineChart
 @using ChartJs.Blazor.Util
@@ -30,10 +31,14 @@
         {
           Text="XXX",
         },
+        Legend = new Legend
+        {
+          Display = false,
+        },
         Scales = new Scales
         {
           xAxes = new List<CartesianAxis>
-          {
+        {
             new TimeAxis
             {
               Distribution = TimeDistribution.Linear,
@@ -57,9 +62,10 @@
     foreach (var idx in aaIndisByIId.Keys) {
       var lineSet = new LineDataset<ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>>
       {
-        //BackgroundColor = ColorUtil.RandomColorString(),
-        //BorderWidth = 0,
-        //BorderColor = "#ffffff",
+        BackgroundColor = "rgba(100,100,100,0.5)",
+        BorderWidth = 2,
+        PointHoverBorderWidth = 4,
+        BorderColor = "rgba(100,100,100,0.5)",
         PointRadius = 3,
         //ShowLine = true,
       };
@@ -72,7 +78,7 @@
           }
         } catch { }
       }
-      if (lineSet.Data.Count>=2) {
+      if (lineSet.Data.Count>=1) {
         _config.Data.Datasets.Add(lineSet);
       }
     }
