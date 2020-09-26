@@ -252,6 +252,7 @@ namespace BioMap
           " INNER JOIN elements ON (elements.name=indivdata.name)" +
           " INNER JOIN photos ON (photos.name=indivdata.name)" +
           " WHERE (indivdata.iid>=1)" +
+          " ORDER BY elements.creationtime" +
           "";
         var dr = command.ExecuteReader();
         while (dr.Read()) {

@@ -8,9 +8,28 @@
 
 <p>Anzahl Individuen: @Individuals.Count</p>
 
-@foreach (var el in NormedElements) {
-  <p>@(i++): @el.ElementName: @el.ElementProp.MarkerInfo.category @el.ElementProp.UploadInfo.UserId</p>
-}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Cat.</th>
+      <th scope="col">ID</th>
+      <th scope="col">Date</th>
+      <th scope="col">User</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var el in NormedElements) {
+    <tr>
+      <th scope="row">@(i++)</th>
+      <td>@el.ElementProp.MarkerInfo.category</td>
+      <td>@el.ElementName</td>
+      <td>@el.ElementProp.CreationTime</td>
+      <td>@el.ElementProp.UploadInfo.UserId</td>
+    </tr>
+    }
+  </tbody>
+</table>
 
 @code {
   private int i = 0;
