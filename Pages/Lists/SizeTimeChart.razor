@@ -60,7 +60,7 @@
 
     var aaIndisByIId = DS.GetIndividuals();
     foreach (var idx in aaIndisByIId.Keys) {
-      var lineSet = new LineDataset<ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>>
+      var lineSet = new LineDataset<TimeTuple<double>>
       {
         BackgroundColor = "rgba(100,100,100,0.5)",
         BorderWidth = 2,
@@ -73,8 +73,8 @@
         try {
           var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
           if (l!=0) {
-            var t = new ChartJs.Blazor.ChartJS.Common.Time.Moment(el.ElementProp.CreationTime);
-            lineSet.Add(new ChartJs.Blazor.ChartJS.Common.Time.TimeTuple<double>(t,l));
+            var t = new Moment(el.ElementProp.CreationTime);
+            lineSet.Add(new TimeTuple<double>(t,l));
           }
         } catch { }
       }
