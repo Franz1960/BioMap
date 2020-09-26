@@ -54,5 +54,7 @@ namespace BioMap
     }
     public string ElementName;
     public ElementProp_t ElementProp;
+    //
+
   }
 }
