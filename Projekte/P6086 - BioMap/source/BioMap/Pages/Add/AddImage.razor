@@ -1,0 +1,16 @@
+﻿@page "/add/image"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<h1>@Localize["Add Image"]</h1>
+
+<form method="post" enctype="multipart/form-data">
+  <input type="file" id="files" name="files[]" accept="image/*" multiple />
+</form>
+
+@code {
+  protected override void OnInitialized() {
+  }
+}
