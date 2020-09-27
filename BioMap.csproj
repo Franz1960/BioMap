@@ -41,10 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Add\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Resources\App.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
