@@ -17,28 +17,31 @@ indem Sie diese MSBuild-Datei bearbeiten. Weitere Informationen hierzu finden Si
       <publishTime>05/24/2020 13:46:28</publishTime>
     </File>
     <File Include="BioMap.deps.json">
-      <publishTime>06/07/2020 10:04:51</publishTime>
+      <publishTime>09/28/2020 18:23:35</publishTime>
     </File>
     <File Include="BioMap.dll">
-      <publishTime>06/07/2020 10:04:49</publishTime>
+      <publishTime>09/28/2020 18:23:31</publishTime>
     </File>
     <File Include="BioMap.exe">
-      <publishTime>06/07/2020 10:04:49</publishTime>
+      <publishTime>09/28/2020 18:23:31</publishTime>
     </File>
     <File Include="BioMap.pdb">
-      <publishTime>06/07/2020 10:04:49</publishTime>
+      <publishTime>09/28/2020 18:23:31</publishTime>
     </File>
     <File Include="BioMap.runtimeconfig.json">
-      <publishTime>06/06/2020 12:57:27</publishTime>
+      <publishTime>09/28/2020 18:23:32</publishTime>
     </File>
     <File Include="BioMap.Views.dll">
-      <publishTime>06/07/2020 10:04:49</publishTime>
+      <publishTime>09/28/2020 18:23:31</publishTime>
     </File>
     <File Include="BioMap.Views.pdb">
-      <publishTime>06/07/2020 10:04:49</publishTime>
+      <publishTime>09/28/2020 18:23:31</publishTime>
+    </File>
+    <File Include="ChartJs.Blazor.dll">
+      <publishTime>03/28/2020 12:53:46</publishTime>
     </File>
     <File Include="de/BioMap.resources.dll">
-      <publishTime>06/07/2020 10:04:49</publishTime>
+      <publishTime>09/28/2020 18:23:31</publishTime>
     </File>
     <File Include="EntityFramework.dll">
       <publishTime>09/14/2019 17:01:18</publishTime>
@@ -46,29 +49,35 @@ indem Sie diese MSBuild-Datei bearbeiten. Weitere Informationen hierzu finden Si
     <File Include="EntityFramework.SqlServer.dll">
       <publishTime>09/14/2019 17:01:34</publishTime>
     </File>
+    <File Include="MetadataExtractor.dll">
+      <publishTime>07/19/2020 12:59:18</publishTime>
+    </File>
     <File Include="Microsoft.Extensions.DependencyInjection.Abstractions.dll">
-      <publishTime>04/15/2020 03:36:10</publishTime>
+      <publishTime>08/20/2020 23:49:48</publishTime>
     </File>
     <File Include="Microsoft.Extensions.Localization.Abstractions.dll">
-      <publishTime>04/15/2020 03:39:18</publishTime>
+      <publishTime>08/20/2020 23:53:20</publishTime>
     </File>
     <File Include="Microsoft.Extensions.Localization.dll">
-      <publishTime>04/15/2020 03:39:30</publishTime>
+      <publishTime>08/20/2020 23:54:48</publishTime>
     </File>
     <File Include="Microsoft.Extensions.Logging.Abstractions.dll">
-      <publishTime>04/15/2020 03:37:16</publishTime>
+      <publishTime>08/20/2020 23:51:02</publishTime>
     </File>
     <File Include="Microsoft.Extensions.Options.dll">
-      <publishTime>04/15/2020 03:36:06</publishTime>
+      <publishTime>08/20/2020 23:49:28</publishTime>
     </File>
     <File Include="Microsoft.Extensions.Primitives.dll">
-      <publishTime>04/15/2020 03:36:32</publishTime>
+      <publishTime>08/20/2020 23:49:56</publishTime>
+    </File>
+    <File Include="Newtonsoft.Json.dll">
+      <publishTime>11/09/2019 00:56:44</publishTime>
     </File>
     <File Include="runtimes/linux-x64/native/netstandard2.0/SQLite.Interop.dll">
-      <publishTime>05/31/2020 19:10:46</publishTime>
+      <publishTime>06/01/2020 15:08:20</publishTime>
     </File>
     <File Include="runtimes/linux-x64/native/netstandard2.1/SQLite.Interop.dll">
-      <publishTime>05/31/2020 19:10:46</publishTime>
+      <publishTime>06/01/2020 15:08:20</publishTime>
     </File>
     <File Include="runtimes/osx-x64/native/netstandard2.0/SQLite.Interop.dll">
       <publishTime>05/31/2020 19:10:50</publishTime>
@@ -125,7 +134,7 @@ indem Sie diese MSBuild-Datei bearbeiten. Weitere Informationen hierzu finden Si
       <publishTime>09/13/2019 02:28:28</publishTime>
     </File>
     <File Include="web.config">
-      <publishTime>06/07/2020 10:04:51</publishTime>
+      <publishTime>09/28/2020 18:23:35</publishTime>
     </File>
     <File Include="wwwroot/css/bootstrap/bootstrap.min.css">
       <publishTime>05/24/2020 13:46:28</publishTime>
@@ -698,7 +707,7 @@ indem Sie diese MSBuild-Datei bearbeiten. Weitere Informationen hierzu finden Si
       <publishTime>09/06/2019 00:56:12</publishTime>
     </File>
     <File Include="wwwroot/scripts/element.js">
-      <publishTime>06/01/2020 13:41:30</publishTime>
+      <publishTime>06/30/2020 18:55:06</publishTime>
     </File>
     <File Include="wwwroot/scripts/geolocation.js">
       <publishTime>06/22/2019 16:07:39</publishTime>
@@ -957,6 +966,42 @@ indem Sie diese MSBuild-Datei bearbeiten. Weitere Informationen hierzu finden Si
     </File>
     <File Include="wwwroot/symbols/ZoomOnAllElements.svg">
       <publishTime>05/01/2019 18:32:13</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/Chart.min.js">
+      <publishTime>03/28/2020 12:53:08</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/ChartJSBlazor.css">
+      <publishTime>03/28/2020 12:53:08</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/ChartJsBlazorInterop.js">
+      <publishTime>03/28/2020 12:53:38</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/ChartJsBlazorInterop.js.map">
+      <publishTime>03/28/2020 12:53:38</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/moment-with-locales.min.js">
+      <publishTime>03/28/2020 12:53:08</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/ts/ChartJsBlazorInterop.ts">
+      <publishTime>03/28/2020 12:53:08</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/ts/ChartJsInterop.ts">
+      <publishTime>03/28/2020 12:53:08</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/ts/MomentJsInterop.ts">
+      <publishTime>03/28/2020 12:53:08</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/ts/types/Chart.min.d.ts">
+      <publishTime>03/28/2020 12:53:08</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/ts/types/moment.d.ts">
+      <publishTime>03/28/2020 12:53:08</publishTime>
+    </File>
+    <File Include="wwwroot/_content/ChartJs.Blazor/tsconfig.json">
+      <publishTime>03/28/2020 12:53:08</publishTime>
+    </File>
+    <File Include="XmpCore.dll">
+      <publishTime>02/11/2018 22:24:22</publishTime>
     </File>
   </ItemGroup>
 </Project>
