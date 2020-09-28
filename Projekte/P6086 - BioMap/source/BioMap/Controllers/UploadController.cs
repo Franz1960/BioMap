@@ -17,15 +17,14 @@ namespace BioMap
         if (Request.Form.Files.Count>=1) {
           var file = Request.Form.Files[0];
           var pathToSave = sImagesOrigDir;
-
           if (file.Length > 0) {
             var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
             var fullPath = Path.Combine(pathToSave,fileName);
-
             using (var stream = new FileStream(fullPath,FileMode.Create)) {
               file.CopyTo(stream);
             }
-
+            var el = Element.CreateFromImageFile(fullPath);
+            ds.WriteElement(el);
             return Ok(fileName);
           }
         }

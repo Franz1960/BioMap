@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
+using MetadataExtractor.Formats.Iptc;
+using MetadataExtractor.Formats.Jpeg;
+using System.Linq;
 
 namespace BioMap
 {
@@ -55,6 +60,40 @@ namespace BioMap
     public string ElementName;
     public ElementProp_t ElementProp;
     //
-
+    public static Element CreateFromImageFile(string sImageFilePath) {
+      var metaData = ImageMetadataReader.ReadMetadata(sImageFilePath);
+      var ifd0Directory = metaData.OfType<ExifIfd0Directory>().FirstOrDefault();
+      var subIfdDirectory = metaData.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+      var gpsDirectory = metaData.OfType<GpsDirectory>().FirstOrDefault();
+      var geoLocation = gpsDirectory.GetGeoLocation();
+      var el = new Element();
+      el.ElementName = System.IO.Path.GetFileName(sImageFilePath);
+      el.ElementProp=new ElementProp_t();
+      el.ElementProp.UploadInfo=new Element.UploadInfo_t
+      {
+        Timestamp = DateTime.Now,
+        UserId = "?",
+      };
+      el.ElementProp.MarkerInfo=new MarkerInfo_t();
+      el.ElementProp.MarkerInfo.category=100;
+      //if (metaData.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal,out var dateTime))
+      if (geoLocation!=null) {
+        el.ElementProp.MarkerInfo.position=new LatLng
+        {
+          lat=geoLocation.Latitude,
+          lng=geoLocation.Longitude,
+        };
+      }
+      el.ElementProp.ExifData=new ExifData_t();
+      if (subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal,out var dateTime)) {
+        el.ElementProp.ExifData.DateTimeOriginal=dateTime;
+      }
+      if (ifd0Directory!=null) {
+        el.ElementProp.ExifData.Make=ifd0Directory.GetString(ExifDirectoryBase.TagMake);
+        el.ElementProp.ExifData.Model=ifd0Directory.GetString(ExifDirectoryBase.TagModel);
+      }
+      el.ElementProp.CreationTime = ((el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? el.ElementProp.ExifData.DateTimeOriginal.Value : el.ElementProp.UploadInfo.Timestamp);
+      return el;
+    }
   }
 }
