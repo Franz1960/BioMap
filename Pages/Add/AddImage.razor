@@ -6,11 +6,22 @@
 
 <h1>@Localize["Add Image"]</h1>
 
+<button @onclick="()=>OnSelectClick()">@Localize["Select"]</button>
+<div id="uploadUI">
+</div>
 <form method="post" enctype="multipart/form-data">
-  <input type="file" id="files" name="files[]" accept="image/*" multiple />
+  <input type="file" id="inputImageFiles" name="files[]" accept="image/*" multiple style="visibility:hidden;" />
 </form>
 
 @code {
-  protected override void OnInitialized() {
+  protected override async void OnInitialized() {
+  }
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
+    if (firstRender) {
+      await JSRuntime.InvokeAsync<string>("UploadImageFiles_Init","inputImageFiles","uploadUI");
+    }
+  }
+  private async void OnSelectClick() {
+    var sResult = await JSRuntime.InvokeAsync<string>("UploadImageFiles_Click","inputImageFiles");
   }
 }
