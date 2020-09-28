@@ -59,6 +59,66 @@
     <a class="dismiss">🗙</a>
   </div>
 
+  <dialog id="imgUploadDialog">
+    <content>
+      <div>
+        <h3 style="text-align: center;">Fotos werden hochgeladen</h3>
+      </div>
+      <table id="imgUploadTable">
+        <thead>
+          <tr>
+            <th>Datei</th>
+            <th>Ergebnis</th>
+          </tr>
+        </thead>
+      </table>
+      <div>
+        <button type="button" style="float: right;" onclick="document.getElementById('imgUploadDialog').close()">Schließen</button>
+      </div>
+    </content>
+  </dialog>
   <script src="_framework/blazor.server.js"></script>
+  <script>
+    function UploadImageFiles_Init(idInput, idUploadUI) {
+      //alert("UploadImageFiles_Init(" + idInput + "," + idUploadUI + ") called.");
+      document.getElementById(idInput).addEventListener('change', UploadImageFiles, false);
+    }
+    function UploadImageFiles_Click(idInput) {
+      document.getElementById(idInput).click();
+    }
+    function UploadImageFiles(evt) {
+      //alert("UploadImageFiles() called.");
+      const files = evt.target.files; // FileList object
+      for (var iFile = 0; iFile < files.length; iFile++) {
+        try {
+          var file = files[iFile];
+          if (file) {
+            // Send selected file.
+            const formData = new FormData();
+            formData.append('files[]', this);
+            CurrentUser.ApiCall('/api/upload.php', {
+              method: 'POST',
+              body: formData
+            }, [
+            ])
+              .then((response) => {
+                response.text().then(function (text) {
+                  //uploadElement(element);
+                  //PicMapElementMgr.CreateMapMarker(element);
+                  console.log(text);
+                });
+              })
+              .catch((error) => {
+                alert("Fehler: " + error);
+              });
+          } else {
+            alert("Datei konnte nicht geladen werden.");
+          }
+        } catch (e) {
+          alert("Exception: " + e);
+        }
+      }
+    }
+  </script>
 </body>
 </html>
