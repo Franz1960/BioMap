@@ -77,7 +77,6 @@ namespace BioMap
       {
         var sElementsDir = System.IO.Path.Combine(sMigSrcDir, "elements");
         var aFileNames = System.IO.Directory.GetFiles(sElementsDir, "*.json");
-        ds.OperateOnDb((command) =>
         {
           foreach (var sFileName in aFileNames)
           {
@@ -228,25 +227,12 @@ namespace BioMap
                 {
                   indivData.YearOfBirth = 2016;
                 }
-                command.CommandText =
-                  "INSERT INTO elements (name,category,markerposlat,markerposlng,uploadtime,uploader,creationtime) " +
-                  "VALUES ('" + el.ElementName +
-                  "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
-                  "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lat) +
-                  "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lng) +
-                  "','" + ConvInvar.ToString(el.ElementProp.UploadInfo.Timestamp) +
-                  "','" + el.ElementProp.UploadInfo.UserId +
-                  "','" + ConvInvar.ToString(el.ElementProp.CreationTime) +
-                  "')";
-                command.ExecuteNonQuery();
                 // Bilder verarbeiten.
-                bool bPhotoFound = false;
                 {
                   var sImageFile = System.IO.Path.Combine(sElementsDir, el.ElementName);
                   var sImageOrigFile = sImageFile + ".orig.jpg";
                   if (System.IO.File.Exists(sImageFile))
                   {
-                    bPhotoFound = true;
                     System.IO.File.Copy(sImageFile, System.IO.Path.Combine(sImagesDir, el.ElementName), true);
                     if (System.IO.File.Exists(sImageOrigFile))
                     {
@@ -254,65 +240,15 @@ namespace BioMap
                     }
                   } else if (System.IO.File.Exists(sImageOrigFile))
                   {
-                    bPhotoFound = true;
                     System.IO.File.Copy(sImageOrigFile, System.IO.Path.Combine(sImagesDir, el.ElementName), true);
                   }
                 }
-                if (bPhotoFound)
-                {
-                  command.CommandText =
-                    "INSERT INTO photos (name,filename,exifmake,exifmodel,exifdatetimeoriginal) " +
-                    "VALUES ('" + el.ElementName +
-                    "','" + el.ElementName +
-                    "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Make?.TrimEnd('\0')) +
-                    "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Model?.TrimEnd('\0')) +
-                    "','" + ((el.ElementProp.ExifData == null || !el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? "" : ConvInvar.ToString(el.ElementProp.ExifData.DateTimeOriginal.Value)) +
-                    "')";
-                  command.ExecuteNonQuery();
-                  if (el.ElementProp.MarkerInfo.category==350 || el.ElementProp.MarkerInfo.category==351)
-                  {
-                    command.CommandText =
-                      "INSERT INTO indivdata (name,normcirclepos0x,normcirclepos0y,normcirclepos1x,normcirclepos1y,normcirclepos2x,normcirclepos2y" +
-                      ",headposx,headposy,backposx,backposy,origheadposx,origheadposy,origbackposx,origbackposy,headbodylength,yearofbirth,gender,iid" +
-                      ",traitYellowDominance" +
-                      ",traitBlackDominance" +
-                      ",traitVertBlackBreastCenterStrip" +
-                      ",traitHorizBlackBreastBellyStrip" +
-                      ",traitManyIsolatedBlackBellyDots" +
-                      ") VALUES ('" + el.ElementName + "'" +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].X) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].Y) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].X) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].Y) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].X) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].Y) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadPosition.X) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadPosition.Y) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.BackPosition.X) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.BackPosition.Y) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.X) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.Y) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigBackPosition.X) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigBackPosition.Y) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadBodyLength) +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.YearOfBirth) +
-                      ",'" + el.ElementProp.IndivData.Gender+"'" +
-                      "," + ConvInvar.ToString(el.ElementProp.IndivData.IId) +
-                      ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("YellowDominance",out int nYD) ? ConvInvar.ToString(nYD) : "") + "'" +
-                      ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("BlackDominance",out int nBD) ? ConvInvar.ToString(nBD) : "") + "'" +
-                      ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("VertBlackBreastCenterStrip",out int nVBBCS) ? ConvInvar.ToString(nVBBCS) : "") + "'" +
-                      ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("HorizBlackBreastBellyStrip",out int nHBBCS) ? ConvInvar.ToString(nHBBCS) : "") + "'" +
-                      ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("ManyIsolatedBlackBellyDots",out int nMIBBD) ? ConvInvar.ToString(nMIBBD) : "") + "'" +
-                      ")";
-                    command.ExecuteNonQuery();
-                  }
-                }
+                ds.WriteElement(el);
               }
               catch { }
             }
           }
-        });
-
+        }
       }
       catch { }
       #endregion
