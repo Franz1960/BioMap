@@ -29,6 +29,9 @@ namespace BioMap
       services.AddServerSideBlazor();
       services.AddSingleton<DataService>();
       services.AddLocalization(options => options.ResourcesPath = "resources");
+      //
+      //services.AddScoped<IProductRepository,ProductRepository>();
+      services.AddControllers();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +57,8 @@ namespace BioMap
       {
         endpoints.MapBlazorHub();
         endpoints.MapFallbackToPage("/_Host");
+        //
+        endpoints.MapControllers();
       });
 
       var ds = app.ApplicationServices.GetRequiredService<DataService>();

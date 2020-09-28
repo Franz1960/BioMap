@@ -95,8 +95,8 @@
           if (file) {
             // Send selected file.
             const formData = new FormData();
-            formData.append('files[]', this);
-            CurrentUser.ApiCall('/api/upload.php', {
+            formData.append('files[]', file);
+            CurrentUser.ApiCall('/api/upload', {
               method: 'POST',
               body: formData
             }, [
