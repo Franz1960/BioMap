@@ -17,37 +17,40 @@ indem Sie diese MSBuild-Datei bearbeiten. Weitere Informationen hierzu finden Si
       <publishTime>05/24/2020 13:46:28</publishTime>
     </File>
     <File Include="BioMap.deps.json">
-      <publishTime>09/28/2020 18:23:35</publishTime>
+      <publishTime>09/29/2020 17:32:42</publishTime>
     </File>
     <File Include="BioMap.dll">
-      <publishTime>09/28/2020 18:23:31</publishTime>
+      <publishTime>09/29/2020 17:32:37</publishTime>
     </File>
     <File Include="BioMap.exe">
-      <publishTime>09/28/2020 18:23:31</publishTime>
+      <publishTime>09/29/2020 17:32:37</publishTime>
     </File>
     <File Include="BioMap.pdb">
-      <publishTime>09/28/2020 18:23:31</publishTime>
+      <publishTime>09/29/2020 17:32:37</publishTime>
     </File>
     <File Include="BioMap.runtimeconfig.json">
-      <publishTime>09/28/2020 18:23:32</publishTime>
+      <publishTime>09/29/2020 17:32:38</publishTime>
     </File>
     <File Include="BioMap.Views.dll">
-      <publishTime>09/28/2020 18:23:31</publishTime>
+      <publishTime>09/29/2020 17:32:37</publishTime>
     </File>
     <File Include="BioMap.Views.pdb">
-      <publishTime>09/28/2020 18:23:31</publishTime>
+      <publishTime>09/29/2020 17:32:37</publishTime>
     </File>
     <File Include="ChartJs.Blazor.dll">
       <publishTime>03/28/2020 12:53:46</publishTime>
     </File>
     <File Include="de/BioMap.resources.dll">
-      <publishTime>09/28/2020 18:23:31</publishTime>
+      <publishTime>09/29/2020 17:32:37</publishTime>
     </File>
     <File Include="EntityFramework.dll">
       <publishTime>09/14/2019 17:01:18</publishTime>
     </File>
     <File Include="EntityFramework.SqlServer.dll">
       <publishTime>09/14/2019 17:01:34</publishTime>
+    </File>
+    <File Include="Geo.dll">
+      <publishTime>05/22/2020 02:18:06</publishTime>
     </File>
     <File Include="MetadataExtractor.dll">
       <publishTime>07/19/2020 12:59:18</publishTime>
@@ -134,7 +137,7 @@ indem Sie diese MSBuild-Datei bearbeiten. Weitere Informationen hierzu finden Si
       <publishTime>09/13/2019 02:28:28</publishTime>
     </File>
     <File Include="web.config">
-      <publishTime>09/28/2020 18:23:35</publishTime>
+      <publishTime>09/29/2020 17:32:42</publishTime>
     </File>
     <File Include="wwwroot/css/bootstrap/bootstrap.min.css">
       <publishTime>05/24/2020 13:46:28</publishTime>
