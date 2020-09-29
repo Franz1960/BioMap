@@ -19,18 +19,23 @@ namespace BioMap
           sFilePath = System.IO.Path.Combine(ds.DataDir,System.IO.Path.Combine("images_orig",id));
         }
         if (System.IO.File.Exists(sFilePath)) {
-          if (Request.Query.ContainsKey("width")) {
-            int nReqWidth = ConvInvar.ToInt(Request.Query["width"]);
-            var bmSrc=System.Drawing.Bitmap.FromFile(sFilePath);
-            int nReqHeight = (nReqWidth*bmSrc.Height)/bmSrc.Width;
-            var bmThumbnail = new System.Drawing.Bitmap(nReqWidth,nReqHeight);
-            using (var graphics = System.Drawing.Graphics.FromImage(bmThumbnail)) {
-              graphics.DrawImage(bmSrc,0,0,bmThumbnail.Width,bmThumbnail.Height);
+          try {
+            if (Request.Query.ContainsKey("width")) {
+              int nReqWidth = ConvInvar.ToInt(Request.Query["width"]);
+              var bmSrc = System.Drawing.Bitmap.FromFile(sFilePath);
+              int nReqHeight = (nReqWidth*bmSrc.Height)/bmSrc.Width;
+              var bmThumbnail = new System.Drawing.Bitmap(nReqWidth,nReqHeight);
+              using (var graphics = System.Drawing.Graphics.FromImage(bmThumbnail)) {
+                graphics.DrawImage(bmSrc,0,0,bmThumbnail.Width,bmThumbnail.Height);
+              }
+              var bs = new MemoryStream();
+              bmThumbnail.Save(bs,System.Drawing.Imaging.ImageFormat.Jpeg);
+              return File(bs.ToArray(),"image/jpeg");
             }
-            var bs = new MemoryStream();
-            bmThumbnail.Save(bs,System.Drawing.Imaging.ImageFormat.Jpeg);
-            return File(bs.ToArray(),"image/jpeg");
-          } else {
+          } catch {
+            // System.Drawing does not work on Linux.
+          }
+          {
             Byte[] b = System.IO.File.ReadAllBytes(sFilePath);
             return File(b,"image/jpeg");
           }
