@@ -72,7 +72,7 @@ namespace BioMap
       el.ElementProp.UploadInfo=new Element.UploadInfo_t
       {
         Timestamp = DateTime.Now,
-        UserId = "?",
+        UserId = DataService.Instance.CurrentUser.EMail,
       };
       el.ElementProp.MarkerInfo=new MarkerInfo_t();
       el.ElementProp.MarkerInfo.category=100;
@@ -94,6 +94,13 @@ namespace BioMap
       }
       el.ElementProp.CreationTime = ((el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? el.ElementProp.ExifData.DateTimeOriginal.Value : el.ElementProp.UploadInfo.Timestamp);
       return el;
+    }
+    public string GetDetails() {
+      var sb = new System.Text.StringBuilder();
+      if (this.ElementProp.IndivData!=null) {
+        sb.Append("#"+this.ElementProp.IndivData.IId);
+      }
+      return sb.ToString();
     }
   }
 }

@@ -15,11 +15,8 @@ namespace BioMap
       DataService.Instance = this;
     }
     public static DataService Instance { get; private set; }
-
     public string DataDir = "../../data/biomap/";
-
     public System.Data.IDbConnection DbConnection = null;
-
     public event EventHandler Initialized
     {
       add
@@ -44,7 +41,6 @@ namespace BioMap
     private event EventHandler _Initialized;
     private bool isInitialized = false;
     private readonly object lockInitialized = new object();
-
     public void OperateOnDb(Action<IDbCommand> dbAction)
     {
       try
@@ -61,7 +57,6 @@ namespace BioMap
         }
       } catch { }
     }
-
     public Task Init()
     {
       return Task.Run(() =>
@@ -165,7 +160,12 @@ namespace BioMap
         }
       });
     }
-
+    public User CurrentUser { get; } = new User
+    {
+      EMail="f.x.haering@gmail.com", // Vorerst konstant vorbesetzen.
+      FullName="Franz Häring",
+      Level=700,
+    };
     public void AddLogEntry(string sUser, string sAction)
     {
       this.OperateOnDb((command) =>
@@ -174,13 +174,11 @@ namespace BioMap
         command.ExecuteNonQuery();
       });
     }
-
     public Place[] AllPlaces
     {
       get;
       private set;
     }
-
     public void RefreshAllPlaces()
     {
       var lPlaces = new List<Place>();
@@ -209,7 +207,6 @@ namespace BioMap
       });
       this.AllPlaces=lPlaces.ToArray();
     }
-
     public void WriteElement(Element el) {
       this.OperateOnDb((command) =>
       {
@@ -380,6 +377,129 @@ namespace BioMap
                 var sValue = oValue as string;
                 if (int.TryParse(sValue,out int nValue)) {
                   el.ElementProp.IndivData.TraitValues.Add(sTraitName,nValue);
+                }
+              }
+            }
+            lElements.Add(el);
+          } catch { }
+        }
+        dr.Close();
+      });
+      return lElements.ToArray();
+    }
+    public Element[] GetElements(string sSqlCondition=null)
+    {
+      var lElements = new List<Element>();
+      this.OperateOnDb((command) =>
+      {
+        command.CommandText = "SELECT elements.name" +
+          ",elements.category" +
+          ",elements.markerposlat" +
+          ",elements.markerposlng" +
+          ",elements.uploadtime" +
+          ",elements.uploader" +
+          ",elements.creationtime" +
+          ",photos.exifmake" +
+          ",photos.exifmodel" +
+          ",photos.exifdatetimeoriginal" +
+          ",indivdata.iid" +
+          ",indivdata.gender" +
+          ",indivdata.yearofbirth" +
+          ",indivdata.traitYellowDominance" +
+          ",indivdata.traitBlackDominance" +
+          ",indivdata.traitVertBlackBreastCenterStrip" +
+          ",indivdata.traitHorizBlackBreastBellyStrip" +
+          ",indivdata.traitManyIsolatedBlackBellyDots" +
+          ",indivdata.headbodylength" +
+          ",indivdata.origheadposx" +
+          ",indivdata.origheadposy" +
+          ",indivdata.origbackposx" +
+          ",indivdata.origbackposy" +
+          ",indivdata.headposx" +
+          ",indivdata.headposy" +
+          ",indivdata.backposx" +
+          ",indivdata.backposy" +
+          ",indivdata.normcirclepos0x" +
+          ",indivdata.normcirclepos0y" +
+          ",indivdata.normcirclepos1x" +
+          ",indivdata.normcirclepos1y" +
+          ",indivdata.normcirclepos2x" +
+          ",indivdata.normcirclepos2y" +
+          " FROM elements" +
+          " LEFT JOIN indivdata ON (indivdata.name=elements.name)" +
+          " LEFT JOIN photos ON (photos.name=elements.name)" +
+          (sSqlCondition==null ? "" : ("WHERE ("+sSqlCondition+")")) +
+          " ORDER BY elements.creationtime" +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read()) {
+          try {
+            var sElementName = dr.GetString(0);
+            DateTime dtDateTimeOriginal = dr.GetDateTime(4);
+            var sDateTimeOriginal = dr.GetString(9);
+            DateTime.TryParse(sDateTimeOriginal,out dtDateTimeOriginal);
+            var el = new Element
+            {
+              ElementName = sElementName,
+              ElementProp = new Element.ElementProp_t
+              {
+                MarkerInfo = new Element.MarkerInfo_t
+                {
+                  category = dr.GetInt32(1),
+                  position = new LatLng
+                  {
+                    lat = dr.GetDouble(2),
+                    lng = dr.GetDouble(3),
+                  },
+                },
+                UploadInfo = new Element.UploadInfo_t
+                {
+                  Timestamp = dr.GetDateTime(4),
+                  UserId = dr.GetString(5),
+                },
+                CreationTime = dr.GetDateTime(6),
+              }
+            };
+            if (!dr.IsDBNull(7) && !dr.IsDBNull(8)) {
+              el.ElementProp.ExifData = new Element.ExifData_t
+              {
+                Make = dr.GetString(7),
+                Model = dr.GetString(8),
+                DateTimeOriginal = dtDateTimeOriginal,
+              };
+              if (!dr.IsDBNull(10)) {
+                el.ElementProp.IndivData = new Element.IndivData_t
+                {
+                  IId = dr.GetInt32(10),
+                  Gender = dr.GetString(11),
+                  YearOfBirth = dr.GetInt32(12),
+                };
+                if (!dr.IsDBNull(18)) {
+                  el.ElementProp.IndivData.TraitValues = new Dictionary<string,int>();
+                  {
+                    int nIdx = 13;
+                    foreach (var sTraitName in new string[] { "YellowDominance","BlackDominance","VertBlackBreastCenterStrip","HorizBlackBreastBellyStrip","ManyIsolatedBlackBellyDots" }) {
+                      var oValue = dr.GetValue(nIdx++);
+                      var sValue = oValue as string;
+                      if (int.TryParse(sValue,out int nValue)) {
+                        el.ElementProp.IndivData.TraitValues.Add(sTraitName,nValue);
+                      }
+                    }
+                  }
+                  el.ElementProp.IndivData.MeasuredData = new Element.IndivData_t.MeasuredData_t
+                  {
+                    HeadBodyLength = dr.GetDouble(18),
+                    OrigHeadPosition = new System.Numerics.Vector2(dr.GetFloat(19),dr.GetFloat(20)),
+                    OrigBackPosition = new System.Numerics.Vector2(dr.GetFloat(21),dr.GetFloat(22)),
+                    HeadPosition = new System.Numerics.Vector2(dr.GetFloat(23),dr.GetFloat(24)),
+                    BackPosition = new System.Numerics.Vector2(dr.GetFloat(25),dr.GetFloat(26)),
+                    PtsOnCircle = new System.Numerics.Vector2[]
+                    {
+                      new System.Numerics.Vector2(dr.GetFloat(27), dr.GetFloat(28)),
+                      new System.Numerics.Vector2(dr.GetFloat(29), dr.GetFloat(30)),
+                      new System.Numerics.Vector2(dr.GetFloat(31), dr.GetFloat(32)),
+                    },
+                  };
                 }
               }
             }
