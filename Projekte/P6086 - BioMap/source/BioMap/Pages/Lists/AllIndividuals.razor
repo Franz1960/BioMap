@@ -11,28 +11,31 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">Cat.</th>
+      <th scope="col">IID</th>
       <th scope="col">ID</th>
-      <th scope="col">Date</th>
+      <th scope="col">Time</th>
       <th scope="col">User</th>
     </tr>
   </thead>
   <tbody>
-    @foreach (var el in NormedElements) {
+    @foreach (var iid in Individuals.Keys) {
     <tr>
-      <th scope="row">@(i++)</th>
-      <td>@el.ElementProp.MarkerInfo.category</td>
-      <td>@el.ElementName</td>
-      <td>@el.ElementProp.CreationTime</td>
-      <td>@el.ElementProp.UploadInfo.UserId</td>
+      <th scope="row">@(iid)</th>
+      <td>@((MarkupString)GetForElements(iid,el=>el.ElementName))</td>
+      <td>@((MarkupString)GetForElements(iid,el=>el.ElementProp.CreationTime.ToString()))</td>
+      <td>@((MarkupString)GetForElements(iid,el=>el.ElementProp.UploadInfo.UserId))</td>
     </tr>
     }
-  </tbody>
+    </tbody>
 </table>
 
 @code {
-  private int i = 0;
-  private Element[] NormedElements = DataService.Instance.GetNormedElements();
   private Dictionary<int,List<Element>> Individuals = DataService.Instance.GetIndividuals();
+  private string GetForElements(int iid,Func<Element,string> func) {
+    var sb = new System.Text.StringBuilder();
+    foreach (var el in this.Individuals[iid]) {
+      sb.Append(func(el)+"<br/>");
+    }
+    return sb.ToString();
+  }
 }
