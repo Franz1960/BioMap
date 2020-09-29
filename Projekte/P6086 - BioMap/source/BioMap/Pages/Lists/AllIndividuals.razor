@@ -33,8 +33,10 @@
   private Dictionary<int,List<Element>> Individuals = DataService.Instance.GetIndividuals();
   private string GetForElements(int iid,Func<Element,string> func) {
     var sb = new System.Text.StringBuilder();
+    string sPreFix = "";
     foreach (var el in this.Individuals[iid]) {
-      sb.Append(func(el)+"<br/>");
+      sb.Append(sPreFix+func(el));
+      sPreFix="<br/>";
     }
     return sb.ToString();
   }
