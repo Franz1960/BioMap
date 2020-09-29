@@ -102,5 +102,29 @@ namespace BioMap
       }
       return sb.ToString();
     }
+    public int GetCategoryNum() {
+      return this.ElementProp.MarkerInfo.category;
+    }
+    public string GetIId() {
+      if (this.ElementProp.IndivData!=null) {
+        return ConvInvar.ToString(this.ElementProp.IndivData.IId);
+      }
+      return "";
+    }
+    public string GetIsoDate() {
+      return this.ElementProp.CreationTime.ToString("yyyy-MM-dd");
+    }
+    public string GetGender() {
+      if (this.ElementProp.IndivData!=null) {
+        return this.ElementProp.IndivData.Gender;
+      }
+      return "";
+    }
+    public double GetHeadBodyLengthMm() {
+      if (this.ElementProp.IndivData?.MeasuredData!=null) {
+        return this.ElementProp.IndivData.MeasuredData.HeadBodyLength;
+      }
+      return 0;
+    }
   }
 }

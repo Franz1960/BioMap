@@ -120,14 +120,23 @@
   <data name="Add" xml:space="preserve">
     <value>Hinzufügen</value>
   </data>
+  <data name="Add Image" xml:space="preserve">
+    <value>Foto hinzufügen</value>
+  </data>
   <data name="All Elements" xml:space="preserve">
     <value>Alle Elemente</value>
   </data>
   <data name="All Individuals" xml:space="preserve">
     <value>Alle Individuen</value>
   </data>
+  <data name="Edit AOI" xml:space="preserve">
+    <value>AOI bearbeiten</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>Startseite</value>
+  </data>
+  <data name="ID Cards" xml:space="preserve">
+    <value>Passbilder</value>
   </data>
   <data name="Image" xml:space="preserve">
     <value>Bild</value>
@@ -135,10 +144,16 @@
   <data name="Impressum" xml:space="preserve">
     <value>Impressum</value>
   </data>
+  <data name="Length / Time Chart" xml:space="preserve">
+    <value>Längen-Zeit-Diagramm</value>
+  </data>
   <data name="Lists" xml:space="preserve">
     <value>Listen</value>
   </data>
   <data name="Map" xml:space="preserve">
     <value>Karte</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Auswählen</value>
   </data>
 </root>
