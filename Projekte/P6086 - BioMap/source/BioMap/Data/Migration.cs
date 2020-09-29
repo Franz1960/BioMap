@@ -179,7 +179,7 @@ namespace BioMap
                   indivData = new Element.IndivData_t
                   {
                       IId = ConvInvar.ToInt(jIndivData["IId"]?.Value<string>()),
-                      Gender = jIndivData?["Gender"]?.Value<string>(),
+                      Gender = jIndivData?["Gender"]?.Value<string>()?.ToLowerInvariant(),
                       MeasuredData = measuredData,
                   };
                   if (jIndivData["TraitValues"] != null)
