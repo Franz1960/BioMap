@@ -2,6 +2,8 @@
 using System.IO;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace BioMap
 {
@@ -21,15 +23,13 @@ namespace BioMap
         if (System.IO.File.Exists(sFilePath)) {
           try {
             if (Request.Query.ContainsKey("width")) {
-              int nReqWidth = ConvInvar.ToInt(Request.Query["width"]);
-              var bmSrc = System.Drawing.Bitmap.FromFile(sFilePath);
-              int nReqHeight = (nReqWidth*bmSrc.Height)/bmSrc.Width;
-              var bmThumbnail = new System.Drawing.Bitmap(nReqWidth,nReqHeight);
-              using (var graphics = System.Drawing.Graphics.FromImage(bmThumbnail)) {
-                graphics.DrawImage(bmSrc,0,0,bmThumbnail.Width,bmThumbnail.Height);
-              }
               var bs = new MemoryStream();
-              bmThumbnail.Save(bs,System.Drawing.Imaging.ImageFormat.Jpeg);
+              int nReqWidth = ConvInvar.ToInt(Request.Query["width"]);
+              using (var image = Image.Load(sFilePath)) {
+                int nReqHeight = (nReqWidth*image.Height)/image.Width;
+                image.Mutate(x => x.Resize(nReqWidth,nReqHeight));
+                image.SaveAsJpeg(bs);
+              }
               return File(bs.ToArray(),"image/jpeg");
             }
           } catch {
