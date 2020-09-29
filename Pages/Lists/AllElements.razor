@@ -8,9 +8,7 @@
 
 <p>Anzahl Elemente: @Elements.Length</p>
 
-<PhotoPopup @ref="PhotoPopup1" Title="XXX" />
-
-@*<img src="api/photos/@SelectedElementName" style="max-width:100%;max-height:100%;margin-top:6px;" />*@
+<PhotoPopup @ref="PhotoPopup1" />
 
 <table class="table table-striped">
   <thead>
@@ -30,7 +28,7 @@
         <td>@el.ElementProp.MarkerInfo.category</td>
         <td>@el.GetDetails()</td>
         <td>@el.ElementProp.CreationTime</td>
-        <td><a @onclick="()=>OnSelectClick(el.ElementName)">@el.ElementName</a></td>
+        <td><a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a></td>
         <td>@el.ElementProp.UploadInfo.UserId</td>
       </tr>
     }
@@ -41,9 +39,7 @@
   private int i = 0;
   private Element[] Elements = DataService.Instance.GetElements();
   private PhotoPopup PhotoPopup1;
-  private string SelectedElementName = "";
-  private async void OnSelectClick(string sElementName) {
-    this.SelectedElementName=sElementName;
-    this.PhotoPopup1.Show(sElementName);
+  private void OnSelectClick(Element el) {
+    this.PhotoPopup1.Show(el);
   }
 }
