@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,13 +13,27 @@ namespace BioMap
     public IActionResult GetPhoto(string id) {
       try {
         var ds = DataService.Instance;
+        bool bReqThumbnail = Request.Query.ContainsKey("width");
         string sFilePath = System.IO.Path.Combine(ds.DataDir,System.IO.Path.Combine("images",id));
         if (!System.IO.File.Exists(sFilePath)) {
           sFilePath = System.IO.Path.Combine(ds.DataDir,System.IO.Path.Combine("images_orig",id));
         }
         if (System.IO.File.Exists(sFilePath)) {
-          Byte[] b = System.IO.File.ReadAllBytes(sFilePath);
-          return File(b,"image/jpeg");
+          if (Request.Query.ContainsKey("width")) {
+            int nReqWidth = ConvInvar.ToInt(Request.Query["width"]);
+            var bmSrc=System.Drawing.Bitmap.FromFile(sFilePath);
+            int nReqHeight = (nReqWidth*bmSrc.Height)/bmSrc.Width;
+            var bmThumbnail = new System.Drawing.Bitmap(nReqWidth,nReqHeight);
+            using (var graphics = System.Drawing.Graphics.FromImage(bmThumbnail)) {
+              graphics.DrawImage(bmSrc,0,0,bmThumbnail.Width,bmThumbnail.Height);
+            }
+            var bs = new MemoryStream();
+            bmThumbnail.Save(bs,System.Drawing.Imaging.ImageFormat.Jpeg);
+            return File(bs.ToArray(),"image/jpeg");
+          } else {
+            Byte[] b = System.IO.File.ReadAllBytes(sFilePath);
+            return File(b,"image/jpeg");
+          }
         } else {
           return StatusCode(404,$"Photo not found: {id}");
         }
