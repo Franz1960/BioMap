@@ -1,0 +1,40 @@
+﻿@if (_Show) {
+  <div class="modal fade show" id="myModal" style=" display: block;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">@Title</h4>
+          <button type="button" class="close" data-dismiss="modal" @onclick="Hide">&times;</button>
+        </div>
+        <div class="modal-body">
+          <img src="api/photos/@ElementName" style="max-width:100%;max-height:100%;margin-top:6px;" />
+          @ChildContent
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal" @onclick="Hide">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+  [Parameter]
+  public string Title { get; set; }
+  [Parameter]
+  public string ElementName { get; set; }
+  private Boolean _Show { get; set; }
+  [Parameter]
+  public RenderFragment ChildContent { get; set; }
+  //[Parameter]
+  //public EventCallback<MouseEventArgs> OnClick { get; set; }
+  public void Show(string sElementName) {
+    this.ElementName=sElementName;
+    _Show=true;
+  }
+  public void Hide() {
+    _Show=false;
+  }
+
+}

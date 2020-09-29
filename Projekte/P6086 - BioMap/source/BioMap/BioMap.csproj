@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <PackageReference Include="ChartJs.Blazor" Version="1.1.0" />
+    <PackageReference Include="Geo" Version="1.0.0" />
     <PackageReference Include="MetadataExtractor" Version="2.4.3" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="3.1.8" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.0.3">
@@ -55,10 +56,6 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>App.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>

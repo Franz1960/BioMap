@@ -5,10 +5,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BioMap
 {
-  [Route("api/upload")]
+  [Route("api/photos")]
   [ApiController]
-  public class UploadController : ControllerBase
+  public class PhotoController : ControllerBase
   {
+    [HttpGet("{id}")]
+    public IActionResult GetPhoto(string id) {
+      var ds = DataService.Instance;
+      var sImagesOrigDir = System.IO.Path.Combine(ds.DataDir,"images_orig");
+      try {
+        var sFilePath = System.IO.Path.Combine(sImagesOrigDir,id);
+        if (System.IO.File.Exists(sFilePath)) {
+          Byte[] b = System.IO.File.ReadAllBytes(sFilePath);
+          return File(b,"image/jpeg");
+        } else {
+          return StatusCode(404,$"Photo not found: {id}");
+        }
+      } catch (Exception ex) {
+        return StatusCode(500,$"Internal server error: {ex}");
+      }
+    }
     [HttpPost]
     public IActionResult Upload() {
       var ds = DataService.Instance;
