@@ -1,0 +1,39 @@
+﻿@page "/lists/all_elements"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<h1>@Localize["All Elements"]</h1>
+
+<p>Anzahl Elemente: @Elements.Length</p>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Cat.</th>
+      <th scope="col">Details</th>
+      <th scope="col">Date</th>
+      <th scope="col">Name</th>
+      <th scope="col">User</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var el in Elements) {
+    <tr>
+      <th scope="row">@(i++)</th>
+      <td>@el.ElementProp.MarkerInfo.category</td>
+      <td>@el.GetDetails()</td>
+      <td>@el.ElementProp.CreationTime</td>
+      <td>@el.ElementName</td>
+      <td>@el.ElementProp.UploadInfo.UserId</td>
+    </tr>
+    }
+  </tbody>
+</table>
+
+@code {
+  private int i = 0;
+  private Element[] Elements = DataService.Instance.GetElements();
+}

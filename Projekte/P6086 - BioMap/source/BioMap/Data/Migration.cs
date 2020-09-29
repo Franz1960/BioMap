@@ -44,6 +44,9 @@ namespace BioMap
         {
           foreach (var place in aPlaces)
           {
+            if (place.Radius==0) {
+              place.Radius=150;
+            }
             command.CommandText = "INSERT INTO places (name,radius,lat,lng) VALUES ('"+place.Name+ "'," + ToString(place.Radius) + "," + ToString(place.LatLng.lat) + "," + ToString(place.LatLng.lng) + ")";
             command.ExecuteNonQuery();
           }
