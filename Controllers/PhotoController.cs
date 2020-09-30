@@ -32,6 +32,30 @@ namespace BioMap
               }
               return File(bs.ToArray(),"image/jpeg");
             }
+            if (Request.Query.ContainsKey("maxdim")) {
+              var bs = new MemoryStream();
+              int nMaxDim = ConvInvar.ToInt(Request.Query["maxdim"]);
+              using (var image = Image.Load(sFilePath)) {
+                int nReqWidth;
+                int nReqHeight;
+                if (image.Height<=image.Width) {
+                  nReqWidth = nMaxDim;
+                  nReqHeight = (nMaxDim*image.Height)/image.Width;
+                } else {
+                  nReqWidth = (nMaxDim*image.Width)/image.Height;
+                  nReqHeight = nMaxDim;
+                }
+                image.Mutate(x => x.Resize(nReqWidth,nReqHeight));
+                if (nReqWidth!=nReqHeight) {
+                  var sqImg = new Image<SixLabors.ImageSharp.PixelFormats.Argb32>(nMaxDim,nMaxDim,Color.Gray);
+                  sqImg.Mutate(x => x.DrawImage(image,new Point((nMaxDim-nReqWidth)/2,(nMaxDim-nReqHeight)/2),1));
+                  sqImg.SaveAsJpeg(bs);
+                } else {
+                  image.SaveAsJpeg(bs);
+                }
+              }
+              return File(bs.ToArray(),"image/jpeg");
+            }
           } catch {
             // System.Drawing does not work on Linux.
           }
