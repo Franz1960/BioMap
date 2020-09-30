@@ -114,17 +114,36 @@ namespace BioMap
     public string GetIsoDate() {
       return this.ElementProp.CreationTime.ToString("yyyy-MM-dd");
     }
+    public Place GetPlace() {
+      var place = new Place { Name="" };
+      return place;
+    }
     public string GetGender() {
       if (this.ElementProp.IndivData!=null) {
         return this.ElementProp.IndivData.Gender;
       }
       return "";
     }
+    public bool HasPhotoData() {
+      return (this.ElementProp.ExifData!=null);
+    }
+    public bool HasIndivData() {
+      return (this.ElementProp.IndivData!=null);
+    }
+    public bool HasMeasuredData() {
+      return (this.ElementProp.IndivData?.MeasuredData!=null);
+    }
     public double GetHeadBodyLengthMm() {
       if (this.ElementProp.IndivData?.MeasuredData!=null) {
         return this.ElementProp.IndivData.MeasuredData.HeadBodyLength;
       }
       return 0;
+    }
+    public string GetHeadBodyLengthNice() {
+      if (this.ElementProp.IndivData?.MeasuredData!=null) {
+        return ConvInvar.ToDecimalString(this.ElementProp.IndivData.MeasuredData.HeadBodyLength,1)+" mm";
+      }
+      return "";
     }
   }
 }

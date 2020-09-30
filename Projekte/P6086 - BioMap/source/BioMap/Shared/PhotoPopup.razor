@@ -7,7 +7,17 @@
           <button type="button" class="close" data-dismiss="modal" @onclick="Hide">&times;</button>
         </div>
         <div class="modal-body">
-          <img src="api/photos/@ElementName" style="max-width:100%;max-height:100%;margin-top:6px;" />
+          <img src="api/photos/@ElementName" style="max-width:100%;max-height:100%;margin-top:3px;" />
+          <table class="table">
+            <tbody>
+              @foreach (var p in Properties) {
+                <tr>
+                  <td>@((MarkupString)p[0])</td>
+                  <td>@((MarkupString)p[1])</td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal" @onclick="Hide">Close</button>
@@ -24,13 +34,22 @@
   [Parameter]
   public string ElementName { get; set; }
   private Boolean _Show { get; set; }
-  [Parameter]
-  public RenderFragment ChildContent { get; set; }
-  //[Parameter]
-  //public EventCallback<MouseEventArgs> OnClick { get; set; }
+  private List<string[]> Properties { get; set; } = new List<string[]>();
   public void Show(Element el) {
     this.ElementName=el.ElementName;
     this.Title=el.ElementName;
+    this.Properties.Clear();
+    if (el.HasIndivData() && el.HasMeasuredData()) {
+      this.Properties.Add(new[] { "Individual","<b>"+el.GetIId()+"</b> ("+el.GetGender()+" / "+el.GetHeadBodyLengthNice()+" / "+el.GetPlace().Name+")" });
+    }
+    this.Properties.Add(new[] { "Cat.",ConvInvar.ToString(el.GetCategoryNum()) });
+    this.Properties.Add(new[] { "File name",el.ElementName });
+    this.Properties.Add(new[] { "Time",ConvInvar.ToString(el.ElementProp.CreationTime) });
+    this.Properties.Add(new[] { "Uploaded",ConvInvar.ToString(el.ElementProp.UploadInfo.Timestamp) });
+    this.Properties.Add(new[] { "by",el.ElementProp.UploadInfo.UserId });
+    if (el.HasPhotoData()) {
+      this.Properties.Add(new[] { "Camera",el.ElementProp.ExifData.Make+" / "+el.ElementProp.ExifData.Model });
+    }
     _Show=true;
     StateHasChanged();
   }
