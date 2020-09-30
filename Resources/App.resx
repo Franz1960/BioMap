@@ -144,6 +144,9 @@
   <data name="Impressum" xml:space="preserve">
     <value>Impressum</value>
   </data>
+  <data name="Length" xml:space="preserve">
+    <value>Länge</value>
+  </data>
   <data name="Length / Time Chart" xml:space="preserve">
     <value>Längen-Zeit-Diagramm</value>
   </data>
@@ -153,7 +156,19 @@
   <data name="Map" xml:space="preserve">
     <value>Karte</value>
   </data>
+  <data name="Place" xml:space="preserve">
+    <value>Ort</value>
+  </data>
   <data name="Select" xml:space="preserve">
     <value>Auswählen</value>
+  </data>
+  <data name="Sex" xml:space="preserve">
+    <value>Geschlecht</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Zeit</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Benutzer</value>
   </data>
 </root>

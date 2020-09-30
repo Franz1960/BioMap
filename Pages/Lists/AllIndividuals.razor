@@ -12,17 +12,23 @@
   <thead>
     <tr>
       <th scope="col">IID</th>
+      <th scope="col">@Localize["Sex"]</th>
+      <th scope="col">@Localize["Length"]</th>
+      <th scope="col">@Localize["Place"]</th>
       <th scope="col">ID</th>
-      <th scope="col">Time</th>
-      <th scope="col">User</th>
+      <th scope="col">@Localize["Time"]</th>
+      <th scope="col">@Localize["User"]</th>
     </tr>
   </thead>
   <tbody>
     @foreach (var iid in Individuals.Keys) {
     <tr>
       <th scope="row">@(iid)</th>
+      <td>@((MarkupString)GetForElements(iid,el=>el.GetGender()))</td>
+      <td>@((MarkupString)GetForElements(iid,el=>el.GetHeadBodyLengthNice()))</td>
+      <td>@((MarkupString)GetForElements(iid,el=>el.GetPlace().Name))</td>
       <td>@((MarkupString)GetForElements(iid,el=>el.ElementName))</td>
-      <td>@((MarkupString)GetForElements(iid,el=>el.ElementProp.CreationTime.ToString()))</td>
+      <td>@((MarkupString)GetForElements(iid,el=>el.GetIsoDate()))</td>
       <td>@((MarkupString)GetForElements(iid,el=>el.ElementProp.UploadInfo.UserId))</td>
     </tr>
     }
