@@ -23,8 +23,7 @@
       <NavLink class="nav-link" @onclick='()=>toggleSubNav("Add")'>
         <span class="oi oi-plus" aria-hidden="true"></span> @Localize["Add"]
       </NavLink>
-      @if (expandedSubNav == "Add")
-      {
+      @if (expandedSubNav == "Add") {
         <ul class="nav flex-column">
           <li class="nav-item px-4">
             <NavLink class="expand-menu" href="/add/image">
@@ -38,30 +37,29 @@
       <NavLink class="nav-link" @onclick='()=>toggleSubNav("Lists")'>
         <span class="oi oi-list" aria-hidden="true"></span> @Localize["Lists"]
       </NavLink>
-      @if (expandedSubNav == "Lists")
-      {
-    <ul class="nav flex-column">
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/lists/all_elements">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Elements"]
-        </NavLink>
-      </li>
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/lists/all_individuals">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Individuals"]
-        </NavLink>
-      </li>
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/lists/id_cards">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["ID Cards"]
-        </NavLink>
-      </li>
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/lists/size_time_chart">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["Length / Time Chart"]
-        </NavLink>
-      </li>
-    </ul>
+      @if (expandedSubNav == "Lists") {
+        <ul class="nav flex-column">
+          <li class="nav-item px-4">
+            <NavLink class="expand-menu" href="/lists/all_elements">
+              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Elements"]
+            </NavLink>
+          </li>
+          <li class="nav-item px-4">
+            <NavLink class="expand-menu" href="/lists/all_individuals">
+              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Individuals"]
+            </NavLink>
+          </li>
+          <li class="nav-item px-4">
+            <NavLink class="expand-menu" href="/lists/id_cards">
+              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["ID Cards"]
+            </NavLink>
+          </li>
+          <li class="nav-item px-4">
+            <NavLink class="expand-menu" href="/lists/size_time_chart">
+              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["Length / Time Chart"]
+            </NavLink>
+          </li>
+        </ul>
       }
     </li>
     <li class="nav-item px-2">
@@ -74,22 +72,17 @@
 
 @code {
   private static string expandedSubNav = "";
-  private static void toggleSubNav(string navId)
-  {
-    if (string.CompareOrdinal(expandedSubNav, navId) == 0)
-    {
+  private static void toggleSubNav(string navId) {
+    if (string.CompareOrdinal(expandedSubNav,navId) == 0) {
       expandedSubNav = "";
-    }
-    else
-    {
+    } else {
       expandedSubNav = navId;
     }
   }
 
   private bool collapseNavMenu = true;
   private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-  private void ToggleNavMenu()
-  {
+  private void ToggleNavMenu() {
     collapseNavMenu = !collapseNavMenu;
   }
 }
