@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>BioMap.Program</StartupObject>
+    <UserSecretsId>53345fd2-aeb4-44b6-aada-5b2af12d392e</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -45,17 +46,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Resources\App.Designer.cs">
+    <Compile Update="Resources\App.en.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>App.resx</DependentUpon>
+      <DependentUpon>App.en.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Resources\App.resx">
+    <EmbeddedResource Update="Resources\App.en.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>App.Designer.cs</LastGenOutput>
+      <LastGenOutput>App.en.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

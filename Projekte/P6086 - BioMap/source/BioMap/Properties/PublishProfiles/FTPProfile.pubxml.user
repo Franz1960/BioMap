@@ -17,31 +17,34 @@ indem Sie diese MSBuild-Datei bearbeiten. Weitere Informationen hierzu finden Si
       <publishTime>05/24/2020 13:46:28</publishTime>
     </File>
     <File Include="BioMap.deps.json">
-      <publishTime>09/29/2020 18:41:43</publishTime>
+      <publishTime>09/30/2020 09:16:28</publishTime>
     </File>
     <File Include="BioMap.dll">
-      <publishTime>09/29/2020 18:41:36</publishTime>
+      <publishTime>09/30/2020 09:15:44</publishTime>
     </File>
     <File Include="BioMap.exe">
-      <publishTime>09/29/2020 18:41:36</publishTime>
+      <publishTime>09/30/2020 09:15:44</publishTime>
     </File>
     <File Include="BioMap.pdb">
-      <publishTime>09/29/2020 18:41:36</publishTime>
+      <publishTime>09/30/2020 09:15:44</publishTime>
     </File>
     <File Include="BioMap.runtimeconfig.json">
-      <publishTime>09/29/2020 18:41:36</publishTime>
+      <publishTime>09/30/2020 09:15:44</publishTime>
     </File>
     <File Include="BioMap.Views.dll">
-      <publishTime>09/29/2020 18:41:36</publishTime>
+      <publishTime>09/30/2020 09:15:44</publishTime>
     </File>
     <File Include="BioMap.Views.pdb">
-      <publishTime>09/29/2020 18:41:36</publishTime>
+      <publishTime>09/30/2020 09:15:44</publishTime>
     </File>
     <File Include="ChartJs.Blazor.dll">
       <publishTime>03/28/2020 12:53:46</publishTime>
     </File>
     <File Include="de/BioMap.resources.dll">
-      <publishTime>09/29/2020 18:41:36</publishTime>
+      <publishTime>09/30/2020 09:11:08</publishTime>
+    </File>
+    <File Include="en/BioMap.resources.dll">
+      <publishTime>09/30/2020 09:15:44</publishTime>
     </File>
     <File Include="EntityFramework.dll">
       <publishTime>09/14/2019 17:01:18</publishTime>
@@ -140,7 +143,7 @@ indem Sie diese MSBuild-Datei bearbeiten. Weitere Informationen hierzu finden Si
       <publishTime>09/13/2019 02:28:28</publishTime>
     </File>
     <File Include="web.config">
-      <publishTime>09/29/2020 18:41:43</publishTime>
+      <publishTime>09/30/2020 09:16:28</publishTime>
     </File>
     <File Include="wwwroot/css/bootstrap/bootstrap.min.css">
       <publishTime>05/24/2020 13:46:28</publishTime>
