@@ -6,12 +6,16 @@
 
 <h1>@Localize["ID Cards"]</h1>
 
+<PhotoPopup @ref="PhotoPopup1" />
+
 <div class="row">
   @foreach (var el in Elements) {
     <div class="card" style="width: 240px;">
-      <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240" style="max-width:100%;max-height:100%;margin-top:1px;" />
+      <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">
+        <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240" style="max-width:100%;max-height:100%;margin-top:1px;" />
+      </a>
       <div class="card-footer">
-        <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.GetGender()/@el.GetHeadBodyLengthMm().ToString("0.0"))</small>
+        <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.GetGender()/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlace().Name)</small>
       </div>
     </div>
   }
@@ -19,4 +23,8 @@
 
 @code {
   private Element[] Elements = DataService.Instance.GetElements("indivdata.iid>=1","indivdata.iid ASC,elements.creationtime ASC");
+  private PhotoPopup PhotoPopup1;
+  private void OnSelectClick(Element el) {
+    this.PhotoPopup1.Show(el);
+  }
 }
