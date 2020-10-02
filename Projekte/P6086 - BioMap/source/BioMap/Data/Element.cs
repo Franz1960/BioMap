@@ -59,6 +59,8 @@ namespace BioMap
     }
     public string ElementName;
     public ElementProp_t ElementProp;
+    public int? SpeciesId;
+    public int? ProjectId;
     //
     public static Element CreateFromImageFile(string sImageFilePath) {
       var metaData = ImageMetadataReader.ReadMetadata(sImageFilePath);

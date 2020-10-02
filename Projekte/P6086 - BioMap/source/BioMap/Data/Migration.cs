@@ -33,9 +33,34 @@ namespace BioMap
       var sMigSrcDir = System.IO.Path.Combine(ds.DataDir, "migration_source");
       var sImagesDir = System.IO.Path.Combine(ds.DataDir, "images");
       var sImagesOrigDir = System.IO.Path.Combine(ds.DataDir, "images_orig");
+      #region Artenliste.
+      try {
+        ds.OperateOnDb((command) =>
+        {
+          command.CommandText = "INSERT INTO species (genus,species,commonname_en)" +
+          " VALUES" +
+          " ('bombina','bombina','Fire-bellied toad')" +
+          ",('bombina','variegata','Yellow-bellied toad')";
+          command.ExecuteNonQuery();
+        });
+
+      } catch { }
+      #endregion
+      var nSpeciesId = ds.GetSpeciesId("bombina","variegata");
+      #region Projekte.
+      try {
+        ds.OperateOnDb((command) =>
+        {
+          command.CommandText = "INSERT INTO projects (name,description,target_species_id)" +
+            " VALUES" +
+            " ('bombina-variegata-de-2019-donaustauf','Gelbbauchunken im Donaustaufer und Kreuther Forst ab 2019','"+nSpeciesId.Value+"')";
+          command.ExecuteNonQuery();
+        });
+
+      } catch { }
+      #endregion
       #region places.json
-      try
-      {
+      try {
         var sr = new System.IO.StreamReader(System.IO.Path.Combine(sMigSrcDir, "places.json"));
         var sJson = sr.ReadToEnd();
         var aPlaces = JsonConvert.DeserializeObject<Place[]>(sJson);
@@ -80,6 +105,7 @@ namespace BioMap
       {
         var sElementsDir = System.IO.Path.Combine(sMigSrcDir, "elements");
         var aFileNames = System.IO.Directory.GetFiles(sElementsDir, "*.json");
+        var nProjectId = ds.GetProjectId("bombina-variegata-de-2019-donaustauf");
         {
           foreach (var sFileName in aFileNames)
           {
@@ -197,6 +223,8 @@ namespace BioMap
                 var el = new Element
                 {
                   ElementName = jel["ElementName"].Value<string>(),
+                  SpeciesId = nSpeciesId,
+                  ProjectId = nProjectId,
                   ElementProp = new Element.ElementProp_t
                   {
                     MarkerInfo = new Element.MarkerInfo_t

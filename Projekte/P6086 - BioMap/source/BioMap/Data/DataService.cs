@@ -88,8 +88,25 @@ namespace BioMap
           "dt DATETIME NOT NULL," +
           "user TEXT," +
           "action TEXT)";
+          command.ExecuteNonQuery();
+          command.CommandText = "CREATE TABLE IF NOT EXISTS species (" +
+          "spec_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+          "genus TEXT NOT NULL," +
+          "species TEXT NOT NULL," +
+          "commonname_en TEXT," +
+          "UNIQUE(species,genus))";
+          command.ExecuteNonQuery();
+          command.CommandText = "CREATE TABLE IF NOT EXISTS projects (" +
+          "prj_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+          "name TEXT NOT NULL," +
+          "description TEXT," +
+          "target_species_id INT," +
+          "UNIQUE(name))";
+          command.ExecuteNonQuery();
           command.CommandText = "CREATE TABLE IF NOT EXISTS elements (" +
           "name TEXT PRIMARY KEY NOT NULL," +
+          "species_id INT," +
+          "project_id INT," +
           "category INT NOT NULL," +
           "markerposlat REAL," +
           "markerposlng REAL," +
@@ -135,11 +152,7 @@ namespace BioMap
           {
             command.CommandText = "SELECT name FROM elements";
             var dr = command.ExecuteReader();
-            while (dr.Read())
-            {
-              bMigrate = false;
-              break;
-            }
+            bMigrate=!dr.Read();
             dr.Close();
           }
           #endregion
@@ -207,13 +220,49 @@ namespace BioMap
       });
       this.AllPlaces=lPlaces.ToArray();
     }
+    public int? GetSpeciesId(string sGenus,string sSpecies)
+    {
+      int? nSpeciesId=null;
+      this.OperateOnDb((command) =>
+      {
+        command.CommandText = "SELECT spec_id" +
+          " FROM species" +
+          " WHERE (genus='"+sGenus+"' AND species='"+sSpecies+"')" +
+          "";
+        var dr = command.ExecuteReader();
+        if (dr.Read()) {
+          nSpeciesId = dr.GetInt32(0);
+        }
+        dr.Close();
+      });
+      return nSpeciesId;
+    }
+    public int? GetProjectId(string sProjectName)
+    {
+      int? nSpeciesId=null;
+      this.OperateOnDb((command) =>
+      {
+        command.CommandText = "SELECT prj_id" +
+          " FROM projects" +
+          " WHERE (name='"+sProjectName+"')" +
+          "";
+        var dr = command.ExecuteReader();
+        if (dr.Read()) {
+          nSpeciesId = dr.GetInt32(0);
+        }
+        dr.Close();
+      });
+      return nSpeciesId;
+    }
     public void WriteElement(Element el) {
       this.OperateOnDb((command) =>
       {
         command.CommandText =
-          "INSERT INTO elements (name,category,markerposlat,markerposlng,uploadtime,uploader,creationtime) " +
-          "VALUES ('" + el.ElementName +
-          "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
+          "INSERT INTO elements (name,species_id,project_id,category,markerposlat,markerposlng,uploadtime,uploader,creationtime) " +
+          "VALUES ('" + el.ElementName + "'," +
+          (el.SpeciesId.HasValue ? ("'" + ConvInvar.ToString(el.SpeciesId.Value) + "'") : ("NULL")) + "," +
+          (el.ProjectId.HasValue ? ("'" + ConvInvar.ToString(el.ProjectId.Value) + "'") : ("NULL")) + "," +
+          "'" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lat) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lng) +
           "','" + ConvInvar.ToString(el.ElementProp.UploadInfo.Timestamp) +

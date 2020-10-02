@@ -132,6 +132,9 @@
   <data name="Edit AOI" xml:space="preserve">
     <value>AOI bearbeiten</value>
   </data>
+  <data name="Fire-bellied toad" xml:space="preserve">
+    <value>Rotbauchunke</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>Startseite</value>
   </data>
@@ -170,5 +173,8 @@
   </data>
   <data name="User" xml:space="preserve">
     <value>Benutzer</value>
+  </data>
+  <data name="Yellow-bellied toad" xml:space="preserve">
+    <value>Gelbbauchunke</value>
   </data>
 </root>
