@@ -23,6 +23,7 @@
   private ChartJsLineChart _chartJs;
 
   protected override void OnInitialized() {
+    base.OnInitialized();
     _config = new LineConfig
     {
       Options = new LineOptions
@@ -30,6 +31,7 @@
         Title = new OptionsTitle
         {
           Text="XXX",
+          Display = false,
         },
         Legend = new Legend
         {
