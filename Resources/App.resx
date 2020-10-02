@@ -135,6 +135,9 @@
   <data name="Fire-bellied toad" xml:space="preserve">
     <value>Rotbauchunke</value>
   </data>
+  <data name="Gender" xml:space="preserve">
+    <value>Geschlecht</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>Startseite</value>
   </data>
@@ -165,14 +168,14 @@
   <data name="Select" xml:space="preserve">
     <value>Auswählen</value>
   </data>
-  <data name="Sex" xml:space="preserve">
-    <value>Geschlecht</value>
-  </data>
   <data name="Time" xml:space="preserve">
     <value>Zeit</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>Benutzer</value>
+  </data>
+  <data name="Vintage" xml:space="preserve">
+    <value>Jahrgang</value>
   </data>
   <data name="Yellow-bellied toad" xml:space="preserve">
     <value>Gelbbauchunke</value>

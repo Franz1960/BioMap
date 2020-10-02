@@ -59,13 +59,15 @@
     };
 
     var aaIndisByIId = DS.GetIndividuals();
+
     foreach (var idx in aaIndisByIId.Keys) {
+      string sYobColor = aaIndisByIId[idx][0].GetColorForYearOfBirth();
       var lineSet = new LineDataset<TimeTuple<double>>
       {
-        BackgroundColor = "rgba(100,100,100,0.5)",
+        BackgroundColor = sYobColor,
         BorderWidth = 2,
         PointHoverBorderWidth = 4,
-        BorderColor = "rgba(100,100,100,0.5)",
+        BorderColor = sYobColor,
         PointRadius = 3,
         //ShowLine = true,
       };
