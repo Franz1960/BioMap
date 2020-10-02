@@ -258,7 +258,7 @@ namespace BioMap
       this.OperateOnDb((command) =>
       {
         command.CommandText =
-          "INSERT INTO elements (name,species_id,project_id,category,markerposlat,markerposlng,uploadtime,uploader,creationtime) " +
+          "REPLACE INTO elements (name,species_id,project_id,category,markerposlat,markerposlng,uploadtime,uploader,creationtime) " +
           "VALUES ('" + el.ElementName + "'," +
           (el.SpeciesId.HasValue ? ("'" + ConvInvar.ToString(el.SpeciesId.Value) + "'") : ("NULL")) + "," +
           (el.ProjectId.HasValue ? ("'" + ConvInvar.ToString(el.ProjectId.Value) + "'") : ("NULL")) + "," +
@@ -272,7 +272,7 @@ namespace BioMap
         command.ExecuteNonQuery();
         if (el.ElementProp.ExifData!=null) {
           command.CommandText =
-            "INSERT INTO photos (name,filename,exifmake,exifmodel,exifdatetimeoriginal) " +
+            "REPLACE INTO photos (name,filename,exifmake,exifmodel,exifdatetimeoriginal) " +
             "VALUES ('" + el.ElementName +
             "','" + el.ElementName +
             "','" + ((el.ElementProp.ExifData == null) ? "" : el.ElementProp.ExifData.Make?.TrimEnd('\0')) +
@@ -283,7 +283,7 @@ namespace BioMap
         }
         if (el.ElementProp.MarkerInfo.category==350 || el.ElementProp.MarkerInfo.category==351) {
           command.CommandText =
-            "INSERT INTO indivdata (name,normcirclepos0x,normcirclepos0y,normcirclepos1x,normcirclepos1y,normcirclepos2x,normcirclepos2y" +
+            "REPLACE INTO indivdata (name,normcirclepos0x,normcirclepos0y,normcirclepos1x,normcirclepos1y,normcirclepos2x,normcirclepos2y" +
             ",headposx,headposy,backposx,backposy,origheadposx,origheadposy,origbackposx,origbackposy,headbodylength,yearofbirth,gender,iid" +
             ",traitYellowDominance" +
             ",traitBlackDominance" +
