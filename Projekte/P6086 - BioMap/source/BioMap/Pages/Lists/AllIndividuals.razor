@@ -27,14 +27,16 @@
         <th scope="row">@(iid)</th>
         <td>
           @((MarkupString)GetForElements(iid,el=>el.GetYearOfBirthAsString(),true))
+          @if (!AreYearsOfBirthConsistent(iid)) {
           <br />
           <div class="form-group">
-            <input class="form-control" type="number" value="0" @onchange="(e)=>inputChanged(e,iid)" />
+            <input class="form-control" type="number" value="0" @onchange="(e) => inputChanged(e,iid)" />
           </div>
+          }
         </td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetGender()))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetHeadBodyLengthNice()))</td>
-        <td>@((MarkupString)GetForElements(iid,el=>el.GetPlace().Name))</td>
+        <td>@((MarkupString)GetForElements(iid,el=>el.GetPlace()?.Name))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.ElementName))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetIsoDate()))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.ElementProp.UploadInfo.UserId))</td>
@@ -70,6 +72,19 @@
       }
     }
     return "";
+  }
+  bool AreYearsOfBirthConsistent(int iid) {
+    int nYoB = 0;
+    foreach (var el in this.Individuals[iid]) {
+      if (nYoB!=0) {
+        if (nYoB!=el.GetYearOfBirth().Value) {
+          return false;
+        }
+      } else {
+        nYoB=el.GetYearOfBirth().Value;
+      }
+    }
+    return true;
   }
   void inputChanged(ChangeEventArgs e,int iid) {
     int nYoB = ConvInvar.ToInt(e.Value.ToString());

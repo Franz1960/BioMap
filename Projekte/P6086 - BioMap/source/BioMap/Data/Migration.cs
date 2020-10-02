@@ -298,6 +298,16 @@ namespace BioMap
             }
           }
           #endregion
+          #region Orte bestimmen und schreiben.
+          {
+            ds.RefreshAllPlaces();
+            Element[] elements = DataService.Instance.GetElements();
+            foreach (var el in elements) {
+              el.ElementProp.MarkerInfo.PlaceName=Place.GetNearestPlace(el.ElementProp.MarkerInfo.position).Name;
+              DataService.Instance.WriteElement(el);
+            }
+          }
+          #endregion
         }
       } catch { }
       #endregion

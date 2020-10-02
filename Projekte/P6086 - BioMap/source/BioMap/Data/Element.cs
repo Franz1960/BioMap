@@ -21,6 +21,7 @@ namespace BioMap
     {
       public int category;
       public LatLng position;
+      public string PlaceName;
     }
     [JsonObject(MemberSerialization.Fields)]
     public class ExifData_t
@@ -126,8 +127,14 @@ namespace BioMap
     }
     public string GetDetails() {
       var sb = new System.Text.StringBuilder();
+      sb.Append(this.GetPlace()?.Name);
       if (this.ElementProp.IndivData!=null) {
-        sb.Append("#"+this.ElementProp.IndivData.IId);
+        sb.Append(", #");
+        sb.Append(this.GetIId());
+        sb.Append(", ");
+        sb.Append(this.GetGender());
+        sb.Append(", ");
+        sb.Append(this.GetHeadBodyLengthNice());
       }
       return sb.ToString();
     }
@@ -144,8 +151,11 @@ namespace BioMap
       return this.ElementProp.CreationTime.ToString("yyyy-MM-dd");
     }
     public Place GetPlace() {
-      var place = new Place { Name="" };
-      return place;
+      var sPlaceName = this.ElementProp.MarkerInfo.PlaceName;
+      if (DataService.Instance.PlacesByNames.TryGetValue(sPlaceName,out var place)) {
+        return place;
+      }
+      return null;
     }
     public string GetGender() {
       if (this.ElementProp.IndivData!=null) {

@@ -110,6 +110,7 @@ namespace BioMap
           "category INT NOT NULL," +
           "markerposlat REAL," +
           "markerposlng REAL," +
+          "place TEXT," +
           "uploadtime DATETIME NOT NULL," +
           "uploader TEXT NOT NULL," +
           "creationtime DATETIME NOT NULL)";
@@ -192,13 +193,20 @@ namespace BioMap
       get;
       private set;
     }
+    public Dictionary<string,Place> PlacesByNames
+    {
+      get;
+      private set;
+    } = new Dictionary<string,Place>();
     public void RefreshAllPlaces()
     {
       var lPlaces = new List<Place>();
+      this.PlacesByNames.Clear();
       this.OperateOnDb((command) =>
       {
         command.CommandText = "SELECT name,radius,lat,lng" +
           " FROM places" +
+          " ORDER BY name" +
           "";
         var dr = command.ExecuteReader();
         while (dr.Read())
@@ -213,12 +221,13 @@ namespace BioMap
               lng = dr.GetDouble(3),
             },
           };
-
           lPlaces.Add(place);
+          this.PlacesByNames.Add(place.Name,place);
         }
         dr.Close();
       });
       this.AllPlaces=lPlaces.ToArray();
+
     }
     public int? GetSpeciesId(string sGenus,string sSpecies)
     {
@@ -258,13 +267,14 @@ namespace BioMap
       this.OperateOnDb((command) =>
       {
         command.CommandText =
-          "REPLACE INTO elements (name,species_id,project_id,category,markerposlat,markerposlng,uploadtime,uploader,creationtime) " +
+          "REPLACE INTO elements (name,species_id,project_id,category,markerposlat,markerposlng,place,uploadtime,uploader,creationtime) " +
           "VALUES ('" + el.ElementName + "'," +
           (el.SpeciesId.HasValue ? ("'" + ConvInvar.ToString(el.SpeciesId.Value) + "'") : ("NULL")) + "," +
           (el.ProjectId.HasValue ? ("'" + ConvInvar.ToString(el.ProjectId.Value) + "'") : ("NULL")) + "," +
           "'" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lat) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lng) +
+          "','" + el.ElementProp.MarkerInfo.PlaceName +
           "','" + ConvInvar.ToString(el.ElementProp.UploadInfo.Timestamp) +
           "','" + el.ElementProp.UploadInfo.UserId +
           "','" + ConvInvar.ToString(el.ElementProp.CreationTime) +
@@ -357,6 +367,7 @@ namespace BioMap
           ",indivdata.normcirclepos1y" +
           ",indivdata.normcirclepos2x" +
           ",indivdata.normcirclepos2y" +
+          ",elements.place" +
           " FROM elements" +
           " LEFT JOIN indivdata ON (indivdata.name=elements.name)" +
           " LEFT JOIN photos ON (photos.name=elements.name)" +
@@ -383,6 +394,7 @@ namespace BioMap
                     lat = dr.GetDouble(2),
                     lng = dr.GetDouble(3),
                   },
+                  PlaceName = dr.GetString(33),
                 },
                 UploadInfo = new Element.UploadInfo_t
                 {
