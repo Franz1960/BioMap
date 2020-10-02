@@ -110,16 +110,16 @@ namespace BioMap
     public string GetColorForYearOfBirth() {
       var sColor = "rgba(100,100,100,0.5)";
       if (this.ElementProp.IndivData!=null) {
-        if (this.ElementProp.IndivData.YearOfBirth==2016) {
-          sColor = "rgba(141,0,206,0.5)";
-        } else if (this.ElementProp.IndivData.YearOfBirth==2017) {
-          sColor = "rgba(0,145,16,0.5)";
-        } else if (this.ElementProp.IndivData.YearOfBirth==2018) {
-          sColor = "rgba(255,106,0,0.5)";
-        } else if (this.ElementProp.IndivData.YearOfBirth==2019) {
-          sColor = "rgba(0,183,100,0.5)";
-        } else if (this.ElementProp.IndivData.YearOfBirth==2020) {
-          sColor = "rgba(0,104,196,0.5)";
+        if ((this.ElementProp.IndivData.YearOfBirth%5)==0) {
+          sColor = "rgba(255,0,0,0.5)";
+        } else if ((this.ElementProp.IndivData.YearOfBirth%5)==1) {
+          sColor = "rgba(0,200,0,0.5)";
+        } else if ((this.ElementProp.IndivData.YearOfBirth%5)==2) {
+          sColor = "rgba(0,0,255,0.5)";
+        } else if ((this.ElementProp.IndivData.YearOfBirth%5)==3) {
+          sColor = "rgba(127,0,127,0.5)";
+        } else if ((this.ElementProp.IndivData.YearOfBirth%5)==4) {
+          sColor = "rgba(0,100,127,0.5)";
         }
       }
       return sColor;

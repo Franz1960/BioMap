@@ -6,6 +6,8 @@ using System.Data;
 using System.Data.SQLite;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using BioMap.Pages.Lists;
+using System.Security.Principal;
 
 namespace BioMap
 {
@@ -279,9 +281,25 @@ namespace BioMap
               catch { }
             }
           }
+          #region Jahrgang aller Wiederfänge auf den zuerst ermittelten Jahrgang setzen.
+          {
+            Dictionary<int,List<Element>> Individuals = DataService.Instance.GetIndividuals();
+            foreach (var iid in Individuals.Keys) {
+              int? nYoB = null;
+              foreach (var el in Individuals[iid]) {
+                int? nElYoB = el.GetYearOfBirth();
+                if (!nYoB.HasValue) {
+                  nYoB=el.GetYearOfBirth();
+                } else if (!nElYoB.HasValue || nElYoB.Value!=nYoB.Value) {
+                  el.ElementProp.IndivData.YearOfBirth=nYoB.Value;
+                  DataService.Instance.WriteElement(el);
+                }
+              }
+            }
+          }
+          #endregion
         }
-      }
-      catch { }
+      } catch { }
       #endregion
     }
   }
