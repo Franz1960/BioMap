@@ -18,6 +18,8 @@
 
 <ChartJsLineChart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
 
+<PlaceFilter OnAnyChangedCallback="RefreshData" />
+
 @code {
   private LineConfig _config;
   private ChartJsLineChart _chartJs;
@@ -40,7 +42,7 @@
         Scales = new Scales
         {
           xAxes = new List<CartesianAxis>
-        {
+          {
             new TimeAxis
             {
               Distribution = TimeDistribution.Linear,
@@ -59,9 +61,11 @@
         },
       },
     };
-
+    RefreshData();
+  }
+  private void RefreshData() {
     var aaIndisByIId = DS.GetIndividuals();
-
+    _config.Data.Datasets.Clear();
     foreach (var idx in aaIndisByIId.Keys) {
       string sYobColor = aaIndisByIId[idx][0].GetColorForYearOfBirth();
       var lineSet = new LineDataset<TimeTuple<double>>

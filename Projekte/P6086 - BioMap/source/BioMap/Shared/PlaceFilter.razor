@@ -1,0 +1,30 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<div class="form-group">
+  <label class="radio-inline"><input type="radio" name="optradio" checked>@Localize["All"]</label>
+  <label class="radio-inline"><input type="radio" name="optradio">@Localize["These"]</label>
+  <label class="radio-inline"><input type="radio" name="optradio" @onselect="SelectedValue_Changed" >@Localize["All but these"]</label>
+  <input type="text" @onchange="PlaceInput_Changed"/>
+</div>
+
+@code {
+  [Parameter]
+  public string SelectedValue { get; set; }
+  [Parameter]
+  public string[] Places { get; set; }
+  [Parameter]
+  public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
+  //
+  private string _PlaceInput { get; set; }
+  private void SelectedValue_Changed() {
+    this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
+  }
+  private void PlaceInput_Changed() {
+    this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
+  }
+
+}
