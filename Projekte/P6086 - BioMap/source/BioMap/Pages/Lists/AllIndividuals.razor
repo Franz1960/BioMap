@@ -12,7 +12,8 @@
   <thead>
     <tr>
       <th scope="col">IID</th>
-      <th scope="col">@Localize["Sex"]</th>
+      <th scope="col">@Localize["Vintage"]</th>
+      <th scope="col">@Localize["Gender"]</th>
       <th scope="col">@Localize["Length"]</th>
       <th scope="col">@Localize["Place"]</th>
       <th scope="col">ID</th>
@@ -24,6 +25,7 @@
     @foreach (var iid in Individuals.Keys) {
     <tr>
       <th scope="row">@(iid)</th>
+      <td>@((MarkupString)GetForElements(iid,el=>el.GetYearOfBirthAsString()))</td>
       <td>@((MarkupString)GetForElements(iid,el=>el.GetGender()))</td>
       <td>@((MarkupString)GetForElements(iid,el=>el.GetHeadBodyLengthNice()))</td>
       <td>@((MarkupString)GetForElements(iid,el=>el.GetPlace().Name))</td>

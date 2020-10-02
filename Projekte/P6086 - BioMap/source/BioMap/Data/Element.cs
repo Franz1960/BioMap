@@ -97,6 +97,33 @@ namespace BioMap
       el.ElementProp.CreationTime = ((el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? el.ElementProp.ExifData.DateTimeOriginal.Value : el.ElementProp.UploadInfo.Timestamp);
       return el;
     }
+    public int? GetYearOfBirth() {
+      return this.ElementProp.IndivData?.YearOfBirth;
+    }
+    public string GetYearOfBirthAsString() {
+      var yob = this.GetYearOfBirth();
+      if (yob.HasValue) {
+        return ConvInvar.ToString(yob.Value);
+      }
+      return "";
+    }
+    public string GetColorForYearOfBirth() {
+      var sColor = "rgba(100,100,100,0.5)";
+      if (this.ElementProp.IndivData!=null) {
+        if (this.ElementProp.IndivData.YearOfBirth==2016) {
+          sColor = "rgba(141,0,206,0.5)";
+        } else if (this.ElementProp.IndivData.YearOfBirth==2017) {
+          sColor = "rgba(0,145,16,0.5)";
+        } else if (this.ElementProp.IndivData.YearOfBirth==2018) {
+          sColor = "rgba(255,106,0,0.5)";
+        } else if (this.ElementProp.IndivData.YearOfBirth==2019) {
+          sColor = "rgba(0,183,100,0.5)";
+        } else if (this.ElementProp.IndivData.YearOfBirth==2020) {
+          sColor = "rgba(0,104,196,0.5)";
+        }
+      }
+      return sColor;
+    }
     public string GetDetails() {
       var sb = new System.Text.StringBuilder();
       if (this.ElementProp.IndivData!=null) {
