@@ -129,6 +129,9 @@
   <data name="All Individuals" xml:space="preserve">
     <value>Alle Individuen</value>
   </data>
+  <data name="Diagrams" xml:space="preserve">
+    <value>Diagramme</value>
+  </data>
   <data name="Edit AOI" xml:space="preserve">
     <value>AOI bearbeiten</value>
   </data>
@@ -176,6 +179,9 @@
   </data>
   <data name="Vintage" xml:space="preserve">
     <value>Jahrgang</value>
+  </data>
+  <data name="Welcome to BioMap!" xml:space="preserve">
+    <value>Willkommen bei BioMap!</value>
   </data>
   <data name="Yellow-bellied toad" xml:space="preserve">
     <value>Gelbbauchunke</value>
