@@ -10,10 +10,24 @@ namespace BioMap
 {
   public class DataService
   {
-    public class Filter
+    public class Filter_t
     {
-      public static string PlaceFilter = "";
-      public static string AddToWhereClause(string sBasicWhereClause,string sWhereClause) {
+      public event EventHandler FilterChanged;
+      public string PlaceFilter {
+        get
+        {
+          return this._PlaceFilter;
+        }
+        set
+        {
+          if (value!=this._PlaceFilter) {
+            this._PlaceFilter=value;
+            Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+          }
+        }
+      }
+      private string _PlaceFilter = "";
+      private string AddToWhereClause(string sBasicWhereClause,string sWhereClause) {
         System.Text.StringBuilder sb = new System.Text.StringBuilder(sBasicWhereClause);
         if (!string.IsNullOrEmpty(sWhereClause)) {
           if (!string.IsNullOrEmpty(sBasicWhereClause)) {
@@ -25,12 +39,12 @@ namespace BioMap
         }
         return sb.ToString();
       }
-      public static string AddAllFiltersToWhereClause(string sBasicWhereClause) {
+      public string AddAllFiltersToWhereClause(string sBasicWhereClause) {
         string sResult = sBasicWhereClause;
-        if (!string.IsNullOrEmpty(PlaceFilter)) {
-          string sPlaceList = PlaceFilter;
+        if (!string.IsNullOrEmpty(this.PlaceFilter)) {
+          string sPlaceList = this.PlaceFilter;
           string[] saPlaces;
-          bool bNegate=(PlaceFilter.StartsWith("!") || PlaceFilter.StartsWith("^") || PlaceFilter.StartsWith("-"));
+          bool bNegate=(sPlaceList.StartsWith("!") || sPlaceList.StartsWith("^") || sPlaceList.StartsWith("-"));
           if (bNegate) {
             sPlaceList=sPlaceList.Substring(1);
           }
@@ -42,7 +56,7 @@ namespace BioMap
             sDelim=",";
           }
           sSqlPlaces+=")";
-          sResult=AddToWhereClause(sResult,"elements.place"+(bNegate?" NOT":"")+" IN "+sSqlPlaces);
+          sResult=this.AddToWhereClause(sResult,"elements.place"+(bNegate?" NOT":"")+" IN "+sSqlPlaces);
         }
         return sResult;
       }
@@ -78,6 +92,7 @@ namespace BioMap
     private event EventHandler _Initialized;
     private bool isInitialized = false;
     private readonly object lockInitialized = new object();
+    public readonly Filter_t Filter = new Filter_t();
     public void OperateOnDb(Action<IDbCommand> dbAction)
     {
       try
