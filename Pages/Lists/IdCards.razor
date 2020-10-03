@@ -22,8 +22,20 @@
 </div>
 
 @code {
-  private Element[] Elements = DataService.Instance.GetElements("indivdata.iid>=1","indivdata.iid ASC,elements.creationtime ASC");
+  private Element[] Elements = new Element[0];
   private PhotoPopup PhotoPopup1;
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    DS.Filter.FilterChanged+=(sender,ev) =>
+    {
+      RefreshData();
+      StateHasChanged();
+    };
+    RefreshData();
+  }
+  private void RefreshData() {
+    this.Elements = DataService.Instance.GetElements("indivdata.iid>=1","indivdata.iid ASC,elements.creationtime ASC");
+  }
   private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);
   }

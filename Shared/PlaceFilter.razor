@@ -6,7 +6,7 @@
 
 <div class="form-group">
   <span data-toggle="tooltip" title="@Localize["A list of places, e.g. 'B2,B3,C1' or '!B1,M1' if negated."]">@Localize["Place filter"]: </span>
-  <input type="text" value="@DataService.Filter.PlaceFilter" @onchange="PlaceInput_Changed" />
+  <input type="text" value="@DataService.Instance.Filter.PlaceFilter" @onchange="PlaceInput_Changed" />
 </div>
 
 @code {
@@ -18,7 +18,7 @@
   public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
   //
   private void PlaceInput_Changed(ChangeEventArgs e) {
-    DataService.Filter.PlaceFilter=e.Value.ToString();
+    DataService.Instance.Filter.PlaceFilter=e.Value.ToString();
     this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
   }
 

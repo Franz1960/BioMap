@@ -46,7 +46,19 @@
 </table>
 
 @code {
-  private Dictionary<int,List<Element>> Individuals = DataService.Instance.GetIndividuals();
+  private Dictionary<int,List<Element>> Individuals = new Dictionary<int,List<Element>>();
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    DS.Filter.FilterChanged+=(sender,ev) =>
+    {
+      RefreshData();
+      StateHasChanged();
+    };
+    RefreshData();
+  }
+  private void RefreshData() {
+    this.Individuals = DataService.Instance.GetIndividuals();
+  }
   private string GetForElements(int iid,Func<Element,string> func,bool bAddYoBWarning=false) {
     var sb = new System.Text.StringBuilder();
     string sPreFix = "";

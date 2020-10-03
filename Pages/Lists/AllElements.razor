@@ -37,8 +37,20 @@
 
 @code {
   private int i = 0;
-  private Element[] Elements = DataService.Instance.GetElements();
+  private Element[] Elements = new Element[0];
   private PhotoPopup PhotoPopup1;
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    DS.Filter.FilterChanged+=(sender,ev) =>
+    {
+      RefreshData();
+      StateHasChanged();
+    };
+    RefreshData();
+  }
+  private void RefreshData() {
+    this.Elements = Elements = DataService.Instance.GetElements();
+  }
   private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);
   }
