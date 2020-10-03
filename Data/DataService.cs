@@ -10,6 +10,43 @@ namespace BioMap
 {
   public class DataService
   {
+    public class Filter
+    {
+      public static string PlaceFilter = "";
+      public static string AddToWhereClause(string sBasicWhereClause,string sWhereClause) {
+        System.Text.StringBuilder sb = new System.Text.StringBuilder(sBasicWhereClause);
+        if (!string.IsNullOrEmpty(sWhereClause)) {
+          if (!string.IsNullOrEmpty(sBasicWhereClause)) {
+            sb.Append(" AND ");
+          }
+          sb.Append("(");
+          sb.Append(sWhereClause);
+          sb.Append(")");
+        }
+        return sb.ToString();
+      }
+      public static string AddAllFiltersToWhereClause(string sBasicWhereClause) {
+        string sResult = sBasicWhereClause;
+        if (!string.IsNullOrEmpty(PlaceFilter)) {
+          string sPlaceList = PlaceFilter;
+          string[] saPlaces;
+          bool bNegate=(PlaceFilter.StartsWith("!") || PlaceFilter.StartsWith("^") || PlaceFilter.StartsWith("-"));
+          if (bNegate) {
+            sPlaceList=sPlaceList.Substring(1);
+          }
+          saPlaces=sPlaceList.Split(' ',',',';','|','+');
+          string sSqlPlaces = "";
+          string sDelim = "(";
+          foreach (var sPlace in saPlaces) {
+            sSqlPlaces+=sDelim+"'"+sPlace+"'";
+            sDelim=",";
+          }
+          sSqlPlaces+=")";
+          sResult=AddToWhereClause(sResult,"elements.place"+(bNegate?" NOT":"")+" IN "+sSqlPlaces);
+        }
+        return sResult;
+      }
+    }
     public DataService()
     {
       DataService.Instance = this;
@@ -329,8 +366,9 @@ namespace BioMap
         }
       });
     }
-    public Element[] GetElements(string sSqlCondition=null,string sSqlOrderBy="elements.creationtime")
+    public Element[] GetElements(string sSqlCondition="",string sSqlOrderBy="elements.creationtime")
     {
+      sSqlCondition=Filter.AddAllFiltersToWhereClause(sSqlCondition);
       var lElements = new List<Element>();
       this.OperateOnDb((command) =>
       {
@@ -371,8 +409,8 @@ namespace BioMap
           " FROM elements" +
           " LEFT JOIN indivdata ON (indivdata.name=elements.name)" +
           " LEFT JOIN photos ON (photos.name=elements.name)" +
-          (sSqlCondition==null ? "" : (" WHERE ("+sSqlCondition+")")) +
-          (sSqlOrderBy==null ? "" : (" ORDER BY "+sSqlOrderBy+"")) +
+          (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
+          (string.IsNullOrEmpty(sSqlOrderBy) ? "" : (" ORDER BY "+sSqlOrderBy+"")) +
           "";
         var dr = command.ExecuteReader();
         while (dr.Read()) {
