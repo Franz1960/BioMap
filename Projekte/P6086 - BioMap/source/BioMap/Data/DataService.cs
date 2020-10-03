@@ -52,7 +52,7 @@ namespace BioMap
           string sSqlPlaces = "";
           string sDelim = "(";
           foreach (var sPlace in saPlaces) {
-            sSqlPlaces+=sDelim+"'"+sPlace+"'";
+            sSqlPlaces+=sDelim+"'"+sPlace.ToUpperInvariant()+"'";
             sDelim=",";
           }
           sSqlPlaces+=")";
