@@ -9,23 +9,19 @@
 
 @code{
 
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (firstRender)
-    {
-      await JSRuntime.InvokeVoidAsync("InitMap", null);
-      await JSRuntime.InvokeVoidAsync("InitPlaces", Newtonsoft.Json.JsonConvert.SerializeObject(DS.AllPlaces));
-      await JSRuntime.InvokeVoidAsync("InitAoiBounds", System.IO.File.ReadAllText(DS.DataDir + "conf/aoi.json"));
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
+    if (firstRender) {
+      await JSRuntime.InvokeVoidAsync("InitMap",null);
+      await JSRuntime.InvokeVoidAsync("InitPlaces",Newtonsoft.Json.JsonConvert.SerializeObject(DS.AllPlaces));
+      await JSRuntime.InvokeVoidAsync("InitAoiBounds",System.IO.File.ReadAllText(DS.DataDir + "conf/aoi.json"));
       StateHasChanged();
     }
   }
 
-  private async void OnEditClick()
-  {
+  private async void OnEditClick() {
     var sAoiBounds = await JSRuntime.InvokeAsync<string>("ToggleEditAoiBounds");
-    if (sAoiBounds != null)
-    {
-      System.IO.File.WriteAllText(DS.DataDir + "conf/aoi.json", sAoiBounds);
+    if (sAoiBounds != null) {
+      System.IO.File.WriteAllText(DS.DataDir + "conf/aoi.json",sAoiBounds);
     }
   }
 }
