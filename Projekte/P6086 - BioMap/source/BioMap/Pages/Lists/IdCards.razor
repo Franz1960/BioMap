@@ -29,7 +29,7 @@
     DS.Filter.FilterChanged+=(sender,ev) =>
     {
       RefreshData();
-      StateHasChanged();
+      base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
   }
