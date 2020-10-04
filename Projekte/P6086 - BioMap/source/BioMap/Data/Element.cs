@@ -108,22 +108,25 @@ namespace BioMap
       }
       return "";
     }
-    public string GetColorForYearOfBirth() {
+    public static string GetColorForYearOfBirth(int? nYearOfBirth) {
       var sColor = "rgba(100,100,100,0.5)";
-      if (this.ElementProp.IndivData!=null) {
-        if ((this.ElementProp.IndivData.YearOfBirth%5)==0) {
+      if (nYearOfBirth.HasValue) {
+        if ((nYearOfBirth.Value%5)==0) {
           sColor = "rgba(255,0,0,0.5)";
-        } else if ((this.ElementProp.IndivData.YearOfBirth%5)==1) {
+        } else if ((nYearOfBirth.Value%5)==1) {
           sColor = "rgba(0,200,0,0.5)";
-        } else if ((this.ElementProp.IndivData.YearOfBirth%5)==2) {
+        } else if ((nYearOfBirth.Value%5)==2) {
           sColor = "rgba(0,0,255,0.5)";
-        } else if ((this.ElementProp.IndivData.YearOfBirth%5)==3) {
+        } else if ((nYearOfBirth.Value%5)==3) {
           sColor = "rgba(127,0,127,0.5)";
-        } else if ((this.ElementProp.IndivData.YearOfBirth%5)==4) {
+        } else if ((nYearOfBirth.Value%5)==4) {
           sColor = "rgba(0,100,127,0.5)";
         }
       }
       return sColor;
+    }
+   public string GetColorForYearOfBirth() {
+      return GetColorForYearOfBirth(this.ElementProp.IndivData?.YearOfBirth);
     }
     public string GetDetails() {
       var sb = new System.Text.StringBuilder();
