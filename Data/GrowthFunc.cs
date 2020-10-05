@@ -10,19 +10,19 @@ namespace BioMap
     /// <summary>
     /// Start of growing season in days since beginning of year.
     /// </summary>
-    public int SeasonStartDay { get; set; } = 90;
+    public int SeasonStartDay { get; set; } = 135;
     /// <summary>
     /// Length of growing season in days.
     /// </summary>
-    public int SeasonLengthDays { get; set; } = 182;
+    public int SeasonLengthDays { get; set; } = 130;
     /// <summary>
     /// Size of a full-grown individual.
     /// </summary>
-    public double FullSize { get; set; } = 55.0;
+    public double FullSize { get; set; } = 60.0;
     /// <summary>
     /// Growth rate.
     /// </summary>
-    public double GrowthRate { get; set; } = 3.3;
+    public double GrowthRate { get; set; } = 1.7;
     /// <summary>
     /// Date of birth.
     /// </summary>
@@ -49,7 +49,7 @@ namespace BioMap
         (nDayOfYear<this.SeasonStartDay) ? 0 :
         (nDayOfYear>this.SeasonStartDay+this.SeasonLengthDays) ? 1 :
         (((double)(nDayOfYear-this.SeasonStartDay))/this.SeasonLengthDays);
-      double dYearsToGrow = Math.Max(0.001,nFullYears+dElapsedInCurrentYear+0.3-(dSeasonDayOfBirth/this.SeasonLengthDays));
+      double dYearsToGrow = Math.Max(0.001,nFullYears+dElapsedInCurrentYear+1.0-(dSeasonDayOfBirth/this.SeasonLengthDays));
       double dSize = Math.Max(0.0,this.FullSize-(100/(this.GrowthRate*dYearsToGrow)));
       return dSize;
     }
