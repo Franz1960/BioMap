@@ -16,15 +16,19 @@ namespace BioMap
     /// <summary>
     /// Size of a full-grown individual.
     /// </summary>
-    public double FullSize { get; set; } = 50.0;
+    public double FullSize { get; set; } = 55.0;
     /// <summary>
-    /// Growth in the first year.
+    /// Growth rate.
     /// </summary>
-    public double GrowthInFirstYear { get; set; } = 25.0;
+    public double GrowthRate { get; set; } = 3.3;
     /// <summary>
     /// Year of birth in Gregorian calendar.
     /// </summary>
     public int YearOfBirth { get; set; } = 2020;
+    /// <summary>
+    /// Day of birth counted from season start.
+    /// </summary>
+    public int SeasonDayOfBirth { get; set; } = 60;
     /// <summary>
     /// Calculate the size of a specimen with given parameters at a given moment in time.
     /// </summary>
@@ -39,14 +43,15 @@ namespace BioMap
       var dtX = new DateTime((long)ticks);
       var dtYoB = new DateTime(this.YearOfBirth,1,1);
       var tsAge = dtX-dtYoB;
-      int nFullYears = dtX.Year-dtYoB.Year;
+      int nFullYears = Math.Max(0,dtX.Year-dtYoB.Year);
       int nDayOfYear = dtX.DayOfYear;
       double dElapsedInCurrentYear =
+        (dtX.Year<dtYoB.Year) ? 0 :
         (nDayOfYear<this.SeasonStartDay) ? 0 :
         (nDayOfYear>this.SeasonStartDay+this.SeasonLengthDays) ? 1 :
         (((double)(nDayOfYear-this.SeasonStartDay))/this.SeasonLengthDays);
-      double dYearsToGrow = nFullYears+dElapsedInCurrentYear;
-      double dSize = Math.Max(0.0,this.FullSize-(this.GrowthInFirstYear/Math.Max(0.01,dYearsToGrow)));
+      double dYearsToGrow = Math.Max(0.001,nFullYears+dElapsedInCurrentYear+0.3-(((double)this.SeasonDayOfBirth)/this.SeasonLengthDays));
+      double dSize = Math.Max(0.0,this.FullSize-(100/(this.GrowthRate*dYearsToGrow)));
       return dSize;
     }
   }
