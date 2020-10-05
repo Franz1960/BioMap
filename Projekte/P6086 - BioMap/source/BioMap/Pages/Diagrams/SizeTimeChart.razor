@@ -70,23 +70,33 @@
     var aaIndisByIId = DS.GetIndividuals();
     _config.Data.Datasets.Clear();
     // Ideale Wachstumskurven hinzufügen.
-    for (int nYoB = 2016;nYoB<2020;nYoB++) {
+    for (int nYoB = 2016;nYoB<2021;nYoB++) {
       string sYobColor = Element.GetColorForYearOfBirth(nYoB);
       var lineSet = new LineDataset<TimeTuple<double>>
       {
         BackgroundColor = sYobColor,
         BorderWidth = 4,
+        BorderDash= new[] { 10,5 },
         PointHoverBorderWidth = 4,
         BorderColor = sYobColor,
-        PointRadius = 3,
+        PointRadius = 0,
         //ShowLine = true,
       };
-      var fg = new GrowthFunc() { FullSize=50,GrowthInFirstYear=28,SeasonStartDay=90,SeasonLengthDays=182,YearOfBirth=nYoB };
+      var fg = new GrowthFunc() {
+        FullSize=55,
+        GrowthRate=3.3,
+        SeasonStartDay=90,
+        SeasonLengthDays=182,
+        YearOfBirth=nYoB,
+        SeasonDayOfBirth=0,
+      };
       for (var dt=new DateTime(2019,4,1);dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
         try {
           var l = fg.GetSize(dt.Ticks);
           var t = new Moment(dt);
-          lineSet.Add(new TimeTuple<double>(t,l));
+          if (l > 0) {
+            lineSet.Add(new TimeTuple<double>(t,l));
+          }
         } catch { }
       }
       if (lineSet.Data.Count>=2) {
