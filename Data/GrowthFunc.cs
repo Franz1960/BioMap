@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
 namespace BioMap
@@ -22,13 +24,9 @@ namespace BioMap
     /// </summary>
     public double GrowthRate { get; set; } = 3.3;
     /// <summary>
-    /// Year of birth in Gregorian calendar.
+    /// Date of birth.
     /// </summary>
-    public int YearOfBirth { get; set; } = 2020;
-    /// <summary>
-    /// Day of birth counted from season start.
-    /// </summary>
-    public int SeasonDayOfBirth { get; set; } = 60;
+    public DateTime DateOfBirth { get; set; } = new DateTime(2020,1,1);
     /// <summary>
     /// Calculate the size of a specimen with given parameters at a given moment in time.
     /// </summary>
@@ -41,16 +39,17 @@ namespace BioMap
     /// </returns>
     public double GetSize(double ticks) {
       var dtX = new DateTime((long)ticks);
-      var dtYoB = new DateTime(this.YearOfBirth,1,1);
+      var dtYoB = new DateTime(this.DateOfBirth.Year,1,1);
       var tsAge = dtX-dtYoB;
       int nFullYears = Math.Max(0,dtX.Year-dtYoB.Year);
       int nDayOfYear = dtX.DayOfYear;
+      double dSeasonDayOfBirth = Math.Max(0,Math.Min(this.SeasonLengthDays,(this.DateOfBirth-dtYoB).TotalDays-this.SeasonStartDay));
       double dElapsedInCurrentYear =
         (dtX.Year<dtYoB.Year) ? 0 :
         (nDayOfYear<this.SeasonStartDay) ? 0 :
         (nDayOfYear>this.SeasonStartDay+this.SeasonLengthDays) ? 1 :
         (((double)(nDayOfYear-this.SeasonStartDay))/this.SeasonLengthDays);
-      double dYearsToGrow = Math.Max(0.001,nFullYears+dElapsedInCurrentYear+0.3-(((double)this.SeasonDayOfBirth)/this.SeasonLengthDays));
+      double dYearsToGrow = Math.Max(0.001,nFullYears+dElapsedInCurrentYear+0.3-(dSeasonDayOfBirth/this.SeasonLengthDays));
       double dSize = Math.Max(0.0,this.FullSize-(100/(this.GrowthRate*dYearsToGrow)));
       return dSize;
     }

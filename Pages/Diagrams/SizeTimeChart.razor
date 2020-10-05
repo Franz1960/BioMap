@@ -87,8 +87,7 @@
         GrowthRate=3.3,
         SeasonStartDay=90,
         SeasonLengthDays=182,
-        YearOfBirth=nYoB,
-        SeasonDayOfBirth=0,
+        DateOfBirth=new DateTime(nYoB,1,1),
       };
       for (var dt=new DateTime(2019,4,1);dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
         try {
