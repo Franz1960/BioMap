@@ -89,7 +89,7 @@
         try {
           var l = fg.GetSize(dt.Ticks);
           var t = new Moment(dt);
-          if (l > 0) {
+          if (l > 10) {
             lineSet.Add(new TimeTuple<double>(t,l));
           }
         } catch { }
