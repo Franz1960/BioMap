@@ -141,6 +141,9 @@
   <data name="Fire-bellied toad" xml:space="preserve">
     <value>Rotbauchunke</value>
   </data>
+  <data name="Fit growing curves" xml:space="preserve">
+    <value>Wachstumskurven fitten</value>
+  </data>
   <data name="Gender" xml:space="preserve">
     <value>Geschlecht</value>
   </data>

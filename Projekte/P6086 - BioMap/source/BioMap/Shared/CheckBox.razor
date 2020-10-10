@@ -1,0 +1,27 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<div class="form-group">
+  <span data-toggle="tooltip" title="@LabelToolTip">@LabelText: </span>
+  <input type="checkbox" value="@Checked" @onchange="Checked_Changed" />
+</div>
+
+@code {
+  [Parameter]
+  public string LabelText { get; set; }
+  [Parameter]
+  public string LabelToolTip { get; set; }
+  [Parameter]
+  public bool Checked { get; set; }
+  [Parameter]
+  public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
+  //
+  private void Checked_Changed(ChangeEventArgs e) {
+    this.Checked=bool.Parse(e.Value.ToString());
+    this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
+  }
+
+}

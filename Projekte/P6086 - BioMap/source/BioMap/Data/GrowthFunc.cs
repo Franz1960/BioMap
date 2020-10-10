@@ -30,15 +30,14 @@ namespace BioMap
     /// <summary>
     /// Calculate the size of a specimen with given parameters at a given moment in time.
     /// </summary>
-    /// <param name="ticks">
-    /// The moment in time in ticks, i.e. the number of 100 nanosecond intervals 
-    /// since 0001-01-01 00:00:00. It is the 'Ticks' in the DateTime class of .NET.
+    /// <param name="dateTime">
+    /// The moment in time.
     /// </param>
     /// <returns>
     /// The calculated size.
     /// </returns>
-    public double GetSize(double ticks) {
-      var dtX = new DateTime((long)ticks);
+    public double GetSize(DateTime dateTime) {
+      var dtX = dateTime;
       var dtYoB = new DateTime(this.DateOfBirth.Year,1,1);
       var tsAge = dtX-dtYoB;
       int nFullYears = Math.Max(0,dtX.Year-dtYoB.Year);
@@ -52,6 +51,18 @@ namespace BioMap
       double dYearsToGrow = Math.Max(0.001,nFullYears+dElapsedInCurrentYear+1.0-(dSeasonDayOfBirth/this.SeasonLengthDays));
       double dSize = Math.Max(0.0,this.FullSize-(100/(this.GrowthRate*dYearsToGrow)));
       return dSize;
+    }
+    /// <summary>
+    /// Calculate the size of a specimen with given parameters at a given moment in time.
+    /// </summary>
+    /// <param name="dYears">
+    /// The moment in time in years. The fraction contains the elapsed time since start of the year.
+    /// </param>
+    /// <returns>
+    /// The calculated size.
+    /// </returns>
+    public double GetSize(double dYears) {
+      return this.GetSize(Utilities.DateTime_from_Years(dYears));
     }
   }
 }
