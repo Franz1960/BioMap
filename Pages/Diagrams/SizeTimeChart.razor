@@ -79,6 +79,7 @@
   }
   private void RefreshData() {
     var aaIndisByIId = DS.GetIndividuals();
+    _config.Options.Legend.Display=false;
     _config.Data.Datasets.Clear();
     // Ideale Wachstumskurven hinzufügen.
     for (int nYoB = 2016;nYoB<2021;nYoB++) {
@@ -112,127 +113,135 @@
     }
     // Wachstumskurven der Individuen hinzufügen.
     foreach (var idx in aaIndisByIId.Keys) {
-      if (this.CheckBoxFit!=null && this.CheckBoxFit.Checked) {
-        // Gefittete Wachstumskurve.
-        DateTime? dtFittedYearOfBirth = null;
-        var lsf = new LeastSquareFit();
-        if (aaIndisByIId[idx].Count>=2) {
-          var ldaPoints = new List<double[]>();
+      try {
+        if (this.CheckBoxFit!=null && this.CheckBoxFit.Checked) {
+          // Gefittete Wachstumskurve.
+          DateTime? dtFittedYearOfBirth = null;
+          var lsf = new LeastSquareFit();
+          if (aaIndisByIId[idx].Count>=2) {
+            var ldaPoints = new List<double[]>();
+            foreach (var el in aaIndisByIId[idx]) {
+              try {
+                var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
+                if (l!=0) {
+                  double t = Utilities.Years_from_DateTime(el.ElementProp.CreationTime);
+                  ldaPoints.Add(new double[] { t,l });
+                }
+              } catch { }
+            }
+            lsf.Optimize(
+              new double[][] { new double[] { 2010,2025 } },
+              ldaPoints.ToArray(),
+              (daParams,daaPoints) =>
+              {
+                double yearsBirth = daParams[0];
+                var fg = new GrowthFunc()
+                {
+                  DateOfBirth=Utilities.DateTime_from_Years(yearsBirth),
+                };
+                double dDevSum = 0;
+                for (int i = 0;i<daaPoints.Length;i++) {
+                  double years = daaPoints[i][0];
+                  double lCalc = fg.GetSize(years);
+                  double lReal = daaPoints[i][1];
+                  double dDev = lReal-lCalc;
+                  // Daten aus der Jugend werden stärker gewichtet.
+                  //dDevSum+=(dDev*dDev)/Math.Max(0.5,years-yearsBirth);
+                  dDevSum+=(dDev*dDev);
+                }
+                return dDevSum;
+              },
+              0.5,
+              0.001,
+              out double[] daBestParams,
+              LeastSquareFit.Method.Random);
+            dtFittedYearOfBirth = Utilities.DateTime_from_Years(daBestParams[0]);
+            var growthFunc = new GrowthFunc()
+            {
+              DateOfBirth=dtFittedYearOfBirth.Value,
+            };
+            string sYobColor = Element.GetColorForYearOfBirth(dtFittedYearOfBirth.Value.Year);
+            var lineSetCurve = new LineDataset<TimeTuple<double>>
+            {
+              BackgroundColor = sYobColor,
+              BorderWidth = 2,
+              PointHoverBorderWidth = 0,
+              BorderColor = sYobColor,
+              PointRadius = 0,
+              Label="YoB: "+dtFittedYearOfBirth?.ToString("yyyy-MM-dd"),
+            };
+            {
+              var dtB = aaIndisByIId[idx][0].ElementProp.CreationTime;
+              var dtE = aaIndisByIId[idx][aaIndisByIId[idx].Count-1].ElementProp.CreationTime;
+              var tsT = (dtE-TimeSpan.FromSeconds(30))-dtB;
+              int nSteps = (int)Math.Ceiling(tsT/TimeSpan.FromDays(7));
+              var tsDelta = new TimeSpan(tsT.Ticks/nSteps);
+              for (var dt = dtB;dt<=dtE;dt+=tsDelta) {
+                try {
+                  var l = growthFunc.GetSize(dt);
+                  var t = new Moment(dt);
+                  if (l > 10) {
+                    lineSetCurve.Add(new TimeTuple<double>(t,l));
+                  }
+                } catch { }
+              }
+            }
+            if (lineSetCurve.Data.Count>=2) {
+              _config.Data.Datasets.Add(lineSetCurve);
+              //_config.Options.Legend.Display=true;
+            }
+          }
+          {
+            string sYobColor = Element.GetColorForYearOfBirth(dtFittedYearOfBirth.HasValue ? dtFittedYearOfBirth.Value.Year : aaIndisByIId[idx][0].ElementProp.IndivData?.YearOfBirth);
+            var lineSetPoints = new LineDataset<TimeTuple<double>>
+            {
+              BackgroundColor = sYobColor,
+              BorderWidth = 0,
+              PointHoverBorderWidth = 4,
+              BorderColor = sYobColor,
+              PointRadius = 3,
+              ShowLine = false,
+            };
+            foreach (var el in aaIndisByIId[idx]) {
+              try {
+                var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
+                if (l>0) {
+                  var t = new Moment(el.ElementProp.CreationTime);
+                  lineSetPoints.Add(new TimeTuple<double>(t,l));
+                }
+              } catch { }
+            }
+            if (lineSetPoints.Data.Count>=1) {
+              _config.Data.Datasets.Add(lineSetPoints);
+            }
+          }
+        } else {
+          // Interpolation durch Punkte.
+          string sYobColor = aaIndisByIId[idx][0].GetColorForYearOfBirth();
+          var lineSet = new LineDataset<TimeTuple<double>>
+          {
+            BackgroundColor = sYobColor,
+            BorderWidth = 2,
+            PointHoverBorderWidth = 4,
+            BorderColor = sYobColor,
+            PointRadius = 3,
+            //ShowLine = true,
+          };
           foreach (var el in aaIndisByIId[idx]) {
             try {
               var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
               if (l!=0) {
-                double t = Utilities.Years_from_DateTime(el.ElementProp.CreationTime);
-                ldaPoints.Add(new double[] { t,l });
-              }
-            } catch { }
-          }
-          lsf.Optimize(
-            new double[][] { new double[] { 2015,2021 } },
-            ldaPoints.ToArray(),
-            (daParams,daaPoints) =>
-            {
-              double yearsBirth = daParams[0];
-              var fg = new GrowthFunc()
-              {
-                DateOfBirth=Utilities.DateTime_from_Years(yearsBirth),
-              };
-              double dDevSum = 0;
-              for (int i = 0;i<daaPoints.Length;i++) {
-                double years = daaPoints[i][0];
-                double lCalc = fg.GetSize(years);
-                double lReal = daaPoints[i][1];
-                double dDev = lReal-lCalc;
-                // Daten aus der Jugend werden stärker gewichtet.
-                dDevSum+=Math.Abs(dDev)/Math.Max(0.5,years-yearsBirth);
-              }
-              return dDevSum;
-            },
-            1.0,
-            0.0001,
-            out double[] daBestParams);
-          dtFittedYearOfBirth = Utilities.DateTime_from_Years(daBestParams[0]);
-          var growthFunc = new GrowthFunc()
-          {
-            DateOfBirth=dtFittedYearOfBirth.Value,
-          };
-          string sYobColor = Element.GetColorForYearOfBirth(dtFittedYearOfBirth.Value.Year);
-          var lineSetCurve = new LineDataset<TimeTuple<double>>
-          {
-            BackgroundColor = sYobColor,
-            BorderWidth = 2,
-            PointHoverBorderWidth = 0,
-            BorderColor = sYobColor,
-            PointRadius = 0,
-          };
-          {
-            var dtB = aaIndisByIId[idx][0].ElementProp.CreationTime;
-            var dtE = aaIndisByIId[idx][aaIndisByIId[idx].Count-1].ElementProp.CreationTime;
-            var tsT = (dtE-TimeSpan.FromSeconds(30))-dtB;
-            int nSteps = (int)Math.Ceiling(tsT/TimeSpan.FromDays(7));
-            var tsDelta = new TimeSpan(tsT.Ticks/nSteps);
-            for (var dt = dtB;dt<=dtE;dt+=tsDelta) {
-              try {
-                var l = growthFunc.GetSize(dt);
-                var t = new Moment(dt);
-                if (l > 10) {
-                  lineSetCurve.Add(new TimeTuple<double>(t,l));
-                }
-              } catch { }
-            }
-          }
-          if (lineSetCurve.Data.Count>=2) {
-            _config.Data.Datasets.Add(lineSetCurve);
-          }
-        }
-        {
-          string sYobColor = Element.GetColorForYearOfBirth(dtFittedYearOfBirth.HasValue ? dtFittedYearOfBirth.Value.Year : aaIndisByIId[idx][0].ElementProp.IndivData?.YearOfBirth);
-          var lineSetPoints = new LineDataset<TimeTuple<double>>
-          {
-            BackgroundColor = sYobColor,
-            BorderWidth = 0,
-            PointHoverBorderWidth = 4,
-            BorderColor = sYobColor,
-            PointRadius = 3,
-            ShowLine = false,
-          };
-          foreach (var el in aaIndisByIId[idx]) {
-            try {
-              var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
-              if (l>0) {
                 var t = new Moment(el.ElementProp.CreationTime);
-                lineSetPoints.Add(new TimeTuple<double>(t,l));
+                lineSet.Add(new TimeTuple<double>(t,l));
               }
             } catch { }
           }
-          if (lineSetPoints.Data.Count>=1) {
-            _config.Data.Datasets.Add(lineSetPoints);
+          if (lineSet.Data.Count>=1) {
+            _config.Data.Datasets.Add(lineSet);
           }
         }
-      } else {
-        // Interpolation durch Punkte.
-        string sYobColor = aaIndisByIId[idx][0].GetColorForYearOfBirth();
-        var lineSet = new LineDataset<TimeTuple<double>>
-        {
-          BackgroundColor = sYobColor,
-          BorderWidth = 2,
-          PointHoverBorderWidth = 4,
-          BorderColor = sYobColor,
-          PointRadius = 3,
-          //ShowLine = true,
-        };
-        foreach (var el in aaIndisByIId[idx]) {
-          try {
-            var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
-            if (l!=0) {
-              var t = new Moment(el.ElementProp.CreationTime);
-              lineSet.Add(new TimeTuple<double>(t,l));
-            }
-          } catch { }
-        }
-        if (lineSet.Data.Count>=1) {
-          _config.Data.Datasets.Add(lineSet);
-        }
+      } catch {
+
       }
     }
   }
