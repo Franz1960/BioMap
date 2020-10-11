@@ -13,7 +13,23 @@ namespace BioMap
     public class Filter_t
     {
       public event EventHandler FilterChanged;
-      public string PlaceFilter {
+      public string IndiFilter
+      {
+        get
+        {
+          return this._IndiFilter;
+        }
+        set
+        {
+          if (value!=this._IndiFilter) {
+            this._IndiFilter=value;
+            Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+          }
+        }
+      }
+      private string _IndiFilter = "";
+      public string PlaceFilter
+      {
         get
         {
           return this._PlaceFilter;
@@ -41,14 +57,31 @@ namespace BioMap
       }
       public string AddAllFiltersToWhereClause(string sBasicWhereClause) {
         string sResult = sBasicWhereClause;
-        if (!string.IsNullOrEmpty(this.PlaceFilter)) {
-          string sPlaceList = this.PlaceFilter;
-          string[] saPlaces;
-          bool bNegate=(sPlaceList.StartsWith("!") || sPlaceList.StartsWith("^") || sPlaceList.StartsWith("-"));
+        if (!string.IsNullOrEmpty(this.IndiFilter)) {
+          string sList = this.IndiFilter;
+          string[] saIndis;
+          bool bNegate=(sList.StartsWith("!") || sList.StartsWith("^") || sList.StartsWith("-"));
           if (bNegate) {
-            sPlaceList=sPlaceList.Substring(1);
+            sList=sList.Substring(1);
           }
-          saPlaces=sPlaceList.Split(' ',',',';','|','+');
+          saIndis=sList.Split(' ',',',';','|','+');
+          string sSqlIndis = "";
+          string sDelim = "(";
+          foreach (var sPlace in saIndis) {
+            sSqlIndis+=sDelim+"'"+sPlace.ToUpperInvariant()+"'";
+            sDelim=",";
+          }
+          sSqlIndis+=")";
+          sResult=this.AddToWhereClause(sResult,"indivdata.iid"+(bNegate?" NOT":"")+" IN "+sSqlIndis);
+        }
+        if (!string.IsNullOrEmpty(this.PlaceFilter)) {
+          string sList = this.PlaceFilter;
+          string[] saPlaces;
+          bool bNegate=(sList.StartsWith("!") || sList.StartsWith("^") || sList.StartsWith("-"));
+          if (bNegate) {
+            sList=sList.Substring(1);
+          }
+          saPlaces=sList.Split(' ',',',';','|','+');
           string sSqlPlaces = "";
           string sDelim = "(";
           foreach (var sPlace in saPlaces) {

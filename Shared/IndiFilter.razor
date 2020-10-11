@@ -1,0 +1,25 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<div class="form-group">
+  <span data-toggle="tooltip" title="@Localize["A list of individuals, e.g. '60', '57,58,59,60' or '!42' if negated."]">@Localize["Individuals"]: </span>
+  <input type="text" value="@DataService.Instance.Filter.IndiFilter" @onchange="IndiInput_Changed" />
+</div>
+
+@code {
+  [Parameter]
+  public string SelectedValue { get; set; }
+  [Parameter]
+  public string[] Indis { get; set; }
+  [Parameter]
+  public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
+  //
+  private void IndiInput_Changed(ChangeEventArgs e) {
+    DataService.Instance.Filter.IndiFilter=e.Value.ToString();
+    this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
+  }
+
+}
