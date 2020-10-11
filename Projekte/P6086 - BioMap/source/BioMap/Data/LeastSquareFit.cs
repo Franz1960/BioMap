@@ -14,6 +14,7 @@ namespace BioMap
       None=0,
       Random=1,
       Monotone=2,
+      RandomThenMonotone=3,
     }
     /// <summary>
     /// Optimierung durchführen. Eine parametrierte Kurve wird einer Menge 
@@ -88,6 +89,44 @@ namespace BioMap
         double dCurrentStepSize = dStartStepSize;
         daBestParams=(double[])daCurrentParams.Clone();
         double dBestSquareSum = double.MaxValue;
+        while (Math.Abs(dCurrentStepSize)>dEpsilon) {
+          daParams[0]=daCurrentParams[0]+dCurrentStepSize;
+          if (daParams[0]<daaParamRanges[0][0] || daParams[0]>daaParamRanges[0][1]) {
+            break;
+          }
+          dSquareSum=calcSquareSum(daParams,daaPoints);
+          if (dSquareSum<=dBestSquareSum) {
+            dBestSquareSum=dSquareSum;
+            daBestParams=(double[])daParams.Clone();
+            daCurrentParams=(double[])daBestParams.Clone();
+          } else {
+            dCurrentStepSize*=-0.573;
+          }
+        }
+      } else if (enMethod==Method.RandomThenMonotone) {
+        if (nParamCount>=2) {
+          throw new ArgumentException("Only one parameter allowed with Monotone method.");
+        }
+        Random random = new Random();
+        double[] daParams = new double[nParamCount];
+        double dSquareSum;
+        double dCurrentStepSize = dStartStepSize;
+        daBestParams=(double[])daCurrentParams.Clone();
+        double dBestSquareSum = double.MaxValue;
+        for (int nRandomLoop = 0;nRandomLoop<1;nRandomLoop++) {
+          for (int nIteration = 0;nIteration<216;nIteration++) {
+            for (int iParam = 0;iParam<nParamCount;iParam++) {
+              daParams[iParam]=daCurrentParams[iParam]+dCurrentStepSize*(daaParamRanges[iParam][1]-daaParamRanges[iParam][0])*(random.NextDouble()-0.5);
+            }
+            dSquareSum=calcSquareSum(daParams,daaPoints);
+            if (dSquareSum<dBestSquareSum) {
+              dBestSquareSum=dSquareSum;
+              daBestParams=(double[])daParams.Clone();
+            }
+          }
+          daCurrentParams=(double[])daBestParams.Clone();
+          dCurrentStepSize*=0.573;
+        }
         while (Math.Abs(dCurrentStepSize)>dEpsilon) {
           daParams[0]=daCurrentParams[0]+dCurrentStepSize;
           if (daParams[0]<daaParamRanges[0][0] || daParams[0]>daaParamRanges[0][1]) {

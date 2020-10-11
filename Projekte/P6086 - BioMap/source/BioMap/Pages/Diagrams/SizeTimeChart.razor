@@ -82,7 +82,7 @@
     _config.Options.Legend.Display=false;
     _config.Data.Datasets.Clear();
     // Ideale Wachstumskurven hinzufügen.
-    for (int nYoB = 2016;nYoB<2021;nYoB++) {
+    for (int nYoB = 2012;nYoB<2021;nYoB++) {
       string sYobColor = Element.GetColorForYearOfBirth(nYoB);
       var lineSet = new LineDataset<TimeTuple<double>>
       {
@@ -154,7 +154,7 @@
               0.5,
               0.001,
               out double[] daBestParams,
-              LeastSquareFit.Method.Random);
+              LeastSquareFit.Method.RandomThenMonotone);
             dtFittedYearOfBirth = Utilities.DateTime_from_Years(daBestParams[0]);
             var growthFunc = new GrowthFunc()
             {
@@ -191,6 +191,7 @@
               //_config.Options.Legend.Display=true;
             }
           }
+          // Datenpunkte.
           {
             string sYobColor = Element.GetColorForYearOfBirth(dtFittedYearOfBirth.HasValue ? dtFittedYearOfBirth.Value.Year : aaIndisByIId[idx][0].ElementProp.IndivData?.YearOfBirth);
             var lineSetPoints = new LineDataset<TimeTuple<double>>
@@ -216,7 +217,7 @@
             }
           }
         } else {
-          // Interpolation durch Punkte.
+          // Interpolation durch Datenpunkte.
           string sYobColor = aaIndisByIId[idx][0].GetColorForYearOfBirth();
           var lineSet = new LineDataset<TimeTuple<double>>
           {
@@ -241,7 +242,6 @@
           }
         }
       } catch {
-
       }
     }
   }
