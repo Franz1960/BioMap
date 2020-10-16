@@ -94,7 +94,7 @@
     base.InvokeAsync(StateHasChanged);
   }
   private void RefreshData() {
-    var dtProjectStart = new DateTime(2019,4,1);
+    var dtProjectStart = DS.ProjectStart;
     var aaIndisByIId = DS.GetIndividuals();
     _config.Options.Legend.Display=false;
     _config.Data.Datasets.Clear();
