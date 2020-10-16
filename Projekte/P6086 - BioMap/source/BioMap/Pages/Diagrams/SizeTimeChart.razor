@@ -26,6 +26,11 @@
         <CheckBox @ref="CheckBoxIncludeSinglePoints" LabelText=@Localize["Include single catches"] OnAnyChangedCallback="@CheckBoxIncludeSinglePoints_CheckedChanged" />
       }
     </div>
+    <div class="col">
+      @if (CheckBoxFit!=null && CheckBoxFit.Checked && CheckBoxIncludeSinglePoints!=null && CheckBoxIncludeSinglePoints.Checked) {
+        <button @onclick="()=>OnSaveYoBClick()">@Localize["Save calculated year-of-birth values"]</button>
+      }
+    </div>
   </div>
 </div>
 
@@ -36,6 +41,7 @@
   private ChartJsLineChart _chartJs;
   private CheckBox CheckBoxFit;
   private CheckBox CheckBoxIncludeSinglePoints;
+  private bool SaveYoB = false;
 
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -90,6 +96,11 @@
     base.InvokeAsync(StateHasChanged);
   }
   private void CheckBoxIncludeSinglePoints_CheckedChanged(EventArgs e) {
+    RefreshData();
+    base.InvokeAsync(StateHasChanged);
+  }
+  private void OnSaveYoBClick() {
+    this.SaveYoB=true;
     RefreshData();
     base.InvokeAsync(StateHasChanged);
   }
@@ -149,32 +160,40 @@
             }
             if (ldaPoints.Count>=(bIncludeSinglePoints ? 1 : 2)) {
               lsf.Optimize(
-              new double[][] { new double[] { 2010,2025 } },
-              ldaPoints.ToArray(),
-              (daParams,daaPoints) =>
-              {
-                double yearsBirth = daParams[0];
-                var fg = new GrowthFunc()
+                new double[][] { new double[] { 2010,2025 } },
+                ldaPoints.ToArray(),
+                (daParams,daaPoints) =>
                 {
-                  DateOfBirth=Utilities.DateTime_from_Years(yearsBirth),
-                };
-                double dDevSum = 0;
-                for (int i = 0;i<daaPoints.Length;i++) {
-                  double years = daaPoints[i][0];
-                  double lCalc = fg.GetSize(years);
-                  double lReal = daaPoints[i][1];
-                  double dDev = lReal-lCalc;
-                // Daten aus der Jugend werden stärker gewichtet.
-                //dDevSum+=(dDev*dDev)/Math.Max(0.5,years-yearsBirth);
-                dDevSum+=(dDev*dDev);
-                }
-                return dDevSum;
-              },
-              0.5,
-              0.001,
-              out double[] daBestParams,
-              LeastSquareFit.Method.RandomThenMonotone);
+                  double yearsBirth = daParams[0];
+                  var fg = new GrowthFunc()
+                  {
+                    DateOfBirth=Utilities.DateTime_from_Years(yearsBirth),
+                  };
+                  double dDevSum = 0;
+                  for (int i = 0;i<daaPoints.Length;i++) {
+                    double years = daaPoints[i][0];
+                    double lCalc = fg.GetSize(years);
+                    double lReal = daaPoints[i][1];
+                    double dDev = lReal-lCalc;
+                    // Daten aus der Jugend werden stärker gewichtet.
+                    //dDevSum+=(dDev*dDev)/Math.Max(0.5,years-yearsBirth);
+                    dDevSum+=(dDev*dDev);
+                  }
+                  return dDevSum;
+                },
+                0.5,
+                0.001,
+                out double[] daBestParams,
+                LeastSquareFit.Method.RandomThenMonotone);
               dtFittedYearOfBirth = Utilities.DateTime_from_Years(daBestParams[0]);
+              if (this.SaveYoB) {
+                foreach (var el in aaIndisByIId[idx].ToArray()) {
+                  try {
+                    el.ElementProp.IndivData.YearOfBirth=dtFittedYearOfBirth.Value.Year;
+                    DS.WriteElement(el);
+                  } catch { }
+                }
+              }
               var growthFunc = new GrowthFunc()
               {
                 DateOfBirth=dtFittedYearOfBirth.Value,
@@ -267,5 +286,6 @@
       } catch {
       }
     }
+    this.SaveYoB=false;
   }
 }
