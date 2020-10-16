@@ -10,6 +10,7 @@ namespace BioMap
 {
   public class DataService
   {
+    public readonly DateTime ProjectStart = new DateTime(2019,4,1);
     public class Filter_t
     {
       public event EventHandler FilterChanged;

@@ -1,0 +1,135 @@
+﻿@page "/lists/numbers_yob_chart"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject IJSRuntime JSRuntime
+@using BioMap
+@using ChartJs.Blazor.Charts
+@using ChartJs.Blazor.ChartJS.Common.Properties
+@using ChartJs.Blazor.ChartJS.Common.Enums
+@using ChartJs.Blazor.ChartJS.Common.Axes
+@using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
+@using ChartJs.Blazor.ChartJS.Common
+@using ChartJs.Blazor.ChartJS.Common.Handlers
+@using ChartJs.Blazor.ChartJS.Common.Time
+@using ChartJs.Blazor.ChartJS.LineChart
+@using ChartJs.Blazor.Util
+
+<h1>@Localize["Numbers / Year of Birth Chart"]</h1>
+
+<ChartJsLineChart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+
+@code {
+  private LineConfig _config;
+  private ChartJsLineChart _chartJs;
+
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    _config = new LineConfig
+    {
+      Options = new LineOptions
+      {
+        Animation=new Animation
+        {
+          Duration=0,
+        },
+        Title = new OptionsTitle
+        {
+          Text="XXX",
+          Display = false,
+        },
+        Legend = new Legend
+        {
+          Display = true,
+        },
+        Scales = new Scales
+        {
+          xAxes = new List<CartesianAxis>
+                   {
+                        new LinearCartesianAxis
+                        {
+                            ScaleLabel = new ScaleLabel
+                            {
+                                LabelString = "Time"
+                            },
+                            GridLines = new GridLines
+                            {
+                                Display = false
+                            },
+                            Ticks = new LinearCartesianTicks
+                            {
+                                StepSize=1,
+                                Precision=0,
+                            }
+                        }
+                    },
+        },
+      },
+    };
+    DS.Filter.FilterChanged+=(sender,ev) =>
+    {
+      RefreshData();
+      base.InvokeAsync(StateHasChanged);
+    };
+    RefreshData();
+  }
+  private void RefreshData() {
+    var dtProjectStart = DS.ProjectStart;
+    var aaIndisByIId = DS.GetIndividuals();
+    _config.Data.Datasets.Clear();
+    var countByYoB = new Dictionary<int,Dictionary<int,int>>(); // [yob][year]
+    foreach (var idx in aaIndisByIId.Keys) {
+      var elsByYears = new Dictionary<int,Element>();
+      foreach (var el in aaIndisByIId[idx]) {
+        int nYear = el.ElementProp.CreationTime.Year;
+        int? nYoB = el.GetYearOfBirth();
+        if (nYoB.HasValue) {
+          if (!elsByYears.ContainsKey(nYear)) {
+            elsByYears.Add(nYear,el);
+          }
+        }
+      }
+      foreach (int nYear in elsByYears.Keys) {
+        var el = elsByYears[nYear];
+        int nYoB = el.GetYearOfBirth().Value;
+        if (!countByYoB.ContainsKey(nYoB)) {
+          countByYoB.Add(nYoB,new Dictionary<int,int>());
+        }
+        var d = countByYoB[nYoB];
+        if (!d.ContainsKey(nYear)) {
+          d.Add(nYear,0);
+        }
+        d[nYear]++;
+      }
+    }
+    var lYoBs = new List<int>(countByYoB.Keys);
+    lYoBs.Sort();
+    foreach (int nYoB in lYoBs) {
+      var d = countByYoB[nYoB];
+      var lYears = new List<int>(d.Keys);
+      lYears.Sort();
+      string sYobColor = Element.GetColorForYearOfBirth(nYoB);
+      var lineSetCurve = new LineDataset<Point>
+      {
+        BackgroundColor = sYobColor,
+        BorderWidth = 2,
+        PointHoverBorderWidth = 0,
+        BorderColor = sYobColor,
+        PointRadius = 3,
+        Label="YoB: "+nYoB,
+      };
+      {
+        foreach (int nYear in lYears) {
+          try {
+            double cnt = d[nYear];
+            var dt = new DateTime(nYear,7,1);
+            var t = new Moment(dt);
+            lineSetCurve.Add(new Point(nYear,cnt));
+          } catch { }
+        }
+      }
+      if (lineSetCurve.Data.Count>=1) {
+        _config.Data.Datasets.Add(lineSetCurve);
+      }
+    }
+  }
+}
