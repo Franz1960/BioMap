@@ -162,6 +162,9 @@
   <data name="Impressum" xml:space="preserve">
     <value>Impressum</value>
   </data>
+  <data name="Include single catches" xml:space="preserve">
+    <value>Einzelfänge einschließen</value>
+  </data>
   <data name="Individuals" xml:space="preserve">
     <value>Individuen</value>
   </data>
