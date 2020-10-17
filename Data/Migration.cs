@@ -33,8 +33,19 @@ namespace BioMap
       var ds = DataService.Instance;
       ds.AddLogEntry("System", "Migrating data");
       var sMigSrcDir = System.IO.Path.Combine(ds.DataDir, "migration_source");
+      var sConfDir = System.IO.Path.Combine(ds.DataDir, "conf");
       var sImagesDir = System.IO.Path.Combine(ds.DataDir, "images");
       var sImagesOrigDir = System.IO.Path.Combine(ds.DataDir, "images_orig");
+      #region conf
+      try
+      {
+        var sSrcDir = System.IO.Path.Combine(sMigSrcDir, "conf");
+        System.IO.Directory.CreateDirectory(sConfDir);
+        foreach (var sSrcPath in System.IO.Directory.GetFiles(sSrcDir)) {
+          System.IO.File.Copy(sSrcPath,System.IO.Path.Combine(sConfDir,System.IO.Path.GetFileName(sSrcPath)));
+        }
+      } catch { }
+      #endregion
       #region Artenliste.
       try {
         ds.OperateOnDb((command) =>
@@ -109,6 +120,8 @@ namespace BioMap
         var aFileNames = System.IO.Directory.GetFiles(sElementsDir, "*.json");
         var nProjectId = ds.GetProjectId("bombina-variegata-de-2019-donaustauf");
         {
+          System.IO.Directory.CreateDirectory(sImagesDir);
+          System.IO.Directory.CreateDirectory(sImagesOrigDir);
           foreach (var sFileName in aFileNames)
           {
             if (string.CompareOrdinal(sFileName, "all_elements.json") != 0)
