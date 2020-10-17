@@ -65,7 +65,7 @@
         Scales = new Scales
         {
           xAxes = new List<CartesianAxis>
-    {
+          {
             new TimeAxis
             {
               Distribution = TimeDistribution.Linear,
@@ -120,6 +120,7 @@
         PointHoverBorderWidth = 4,
         BorderColor = sYobColor,
         PointRadius = 0,
+        CubicInterpolationMode = CubicInterpolationMode.Monotone,
         //ShowLine = true,
       };
       var fg = new GrowthFunc()
@@ -206,11 +207,12 @@
                 PointHoverBorderWidth = 0,
                 BorderColor = sYobColor,
                 PointRadius = 0,
+                CubicInterpolationMode = CubicInterpolationMode.Monotone,
                 Label="YoB: "+dtFittedYearOfBirth?.ToString("yyyy-MM-dd"),
               };
               {
                 var dtB = aaIndisByIId[idx][0].ElementProp.CreationTime;
-                if (ldaPoints.Count<2 && dtFittedYearOfBirth.HasValue) {
+                if (bIncludeSinglePoints && dtFittedYearOfBirth.HasValue) {
                   dtB=(dtProjectStart<dtFittedYearOfBirth.Value) ? dtFittedYearOfBirth.Value : dtProjectStart;
                 }
                 var dtE = aaIndisByIId[idx][aaIndisByIId[idx].Count-1].ElementProp.CreationTime;
@@ -268,6 +270,7 @@
             PointHoverBorderWidth = 4,
             BorderColor = sYobColor,
             PointRadius = 3,
+            CubicInterpolationMode = CubicInterpolationMode.Monotone,
             //ShowLine = true,
           };
           foreach (var el in aaIndisByIId[idx]) {
