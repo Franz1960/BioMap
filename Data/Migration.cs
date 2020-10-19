@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using BioMap.Pages.Lists;
 using System.Security.Principal;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace BioMap
 {
@@ -24,22 +26,19 @@ namespace BioMap
       public string Name;
       public ProtocolContent_t Content;
     }
-    static string ToString(double d)
-    {
+    static string ToString(double d) {
       return d.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
-    public static void MigrateData()
-    {
+    public static void MigrateData() {
       var ds = DataService.Instance;
-      ds.AddLogEntry("System", "Migrating data");
-      var sMigSrcDir = System.IO.Path.Combine(ds.DataDir, "migration_source");
-      var sConfDir = System.IO.Path.Combine(ds.DataDir, "conf");
-      var sImagesDir = System.IO.Path.Combine(ds.DataDir, "images");
-      var sImagesOrigDir = System.IO.Path.Combine(ds.DataDir, "images_orig");
+      ds.AddLogEntry("System","Migrating data");
+      var sMigSrcDir = System.IO.Path.Combine(ds.DataDir,"migration_source");
+      var sConfDir = System.IO.Path.Combine(ds.DataDir,"conf");
+      var sImagesDir = System.IO.Path.Combine(ds.DataDir,"images");
+      var sImagesOrigDir = System.IO.Path.Combine(ds.DataDir,"images_orig");
       #region conf
-      try
-      {
-        var sSrcDir = System.IO.Path.Combine(sMigSrcDir, "conf");
+      try {
+        var sSrcDir = System.IO.Path.Combine(sMigSrcDir,"conf");
         System.IO.Directory.CreateDirectory(sConfDir);
         foreach (var sSrcPath in System.IO.Directory.GetFiles(sSrcDir)) {
           System.IO.File.Copy(sSrcPath,System.IO.Path.Combine(sConfDir,System.IO.Path.GetFileName(sSrcPath)));
@@ -74,14 +73,13 @@ namespace BioMap
       #endregion
       #region places.json
       try {
-        var sr = new System.IO.StreamReader(System.IO.Path.Combine(sMigSrcDir, "places.json"));
+        var sr = new System.IO.StreamReader(System.IO.Path.Combine(sMigSrcDir,"places.json"));
         var sJson = sr.ReadToEnd();
         var aPlaces = JsonConvert.DeserializeObject<Place[]>(sJson);
         sr.Close();
         ds.OperateOnDb((command) =>
         {
-          foreach (var place in aPlaces)
-          {
+          foreach (var place in aPlaces) {
             if (place.Radius==0) {
               place.Radius=150;
             }
@@ -90,17 +88,14 @@ namespace BioMap
           }
         });
 
-      }
-      catch { }
+      } catch { }
       #endregion
       #region protocol
-      try
-      {
-        var aFileNames = System.IO.Directory.GetFiles(System.IO.Path.Combine(sMigSrcDir, "protocol"),"protocol_*.json");
+      try {
+        var aFileNames = System.IO.Directory.GetFiles(System.IO.Path.Combine(sMigSrcDir,"protocol"),"protocol_*.json");
         ds.OperateOnDb((command) =>
         {
-          foreach (var sFileName in aFileNames)
-          {
+          foreach (var sFileName in aFileNames) {
             var sr = new System.IO.StreamReader(sFileName);
             var sJson = sr.ReadToEnd();
             var pe = JsonConvert.DeserializeObject<Protocol_t>(sJson);
@@ -110,54 +105,47 @@ namespace BioMap
           }
         });
 
-      }
-      catch { }
+      } catch { }
       #endregion
       #region elements
-      try
-      {
-        var sElementsDir = System.IO.Path.Combine(sMigSrcDir, "elements");
-        var aFileNames = System.IO.Directory.GetFiles(sElementsDir, "*.json");
+      try {
+        var sElementsDir = System.IO.Path.Combine(sMigSrcDir,"elements");
+        var aFileNames = System.IO.Directory.GetFiles(sElementsDir,"*.json");
         var nProjectId = ds.GetProjectId("bombina-variegata-de-2019-donaustauf");
         {
           System.IO.Directory.CreateDirectory(sImagesDir);
           System.IO.Directory.CreateDirectory(sImagesOrigDir);
-          foreach (var sFileName in aFileNames)
-          {
-            if (string.CompareOrdinal(sFileName, "all_elements.json") != 0)
-            {
-              try
-              {
+          foreach (var sFileName in aFileNames) {
+            if (string.CompareOrdinal(sFileName,"all_elements.json") != 0) {
+              try {
                 var sr = new System.IO.StreamReader(sFileName);
                 var sJson = sr.ReadToEnd();
                 sr.Close();
                 var jel = JObject.Parse(sJson);
-                var exifData = new Element.ExifData_t {
-                };
-                if (jel["ElementProp"]["ExifData"]!=null)
+                var exifData = new Element.ExifData_t
                 {
+                };
+                if (jel["ElementProp"]["ExifData"]!=null) {
                   var sDateTimeOriginal = jel["ElementProp"]["ExifData"]["DateTimeOriginal"]?.Value<string>();
                   DateTime dtOriginal;
-                  if (!DateTime.TryParse(sDateTimeOriginal,out dtOriginal))
-                  {
-                    if (sDateTimeOriginal!=null && sDateTimeOriginal.Length>=18 && sDateTimeOriginal[4]==':')
-                    {
+                  if (!DateTime.TryParse(sDateTimeOriginal,out dtOriginal)) {
+                    if (sDateTimeOriginal!=null && sDateTimeOriginal.Length>=18 && sDateTimeOriginal[4]==':') {
                       // Fehlerhaftes Datumsformat in Exif-Daten ('2020:06:21 16:27:00') korrigieren.
-                      sDateTimeOriginal = sDateTimeOriginal.Substring(0, 4) + "-" + sDateTimeOriginal.Substring(5, 2) + "-" + sDateTimeOriginal.Substring(8, 2) + sDateTimeOriginal.Substring(10);
+                      sDateTimeOriginal = sDateTimeOriginal.Substring(0,4) + "-" + sDateTimeOriginal.Substring(5,2) + "-" + sDateTimeOriginal.Substring(8,2) + sDateTimeOriginal.Substring(10);
                     }
                   }
                   exifData = new Element.ExifData_t
                   {
                     Make = jel["ElementProp"]["ExifData"]["Make"]?.Value<string>(),
                     Model = jel["ElementProp"]["ExifData"]["Model"]?.Value<string>(),
-                    DateTimeOriginal = DateTime.TryParse(sDateTimeOriginal, out DateTime dt)?dt:(DateTime?)null,
+                    DateTimeOriginal = DateTime.TryParse(sDateTimeOriginal,out DateTime dt) ? dt : (DateTime?)null,
                   };
                 }
-                var indivData = new Element.IndivData_t {
+                var indivData = new Element.IndivData_t
+                {
                 };
                 var jIndivData = jel["ElementProp"]["IndivData"];
-                if (jIndivData!=null && jIndivData.HasValues)
-                {
+                if (jIndivData!=null && jIndivData.HasValues) {
                   var measuredData = new Element.IndivData_t.MeasuredData_t
                   {
                   };
@@ -165,8 +153,7 @@ namespace BioMap
                   jIndivData["MeasuredData"] != null
                   &&
                   jIndivData["MeasuredData"]["HeadBodyLength"]!=null
-                  )
-                  {
+                  ) {
                     measuredData = new Element.IndivData_t.MeasuredData_t
                     {
                       HeadPosition = new System.Numerics.Vector2
@@ -186,19 +173,19 @@ namespace BioMap
                       &&
                       jIndivData["MeasuredData"]["PtsOnCircle"]!=null
                     )
-                    try {
-                      measuredData.OrigHeadPosition = new System.Numerics.Vector2
-                      {
-                        X = jIndivData["MeasuredData"]["OrigHeadPosition"]["x"].Value<float>(),
-                        Y = jIndivData["MeasuredData"]["OrigHeadPosition"]["y"].Value<float>(),
-                      };
-                      measuredData.OrigBackPosition = new System.Numerics.Vector2
-                      {
-                        X = jIndivData["MeasuredData"]["OrigBackPosition"]["x"].Value<float>(),
-                        Y = jIndivData["MeasuredData"]["OrigBackPosition"]["y"].Value<float>(),
-                      };
-                      measuredData.PtsOnCircle = new System.Numerics.Vector2[]
-                      {
+                      try {
+                        measuredData.OrigHeadPosition = new System.Numerics.Vector2
+                        {
+                          X = jIndivData["MeasuredData"]["OrigHeadPosition"]["x"].Value<float>(),
+                          Y = jIndivData["MeasuredData"]["OrigHeadPosition"]["y"].Value<float>(),
+                        };
+                        measuredData.OrigBackPosition = new System.Numerics.Vector2
+                        {
+                          X = jIndivData["MeasuredData"]["OrigBackPosition"]["x"].Value<float>(),
+                          Y = jIndivData["MeasuredData"]["OrigBackPosition"]["y"].Value<float>(),
+                        };
+                        measuredData.PtsOnCircle = new System.Numerics.Vector2[]
+                        {
                         new System.Numerics.Vector2
                         {
                           X = jIndivData["MeasuredData"]["PtsOnCircle"][0]["x"].Value<float>(),
@@ -214,23 +201,20 @@ namespace BioMap
                           X = jIndivData["MeasuredData"]["PtsOnCircle"][2]["x"].Value<float>(),
                           Y = jIndivData["MeasuredData"]["PtsOnCircle"][2]["y"].Value<float>(),
                         },
-                      };
-                    } catch { }
+                        };
+                      } catch { }
                   }
                   indivData = new Element.IndivData_t
                   {
-                      IId = ConvInvar.ToInt(jIndivData["IId"]?.Value<string>()),
-                      Gender = jIndivData?["Gender"]?.Value<string>()?.ToLowerInvariant(),
-                      MeasuredData = measuredData,
+                    IId = ConvInvar.ToInt(jIndivData["IId"]?.Value<string>()),
+                    Gender = jIndivData?["Gender"]?.Value<string>()?.ToLowerInvariant(),
+                    MeasuredData = measuredData,
                   };
-                  if (jIndivData["TraitValues"] != null)
-                  {
+                  if (jIndivData["TraitValues"] != null) {
                     var jTraitValues = jIndivData["TraitValues"];
-                    foreach (var jTraitValue in jTraitValues)
-                    {
-                      if (jTraitValue is JProperty jProperty)
-                      {
-                        indivData.TraitValues.Add(jProperty.Name, jTraitValues[jProperty.Name].Value<int>());
+                    foreach (var jTraitValue in jTraitValues) {
+                      if (jTraitValue is JProperty jProperty) {
+                        indivData.TraitValues.Add(jProperty.Name,jTraitValues[jProperty.Name].Value<int>());
                       }
                     }
                   }
@@ -245,7 +229,8 @@ namespace BioMap
                     MarkerInfo = new Element.MarkerInfo_t
                     {
                       category = jel["ElementProp"]["MarkerInfo"]["category"].Value<int>(),
-                      position = new LatLng {
+                      position = new LatLng
+                      {
                         lat = jel["ElementProp"]["MarkerInfo"]["position"]["lat"].Value<double>(),
                         lng = jel["ElementProp"]["MarkerInfo"]["position"]["lng"].Value<double>(),
                       },
@@ -260,38 +245,34 @@ namespace BioMap
                   },
                 };
                 el.ElementProp.CreationTime = ((el.ElementProp.ExifData != null && el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? el.ElementProp.ExifData.DateTimeOriginal.Value : el.ElementProp.UploadInfo.Timestamp);
-                if (indivData.Gender!=null && indivData.Gender.StartsWith("j"))
-                {
+                if (indivData.Gender!=null && indivData.Gender.StartsWith("j")) {
                   int yob = 2016;
-                  if (int.TryParse(indivData.Gender.Substring(1), out int age))
-                  {
+                  if (int.TryParse(indivData.Gender.Substring(1),out int age)) {
                     yob = el.ElementProp.CreationTime.Year - age;
                   }
                   indivData.YearOfBirth = yob;
-                }
-                else
-                {
+                } else {
                   indivData.YearOfBirth = 2016;
                 }
                 // Bilder verarbeiten.
                 {
-                  var sImageFile = System.IO.Path.Combine(sElementsDir, el.ElementName);
+                  var sImageFile = System.IO.Path.Combine(sElementsDir,el.ElementName);
                   var sImageOrigFile = sImageFile + ".orig.jpg";
-                  if (System.IO.File.Exists(sImageFile))
-                  {
-                    System.IO.File.Copy(sImageFile, System.IO.Path.Combine(sImagesDir, el.ElementName), true);
-                    if (System.IO.File.Exists(sImageOrigFile))
-                    {
-                      System.IO.File.Copy(sImageOrigFile, System.IO.Path.Combine(sImagesOrigDir, el.ElementName), true);
+                  if (System.IO.File.Exists(sImageFile)) {
+                    if (System.IO.File.Exists(sImageOrigFile)) {
+                      CopyImageCompressed(sImageOrigFile,System.IO.Path.Combine(sImagesOrigDir,el.ElementName),2000);
+                      CopyImageCompressed(sImageFile,System.IO.Path.Combine(sImagesDir,el.ElementName));
+                    } else {
+                      CopyImageCompressed(sImageFile,System.IO.Path.Combine(sImagesOrigDir,el.ElementName),2000);
+                      CopyImageCompressed(sImageFile,System.IO.Path.Combine(sImagesDir,el.ElementName));
                     }
-                  } else if (System.IO.File.Exists(sImageOrigFile))
-                  {
-                    System.IO.File.Copy(sImageOrigFile, System.IO.Path.Combine(sImagesDir, el.ElementName), true);
+                  } else if (System.IO.File.Exists(sImageOrigFile)) {
+                    CopyImageCompressed(sImageOrigFile,System.IO.Path.Combine(sImagesOrigDir,el.ElementName),2000);
+                    CopyImageCompressed(sImageOrigFile,System.IO.Path.Combine(sImagesDir,el.ElementName));
                   }
                 }
                 ds.WriteElement(el);
-              }
-              catch { }
+              } catch { }
             }
           }
           #region Jahrgang aller Wiederfänge auf den zuerst ermittelten Jahrgang setzen.
@@ -324,6 +305,21 @@ namespace BioMap
         }
       } catch { }
       #endregion
+    }
+    public static void CopyImageCompressed(string sSrcFile,string sDestFile,int nBiggerDim=1200) {
+      using (var imgSrc = Image.Load(sSrcFile)) {
+        int nReqHeight;
+        int nReqWidth;
+        if (imgSrc.Height<imgSrc.Width) {
+          nReqWidth=Math.Min(nBiggerDim,imgSrc.Width);
+          nReqHeight=(nReqWidth*imgSrc.Height)/imgSrc.Width;
+        } else {
+          nReqHeight=Math.Min(nBiggerDim,imgSrc.Height);
+          nReqWidth=(nReqHeight*imgSrc.Width)/imgSrc.Height;
+        }
+        imgSrc.Mutate(x => x.Resize(nReqWidth,nReqHeight));
+        imgSrc.SaveAsJpeg(sDestFile);
+      }
     }
   }
 }
