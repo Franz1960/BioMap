@@ -49,7 +49,7 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.Elements = Elements = DataService.Instance.GetElements();
+    this.Elements = Elements = DataService.Instance.GetElements("","elements.creationtime DESC");
   }
   private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);
