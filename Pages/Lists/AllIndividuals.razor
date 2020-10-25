@@ -101,7 +101,7 @@
   void inputChanged(ChangeEventArgs e,int iid) {
     int nYoB = ConvInvar.ToInt(e.Value.ToString());
     foreach (var el in this.Individuals[iid]) {
-      el.ElementProp.IndivData.YearOfBirth=nYoB;
+      el.ElementProp.IndivData.DateOfBirth=new DateTime(nYoB,7,1);
       DataService.Instance.WriteElement(el);
     }
   }

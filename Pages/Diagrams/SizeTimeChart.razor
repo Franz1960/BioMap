@@ -190,7 +190,7 @@
               if (this.SaveYoB) {
                 foreach (var el in aaIndisByIId[idx].ToArray()) {
                   try {
-                    el.ElementProp.IndivData.YearOfBirth=dtFittedYearOfBirth.Value.Year;
+                    el.ElementProp.IndivData.DateOfBirth=dtFittedYearOfBirth.Value;
                     DS.WriteElement(el);
                   } catch { }
                 }
@@ -237,7 +237,7 @@
           }
           // Datenpunkte.
           {
-            string sYobColor = Element.GetColorForYearOfBirth(dtFittedYearOfBirth.HasValue ? dtFittedYearOfBirth.Value.Year : aaIndisByIId[idx][0].ElementProp.IndivData?.YearOfBirth);
+            string sYobColor = Element.GetColorForYearOfBirth(dtFittedYearOfBirth.HasValue ? dtFittedYearOfBirth.Value.Year : aaIndisByIId[idx][0].ElementProp.IndivData?.DateOfBirth.Year);
             var lineSetPoints = new LineDataset<TimeTuple<double>>
             {
               BackgroundColor = sYobColor,
