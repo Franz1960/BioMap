@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
@@ -11,6 +12,43 @@ namespace BioMap
 {
   public class Element
   {
+    public class Category
+    {
+      public Category(int nCatNum,string sCatName,string bgColor) {
+        this.Num=nCatNum;
+        this.Name=sCatName;
+        this.BgColor=bgColor;
+      }
+      public int Num { get; private set; }
+      public string Name { get; private set; }
+      public string BgColor { get; private set; }
+      public static Category[] AllCategories
+      {
+        get
+        {
+          if (_AllCategories==null) {
+            var l = new List<Category>();
+            try {
+              var sr = new System.IO.StreamReader(System.IO.Path.Combine(DataService.Instance.DataDir + "conf/ElementCategories.json"));
+              var sJson = sr.ReadToEnd();
+              sr.Close();
+              var jel = JObject.Parse(sJson);
+              foreach (var jCat in jel) {
+                int nCatNum = ConvInvar.ToInt(jCat.Key);
+                var category = new Category(
+                  nCatNum,
+                  jCat.Value["name"].ToString(),
+                  (string)jCat.Value["bgColor"]);
+                l.Add(category);
+              }
+            } catch { }
+            _AllCategories=l.ToArray();
+          }
+          return _AllCategories;
+        }
+      }
+      private static Category[] _AllCategories = null;
+    }
     public class UploadInfo_t
     {
       public DateTime Timestamp;

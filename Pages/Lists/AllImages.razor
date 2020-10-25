@@ -37,6 +37,8 @@
       base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
+
+    var c = Element.Category.AllCategories;
   }
   private void RefreshData() {
     var els = DataService.Instance.GetElements("","elements.place ASC,elements.creationtime ASC");
