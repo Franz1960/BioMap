@@ -11,16 +11,23 @@ namespace BioMap
   [ApiController]
   public class PhotoController : ControllerBase
   {
+    public static string GetImageFilePath(string id) {
+      var ds = DataService.Instance;
+      string sFilePath = System.IO.Path.Combine(ds.DataDir,System.IO.Path.Combine("images",id));
+      if (!System.IO.File.Exists(sFilePath)) {
+        sFilePath = System.IO.Path.Combine(ds.DataDir,System.IO.Path.Combine("images_orig",id));
+      }
+      if (System.IO.File.Exists(sFilePath)) {
+        return sFilePath;
+      }
+      return "";
+    }
     [HttpGet("{id}")]
     public IActionResult GetPhoto(string id) {
       try {
-        var ds = DataService.Instance;
         bool bReqThumbnail = Request.Query.ContainsKey("width");
-        string sFilePath = System.IO.Path.Combine(ds.DataDir,System.IO.Path.Combine("images",id));
-        if (!System.IO.File.Exists(sFilePath)) {
-          sFilePath = System.IO.Path.Combine(ds.DataDir,System.IO.Path.Combine("images_orig",id));
-        }
-        if (System.IO.File.Exists(sFilePath)) {
+        string sFilePath = GetImageFilePath(id);
+        if (!string.IsNullOrEmpty(sFilePath)) {
           try {
             if (Request.Query.ContainsKey("width")) {
               var bs = new MemoryStream();
