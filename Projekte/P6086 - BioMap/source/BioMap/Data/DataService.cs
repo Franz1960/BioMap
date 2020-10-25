@@ -230,7 +230,8 @@ namespace BioMap
           "traitVertBlackBreastCenterStrip INT," +
           "traitHorizBlackBreastBellyStrip INT," +
           "traitManyIsolatedBlackBellyDots INT," +
-          "yearofbirth INT," +
+          "dateofbirth DATETIME," +
+          "ageyears REAL," +
           "gender TEXT," +
           "iid INT)";
           command.ExecuteNonQuery();
@@ -380,7 +381,7 @@ namespace BioMap
         if (el.ElementProp.MarkerInfo.category==350 || el.ElementProp.MarkerInfo.category==351) {
           command.CommandText =
             "REPLACE INTO indivdata (name,normcirclepos0x,normcirclepos0y,normcirclepos1x,normcirclepos1y,normcirclepos2x,normcirclepos2y" +
-            ",headposx,headposy,backposx,backposy,origheadposx,origheadposy,origbackposx,origbackposy,headbodylength,yearofbirth,gender,iid" +
+            ",headposx,headposy,backposx,backposy,origheadposx,origheadposy,origbackposx,origbackposy,headbodylength,dateofbirth,ageyears,gender,iid" +
             ",traitYellowDominance" +
             ",traitBlackDominance" +
             ",traitVertBlackBreastCenterStrip" +
@@ -402,7 +403,8 @@ namespace BioMap
             "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigBackPosition.X) +
             "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigBackPosition.Y) +
             "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadBodyLength) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.YearOfBirth) +
+            ",'" + ConvInvar.ToString(el.ElementProp.IndivData.DateOfBirth) + "'" +
+            "," + ConvInvar.ToString(el.GetAgeYears()) +
             ",'" + el.ElementProp.IndivData.Gender+"'" +
             "," + ConvInvar.ToString(el.ElementProp.IndivData.IId) +
             ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("YellowDominance",out int nYD) ? ConvInvar.ToString(nYD) : "") + "'" +
@@ -433,7 +435,7 @@ namespace BioMap
           ",photos.exifdatetimeoriginal" +
           ",indivdata.iid" +
           ",indivdata.gender" +
-          ",indivdata.yearofbirth" +
+          ",indivdata.dateofbirth" +
           ",indivdata.traitYellowDominance" +
           ",indivdata.traitBlackDominance" +
           ",indivdata.traitVertBlackBreastCenterStrip" +
@@ -503,7 +505,7 @@ namespace BioMap
                 {
                   IId = dr.GetInt32(10),
                   Gender = dr.GetString(11),
-                  YearOfBirth = dr.GetInt32(12),
+                  DateOfBirth = dr.GetDateTime(12),
                 };
                 if (!dr.IsDBNull(18)) {
                   el.ElementProp.IndivData.TraitValues = new Dictionary<string,int>();

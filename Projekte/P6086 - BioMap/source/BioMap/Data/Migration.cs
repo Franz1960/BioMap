@@ -250,9 +250,9 @@ namespace BioMap
                   if (int.TryParse(indivData.Gender.Substring(1),out int age)) {
                     yob = el.ElementProp.CreationTime.Year - age;
                   }
-                  indivData.YearOfBirth = yob;
+                  indivData.DateOfBirth = new DateTime(yob,7,1);
                 } else {
-                  indivData.YearOfBirth = 2016;
+                  indivData.DateOfBirth = new DateTime(2016,7,1);
                 }
                 // Bilder verarbeiten.
                 {
@@ -285,7 +285,7 @@ namespace BioMap
                 if (!nYoB.HasValue) {
                   nYoB=el.GetYearOfBirth();
                 } else if (!nElYoB.HasValue || nElYoB.Value!=nYoB.Value) {
-                  el.ElementProp.IndivData.YearOfBirth=nYoB.Value;
+                  el.ElementProp.IndivData.DateOfBirth=new DateTime(nYoB.Value,7,1);
                   DataService.Instance.WriteElement(el);
                 }
               }

@@ -45,7 +45,7 @@ namespace BioMap
       }
       public int IId;
       public string Gender;
-      public int YearOfBirth;
+      public DateTime DateOfBirth;
       public MeasuredData_t MeasuredData;
       public Dictionary<string, int> TraitValues = new Dictionary<string, int>();
     }
@@ -99,7 +99,7 @@ namespace BioMap
       return el;
     }
     public int? GetYearOfBirth() {
-      return this.ElementProp.IndivData?.YearOfBirth;
+      return this.ElementProp.IndivData?.DateOfBirth.Year;
     }
     public string GetYearOfBirthAsString() {
       var yob = this.GetYearOfBirth();
@@ -126,7 +126,7 @@ namespace BioMap
       return sColor;
     }
    public string GetColorForYearOfBirth() {
-      return GetColorForYearOfBirth(this.ElementProp.IndivData?.YearOfBirth);
+      return GetColorForYearOfBirth(this.GetYearOfBirth());
     }
     public string GetDetails() {
       var sb = new System.Text.StringBuilder();
@@ -149,6 +149,12 @@ namespace BioMap
         return ConvInvar.ToString(this.ElementProp.IndivData.IId);
       }
       return "";
+    }
+    public double GetAgeYears() {
+      if (this.ElementProp.IndivData!=null) {
+        return (this.ElementProp.CreationTime-this.ElementProp.IndivData.DateOfBirth).TotalDays/365;
+      }
+      return 0;
     }
     public string GetIsoDate() {
       return this.ElementProp.CreationTime.ToString("yyyy-MM-dd");
