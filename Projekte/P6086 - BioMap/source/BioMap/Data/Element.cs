@@ -22,32 +22,28 @@ namespace BioMap
       public int Num { get; private set; }
       public string Name { get; private set; }
       public string BgColor { get; private set; }
-      public static Category[] AllCategories
-      {
-        get
-        {
-          if (_AllCategories==null) {
-            var l = new List<Category>();
-            try {
-              var sr = new System.IO.StreamReader(System.IO.Path.Combine(DataService.Instance.DataDir + "conf/ElementCategories.json"));
-              var sJson = sr.ReadToEnd();
-              sr.Close();
-              var jel = JObject.Parse(sJson);
-              foreach (var jCat in jel) {
-                int nCatNum = ConvInvar.ToInt(jCat.Key);
-                var category = new Category(
-                  nCatNum,
-                  jCat.Value["name"].ToString(),
-                  (string)jCat.Value["bgColor"]);
-                l.Add(category);
-              }
-            } catch { }
-            _AllCategories=l.ToArray();
+      public static Category[] AllCategories { get; private set; }
+      public static readonly Dictionary<int,Category> CategoriesByNum = new Dictionary<int,Category>();
+      static Category() {
+        var l = new List<Category>();
+        CategoriesByNum.Clear();
+        try {
+          var sr = new System.IO.StreamReader(System.IO.Path.Combine(DataService.Instance.DataDir + "conf/ElementCategories.json"));
+          var sJson = sr.ReadToEnd();
+          sr.Close();
+          var jel = JObject.Parse(sJson);
+          foreach (var jCat in jel) {
+            int nCatNum = ConvInvar.ToInt(jCat.Key);
+            var category = new Category(
+              nCatNum,
+              jCat.Value["name"].ToString(),
+              (string)jCat.Value["bgColor"]);
+            l.Add(category);
+            CategoriesByNum[nCatNum]=category;
           }
-          return _AllCategories;
-        }
+        } catch { }
+        AllCategories=l.ToArray();
       }
-      private static Category[] _AllCategories = null;
     }
     public class UploadInfo_t
     {
@@ -181,6 +177,13 @@ namespace BioMap
     }
     public int GetCategoryNum() {
       return this.ElementProp.MarkerInfo.category;
+    }
+    public string GetCategoryNice() {
+      if (Category.CategoriesByNum.TryGetValue(this.ElementProp.MarkerInfo.category,out Category category)) {
+        return ConvInvar.ToString(this.ElementProp.MarkerInfo.category)+" ("+category.Name+")";
+      } else {
+        return ConvInvar.ToString(this.ElementProp.MarkerInfo.category)+" (???)";
+      }
     }
     public string GetIId() {
       if (this.ElementProp.IndivData!=null) {
