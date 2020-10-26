@@ -42,7 +42,7 @@
     if (el.HasIndivData() && el.HasMeasuredData()) {
       this.Properties.Add(new[] { "Individual","<b>"+el.GetIId()+"</b> ("+el.GetGender()+" / "+el.GetHeadBodyLengthNice()+" / "+el.GetPlace().Name+")" });
     }
-    this.Properties.Add(new[] { "Cat.",ConvInvar.ToString(el.GetCategoryNum())+" ("+")" });
+    this.Properties.Add(new[] { "Cat.",el.GetCategoryNice() });
     this.Properties.Add(new[] { "File name",el.ElementName });
     this.Properties.Add(new[] { "Time",ConvInvar.ToString(el.ElementProp.CreationTime) });
     this.Properties.Add(new[] { "Uploaded",ConvInvar.ToString(el.ElementProp.UploadInfo.Timestamp) });
