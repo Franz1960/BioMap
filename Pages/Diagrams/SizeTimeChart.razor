@@ -107,7 +107,7 @@
   }
   private void RefreshData() {
     var dtProjectStart = DS.ProjectStart;
-    var aaIndisByIId = DS.GetIndividuals();
+    var aaIndisByIId = DS.GetIndividuals(Filters);
     _config.Options.Legend.Display=false;
     _config.Data.Datasets.Clear();
     // Ideale Wachstumskurven hinzufügen.
