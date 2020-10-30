@@ -58,7 +58,7 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.Individuals = DataService.Instance.GetIndividuals();
+    this.Individuals = DataService.Instance.GetIndividuals(Filters);
   }
   private string GetForElements(int iid,Func<Element,string> func,bool bAddYoBWarning = false) {
     var sb = new System.Text.StringBuilder();
