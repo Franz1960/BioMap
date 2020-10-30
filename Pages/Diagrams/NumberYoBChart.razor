@@ -1,6 +1,7 @@
 ﻿@page "/lists/numbers_yob_chart"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
+@inject Filters Filters
 @inject IJSRuntime JSRuntime
 @using BioMap
 @using ChartJs.Blazor.Charts
@@ -44,7 +45,7 @@
         Scales = new Scales
         {
           xAxes = new List<CartesianAxis>
-          {
+        {
             new LinearCartesianAxis
             {
               ScaleLabel = new ScaleLabel
@@ -65,7 +66,7 @@
         },
       },
     };
-    DS.Filter.FilterChanged+=(sender,ev) =>
+    Filters.FilterChanged+=(sender,ev) =>
     {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
