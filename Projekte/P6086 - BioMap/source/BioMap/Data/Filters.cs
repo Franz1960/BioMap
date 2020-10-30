@@ -11,14 +11,11 @@ namespace BioMap
   public class Filters
   {
     public event EventHandler FilterChanged;
-    public string IndiFilter
-    {
-      get
-      {
+    public string IndiFilter {
+      get {
         return this._IndiFilter;
       }
-      set
-      {
+      set {
         if (value!=this._IndiFilter) {
           this._IndiFilter=value;
           Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
@@ -26,14 +23,11 @@ namespace BioMap
       }
     }
     private string _IndiFilter = "";
-    public string PlaceFilter
-    {
-      get
-      {
+    public string PlaceFilter {
+      get {
         return this._PlaceFilter;
       }
-      set
-      {
+      set {
         if (value!=this._PlaceFilter) {
           this._PlaceFilter=value;
           Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
@@ -41,14 +35,11 @@ namespace BioMap
       }
     }
     private string _PlaceFilter = "";
-    public string CatFilter
-    {
-      get
-      {
+    public string CatFilter {
+      get {
         return this._CatFilter;
       }
-      set
-      {
+      set {
         if (value!=this._CatFilter) {
           this._CatFilter=value;
           Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);

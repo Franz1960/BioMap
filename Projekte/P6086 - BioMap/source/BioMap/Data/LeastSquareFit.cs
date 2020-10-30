@@ -11,10 +11,10 @@ namespace BioMap
     public delegate double CalcSquareSumDelegate(double[] daParams,double[][] daaPoints);
     public enum Method
     {
-      None=0,
-      Random=1,
-      Monotone=2,
-      RandomThenMonotone=3,
+      None = 0,
+      Random = 1,
+      Monotone = 2,
+      RandomThenMonotone = 3,
     }
     /// <summary>
     /// Optimierung durchführen. Eine parametrierte Kurve wird einer Menge 
