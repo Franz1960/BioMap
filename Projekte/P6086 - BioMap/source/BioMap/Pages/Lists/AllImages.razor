@@ -1,6 +1,7 @@
 ﻿@page "/lists/all_images"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
+@inject Filters Filters
 @inject IJSRuntime JSRuntime
 @using BioMap
 
@@ -31,7 +32,7 @@
   private PhotoPopup PhotoPopup1;
   protected override void OnInitialized() {
     base.OnInitialized();
-    DS.Filter.FilterChanged+=(sender,ev) =>
+    Filters.FilterChanged+=(sender,ev) =>
     {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
@@ -41,7 +42,7 @@
     var c = Element.Category.AllCategories;
   }
   private void RefreshData() {
-    var els = DataService.Instance.GetElements("","elements.place ASC,elements.creationtime ASC");
+    var els = DataService.Instance.GetElements(Filters,"","elements.place ASC,elements.creationtime ASC");
     this.ElementsByPlaces.Clear();
     foreach (var el in els) {
       if (!string.IsNullOrEmpty(PhotoController.GetImageFilePath(el.ElementName))) {

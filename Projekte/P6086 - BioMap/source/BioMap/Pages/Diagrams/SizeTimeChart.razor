@@ -1,6 +1,7 @@
 ﻿@page "/lists/size_time_chart"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
+@inject Filters Filters
 @inject IJSRuntime JSRuntime
 @using BioMap
 @using ChartJs.Blazor.Charts
@@ -65,7 +66,7 @@
         Scales = new Scales
         {
           xAxes = new List<CartesianAxis>
-          {
+        {
             new TimeAxis
             {
               Distribution = TimeDistribution.Linear,
@@ -84,7 +85,7 @@
         },
       },
     };
-    DS.Filter.FilterChanged+=(sender,ev) =>
+    Filters.FilterChanged+=(sender,ev) =>
     {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
@@ -176,9 +177,9 @@
                     double lCalc = fg.GetSize(years);
                     double lReal = daaPoints[i][1];
                     double dDev = lReal-lCalc;
-                    // Daten aus der Jugend werden stärker gewichtet.
-                    //dDevSum+=(dDev*dDev)/Math.Max(0.5,years-yearsBirth);
-                    dDevSum+=(dDev*dDev);
+                  // Daten aus der Jugend werden stärker gewichtet.
+                  //dDevSum+=(dDev*dDev)/Math.Max(0.5,years-yearsBirth);
+                  dDevSum+=(dDev*dDev);
                   }
                   return dDevSum;
                 },
