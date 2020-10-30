@@ -70,18 +70,18 @@ namespace BioMap
       [JsonObject(MemberSerialization.Fields)]
       public class MeasuredData_t
       {
-        public System.Numerics.Vector2 HeadPosition = new System.Numerics.Vector2(300, 100);
-        public System.Numerics.Vector2 BackPosition = new System.Numerics.Vector2(300, 500);
+        public System.Numerics.Vector2 HeadPosition = new System.Numerics.Vector2(300,100);
+        public System.Numerics.Vector2 BackPosition = new System.Numerics.Vector2(300,500);
         public double HeadBodyLength;
-        public System.Numerics.Vector2 OrigHeadPosition = new System.Numerics.Vector2(300, 100);
-        public System.Numerics.Vector2 OrigBackPosition = new System.Numerics.Vector2(300, 500);
-        public System.Numerics.Vector2[] PtsOnCircle = { new System.Numerics.Vector2(300, 300), new System.Numerics.Vector2(400, 400), new System.Numerics.Vector2(500, 300) };
+        public System.Numerics.Vector2 OrigHeadPosition = new System.Numerics.Vector2(300,100);
+        public System.Numerics.Vector2 OrigBackPosition = new System.Numerics.Vector2(300,500);
+        public System.Numerics.Vector2[] PtsOnCircle = { new System.Numerics.Vector2(300,300),new System.Numerics.Vector2(400,400),new System.Numerics.Vector2(500,300) };
       }
       public int IId;
       public string Gender;
       public DateTime DateOfBirth;
       public MeasuredData_t MeasuredData;
-      public Dictionary<string, int> TraitValues = new Dictionary<string, int>();
+      public Dictionary<string,int> TraitValues = new Dictionary<string,int>();
     }
     [JsonObject(MemberSerialization.Fields)]
     public class ElementProp_t
@@ -106,8 +106,7 @@ namespace BioMap
       var el = new Element();
       el.ElementName = System.IO.Path.GetFileName(sImageFilePath);
       el.ElementProp=new ElementProp_t();
-      el.ElementProp.UploadInfo=new Element.UploadInfo_t
-      {
+      el.ElementProp.UploadInfo=new Element.UploadInfo_t {
         Timestamp = DateTime.Now,
         UserId = DataService.Instance.CurrentUser.EMail,
       };
@@ -115,8 +114,7 @@ namespace BioMap
       el.ElementProp.MarkerInfo.category=100;
       //if (metaData.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal,out var dateTime))
       if (geoLocation!=null) {
-        el.ElementProp.MarkerInfo.position=new LatLng
-        {
+        el.ElementProp.MarkerInfo.position=new LatLng {
           lat=geoLocation.Latitude,
           lng=geoLocation.Longitude,
         };
@@ -159,7 +157,7 @@ namespace BioMap
       }
       return sColor;
     }
-   public string GetColorForYearOfBirth() {
+    public string GetColorForYearOfBirth() {
       return GetColorForYearOfBirth(this.GetYearOfBirth());
     }
     public string GetDetails() {

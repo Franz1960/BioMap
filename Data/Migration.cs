@@ -47,8 +47,7 @@ namespace BioMap
       #endregion
       #region Artenliste.
       try {
-        ds.OperateOnDb((command) =>
-        {
+        ds.OperateOnDb((command) => {
           command.CommandText = "INSERT INTO species (genus,species,commonname_en)" +
           " VALUES" +
           " ('bombina','bombina','Fire-bellied toad')" +
@@ -61,8 +60,7 @@ namespace BioMap
       var nSpeciesId = ds.GetSpeciesId("bombina","variegata");
       #region Projekte.
       try {
-        ds.OperateOnDb((command) =>
-        {
+        ds.OperateOnDb((command) => {
           command.CommandText = "INSERT INTO projects (name,description,target_species_id)" +
             " VALUES" +
             " ('bombina-variegata-de-2019-donaustauf','Gelbbauchunken im Donaustaufer und Kreuther Forst ab 2019','"+nSpeciesId.Value+"')";
@@ -77,8 +75,7 @@ namespace BioMap
         var sJson = sr.ReadToEnd();
         var aPlaces = JsonConvert.DeserializeObject<Place[]>(sJson);
         sr.Close();
-        ds.OperateOnDb((command) =>
-        {
+        ds.OperateOnDb((command) => {
           foreach (var place in aPlaces) {
             if (place.Radius==0) {
               place.Radius=150;
@@ -93,8 +90,7 @@ namespace BioMap
       #region protocol
       try {
         var aFileNames = System.IO.Directory.GetFiles(System.IO.Path.Combine(sMigSrcDir,"protocol"),"protocol_*.json");
-        ds.OperateOnDb((command) =>
-        {
+        ds.OperateOnDb((command) => {
           foreach (var sFileName in aFileNames) {
             var sr = new System.IO.StreamReader(sFileName);
             var sJson = sr.ReadToEnd();
@@ -122,8 +118,7 @@ namespace BioMap
                 var sJson = sr.ReadToEnd();
                 sr.Close();
                 var jel = JObject.Parse(sJson);
-                var exifData = new Element.ExifData_t
-                {
+                var exifData = new Element.ExifData_t {
                 };
                 if (jel["ElementProp"]["ExifData"]!=null) {
                   var sDateTimeOriginal = jel["ElementProp"]["ExifData"]["DateTimeOriginal"]?.Value<string>();
@@ -134,35 +129,29 @@ namespace BioMap
                       sDateTimeOriginal = sDateTimeOriginal.Substring(0,4) + "-" + sDateTimeOriginal.Substring(5,2) + "-" + sDateTimeOriginal.Substring(8,2) + sDateTimeOriginal.Substring(10);
                     }
                   }
-                  exifData = new Element.ExifData_t
-                  {
+                  exifData = new Element.ExifData_t {
                     Make = jel["ElementProp"]["ExifData"]["Make"]?.Value<string>(),
                     Model = jel["ElementProp"]["ExifData"]["Model"]?.Value<string>(),
                     DateTimeOriginal = DateTime.TryParse(sDateTimeOriginal,out DateTime dt) ? dt : (DateTime?)null,
                   };
                 }
-                var indivData = new Element.IndivData_t
-                {
+                var indivData = new Element.IndivData_t {
                 };
                 var jIndivData = jel["ElementProp"]["IndivData"];
                 if (jIndivData!=null && jIndivData.HasValues) {
-                  var measuredData = new Element.IndivData_t.MeasuredData_t
-                  {
+                  var measuredData = new Element.IndivData_t.MeasuredData_t {
                   };
                   if (
                   jIndivData["MeasuredData"] != null
                   &&
                   jIndivData["MeasuredData"]["HeadBodyLength"]!=null
                   ) {
-                    measuredData = new Element.IndivData_t.MeasuredData_t
-                    {
-                      HeadPosition = new System.Numerics.Vector2
-                      {
+                    measuredData = new Element.IndivData_t.MeasuredData_t {
+                      HeadPosition = new System.Numerics.Vector2 {
                         X = jIndivData["MeasuredData"]["HeadPosition"]["x"].Value<float>(),
                         Y = jIndivData["MeasuredData"]["HeadPosition"]["y"].Value<float>(),
                       },
-                      BackPosition = new System.Numerics.Vector2
-                      {
+                      BackPosition = new System.Numerics.Vector2 {
                         X = jIndivData["MeasuredData"]["BackPosition"]["x"].Value<float>(),
                         Y = jIndivData["MeasuredData"]["BackPosition"]["y"].Value<float>(),
                       },
@@ -174,13 +163,11 @@ namespace BioMap
                       jIndivData["MeasuredData"]["PtsOnCircle"]!=null
                     )
                       try {
-                        measuredData.OrigHeadPosition = new System.Numerics.Vector2
-                        {
+                        measuredData.OrigHeadPosition = new System.Numerics.Vector2 {
                           X = jIndivData["MeasuredData"]["OrigHeadPosition"]["x"].Value<float>(),
                           Y = jIndivData["MeasuredData"]["OrigHeadPosition"]["y"].Value<float>(),
                         };
-                        measuredData.OrigBackPosition = new System.Numerics.Vector2
-                        {
+                        measuredData.OrigBackPosition = new System.Numerics.Vector2 {
                           X = jIndivData["MeasuredData"]["OrigBackPosition"]["x"].Value<float>(),
                           Y = jIndivData["MeasuredData"]["OrigBackPosition"]["y"].Value<float>(),
                         };
@@ -204,8 +191,7 @@ namespace BioMap
                         };
                       } catch { }
                   }
-                  indivData = new Element.IndivData_t
-                  {
+                  indivData = new Element.IndivData_t {
                     IId = ConvInvar.ToInt(jIndivData["IId"]?.Value<string>()),
                     Gender = jIndivData?["Gender"]?.Value<string>()?.ToLowerInvariant(),
                     MeasuredData = measuredData,
@@ -219,24 +205,19 @@ namespace BioMap
                     }
                   }
                 }
-                var el = new Element
-                {
+                var el = new Element {
                   ElementName = jel["ElementName"].Value<string>(),
                   SpeciesId = nSpeciesId,
                   ProjectId = nProjectId,
-                  ElementProp = new Element.ElementProp_t
-                  {
-                    MarkerInfo = new Element.MarkerInfo_t
-                    {
+                  ElementProp = new Element.ElementProp_t {
+                    MarkerInfo = new Element.MarkerInfo_t {
                       category = jel["ElementProp"]["MarkerInfo"]["category"].Value<int>(),
-                      position = new LatLng
-                      {
+                      position = new LatLng {
                         lat = jel["ElementProp"]["MarkerInfo"]["position"]["lat"].Value<double>(),
                         lng = jel["ElementProp"]["MarkerInfo"]["position"]["lng"].Value<double>(),
                       },
                     },
-                    UploadInfo=new Element.UploadInfo_t
-                    {
+                    UploadInfo=new Element.UploadInfo_t {
                       Timestamp = jel["ElementProp"]["UploadInfo"]["Timestamp"].Value<DateTime>(),
                       UserId = jel["ElementProp"]["UploadInfo"]["UserId"].Value<string>(),
                     },
@@ -306,7 +287,7 @@ namespace BioMap
       } catch { }
       #endregion
     }
-    public static void CopyImageCompressed(string sSrcFile,string sDestFile,int nBiggerDim=1200) {
+    public static void CopyImageCompressed(string sSrcFile,string sDestFile,int nBiggerDim = 1200) {
       using (var imgSrc = Image.Load(sSrcFile)) {
         int nReqHeight;
         int nReqWidth;

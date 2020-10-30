@@ -11,46 +11,34 @@ namespace BioMap
   public class DataService
   {
     public readonly DateTime ProjectStart = new DateTime(2019,4,1);
-    public DataService()
-    {
+    public DataService() {
       DataService.Instance = this;
     }
     public static DataService Instance { get; private set; }
     public string DataDir = "../../data/biomap/";
     public System.Data.IDbConnection DbConnection = null;
-    public event EventHandler Initialized
-    {
-      add
-      {
-        lock (this.lockInitialized)
-        {
-          if (this.isInitialized)
-          {
-            value.Invoke(this, EventArgs.Empty);
-          }
-          else
-          {
+    public event EventHandler Initialized {
+      add {
+        lock (this.lockInitialized) {
+          if (this.isInitialized) {
+            value.Invoke(this,EventArgs.Empty);
+          } else {
             this._Initialized += value;
           }
         }
       }
-      remove
-      {
+      remove {
         this._Initialized -= value;
       }
     }
     private event EventHandler _Initialized;
     private bool isInitialized = false;
     private readonly object lockInitialized = new object();
-    public void OperateOnDb(Action<IDbCommand> dbAction)
-    {
-      try
-      {
+    public void OperateOnDb(Action<IDbCommand> dbAction) {
+      try {
         this.DbConnection.Open();
-        try
-        {
-          using (IDbCommand command = this.DbConnection.CreateCommand())
-          {
+        try {
+          using (IDbCommand command = this.DbConnection.CreateCommand()) {
             dbAction(command);
           }
         } finally {
@@ -58,15 +46,12 @@ namespace BioMap
         }
       } catch { }
     }
-    public Task Init()
-    {
-      return Task.Run(() =>
-      {
+    public Task Init() {
+      return Task.Run(() => {
         bool bMigrate = true;
         this.DbConnection = new SQLiteConnection();
         this.DbConnection.ConnectionString = "Data Source="+System.IO.Path.Combine(this.DataDir,"biomap.sqlite");
-        this.OperateOnDb((command) =>
-        {
+        this.OperateOnDb((command) => {
           #region Ggf. Tabellenstruktur erzeugen.
           command.CommandText = "CREATE TABLE IF NOT EXISTS places (" +
           "name TEXT PRIMARY KEY NOT NULL," +
@@ -161,64 +146,52 @@ namespace BioMap
           #endregion
         });
         //
-        this.AddLogEntry("System", "Web service started");
+        this.AddLogEntry("System","Web service started");
         //
-        if (bMigrate)
-        {
+        if (bMigrate) {
           Migration.MigrateData();
         }
         this.RefreshAllPlaces();
         //
-        lock (this.lockInitialized)
-        {
-          this._Initialized?.Invoke(this, EventArgs.Empty);
+        lock (this.lockInitialized) {
+          this._Initialized?.Invoke(this,EventArgs.Empty);
           this.isInitialized = true;
         }
       });
     }
-    public User CurrentUser { get; } = new User
-    {
+    public User CurrentUser { get; } = new User {
       EMail="f.x.haering@gmail.com", // Vorerst konstant vorbesetzen.
       FullName="Franz Häring",
       Level=700,
     };
-    public void AddLogEntry(string sUser, string sAction)
-    {
-      this.OperateOnDb((command) =>
-      {
+    public void AddLogEntry(string sUser,string sAction) {
+      this.OperateOnDb((command) => {
         command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('now','localtime'),'" + sUser + "','" + sAction + "')";
         command.ExecuteNonQuery();
       });
     }
-    public Place[] AllPlaces
-    {
+    public Place[] AllPlaces {
       get;
       private set;
     }
-    public Dictionary<string,Place> PlacesByNames
-    {
+    public Dictionary<string,Place> PlacesByNames {
       get;
       private set;
     } = new Dictionary<string,Place>();
-    public void RefreshAllPlaces()
-    {
+    public void RefreshAllPlaces() {
       var lPlaces = new List<Place>();
       this.PlacesByNames.Clear();
-      this.OperateOnDb((command) =>
-      {
+      this.OperateOnDb((command) => {
         command.CommandText = "SELECT name,radius,lat,lng" +
           " FROM places" +
           " ORDER BY name" +
           "";
         var dr = command.ExecuteReader();
-        while (dr.Read())
-        {
-          var place = new Place
-          {
+        while (dr.Read()) {
+          var place = new Place {
             Name = dr.GetString(0),
             Radius = dr.GetDouble(1),
-            LatLng = new LatLng
-            {
+            LatLng = new LatLng {
               lat = dr.GetDouble(2),
               lng = dr.GetDouble(3),
             },
@@ -231,11 +204,9 @@ namespace BioMap
       this.AllPlaces=lPlaces.ToArray();
 
     }
-    public int? GetSpeciesId(string sGenus,string sSpecies)
-    {
-      int? nSpeciesId=null;
-      this.OperateOnDb((command) =>
-      {
+    public int? GetSpeciesId(string sGenus,string sSpecies) {
+      int? nSpeciesId = null;
+      this.OperateOnDb((command) => {
         command.CommandText = "SELECT spec_id" +
           " FROM species" +
           " WHERE (genus='"+sGenus+"' AND species='"+sSpecies+"')" +
@@ -248,11 +219,9 @@ namespace BioMap
       });
       return nSpeciesId;
     }
-    public int? GetProjectId(string sProjectName)
-    {
-      int? nSpeciesId=null;
-      this.OperateOnDb((command) =>
-      {
+    public int? GetProjectId(string sProjectName) {
+      int? nSpeciesId = null;
+      this.OperateOnDb((command) => {
         command.CommandText = "SELECT prj_id" +
           " FROM projects" +
           " WHERE (name='"+sProjectName+"')" +
@@ -266,8 +235,7 @@ namespace BioMap
       return nSpeciesId;
     }
     public void WriteElement(Element el) {
-      this.OperateOnDb((command) =>
-      {
+      this.OperateOnDb((command) => {
         command.CommandText =
           "REPLACE INTO elements (name,species_id,project_id,category,markerposlat,markerposlng,place,uploadtime,uploader,creationtime) " +
           "VALUES ('" + el.ElementName + "'," +
@@ -332,14 +300,12 @@ namespace BioMap
         }
       });
     }
-    public Element[] GetElements(Filters filters=null,string sSqlCondition ="",string sSqlOrderBy="elements.creationtime")
-    {
+    public Element[] GetElements(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "elements.creationtime") {
       if (filters!=null) {
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
       }
       var lElements = new List<Element>();
-      this.OperateOnDb((command) =>
-      {
+      this.OperateOnDb((command) => {
         command.CommandText = "SELECT elements.name" +
           ",elements.category" +
           ",elements.markerposlat" +
@@ -387,23 +353,18 @@ namespace BioMap
             DateTime dtDateTimeOriginal = dr.GetDateTime(4);
             var sDateTimeOriginal = dr.GetString(9);
             DateTime.TryParse(sDateTimeOriginal,out dtDateTimeOriginal);
-            var el = new Element
-            {
+            var el = new Element {
               ElementName = sElementName,
-              ElementProp = new Element.ElementProp_t
-              {
-                MarkerInfo = new Element.MarkerInfo_t
-                {
+              ElementProp = new Element.ElementProp_t {
+                MarkerInfo = new Element.MarkerInfo_t {
                   category = dr.GetInt32(1),
-                  position = new LatLng
-                  {
+                  position = new LatLng {
                     lat = dr.GetDouble(2),
                     lng = dr.GetDouble(3),
                   },
                   PlaceName = dr.GetString(33),
                 },
-                UploadInfo = new Element.UploadInfo_t
-                {
+                UploadInfo = new Element.UploadInfo_t {
                   Timestamp = dr.GetDateTime(4),
                   UserId = dr.GetString(5),
                 },
@@ -411,15 +372,13 @@ namespace BioMap
               }
             };
             if (!dr.IsDBNull(7) && !dr.IsDBNull(8)) {
-              el.ElementProp.ExifData = new Element.ExifData_t
-              {
+              el.ElementProp.ExifData = new Element.ExifData_t {
                 Make = dr.GetString(7),
                 Model = dr.GetString(8),
                 DateTimeOriginal = dtDateTimeOriginal,
               };
               if (!dr.IsDBNull(10)) {
-                el.ElementProp.IndivData = new Element.IndivData_t
-                {
+                el.ElementProp.IndivData = new Element.IndivData_t {
                   IId = dr.GetInt32(10),
                   Gender = dr.GetString(11),
                   DateOfBirth = dr.GetDateTime(12),
@@ -436,8 +395,7 @@ namespace BioMap
                       }
                     }
                   }
-                  el.ElementProp.IndivData.MeasuredData = new Element.IndivData_t.MeasuredData_t
-                  {
+                  el.ElementProp.IndivData.MeasuredData = new Element.IndivData_t.MeasuredData_t {
                     HeadBodyLength = dr.GetDouble(18),
                     OrigHeadPosition = new System.Numerics.Vector2(dr.GetFloat(19),dr.GetFloat(20)),
                     OrigBackPosition = new System.Numerics.Vector2(dr.GetFloat(21),dr.GetFloat(22)),
@@ -460,7 +418,7 @@ namespace BioMap
       });
       return lElements.ToArray();
     }
-    public Dictionary<int,List<Element>> GetIndividuals(Filters filters=null) {
+    public Dictionary<int,List<Element>> GetIndividuals(Filters filters = null) {
       var aaIndisByIId = new Dictionary<int,List<Element>>();
       var aNormedElements = this.GetElements(filters,"indivdata.iid>=1","indivdata.iid ASC,elements.creationtime ASC");
       foreach (var el in aNormedElements) {

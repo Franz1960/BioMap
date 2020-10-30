@@ -25,25 +25,19 @@
 
   protected override void OnInitialized() {
     base.OnInitialized();
-    _config = new LineConfig
-    {
-      Options = new LineOptions
-      {
-        Animation=new Animation
-        {
+    _config = new LineConfig {
+      Options = new LineOptions {
+        Animation=new Animation {
           Duration=0,
         },
-        Title = new OptionsTitle
-        {
+        Title = new OptionsTitle {
           Text="XXX",
           Display = false,
         },
-        Legend = new Legend
-        {
+        Legend = new Legend {
           Display = true,
         },
-        Scales = new Scales
-        {
+        Scales = new Scales {
           xAxes = new List<CartesianAxis>
         {
             new LinearCartesianAxis
@@ -66,8 +60,7 @@
         },
       },
     };
-    SD.Filters.FilterChanged+=(sender,ev) =>
-    {
+    SD.Filters.FilterChanged+=(sender,ev) => {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };
@@ -109,8 +102,7 @@
       var lYears = new List<int>(d.Keys);
       lYears.Sort();
       string sYobColor = Element.GetColorForYearOfBirth(nYoB);
-      var lineSetCurve = new LineDataset<Point>
-      {
+      var lineSetCurve = new LineDataset<Point> {
         BackgroundColor = sYobColor,
         BorderWidth = 2,
         PointHoverBorderWidth = 0,
