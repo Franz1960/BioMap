@@ -29,7 +29,7 @@ namespace BioMap
       services.AddRazorPages();
       services.AddServerSideBlazor();
       services.AddSingleton<DataService>();
-      services.AddScoped<Filters>();
+      services.AddScoped<SessionData>();
       services.AddLocalization(options => options.ResourcesPath = "Resources");
       services.AddControllers();
     }

@@ -1,7 +1,7 @@
 ﻿@page "/lists/size_time_chart"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
-@inject Filters Filters
+@inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
 @using ChartJs.Blazor.Charts
@@ -20,15 +20,15 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <CheckBox @ref="CheckBoxFit" LabelText=@Localize["Fit growing curves"] OnAnyChangedCallback="@CheckBoxFit_CheckedChanged" />
+      <CheckBox Checked="@SD.SizeTimeChartFit" LabelText=@Localize["Fit growing curves"] OnAnyChangedCallback="@CheckBoxFit_CheckedChanged" />
     </div>
     <div class="col">
-      @if (CheckBoxFit!=null && CheckBoxFit.Checked) {
-        <CheckBox @ref="CheckBoxIncludeSinglePoints" LabelText=@Localize["Include single catches"] OnAnyChangedCallback="@CheckBoxIncludeSinglePoints_CheckedChanged" />
+      @if (SD.SizeTimeChartFit) {
+        <CheckBox Checked="@SD.SizeTimeChartIncludeSinglePoints" LabelText=@Localize["Include single catches"] OnAnyChangedCallback="@CheckBoxIncludeSinglePoints_CheckedChanged" />
       }
     </div>
     <div class="col">
-      @if (CheckBoxFit!=null && CheckBoxFit.Checked && CheckBoxIncludeSinglePoints!=null && CheckBoxIncludeSinglePoints.Checked) {
+      @if (SD.SizeTimeChartFit && SD.SizeTimeChartIncludeSinglePoints) {
         <button @onclick="()=>OnSaveYoBClick()">@Localize["Save calculated year-of-birth values"]</button>
       }
     </div>
@@ -40,8 +40,6 @@
 @code {
   private LineConfig _config;
   private ChartJsLineChart _chartJs;
-  private CheckBox CheckBoxFit;
-  private CheckBox CheckBoxIncludeSinglePoints;
   private bool SaveYoB = false;
 
   protected override void OnInitialized() {
@@ -85,18 +83,20 @@
         },
       },
     };
-    Filters.FilterChanged+=(sender,ev) =>
+    SD.Filters.FilterChanged+=(sender,ev) =>
     {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
   }
-  private void CheckBoxFit_CheckedChanged(EventArgs e) {
+  private void CheckBoxFit_CheckedChanged(ChangeEventArgs e) {
+    SD.SizeTimeChartFit=bool.Parse(e.Value.ToString());
     RefreshData();
     base.InvokeAsync(StateHasChanged);
   }
-  private void CheckBoxIncludeSinglePoints_CheckedChanged(EventArgs e) {
+  private void CheckBoxIncludeSinglePoints_CheckedChanged(ChangeEventArgs e) {
+    SD.SizeTimeChartIncludeSinglePoints=bool.Parse(e.Value.ToString());
     RefreshData();
     base.InvokeAsync(StateHasChanged);
   }
@@ -107,7 +107,7 @@
   }
   private void RefreshData() {
     var dtProjectStart = DS.ProjectStart;
-    var aaIndisByIId = DS.GetIndividuals(Filters);
+    var aaIndisByIId = DS.GetIndividuals(SD.Filters);
     _config.Options.Legend.Display=false;
     _config.Data.Datasets.Clear();
     // Ideale Wachstumskurven hinzufügen.
@@ -144,9 +144,9 @@
     // Wachstumskurven der Individuen hinzufügen.
     foreach (var idx in aaIndisByIId.Keys) {
       try {
-        if (this.CheckBoxFit!=null && this.CheckBoxFit.Checked) {
+        if (SD.SizeTimeChartFit) {
           // Gefittete Wachstumskurve.
-          bool bIncludeSinglePoints = (this.CheckBoxIncludeSinglePoints!=null && this.CheckBoxIncludeSinglePoints.Checked);
+          bool bIncludeSinglePoints = (SD.SizeTimeChartIncludeSinglePoints);
           DateTime? dtFittedYearOfBirth = null;
           var lsf = new LeastSquareFit();
           if (aaIndisByIId[idx].Count>=(bIncludeSinglePoints ? 1 : 2)) {
@@ -177,9 +177,9 @@
                     double lCalc = fg.GetSize(years);
                     double lReal = daaPoints[i][1];
                     double dDev = lReal-lCalc;
-                  // Daten aus der Jugend werden stärker gewichtet.
-                  //dDevSum+=(dDev*dDev)/Math.Max(0.5,years-yearsBirth);
-                  dDevSum+=(dDev*dDev);
+                    // Daten aus der Jugend werden stärker gewichtet.
+                    //dDevSum+=(dDev*dDev)/Math.Max(0.5,years-yearsBirth);
+                    dDevSum+=(dDev*dDev);
                   }
                   return dDevSum;
                 },

@@ -1,13 +1,13 @@
 ﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @using Microsoft.AspNetCore.Components.Forms
 @inject DataService DS
-@inject Filters Filters
+@inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
 
 <div class="form-group">
   <span data-toggle="tooltip" title="@Localize["A list of categories, e.g. '100,320,330' or '!350,351' if negated."]">@Localize["Category filter"]: </span>
-  <input type="text" value="@Filters.CatFilter" @onchange="CatInput_Changed" />
+  <input type="text" value="@SD.Filters.CatFilter" @onchange="CatInput_Changed" />
 </div>
 
 @code {
@@ -19,7 +19,7 @@
   public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
   //
   private void CatInput_Changed(ChangeEventArgs e) {
-    Filters.CatFilter=e.Value.ToString();
+    SD.Filters.CatFilter=e.Value.ToString();
     this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
   }
 

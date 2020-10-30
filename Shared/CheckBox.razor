@@ -6,7 +6,7 @@
 
 <div class="form-group">
   <span data-toggle="tooltip" title="@LabelToolTip">@LabelText: </span>
-  <input type="checkbox" value="@Checked" @onchange="Checked_Changed" />
+  <input type="checkbox" checked="@Checked" @onchange="Checked_Changed" />
 </div>
 
 @code {
@@ -17,11 +17,10 @@
   [Parameter]
   public bool Checked { get; set; }
   [Parameter]
-  public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
+  public EventCallback<ChangeEventArgs> OnAnyChangedCallback { get; set; }
   //
   private void Checked_Changed(ChangeEventArgs e) {
     this.Checked=bool.Parse(e.Value.ToString());
-    this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
+    this.OnAnyChangedCallback.InvokeAsync(e);
   }
-
 }
