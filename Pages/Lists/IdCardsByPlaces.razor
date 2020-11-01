@@ -1,11 +1,11 @@
-﻿@page "/lists/all_images"
+﻿@page "/lists/id_cards_by_places"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<h1>@Localize["All Images"]</h1>
+<h1>@Localize["ID Cards by Places"]</h1>
 
 <PhotoPopup @ref="PhotoPopup1" />
 
@@ -32,8 +32,7 @@
   private PhotoPopup PhotoPopup1;
   protected override void OnInitialized() {
     base.OnInitialized();
-    SD.Filters.FilterChanged+=(sender,ev) =>
-    {
+    SD.Filters.FilterChanged+=(sender,ev) => {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };
@@ -42,7 +41,7 @@
     var c = Element.Category.AllCategories;
   }
   private void RefreshData() {
-    var els = DataService.Instance.GetElements(SD.Filters,"","elements.place ASC,elements.creationtime ASC");
+    var els = DataService.Instance.GetElements(SD.Filters,"indivdata.iid>=1 AND elements.category=350","elements.place ASC,elements.creationtime ASC");
     this.ElementsByPlaces.Clear();
     foreach (var el in els) {
       if (!string.IsNullOrEmpty(PhotoController.GetImageFilePath(el.ElementName))) {
@@ -54,6 +53,11 @@
           lEls=new List<Element>();
           this.ElementsByPlaces.Add(sPlace,lEls);
         }
+        //foreach (var el1 in lEls.ToArray()) {
+        //  if (el1.GetIId()==el.GetIId()) {
+        //    lEls.Remove(el1);
+        //  }
+        //}
         lEls.Add(el);
       }
     }

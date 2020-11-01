@@ -22,7 +22,7 @@ namespace BioMap
     /// <summary>
     /// Growth rate.
     /// </summary>
-    public double GrowthRate { get; set; } = 1.7;
+    public double GrowthRate { get; set; } = 1.03;
     /// <summary>
     /// Date of birth.
     /// </summary>
@@ -37,20 +37,24 @@ namespace BioMap
     /// The calculated size.
     /// </returns>
     public double GetSize(DateTime dateTime) {
-      var dtX = dateTime;
-      var dtYoB = new DateTime(this.DateOfBirth.Year,1,1);
-      var tsAge = dtX-dtYoB;
-      int nFullYears = Math.Max(0,dtX.Year-dtYoB.Year);
-      int nDayOfYear = dtX.DayOfYear;
-      double dSeasonDayOfBirth = Math.Max(0,Math.Min(this.SeasonLengthDays,(this.DateOfBirth-dtYoB).TotalDays-this.SeasonStartDay));
-      double dElapsedInCurrentYear =
-        (dtX.Year<dtYoB.Year) ? 0 :
-        (nDayOfYear<this.SeasonStartDay) ? 0 :
-        (nDayOfYear>this.SeasonStartDay+this.SeasonLengthDays) ? 1 :
-        (((double)(nDayOfYear-this.SeasonStartDay))/this.SeasonLengthDays);
-      double dYearsToGrow = Math.Max(0.001,nFullYears+dElapsedInCurrentYear+1.0-(dSeasonDayOfBirth/this.SeasonLengthDays));
-      double dSize = Math.Max(0.0,this.FullSize-(100/(this.GrowthRate*dYearsToGrow)));
-      return dSize;
+      if (dateTime<=this.DateOfBirth) {
+        return 0;
+      } else {
+        var dtX = dateTime;
+        var dtB = this.DateOfBirth;
+        int nSeasonDayOfBirth = Math.Max(0,Math.Min(this.SeasonLengthDays,dtB.DayOfYear-this.SeasonStartDay));
+        int nSeasonDayNow = Math.Max(0,Math.Min(this.SeasonLengthDays,dtX.DayOfYear-this.SeasonStartDay));
+        int nGrowingTimeDays =
+          (dtX.Year==dtB.Year)
+          ?
+          (nSeasonDayNow-nSeasonDayOfBirth)
+          :
+          (this.SeasonLengthDays-nSeasonDayOfBirth+(dtX.Year-dtB.Year-1)*this.SeasonLengthDays+nSeasonDayNow)
+          ;
+        double dGrowingTimeYears = ((double)nGrowingTimeDays)/this.SeasonLengthDays;
+        double dSize = Math.Max(0.0,this.FullSize*(1-1/(1+this.GrowthRate*dGrowingTimeYears)));
+        return dSize;
+      }
     }
     /// <summary>
     /// Calculate the size of a specimen with given parameters at a given moment in time.

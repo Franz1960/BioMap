@@ -165,6 +165,9 @@
   <data name="ID Cards" xml:space="preserve">
     <value>Passbilder</value>
   </data>
+  <data name="ID Cards by Places" xml:space="preserve">
+    <value>Passbilder nach Orten</value>
+  </data>
   <data name="Image" xml:space="preserve">
     <value>Bild</value>
   </data>
@@ -191,6 +194,9 @@
   </data>
   <data name="Numbers / Year of Birth Chart" xml:space="preserve">
     <value>Anzahl-Jahrgang-Diagramm</value>
+  </data>
+  <data name="Only last image" xml:space="preserve">
+    <value>Nur letztes Bild</value>
   </data>
   <data name="Place" xml:space="preserve">
     <value>Ort</value>

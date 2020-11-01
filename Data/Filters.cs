@@ -23,6 +23,18 @@ namespace BioMap
       }
     }
     private string _IndiFilter = "";
+    public bool OnlyLastIndiFilter {
+      get {
+        return this._OnlyLastIndiFilter;
+      }
+      set {
+        if (value!=this._OnlyLastIndiFilter) {
+          this._OnlyLastIndiFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private bool _OnlyLastIndiFilter = false;
     public string PlaceFilter {
       get {
         return this._PlaceFilter;
@@ -35,6 +47,12 @@ namespace BioMap
       }
     }
     private string _PlaceFilter = "";
+    private readonly string OnlyLastIndiFilterExp=
+      "NOT EXISTS (" +
+      "SELECT * FROM elements e1" +
+      " LEFT JOIN indivdata i1 ON (i1.name=e1.name)" +
+      " WHERE (i1.iid=indivdata.iid AND e1.category=350 AND e1.creationtime>elements.creationtime)" +
+      ")";
     public string CatFilter {
       get {
         return this._CatFilter;
@@ -107,6 +125,9 @@ namespace BioMap
       sResult = this.AddToWhereClause(sResult,"indivdata.iid",this.IndiFilter);
       sResult = this.AddToWhereClause(sResult,"elements.place",this.PlaceFilter);
       sResult = this.AddToWhereClause(sResult,"elements.category",this.CatFilter);
+      if (this.OnlyLastIndiFilter) {
+        sResult = this.AddToWhereClause(sResult,this.OnlyLastIndiFilterExp);
+      }
       return sResult;
     }
   }
