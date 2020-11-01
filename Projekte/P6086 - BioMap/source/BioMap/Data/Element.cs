@@ -183,6 +183,14 @@ namespace BioMap
         return ConvInvar.ToString(this.ElementProp.MarkerInfo.category)+" (???)";
       }
     }
+    public string GetCategoryOrIId() {
+      var sIId = this.GetIId();
+      if (string.IsNullOrEmpty(sIId)) {
+        return ConvInvar.ToString(this.GetCategoryNum());
+      } else {
+        return "#"+sIId;
+      }
+    }
     public string GetIId() {
       if (this.ElementProp.IndivData!=null) {
         return ConvInvar.ToString(this.ElementProp.IndivData.IId);
