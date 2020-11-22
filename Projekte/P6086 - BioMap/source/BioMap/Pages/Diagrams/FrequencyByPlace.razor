@@ -1,0 +1,114 @@
+﻿@page "/charts/FrequencyByPlace"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+@using ChartJs.Blazor.Charts
+@using ChartJs.Blazor.ChartJS.Common.Properties
+@using ChartJs.Blazor.ChartJS.Common.Enums
+@using ChartJs.Blazor.ChartJS.Common.Axes
+@using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
+@using ChartJs.Blazor.ChartJS.Common
+@using ChartJs.Blazor.ChartJS.Common.Handlers
+@using ChartJs.Blazor.ChartJS.Common.Time
+@using ChartJs.Blazor.ChartJS.LineChart
+@using ChartJs.Blazor.Util
+
+<h1>@Localize["Frequency by Place / Time Chart"]</h1>
+
+<ChartJsLineChart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+
+@code {
+  private LineConfig _config;
+  private ChartJsLineChart _chartJs;
+
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    _config = new LineConfig {
+      Options = new LineOptions {
+        Animation=new Animation {
+          Duration=0,
+        },
+        Title = new OptionsTitle {
+          Text="XXX",
+          Display = false,
+        },
+        Legend = new Legend {
+          Display = false,
+        },
+        Scales = new Scales {
+          xAxes = new List<CartesianAxis>
+          {
+            new TimeAxis
+            {
+              Distribution = TimeDistribution.Linear,
+              Time = new TimeOptions
+              {
+                Unit = TimeMeasurement.Month,
+                Round = TimeMeasurement.Day,
+                TooltipFormat = "DD.MM.YYYY",
+              },
+              ScaleLabel = new ScaleLabel
+              {
+                LabelString = "Time"
+              }
+            }
+          },
+          yAxes = new List<CartesianAxis>
+          {
+            new CategoryAxis
+            {
+            }
+          },
+        },
+      }
+    };
+    SD.Filters.FilterChanged+=(sender,ev) => {
+      RefreshData();
+      base.InvokeAsync(StateHasChanged);
+    };
+    RefreshData();
+  }
+  private void RefreshData() {
+    var dtProjectStart = DS.ProjectStart;
+    var aIndividuals = DS.GetElements(SD.Filters,"indivdata.iid>=1 AND elements.category=350","elements.creationtime ASC");
+    _config.Data.Datasets.Clear();
+    var countByPlaceAndDate = new Dictionary<string,Dictionary<DateTime,int>>();
+    foreach (var el in aIndividuals) {
+      string sPlace = el.GetPlace()?.Name;
+      var date = el.ElementProp.CreationTime.Date;
+      if (!countByPlaceAndDate.TryGetValue(sPlace,out var countByDate)) {
+        countByDate=new Dictionary<DateTime,int>();
+        countByPlaceAndDate.Add(sPlace,countByDate);
+      }
+      if (!countByDate.ContainsKey(date)) {
+        countByDate[date]=0;
+      }
+      countByDate[date]++;
+    }
+    var lPlaces = new List<string>(countByPlaceAndDate.Keys);
+    lPlaces.Sort();
+    _config.Data.YLabels=lPlaces;
+    for (int idxPlace=0;idxPlace<lPlaces.Count;idxPlace++) {
+      string sPlace = lPlaces[idxPlace];
+      var lDates = new List<DateTime>(countByPlaceAndDate[sPlace].Keys);
+      lDates.Sort();
+      foreach (var date in lDates) {
+        var lineSetCurve = new LineDataset<TimeTuple<string>> {
+          BackgroundColor = "rgba(239,209,0,0.8)",
+          BorderWidth = 1,
+          PointHoverBorderWidth = 1,
+          BorderColor = "rgba(239,209,0,0.8)",
+          PointRadius = (int)Math.Round(2*Math.Sqrt(countByPlaceAndDate[sPlace][date])),
+          ShowLine = false,
+        };
+        var t = new Moment(date);
+        lineSetCurve.Add(new TimeTuple<string>(t,sPlace));
+        if (lineSetCurve.Data.Count>=1) {
+          _config.Data.Datasets.Add(lineSetCurve);
+        }
+      }
+    }
+  }
+}
