@@ -1,0 +1,42 @@
+﻿@page "/lists/protocol"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<h1>@Localize["Protocol"]</h1>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">@Localize["Time"]<br />@Localize["Author"]</th>
+      <th scope="col">@Localize["Text"]</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var pe in ProtocolEntries) {
+    <tr>
+      <td>@pe.CreationTime.ToString("yyyy-MM-dd")<br />@pe.Author</td>
+      <td>@((MarkupString)pe.Text)</td>
+    </tr>
+    }
+  </tbody>
+</table>
+
+@code {
+  private int i = 0;
+  private ProtocolEntry[] ProtocolEntries = new ProtocolEntry[0];
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    SD.Filters.FilterChanged+=(sender,ev) =>
+    {
+      RefreshData();
+      base.InvokeAsync(StateHasChanged);
+    };
+    RefreshData();
+  }
+  private void RefreshData() {
+    this.ProtocolEntries = DataService.Instance.GetProtocolEntries(SD.Filters,"","protocol.dt DESC");
+  }
+}

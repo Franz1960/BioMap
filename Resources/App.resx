@@ -141,6 +141,9 @@
   <data name="All Individuals" xml:space="preserve">
     <value>Alle Individuen</value>
   </data>
+  <data name="Author" xml:space="preserve">
+    <value>Autor</value>
+  </data>
   <data name="Category filter" xml:space="preserve">
     <value>Kategorie-Filter</value>
   </data>
@@ -204,11 +207,17 @@
   <data name="Place filter" xml:space="preserve">
     <value>Platzfilter</value>
   </data>
+  <data name="Protocol" xml:space="preserve">
+    <value>Protokoll</value>
+  </data>
   <data name="Save calculated year-of-birth values" xml:space="preserve">
     <value>Berechnete Jahrgänge speichern</value>
   </data>
   <data name="Select" xml:space="preserve">
     <value>Auswählen</value>
+  </data>
+  <data name="Text" xml:space="preserve">
+    <value>Text</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>Zeit</value>
