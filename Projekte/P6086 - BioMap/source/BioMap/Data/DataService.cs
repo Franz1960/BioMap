@@ -432,5 +432,33 @@ namespace BioMap
       }
       return aaIndisByIId;
     }
+    public ProtocolEntry[] GetProtocolEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "protocol.dt") {
+      if (filters!=null) {
+        sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
+      }
+      var lProtocolEntries = new List<ProtocolEntry>();
+      this.OperateOnDb((command) => {
+        command.CommandText = "SELECT protocol.dt" +
+          ",protocol.author" +
+          ",protocol.text" +
+          " FROM protocol" +
+          (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
+          (string.IsNullOrEmpty(sSqlOrderBy) ? "" : (" ORDER BY "+sSqlOrderBy+"")) +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read()) {
+          try {
+            var pe = new ProtocolEntry() {
+              CreationTime=dr.GetDateTime(0),
+              Author=dr.GetString(1),
+              Text=dr.GetString(2),
+            };
+            lProtocolEntries.Add(pe);
+          } catch { }
+        }
+        dr.Close();
+      });
+      return lProtocolEntries.ToArray();
+    }
   }
 }
