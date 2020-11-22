@@ -153,6 +153,9 @@
   <data name="Edit AOI" xml:space="preserve">
     <value>AOI bearbeiten</value>
   </data>
+  <data name="Exclude fresh born" xml:space="preserve">
+    <value>Ohne Hüpferlinge</value>
+  </data>
   <data name="Fire-bellied toad" xml:space="preserve">
     <value>Rotbauchunke</value>
   </data>

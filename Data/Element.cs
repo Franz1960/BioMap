@@ -203,6 +203,12 @@ namespace BioMap
       }
       return 0;
     }
+    public int GetWinters() {
+      if (this.ElementProp.IndivData!=null) {
+        return (int)Math.Max(0,this.ElementProp.CreationTime.Year-this.ElementProp.IndivData.DateOfBirth.Year);
+      }
+      return 0;
+    }
     public string GetIsoDate() {
       return this.ElementProp.CreationTime.ToString("yyyy-MM-dd");
     }

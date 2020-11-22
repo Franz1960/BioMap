@@ -35,6 +35,25 @@ namespace BioMap
       }
     }
     private bool _OnlyLastIndiFilter = false;
+    private readonly string OnlyLastIndiFilterExp=
+      "NOT EXISTS (" +
+      "SELECT * FROM elements e1" +
+      " LEFT JOIN indivdata i1 ON (i1.name=e1.name)" +
+      " WHERE (i1.iid=indivdata.iid AND e1.category=350 AND e1.creationtime>elements.creationtime)" +
+      ")";
+    public bool ExcludeFreshBornFilter {
+      get {
+        return this._ExcludeFreshBornFilter;
+      }
+      set {
+        if (value!=this._ExcludeFreshBornFilter) {
+          this._ExcludeFreshBornFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private bool _ExcludeFreshBornFilter = false;
+    private readonly string ExcludeFreshBornFilterExp = "indivdata.winters>=1";
     public string PlaceFilter {
       get {
         return this._PlaceFilter;
@@ -47,12 +66,6 @@ namespace BioMap
       }
     }
     private string _PlaceFilter = "";
-    private readonly string OnlyLastIndiFilterExp=
-      "NOT EXISTS (" +
-      "SELECT * FROM elements e1" +
-      " LEFT JOIN indivdata i1 ON (i1.name=e1.name)" +
-      " WHERE (i1.iid=indivdata.iid AND e1.category=350 AND e1.creationtime>elements.creationtime)" +
-      ")";
     public string CatFilter {
       get {
         return this._CatFilter;
@@ -127,6 +140,9 @@ namespace BioMap
       sResult = this.AddToWhereClause(sResult,"elements.category",this.CatFilter);
       if (this.OnlyLastIndiFilter) {
         sResult = this.AddToWhereClause(sResult,this.OnlyLastIndiFilterExp);
+      }
+      if (this.ExcludeFreshBornFilter) {
+        sResult = this.AddToWhereClause(sResult,this.ExcludeFreshBornFilterExp);
       }
       return sResult;
     }
