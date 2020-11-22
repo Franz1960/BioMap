@@ -90,7 +90,7 @@
     var lPlaces = new List<string>(countByPlaceAndDate.Keys);
     lPlaces.Sort();
     _config.Data.YLabels=lPlaces;
-    for (int idxPlace=0;idxPlace<lPlaces.Count;idxPlace++) {
+    for (int idxPlace = 0;idxPlace<lPlaces.Count;idxPlace++) {
       string sPlace = lPlaces[idxPlace];
       var lDates = new List<DateTime>(countByPlaceAndDate[sPlace].Keys);
       lDates.Sort();

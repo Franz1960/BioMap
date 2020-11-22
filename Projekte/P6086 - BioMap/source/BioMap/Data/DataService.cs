@@ -132,6 +132,7 @@ namespace BioMap
           "traitManyIsolatedBlackBellyDots INT," +
           "dateofbirth DATETIME," +
           "ageyears REAL," +
+          "winters INT," +
           "gender TEXT," +
           "iid INT)";
           command.ExecuteNonQuery();
@@ -264,7 +265,7 @@ namespace BioMap
         if (el.ElementProp.MarkerInfo.category==350 || el.ElementProp.MarkerInfo.category==351) {
           command.CommandText =
             "REPLACE INTO indivdata (name,normcirclepos0x,normcirclepos0y,normcirclepos1x,normcirclepos1y,normcirclepos2x,normcirclepos2y" +
-            ",headposx,headposy,backposx,backposy,origheadposx,origheadposy,origbackposx,origbackposy,headbodylength,dateofbirth,ageyears,gender,iid" +
+            ",headposx,headposy,backposx,backposy,origheadposx,origheadposy,origbackposx,origbackposy,headbodylength,dateofbirth,ageyears,winters,gender,iid" +
             ",traitYellowDominance" +
             ",traitBlackDominance" +
             ",traitVertBlackBreastCenterStrip" +
@@ -288,6 +289,7 @@ namespace BioMap
             "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadBodyLength) +
             ",'" + ConvInvar.ToString(el.ElementProp.IndivData.DateOfBirth) + "'" +
             "," + ConvInvar.ToString(el.GetAgeYears()) +
+            "," + ConvInvar.ToString(el.GetWinters()) +
             ",'" + el.ElementProp.IndivData.Gender+"'" +
             "," + ConvInvar.ToString(el.ElementProp.IndivData.IId) +
             ",'" + (el.ElementProp.IndivData.TraitValues.TryGetValue("YellowDominance",out int nYD) ? ConvInvar.ToString(nYD) : "") + "'" +
