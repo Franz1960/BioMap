@@ -1,0 +1,107 @@
+﻿@page "/Statistics/Summary"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<h1>@Localize["Summary"]</h1>
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title text-center">@Localize["Different Individuals"]</h5>
+    <table class="table table-striped text-right">
+      <thead>
+        <tr>
+          <th scope="col">@Localize["Conditions"]</th>
+          <th scope="col">@Localize["All Years"]</th>
+          @for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
+            <th scope="col">@year</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var dby in this.DataByYears) {
+          <tr>
+            <td scope="col">@Localize[dby.Name]</td>
+            <td scope="col">@dby.AllYears</td>
+            @for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
+              <td scope="col">@dby.ByYear[year-ProjectYearBegin]</td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+    <p class="text-center">
+      @Localize["Gezählt werden alle verschiedenen Individuen,die im jeweiligen Zeitraum mindestens einmal die Bedingungen erfüllen."]
+    </p>
+  </div>
+</div>
+
+@code {
+  private int ProjectYearBegin;
+  private int ProjectYearEnd;
+  private class DataByYears_t
+  {
+    public string Name;
+    public string AllYears;
+    public string[] ByYear;
+  }
+  private readonly List<DataByYears_t> DataByYears = new List<DataByYears_t>();
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    ProjectYearBegin=DS.ProjectStart.Year;
+    ProjectYearEnd=DateTime.Now.Year;
+    SD.Filters.FilterChanged+=(sender,ev) => {
+      RefreshData();
+      base.InvokeAsync(StateHasChanged);
+    };
+    RefreshData();
+  }
+  private void RefreshData() {
+    this.DataByYears.Clear();
+    //
+    foreach (var indiSpec in new[] {
+      new Tuple<string,string>(Localize["Totals"],""),
+      new Tuple<string,string>(">= 38 mm","indivdata.headbodylength>=38"),
+      new Tuple<string,string>(">= 33 mm","indivdata.headbodylength>=33"),
+      new Tuple<string,string>("< 33 mm","indivdata.headbodylength<33"),
+      new Tuple<string,string>(Localize["Hibernations"]+" < 1","indivdata.winters<1"),
+      new Tuple<string,string>(Localize["Hibernations"]+" < 2","indivdata.winters<2"),
+      new Tuple<string,string>(Localize["Hibernations"]+" < 3","indivdata.winters<3"),
+      new Tuple<string,string>(Localize["Hibernations"]+" >= 3","indivdata.winters>=3"),
+      new Tuple<string,string>(Localize["Female"],"indivdata.gender='fa'"),
+      new Tuple<string,string>(Localize["Male"],"indivdata.gender='ma'"),
+      new Tuple<string,string>(Localize["Female"]+" >= 38 mm","indivdata.gender='fa' AND indivdata.headbodylength>=38"),
+      new Tuple<string,string>(Localize["Male"]+" >= 38 mm","indivdata.gender='ma' AND indivdata.headbodylength>=38"),
+    }) {
+      var aaIndisByIId = DS.GetIndividuals(null,indiSpec.Item2);
+      int nAllYears = 0;
+      var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
+      foreach (var iid in aaIndisByIId.Keys) {
+        foreach (var el in aaIndisByIId[iid]) {
+          int year = el.ElementProp.CreationTime.Year;
+          if (year>=ProjectYearBegin && year<=ProjectYearEnd) {
+            nAllYears++;
+            break;
+          }
+        }
+        for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
+          foreach (var el in aaIndisByIId[iid]) {
+            if (el.ElementProp.CreationTime.Year==year) {
+              aByYears[year-ProjectYearBegin]++;
+              break;
+            }
+          }
+        }
+      }
+      this.DataByYears.Add(
+        new DataByYears_t {
+          Name=indiSpec.Item1,
+          AllYears=nAllYears.ToString(),
+          ByYear=Array.ConvertAll<int,string>(aByYears,(n) => n.ToString()),
+        }
+      );
+    }
+  }
+}
