@@ -117,11 +117,11 @@ namespace BioMap
           sDelim=",";
         }
         sSqlIndis+=")";
-        sWhereClause = this.AddToWhereClause(sBasicWhereClause,sTableRow+sFilterTerm);
+        sWhereClause = Filters.AddToWhereClause(sBasicWhereClause,sTableRow+sFilterTerm);
       }
       return sWhereClause;
     }
-    private string AddToWhereClause(string sBasicWhereClause,string sWhereClause) {
+    public static string AddToWhereClause(string sBasicWhereClause,string sWhereClause) {
       System.Text.StringBuilder sb = new System.Text.StringBuilder(sBasicWhereClause);
       if (!string.IsNullOrEmpty(sWhereClause)) {
         if (!string.IsNullOrEmpty(sBasicWhereClause)) {
@@ -139,10 +139,10 @@ namespace BioMap
       sResult = this.AddToWhereClause(sResult,"elements.place",this.PlaceFilter);
       sResult = this.AddToWhereClause(sResult,"elements.category",this.CatFilter);
       if (this.OnlyLastIndiFilter) {
-        sResult = this.AddToWhereClause(sResult,this.OnlyLastIndiFilterExp);
+        sResult = Filters.AddToWhereClause(sResult,this.OnlyLastIndiFilterExp);
       }
       if (this.ExcludeFreshBornFilter) {
-        sResult = this.AddToWhereClause(sResult,this.ExcludeFreshBornFilterExp);
+        sResult = Filters.AddToWhereClause(sResult,this.ExcludeFreshBornFilterExp);
       }
       return sResult;
     }

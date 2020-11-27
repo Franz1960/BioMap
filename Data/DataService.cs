@@ -420,9 +420,11 @@ namespace BioMap
       });
       return lElements.ToArray();
     }
-    public Dictionary<int,List<Element>> GetIndividuals(Filters filters = null) {
+    public Dictionary<int,List<Element>> GetIndividuals(Filters filters = null,string sAdditionalWhereClause=null) {
       var aaIndisByIId = new Dictionary<int,List<Element>>();
-      var aNormedElements = this.GetElements(filters,"indivdata.iid>=1","indivdata.iid ASC,elements.creationtime ASC");
+      var sWhereClause = "indivdata.iid>=1";
+      sWhereClause=Filters.AddToWhereClause(sWhereClause,sAdditionalWhereClause);
+      var aNormedElements = this.GetElements(filters,sWhereClause,"indivdata.iid ASC,elements.creationtime ASC");
       foreach (var el in aNormedElements) {
         if (el.ElementProp.MarkerInfo.category==350 && el.ElementProp.IndivData!=null) {
           var idx = el.ElementProp.IndivData.IId;

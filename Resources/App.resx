@@ -132,6 +132,12 @@
   <data name="Add Image" xml:space="preserve">
     <value>Foto hinzufügen</value>
   </data>
+  <data name="Adults" xml:space="preserve">
+    <value>Adulti</value>
+  </data>
+  <data name="Adults from 38 mm" xml:space="preserve">
+    <value>Adulti ab 38 mm</value>
+  </data>
   <data name="All Elements" xml:space="preserve">
     <value>Alle Elemente</value>
   </data>
@@ -141,20 +147,35 @@
   <data name="All Individuals" xml:space="preserve">
     <value>Alle Individuen</value>
   </data>
+  <data name="All Years" xml:space="preserve">
+    <value>Alle Jahre</value>
+  </data>
   <data name="Author" xml:space="preserve">
     <value>Autor</value>
   </data>
   <data name="Category filter" xml:space="preserve">
     <value>Kategorie-Filter</value>
   </data>
+  <data name="Conditions" xml:space="preserve">
+    <value>Bedingungen</value>
+  </data>
+  <data name="Counted are all the different individuals who fulfill the conditions at least once in the respective period." xml:space="preserve">
+    <value>Gezählt werden alle verschiedenen Individuen,die im jeweiligen Zeitraum mindestens einmal die Bedingungen erfüllen.</value>
+  </data>
   <data name="Diagrams" xml:space="preserve">
     <value>Diagramme</value>
+  </data>
+  <data name="Different Individuals" xml:space="preserve">
+    <value>Verschiedene Individuen</value>
   </data>
   <data name="Edit AOI" xml:space="preserve">
     <value>AOI bearbeiten</value>
   </data>
   <data name="Exclude fresh born" xml:space="preserve">
     <value>Ohne Hüpferlinge</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>Weiblich</value>
   </data>
   <data name="Fire-bellied toad" xml:space="preserve">
     <value>Rotbauchunke</value>
@@ -167,6 +188,9 @@
   </data>
   <data name="Gender" xml:space="preserve">
     <value>Geschlecht</value>
+  </data>
+  <data name="Hibernations" xml:space="preserve">
+    <value>Überwinterungen</value>
   </data>
   <data name="Home" xml:space="preserve">
     <value>Startseite</value>
@@ -189,6 +213,9 @@
   <data name="Individuals" xml:space="preserve">
     <value>Individuen</value>
   </data>
+  <data name="Juveniles" xml:space="preserve">
+    <value>Juvenile</value>
+  </data>
   <data name="Length" xml:space="preserve">
     <value>Länge</value>
   </data>
@@ -197,6 +224,9 @@
   </data>
   <data name="Lists" xml:space="preserve">
     <value>Listen</value>
+  </data>
+  <data name="Male" xml:space="preserve">
+    <value>Männlich</value>
   </data>
   <data name="Map" xml:space="preserve">
     <value>Karte</value>
@@ -222,11 +252,20 @@
   <data name="Select" xml:space="preserve">
     <value>Auswählen</value>
   </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Statistik</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Zusammenfassung</value>
+  </data>
   <data name="Text" xml:space="preserve">
     <value>Text</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>Zeit</value>
+  </data>
+  <data name="Totals" xml:space="preserve">
+    <value>Gesamtzahlen</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>Benutzer</value>
