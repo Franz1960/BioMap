@@ -1,0 +1,95 @@
+﻿@page "/Statistics/ByCategories"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<h1>@Localize["ByCategories"]</h1>
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title text-center">@Localize["ByCategories"]</h5>
+    <table class="table table-sm table-striped text-right">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">@Localize["Category"]</th>
+          <th scope="col">@Localize["All Years"]</th>
+          @for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
+            <th scope="col">@year</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var dby in this.OtherData) {
+          <tr>
+            <td scope="col">@dby.Id</td>
+            <td scope="col">@dby.Name</td>
+            <td scope="col">@dby.AllYears</td>
+            @for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
+              <td scope="col">@dby.ByYear[year-ProjectYearBegin]</td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+    <p class="text-center">
+      @Localize[""]
+    </p>
+  </div>
+</div>
+
+@code {
+  private int ProjectYearBegin;
+  private int ProjectYearEnd;
+  private class DataByYears_t
+  {
+    public string Id;
+    public string Name;
+    public string AllYears;
+    public string[] ByYear;
+  }
+  private readonly List<DataByYears_t> IndividualData = new List<DataByYears_t>();
+  private readonly List<DataByYears_t> OtherData = new List<DataByYears_t>();
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    ProjectYearBegin=DS.ProjectStart.Year;
+    ProjectYearEnd=DateTime.Now.Year;
+    SD.Filters.FilterChanged+=(sender,ev) => {
+      RefreshData();
+      base.InvokeAsync(StateHasChanged);
+    };
+    RefreshData();
+  }
+  private void RefreshData() {
+    //
+    this.OtherData.Clear();
+    foreach (var cat in Element.Category.AllCategories) {
+      var aEls = DS.GetElements(null,"elements.category="+cat.Num);
+      int nAllYears = 0;
+      var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
+      foreach (var el in aEls) {
+        int year = el.ElementProp.CreationTime.Year;
+        if (year>=ProjectYearBegin && year<=ProjectYearEnd) {
+          nAllYears++;
+        }
+      }
+      for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
+        foreach (var el in aEls) {
+          if (el.ElementProp.CreationTime.Year==year) {
+            aByYears[year-ProjectYearBegin]++;
+          }
+        }
+      }
+      this.OtherData.Add(
+        new DataByYears_t {
+          Id=ConvInvar.ToString(cat.Num),
+          Name=cat.Name,
+          AllYears=nAllYears.ToString(),
+          ByYear=Array.ConvertAll<int,string>(aByYears,(n) => n.ToString()),
+        }
+      );
+    }
+  }
+}

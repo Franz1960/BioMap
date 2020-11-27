@@ -99,16 +99,21 @@
     </li>
     <li class="nav-item px-2">
       <NavLink class="nav-link" @onclick='()=>toggleSubNav("Statistics")'>
-        <span class="oi oi-graph" aria-hidden="true"></span> @Localize["Statistics"]
+        <span class="oi oi-pie-chart" aria-hidden="true"></span> @Localize["Statistics"]
       </NavLink>
       @if (expandedSubNav == "Statistics") {
-        <ul class="nav flex-column">
-          <li class="nav-item px-4">
-            <NavLink class="expand-menu" href="/Statistics/Summary">
-              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["Summary"]
-            </NavLink>
-          </li>
-        </ul>
+    <ul class="nav flex-column">
+      <li class="nav-item px-4">
+        <NavLink class="expand-menu" href="/Statistics/Summary">
+          <span class="oi oi-pie-chart" aria-hidden="true"></span> @Localize["Summary"]
+        </NavLink>
+      </li>
+      <li class="nav-item px-4">
+        <NavLink class="expand-menu" href="/Statistics/ByCategories">
+          <span class="oi oi-pie-chart" aria-hidden="true"></span> @Localize["ByCategories"]
+        </NavLink>
+      </li>
+    </ul>
       }
     </li>
     <li class="nav-item px-2">
