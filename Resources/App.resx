@@ -153,6 +153,12 @@
   <data name="Author" xml:space="preserve">
     <value>Autor</value>
   </data>
+  <data name="ByCategories" xml:space="preserve">
+    <value>Nach Kategorien</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Kategorie</value>
+  </data>
   <data name="Category filter" xml:space="preserve">
     <value>Kategorie-Filter</value>
   </data>
@@ -236,6 +242,12 @@
   </data>
   <data name="Only last image" xml:space="preserve">
     <value>Nur letztes Bild</value>
+  </data>
+  <data name="Other elements" xml:space="preserve">
+    <value>Sonstige Elemente</value>
+  </data>
+  <data name="Other photos and local news" xml:space="preserve">
+    <value>Sonstige Fotos und Ortsmeldungen</value>
   </data>
   <data name="Place" xml:space="preserve">
     <value>Ort</value>

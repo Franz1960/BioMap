@@ -11,6 +11,7 @@ namespace BioMap
   public class DataService
   {
     public readonly DateTime ProjectStart = new DateTime(2019,4,1);
+    public readonly double ProjectArea = 3139.5;
     public DataService() {
       DataService.Instance = this;
     }
