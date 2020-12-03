@@ -116,7 +116,7 @@ namespace BioMap
         for (int nRandomLoop = 0;nRandomLoop<1;nRandomLoop++) {
           for (int nIteration = 0;nIteration<216;nIteration++) {
             for (int iParam = 0;iParam<nParamCount;iParam++) {
-              daParams[iParam]=daCurrentParams[iParam]+dCurrentStepSize*(daaParamRanges[iParam][1]-daaParamRanges[iParam][0])*(random.NextDouble()-0.5);
+              daParams[iParam]=daaParamRanges[iParam][0]+(daaParamRanges[iParam][1]-daaParamRanges[iParam][0])*(random.NextDouble());
             }
             dSquareSum=calcSquareSum(daParams,daaPoints);
             if (dSquareSum<dBestSquareSum) {
@@ -130,7 +130,8 @@ namespace BioMap
         while (Math.Abs(dCurrentStepSize)>dEpsilon) {
           daParams[0]=daCurrentParams[0]+dCurrentStepSize;
           if (daParams[0]<daaParamRanges[0][0] || daParams[0]>daaParamRanges[0][1]) {
-            break;
+            dCurrentStepSize*=-0.573;
+            continue;
           }
           dSquareSum=calcSquareSum(daParams,daaPoints);
           if (dSquareSum<=dBestSquareSum) {
