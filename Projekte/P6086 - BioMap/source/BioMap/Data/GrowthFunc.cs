@@ -10,23 +10,42 @@ namespace BioMap
     /// <summary>
     /// Start of growing season in days since beginning of year.
     /// </summary>
-    public int SeasonStartDay { get; set; } = 135;
+    public static int SeasonStartDay { get; set; } = 135;
     /// <summary>
     /// Length of growing season in days.
     /// </summary>
-    public int SeasonLengthDays { get; set; } = 130;
+    public static int SeasonLengthDays { get; set; } = 130;
+    public static double HatchSize { get; set; } = 12.0;
     /// <summary>
     /// Size of a full-grown individual.
     /// </summary>
-    public double FullSize { get; set; } = 60.0;
+    public static double FullSize { get; set; } = 60.0;
     /// <summary>
     /// Growth rate.
     /// </summary>
-    public double GrowthRate { get; set; } = 1.03;
+    public static double GrowthRate { get; set; } = 1.03;
+    /// <summary>
+    /// Maximum additional days in first season.
+    /// </summary>
+    public static int MaxAddDaysInFirstSeason { get; set; } = 0;
     /// <summary>
     /// Date of birth.
     /// </summary>
     public DateTime DateOfBirth { get; set; } = new DateTime(2020,1,1);
+    /// <summary>
+    /// Calculate the size of a specimen with given parameters for a given net growth time.
+    /// </summary>
+    /// <param name="dateTime">
+    /// The net growth time, unit years.
+    /// </param>
+    /// <returns>
+    /// The calculated size.
+    /// </returns>
+    public static double GetSizeForNetGrowingTime(double dGrowingTimeYears) {
+      double dX = dGrowingTimeYears;
+      double dSize = GrowthFunc.HatchSize+Math.Max(0.0,(GrowthFunc.FullSize-GrowthFunc.HatchSize)*(1-1/(1+GrowthFunc.GrowthRate*dX)));
+      return dSize;
+    }
     /// <summary>
     /// Calculate the size of a specimen with given parameters at a given moment in time.
     /// </summary>
@@ -42,17 +61,28 @@ namespace BioMap
       } else {
         var dtX = dateTime;
         var dtB = this.DateOfBirth;
-        int nSeasonDayOfBirth = Math.Max(0,Math.Min(this.SeasonLengthDays,dtB.DayOfYear-this.SeasonStartDay));
-        int nSeasonDayNow = Math.Max(0,Math.Min(this.SeasonLengthDays,dtX.DayOfYear-this.SeasonStartDay));
-        int nGrowingTimeDays =
-          (dtX.Year==dtB.Year)
-          ?
-          (nSeasonDayNow-nSeasonDayOfBirth)
-          :
-          (this.SeasonLengthDays-nSeasonDayOfBirth+(dtX.Year-dtB.Year-1)*this.SeasonLengthDays+nSeasonDayNow)
-          ;
-        double dGrowingTimeYears = ((double)nGrowingTimeDays)/this.SeasonLengthDays;
-        double dSize = Math.Max(0.0,this.FullSize*(1-1/(1+this.GrowthRate*dGrowingTimeYears)));
+        int nDaysInFirstSeason;
+        int nDaysInLaterSeasons;
+        if (dtB.Month>=13) {
+          // So spät überlebt kein Hüpferling mehr.
+          nDaysInFirstSeason=0;
+          nDaysInLaterSeasons=0;
+        } else if (dtX.Year==dtB.Year) {
+          int nStartDayInFirstSeason = Math.Max(dtB.DayOfYear,GrowthFunc.SeasonStartDay-GrowthFunc.MaxAddDaysInFirstSeason);
+          int nEndDayInFirstSeason = Math.Min(dtX.DayOfYear,GrowthFunc.SeasonStartDay+GrowthFunc.SeasonLengthDays);
+          nDaysInFirstSeason=Math.Max(0,nEndDayInFirstSeason-nStartDayInFirstSeason);
+          nDaysInLaterSeasons=0;
+        } else {
+          int nStartDayInFirstSeason = Math.Max(dtB.DayOfYear,GrowthFunc.SeasonStartDay-GrowthFunc.MaxAddDaysInFirstSeason);
+          int nEndDayInFirstSeason = GrowthFunc.SeasonStartDay+GrowthFunc.SeasonLengthDays;
+          nDaysInFirstSeason=Math.Max(0,nEndDayInFirstSeason-nStartDayInFirstSeason);
+          int nStartDayInLastSeason = GrowthFunc.SeasonStartDay;
+          int nEndDayInLastSeason = Math.Min(dtX.DayOfYear,GrowthFunc.SeasonStartDay+GrowthFunc.SeasonLengthDays);
+          nDaysInLaterSeasons=Math.Max(0,nEndDayInLastSeason-nStartDayInLastSeason)+(dtX.Year-dtB.Year-1)*GrowthFunc.SeasonLengthDays;
+        }
+        int nGrowingTimeDays = nDaysInFirstSeason+nDaysInLaterSeasons;
+        double dGrowingTimeYears = ((double)nGrowingTimeDays)/GrowthFunc.SeasonLengthDays;
+        double dSize = GrowthFunc.GetSizeForNetGrowingTime(dGrowingTimeYears);
         return dSize;
       }
     }
