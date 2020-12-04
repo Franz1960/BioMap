@@ -86,13 +86,7 @@ namespace BioMap
               daBestParams=(double[])daParams.Clone();
             }
           }
-          daParamInterval=
-            (dCurrentStepSize<0)
-            ?
-            new[] { daBestParams[0]+2*dCurrentStepSize,daBestParams[0]-2*dCurrentStepSize }
-            :
-            new[] { daBestParams[0]-2*dCurrentStepSize,daBestParams[0]+2*dCurrentStepSize }
-            ;
+          daParamInterval=new[] { daBestParams[0]-2*dCurrentStepSize,daBestParams[0]+2*dCurrentStepSize };
           dCurrentStepSize*=0.2;
         }
       } else if (enMethod==Method.Random) {
