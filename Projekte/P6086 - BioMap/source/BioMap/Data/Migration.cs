@@ -103,6 +103,35 @@ namespace BioMap
 
       } catch { }
       #endregion
+      #region log
+      try {
+        var lFileNames = System.IO.Directory.GetFiles(System.IO.Path.Combine(sMigSrcDir,"logs"),"log_*.txt")?.ToList();
+        lFileNames.Sort();
+        ds.OperateOnDb((command) => {
+          var regEx = new System.Text.RegularExpressions.Regex("(.*) User\\((.*)\\): (.*)");
+          foreach (var sFileName in lFileNames) {
+            var sr = new System.IO.StreamReader(sFileName);
+            while (true) {
+              var sLine = sr.ReadLine();
+              if (string.IsNullOrEmpty(sLine)) {
+                break;
+              } else {
+                var saLogEntry=regEx.Split(sLine);
+                var le = new LogEntry() {
+                  CreationTime=DateTime.Parse(saLogEntry[1]),
+                  User=saLogEntry[2],
+                  Action=saLogEntry[3],
+                };
+                command.CommandText = "INSERT INTO log (dt,user,action) VALUES ('" + le.CreationTime + "','" + le.User + "','" + le.Action + "')";
+                command.ExecuteNonQuery();
+              }
+            }
+            sr.Close();
+          }
+        });
+
+      } catch { }
+      #endregion
       #region elements
       try {
         var sElementsDir = System.IO.Path.Combine(sMigSrcDir,"elements");
