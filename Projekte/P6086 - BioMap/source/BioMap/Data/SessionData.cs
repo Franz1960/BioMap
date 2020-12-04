@@ -11,7 +11,8 @@ namespace BioMap
   public class SessionData
   {
     public Filters Filters { get; } = new Filters();
-    public bool SizeTimeChartFit { get; set; } = true;
+    public bool SizeTimeChartShowGrowingCurves { get; set; } = true;
     public bool SizeTimeChartIncludeSinglePoints { get; set; } = true;
+    public bool SizeTimeChartFit { get; set; } = false;
   }
 }

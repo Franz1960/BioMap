@@ -264,6 +264,9 @@
   <data name="Select" xml:space="preserve">
     <value>Auswählen</value>
   </data>
+  <data name="Show growing curves" xml:space="preserve">
+    <value>Wachstumskurven anzeigen</value>
+  </data>
   <data name="Statistics" xml:space="preserve">
     <value>Statistik</value>
   </data>
