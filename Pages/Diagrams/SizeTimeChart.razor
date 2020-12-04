@@ -216,10 +216,10 @@
                   //System.Diagnostics.Debug.WriteLine(" DevSum="+ConvInvar.ToDecimalString(dDevSum,5));
                   return dDevSum;
                 },
-                0.5,
+                -0.02,
                 0.001,
                 out double[] daBestParams,
-                LeastSquareFit.Method.RandomThenMonotone);
+                LeastSquareFit.Method.Directed);
               dtFittedYearOfBirth = Utilities.DateTime_from_Years(daBestParams[0]);
               if (this.SaveYoB) {
                 foreach (var el in aaIndisByIId[idx].ToArray()) {

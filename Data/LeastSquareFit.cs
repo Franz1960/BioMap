@@ -15,6 +15,7 @@ namespace BioMap
       Random = 1,
       Monotone = 2,
       RandomThenMonotone = 3,
+      Directed = 4,
     }
     /// <summary>
     /// Optimierung durchführen. Eine parametrierte Kurve wird einer Menge 
@@ -59,7 +60,42 @@ namespace BioMap
       for (int iParam = 0;iParam<nParamCount;iParam++) {
         daCurrentParams[iParam]=0.5*(daaParamRanges[iParam][1]+daaParamRanges[iParam][0]);
       }
-      if (enMethod==Method.Random) {
+      if (enMethod==Method.Directed) {
+        if (nParamCount>=2) {
+          throw new ArgumentException("Only one parameter allowed with Directed method.");
+        }
+        double[] daParams = new double[nParamCount];
+        double dSquareSum;
+        double dCurrentStepSize = dStartStepSize;
+        daBestParams=(double[])daCurrentParams.Clone();
+        double dBestSquareSum = double.MaxValue;
+        var daParamInterval = 
+          (dCurrentStepSize<0)
+          ?
+          new[] { daaParamRanges[0][1],daaParamRanges[0][0] }
+          :
+          new[] { daaParamRanges[0][0],daaParamRanges[0][1] }
+          ;
+        while (Math.Abs(dCurrentStepSize)>dEpsilon) {
+          int nSteps = (int)Math.Ceiling((daParamInterval[1]-daParamInterval[0])/dCurrentStepSize);
+          for (int iStep = 0;iStep<nSteps;iStep++) {
+            daParams[0]=daParamInterval[0]+iStep*dCurrentStepSize;
+            dSquareSum=calcSquareSum(daParams,daaPoints);
+            if (dSquareSum<dBestSquareSum) {
+              dBestSquareSum=dSquareSum;
+              daBestParams=(double[])daParams.Clone();
+            }
+          }
+          daParamInterval=
+            (dCurrentStepSize<0)
+            ?
+            new[] { daBestParams[0]+2*dCurrentStepSize,daBestParams[0]-2*dCurrentStepSize }
+            :
+            new[] { daBestParams[0]-2*dCurrentStepSize,daBestParams[0]+2*dCurrentStepSize }
+            ;
+          dCurrentStepSize*=0.2;
+        }
+      } else if (enMethod==Method.Random) {
         Random random = new Random();
         double[] daParams = new double[nParamCount];
         double dSquareSum;

@@ -27,7 +27,7 @@ namespace BioMap
     /// <summary>
     /// Maximum additional days in first season.
     /// </summary>
-    public static int MaxAddDaysInFirstSeason { get; set; } = 0;
+    public static int MaxAddDaysInFirstSeason { get; set; } = 15;
     /// <summary>
     /// Date of birth.
     /// </summary>
