@@ -126,6 +126,9 @@
   <data name="A list of places, e.g. 'B2,B3,C1' or '!B1,M1' if negated." xml:space="preserve">
     <value>Eine Liste von Plätzen, z.B. 'B2,B3,C1' oder '!B1,M1' zum Negieren.</value>
   </data>
+  <data name="Action" xml:space="preserve">
+    <value>Aktion</value>
+  </data>
   <data name="Add" xml:space="preserve">
     <value>Hinzufügen</value>
   </data>
@@ -231,11 +234,17 @@
   <data name="Lists" xml:space="preserve">
     <value>Listen</value>
   </data>
+  <data name="Log" xml:space="preserve">
+    <value>Protokoll</value>
+  </data>
   <data name="Male" xml:space="preserve">
     <value>Männlich</value>
   </data>
   <data name="Map" xml:space="preserve">
     <value>Karte</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notizen</value>
   </data>
   <data name="Numbers / Year of Birth Chart" xml:space="preserve">
     <value>Anzahl-Jahrgang-Diagramm</value>
@@ -254,9 +263,6 @@
   </data>
   <data name="Place filter" xml:space="preserve">
     <value>Platzfilter</value>
-  </data>
-  <data name="Protocol" xml:space="preserve">
-    <value>Protokoll</value>
   </data>
   <data name="Save calculated year-of-birth values" xml:space="preserve">
     <value>Berechnete Jahrgänge speichern</value>

@@ -465,5 +465,33 @@ namespace BioMap
       });
       return lProtocolEntries.ToArray();
     }
+    public LogEntry[] GetLogEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "log.dt") {
+      if (filters!=null) {
+        sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
+      }
+      var lLogEntries = new List<LogEntry>();
+      this.OperateOnDb((command) => {
+        command.CommandText = "SELECT log.dt" +
+          ",log.user" +
+          ",log.action" +
+          " FROM log" +
+          (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
+          (string.IsNullOrEmpty(sSqlOrderBy) ? "" : (" ORDER BY "+sSqlOrderBy+"")) +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read()) {
+          try {
+            var pe = new LogEntry() {
+              CreationTime=dr.GetDateTime(0),
+              User=dr.GetString(1),
+              Action=dr.GetString(2),
+            };
+            lLogEntries.Add(pe);
+          } catch { }
+        }
+        dr.Close();
+      });
+      return lLogEntries.ToArray();
+    }
   }
 }
