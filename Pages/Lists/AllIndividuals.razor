@@ -42,10 +42,10 @@
         <td>@((MarkupString)GetForElements(iid,el=>el.GetPlace()?.Name))</td>
         <td>
           @foreach (var el in this.Individuals[iid]) {
-            <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a>
             @((MarkupString)this.GetLineBreak(iid))
+            <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a>
           }
-          </td>
+        </td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetIsoDate()))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.ElementProp.UploadInfo.UserId))</td>
       </tr>
