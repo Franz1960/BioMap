@@ -122,7 +122,7 @@ namespace BioMap
                   User=saLogEntry[2],
                   Action=saLogEntry[3],
                 };
-                command.CommandText = "INSERT INTO log (dt,user,action) VALUES ('" + le.CreationTime + "','" + le.User + "','" + le.Action + "')";
+                command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('" + le.CreationTime + "'),'" + le.User + "','" + le.Action + "')";
                 command.ExecuteNonQuery();
               }
             }
