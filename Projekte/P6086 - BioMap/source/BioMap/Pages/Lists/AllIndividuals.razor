@@ -9,16 +9,18 @@
 
 <p>Anzahl Individuen: @Individuals.Count</p>
 
+<PhotoPopup @ref="PhotoPopup1" />
+
 <table class="table table-striped">
   <thead>
     <tr>
       <th scope="col">IID</th>
       <th scope="col">@Localize["Vintage"]</th>
       <th scope="col">@Localize["Gender"]</th>
-      <th scope="col">@Localize["Length"]</th>
+      <th scope="col" width="10%">@Localize["Length"]</th>
       <th scope="col">@Localize["Place"]</th>
       <th scope="col">ID</th>
-      <th scope="col">@Localize["Time"]</th>
+      <th scope="col" width="10%">@Localize["Time"]</th>
       <th scope="col">@Localize["User"]</th>
     </tr>
   </thead>
@@ -38,7 +40,12 @@
         <td>@((MarkupString)GetForElements(iid,el=>el.GetGender()))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetHeadBodyLengthNice()))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetPlace()?.Name))</td>
-        <td>@((MarkupString)GetForElements(iid,el=>el.ElementName))</td>
+        <td>
+          @foreach (var el in this.Individuals[iid]) {
+            <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a>
+            @((MarkupString)this.GetLineBreak(iid))
+          }
+          </td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetIsoDate()))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.ElementProp.UploadInfo.UserId))</td>
       </tr>
@@ -47,6 +54,7 @@
 </table>
 
 @code {
+  private PhotoPopup PhotoPopup1;
   private Dictionary<int,List<Element>> Individuals = new Dictionary<int,List<Element>>();
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -129,5 +137,16 @@
       el.ElementProp.IndivData.DateOfBirth=new DateTime(nYoB,7,1);
       DataService.Instance.WriteElement(el);
     }
+  }
+  private int oldIid = 0;
+  private string GetLineBreak(int iid) {
+    if (iid==this.oldIid) {
+      return "<br/>";
+    }
+    this.oldIid=iid;
+    return "";
+  }
+  private void OnSelectClick(Element el) {
+    this.PhotoPopup1.Show(el);
   }
 }
