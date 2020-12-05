@@ -258,6 +258,9 @@
   <data name="Numbers / Year of Birth Chart" xml:space="preserve">
     <value>Anzahl-Jahrgang-Diagramm</value>
   </data>
+  <data name="Only first image" xml:space="preserve">
+    <value>Nur erstes Bild</value>
+  </data>
   <data name="Only last image" xml:space="preserve">
     <value>Nur letztes Bild</value>
   </data>
