@@ -39,6 +39,6 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.LogEntries = DataService.Instance.GetLogEntries(SD.Filters,"","log.dt DESC");
+    this.LogEntries = DataService.Instance.GetLogEntries(SD.Filters,"dt>'2018-08-01'","log.dt DESC");
   }
 }
