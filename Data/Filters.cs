@@ -23,6 +23,24 @@ namespace BioMap
       }
     }
     private string _IndiFilter = "";
+    public bool OnlyFirstIndiFilter {
+      get {
+        return this._OnlyFirstIndiFilter;
+      }
+      set {
+        if (value!=this._OnlyFirstIndiFilter) {
+          this._OnlyFirstIndiFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private bool _OnlyFirstIndiFilter = false;
+    private readonly string OnlyFirstIndiFilterExp =
+      "NOT EXISTS (" +
+      "SELECT * FROM elements e1" +
+      " LEFT JOIN indivdata i1 ON (i1.name=e1.name)" +
+      " WHERE (i1.iid=indivdata.iid AND e1.category=350 AND e1.creationtime<elements.creationtime)" +
+      ")";
     public bool OnlyLastIndiFilter {
       get {
         return this._OnlyLastIndiFilter;
@@ -35,7 +53,7 @@ namespace BioMap
       }
     }
     private bool _OnlyLastIndiFilter = false;
-    private readonly string OnlyLastIndiFilterExp=
+    private readonly string OnlyLastIndiFilterExp =
       "NOT EXISTS (" +
       "SELECT * FROM elements e1" +
       " LEFT JOIN indivdata i1 ON (i1.name=e1.name)" +
@@ -138,6 +156,9 @@ namespace BioMap
       sResult = this.AddToWhereClause(sResult,"indivdata.iid",this.IndiFilter);
       sResult = this.AddToWhereClause(sResult,"elements.place",this.PlaceFilter);
       sResult = this.AddToWhereClause(sResult,"elements.category",this.CatFilter);
+      if (this.OnlyFirstIndiFilter) {
+        sResult = Filters.AddToWhereClause(sResult,this.OnlyFirstIndiFilterExp);
+      }
       if (this.OnlyLastIndiFilter) {
         sResult = Filters.AddToWhereClause(sResult,this.OnlyLastIndiFilterExp);
       }
