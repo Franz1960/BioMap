@@ -18,9 +18,9 @@
   <tbody>
     @foreach (var le in LogEntries) {
     <tr>
-      <td>@le.CreationTime.ToString("yyyy-MM-dd HH:MM:ss")</td>
+      <td>@le.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
       <td>@le.User</td>
-      <td>@((MarkupString)le.Action)</td>
+      <td>@le.Action</td>
     </tr>
     }
   </tbody>

@@ -15,11 +15,11 @@
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">Cat.</th>
-      <th scope="col">Details</th>
-      <th scope="col">Time</th>
-      <th scope="col">Name</th>
-      <th scope="col">User</th>
+      <th scope="col">@Localize["Cat."]</th>
+      <th scope="col">@Localize["Details"]</th>
+      <th scope="col">@Localize["Time"]</th>
+      <th scope="col">@Localize["Name"]</th>
+      <th scope="col">@Localize["User"]</th>
     </tr>
   </thead>
   <tbody>
@@ -28,7 +28,7 @@
         <th scope="row">@(i++)</th>
         <td>@el.ElementProp.MarkerInfo.category</td>
         <td>@el.GetDetails()</td>
-        <td>@el.ElementProp.CreationTime</td>
+        <td>@el.GetIsoDateTime()</td>
         <td><a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a></td>
         <td>@el.ElementProp.UploadInfo.UserId</td>
       </tr>
