@@ -471,10 +471,7 @@ namespace BioMap
       }
       var lLogEntries = new List<LogEntry>();
       this.OperateOnDb((command) => {
-        command.CommandText = "SELECT log.dt" +
-          ",log.user" +
-          ",log.action" +
-          " FROM log" +
+        command.CommandText = "SELECT dt,user,action FROM log" +
           (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
           (string.IsNullOrEmpty(sSqlOrderBy) ? "" : (" ORDER BY "+sSqlOrderBy+"")) +
           "";

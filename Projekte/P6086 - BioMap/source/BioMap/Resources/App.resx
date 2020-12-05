@@ -159,6 +159,9 @@
   <data name="ByCategories" xml:space="preserve">
     <value>Nach Kategorien</value>
   </data>
+  <data name="Cat." xml:space="preserve">
+    <value>Kat.</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Kategorie</value>
   </data>
@@ -170,6 +173,9 @@
   </data>
   <data name="Counted are all the different individuals who fulfill the conditions at least once in the respective period." xml:space="preserve">
     <value>Gezählt werden alle verschiedenen Individuen,die im jeweiligen Zeitraum mindestens einmal die Bedingungen erfüllen.</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
   </data>
   <data name="Diagrams" xml:space="preserve">
     <value>Diagramme</value>
@@ -242,6 +248,9 @@
   </data>
   <data name="Map" xml:space="preserve">
     <value>Karte</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
   </data>
   <data name="Notes" xml:space="preserve">
     <value>Notizen</value>

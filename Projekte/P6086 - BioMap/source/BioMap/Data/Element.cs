@@ -212,6 +212,9 @@ namespace BioMap
     public string GetIsoDate() {
       return this.ElementProp.CreationTime.ToString("yyyy-MM-dd");
     }
+    public string GetIsoDateTime() {
+      return this.ElementProp.CreationTime.ToString("yyyy-MM-dd HH:mm:ss");
+    }
     public Place GetPlace() {
       var sPlaceName = this.ElementProp.MarkerInfo.PlaceName;
       if (DataService.Instance.PlacesByNames.TryGetValue(sPlaceName,out var place)) {
