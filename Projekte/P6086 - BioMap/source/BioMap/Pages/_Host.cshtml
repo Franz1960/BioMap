@@ -25,17 +25,7 @@
   <script language="javascript" type="text/javascript" src="scripts/preppic.js"></script>
   <script language="javascript" type="text/javascript" src="scripts/identify.js"></script>
   <script language="javascript" type="text/javascript" src="scripts/geolocation.js"></script>
-  <!-- Reference the included moment.js javascript file. -->
-  <script src="_content/ChartJs.Blazor/moment-with-locales.min.js" type="text/javascript" language="javascript"></script>
-
-  <!-- Reference the included ChartJs javascript file. -->
-  <script src="_content/ChartJs.Blazor/Chart.min.js" type="text/javascript" language="javascript"></script>
-
-  <!-- This is the glue between the C# code and the ChartJs charts -->
-  <script src="_content/ChartJs.Blazor/ChartJsBlazorInterop.js" type="text/javascript" language="javascript"></script>
-
   <!-- Some styling -->
-  <link rel="stylesheet" href="_content/ChartJs.Blazor/ChartJSBlazor.css" />
   <link href="_content/Blazored.Menu/blazored-menu.css" rel="stylesheet" />
   <link href="css/site.css" rel="stylesheet" />
 </head>
@@ -74,6 +64,14 @@
     </content>
   </dialog>
   <script src="_framework/blazor.server.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <!-- This is the glue between Blazor and Chart.js -->
+  <script src="_content/ChartJs.Blazor/ChartJsBlazorInterop.js"></script>
+  <!-- Workarounds -->
+  <script src="~/workaround-gradient.js"></script>
+
   <script>
     function UploadImageFiles_Init(idInput, idUploadUI) {
       //alert("UploadImageFiles_Init(" + idInput + "," + idUploadUI + ") called.");
