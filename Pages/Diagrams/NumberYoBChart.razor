@@ -4,24 +4,22 @@
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
-@using ChartJs.Blazor.Charts
-@using ChartJs.Blazor.ChartJS.Common.Properties
-@using ChartJs.Blazor.ChartJS.Common.Enums
-@using ChartJs.Blazor.ChartJS.Common.Axes
-@using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
-@using ChartJs.Blazor.ChartJS.Common
-@using ChartJs.Blazor.ChartJS.Common.Handlers
-@using ChartJs.Blazor.ChartJS.Common.Time
-@using ChartJs.Blazor.ChartJS.LineChart
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
 @using ChartJs.Blazor.Util
 
 <h1>@Localize["Numbers / Year of Birth Chart"]</h1>
 
-<ChartJsLineChart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+<Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
 
 @code {
   private LineConfig _config;
-  private ChartJsLineChart _chartJs;
+  private Chart _chartJs;
 
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -38,7 +36,7 @@
           Display = true,
         },
         Scales = new Scales {
-          xAxes = new List<CartesianAxis>
+          XAxes = new List<CartesianAxis>
         {
             new LinearCartesianAxis
             {
@@ -114,8 +112,6 @@
         foreach (int nYear in lYears) {
           try {
             double cnt = d[nYear];
-            var dt = new DateTime(nYear,7,1);
-            var t = new Moment(dt);
             lineSetCurve.Add(new Point(nYear,cnt));
           } catch { }
         }

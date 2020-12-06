@@ -4,15 +4,13 @@
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
-@using ChartJs.Blazor.Charts
-@using ChartJs.Blazor.ChartJS.Common.Properties
-@using ChartJs.Blazor.ChartJS.Common.Enums
-@using ChartJs.Blazor.ChartJS.Common.Axes
-@using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
-@using ChartJs.Blazor.ChartJS.Common
-@using ChartJs.Blazor.ChartJS.Common.Handlers
-@using ChartJs.Blazor.ChartJS.Common.Time
-@using ChartJs.Blazor.ChartJS.LineChart
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
 @using ChartJs.Blazor.Util
 
 <h1>@Localize["Length / Time Chart"]</h1>
@@ -40,11 +38,11 @@
   </div>
 </div>
 
-<ChartJsLineChart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+<Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
 
 @code {
   private LineConfig _config;
-  private ChartJsLineChart _chartJs;
+  private Chart _chartJs;
   private bool SaveYoB = false;
 
   protected override void OnInitialized() {
@@ -62,7 +60,7 @@
           Display = false,
         },
         Scales = new Scales {
-          xAxes = new List<CartesianAxis>
+          XAxes = new List<CartesianAxis>
         {
             new TimeAxis
             {
@@ -75,7 +73,7 @@
               },
               ScaleLabel = new ScaleLabel
               {
-                LabelString = "Time"
+                LabelString = Localize["Time"]
               }
             }
           }
@@ -111,12 +109,11 @@
   private void RefreshData() {
     var dtProjectStart = DS.ProjectStart;
     var aaIndisByIId = DS.GetIndividuals(SD.Filters);
-    _config.Options.Legend.Display=false;
     _config.Data.Datasets.Clear();
     // Ideale Wachstumskurven hinzufügen.
     for (int nYoB = 2012;nYoB<2021;nYoB++) {
       string sYobColor = Element.GetColorForYearOfBirth(nYoB);
-      var lineSet = new LineDataset<TimeTuple<double>> {
+      var lineSet = new LineDataset<TimePoint> {
         BackgroundColor = sYobColor,
         BorderWidth = 4,
         BorderDash= new[] { 10,5 },
@@ -132,9 +129,8 @@
       for (var dt = dtProjectStart;dt<new DateTime(DateTime.Now.Year,11,1);dt+=TimeSpan.FromDays(7)) {
         try {
           var l = fg.GetSize(dt);
-          var t = new Moment(dt);
           if (l > 10) {
-            lineSet.Add(new TimeTuple<double>(t,l));
+            lineSet.Add(new TimePoint(dt,l));
           }
         } catch { }
       }
@@ -146,7 +142,7 @@
     // Kurvenschar hinzufügen.
     for (var dtB = new DateTime(2012,1,1);dtB.Year<2021;dtB+=TimeSpan.FromDays(7)) {
       string sYobColor = Element.GetColorForYearOfBirth(dtB.Year);
-      var lineSet = new LineDataset<TimeTuple<double>> {
+      var lineSet = new LineDataset<TimePoint> {
         BackgroundColor = sYobColor,
         BorderWidth = 2,
         PointHoverBorderWidth = 4,
@@ -162,9 +158,8 @@
       for (var dt = new DateTime(2015,11,1);dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
         try {
           var l = fg.GetSize(dt);
-          var t = new Moment(dt);
           if (l > 10) {
-            lineSet.Add(new TimeTuple<double>(t,l));
+            lineSet.Add(new TimePoint(dt,l));
           }
         } catch { }
       }
@@ -248,7 +243,7 @@
                 DateOfBirth=dtDateOfBirth.Value,
               };
               string sYobColor = Element.GetColorForYearOfBirth(growthFunc.DateOfBirth.Year);
-              var lineSetCurve = new LineDataset<TimeTuple<double>> {
+              var lineSetCurve = new LineDataset<TimePoint> {
                 BackgroundColor = sYobColor,
                 BorderWidth = 2,
                 PointHoverBorderWidth = 0,
@@ -269,9 +264,8 @@
                 for (var dt = dtB;dt<=dtE;dt+=tsDelta) {
                   try {
                     var l = growthFunc.GetSize(dt);
-                    var t = new Moment(dt);
                     if (l > 10) {
-                      lineSetCurve.Add(new TimeTuple<double>(t,l));
+                      lineSetCurve.Add(new TimePoint(dt,l));
                     }
                   } catch { }
                 }
@@ -285,7 +279,7 @@
           // Datenpunkte.
           {
             string sYobColor = Element.GetColorForYearOfBirth(dtFittedYearOfBirth.HasValue ? dtFittedYearOfBirth.Value.Year : aaIndisByIId[idx][0].ElementProp.IndivData?.DateOfBirth.Year);
-            var lineSetPoints = new LineDataset<TimeTuple<double>> {
+            var lineSetPoints = new LineDataset<TimePoint> {
               BackgroundColor = sYobColor,
               BorderWidth = 0,
               PointHoverBorderWidth = 4,
@@ -297,8 +291,7 @@
               try {
                 var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
                 if (l>0) {
-                  var t = new Moment(el.ElementProp.CreationTime);
-                  lineSetPoints.Add(new TimeTuple<double>(t,l));
+                  lineSetPoints.Add(new TimePoint(el.ElementProp.CreationTime,l));
                 }
               } catch { }
             }
@@ -309,7 +302,7 @@
         } else {
           // Interpolation durch Datenpunkte.
           string sYobColor = aaIndisByIId[idx][0].GetColorForYearOfBirth();
-          var lineSet = new LineDataset<TimeTuple<double>> {
+          var lineSet = new LineDataset<TimePoint> {
             BackgroundColor = sYobColor,
             BorderWidth = 2,
             PointHoverBorderWidth = 4,
@@ -322,8 +315,7 @@
             try {
               var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
               if (l!=0) {
-                var t = new Moment(el.ElementProp.CreationTime);
-                lineSet.Add(new TimeTuple<double>(t,l));
+                lineSet.Add(new TimePoint(el.ElementProp.CreationTime,l));
               }
             } catch { }
           }

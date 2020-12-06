@@ -4,24 +4,22 @@
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
-@using ChartJs.Blazor.Charts
-@using ChartJs.Blazor.ChartJS.Common.Properties
-@using ChartJs.Blazor.ChartJS.Common.Enums
-@using ChartJs.Blazor.ChartJS.Common.Axes
-@using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
-@using ChartJs.Blazor.ChartJS.Common
-@using ChartJs.Blazor.ChartJS.Common.Handlers
-@using ChartJs.Blazor.ChartJS.Common.Time
-@using ChartJs.Blazor.ChartJS.LineChart
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
 @using ChartJs.Blazor.Util
 
 <h1>@Localize["Frequency by Place / Time Chart"]</h1>
 
-<ChartJsLineChart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+<ChartJs.Blazor.Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
 
 @code {
   private LineConfig _config;
-  private ChartJsLineChart _chartJs;
+  private Chart _chartJs;
 
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -38,7 +36,7 @@
           Display = false,
         },
         Scales = new Scales {
-          xAxes = new List<CartesianAxis>
+          XAxes = new List<CartesianAxis>
           {
             new TimeAxis
             {
@@ -55,7 +53,7 @@
               }
             }
           },
-          yAxes = new List<CartesianAxis>
+          YAxes = new List<CartesianAxis>
           {
             new CategoryAxis
             {
@@ -89,13 +87,14 @@
     }
     var lPlaces = new List<string>(countByPlaceAndDate.Keys);
     lPlaces.Sort();
-    _config.Data.YLabels=lPlaces;
+    _config.Data.YLabels.Clear();
+    _config.Data.YLabels.Union(lPlaces);
     for (int idxPlace = 0;idxPlace<lPlaces.Count;idxPlace++) {
       string sPlace = lPlaces[idxPlace];
       var lDates = new List<DateTime>(countByPlaceAndDate[sPlace].Keys);
       lDates.Sort();
       foreach (var date in lDates) {
-        var lineSetCurve = new LineDataset<TimeTuple<string>> {
+        var lineSetCurve = new LineDataset<TimePoint> {
           BackgroundColor = "rgba(239,209,0,0.8)",
           BorderWidth = 1,
           PointHoverBorderWidth = 1,
@@ -103,8 +102,7 @@
           PointRadius = (int)Math.Round(2*Math.Sqrt(countByPlaceAndDate[sPlace][date])),
           ShowLine = false,
         };
-        var t = new Moment(date);
-        lineSetCurve.Add(new TimeTuple<string>(t,sPlace));
+        lineSetCurve.Add(new TimePoint(date,idxPlace));
         if (lineSetCurve.Data.Count>=1) {
           _config.Data.Datasets.Add(lineSetCurve);
         }

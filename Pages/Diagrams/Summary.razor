@@ -4,81 +4,24 @@
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
-@using ChartJs.Blazor.Charts
-@using ChartJs.Blazor.ChartJS.Common.Properties
-@using ChartJs.Blazor.ChartJS.Common.Enums
-@using ChartJs.Blazor.ChartJS.Common.Axes
-@using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
-@using ChartJs.Blazor.ChartJS.Common
-@using ChartJs.Blazor.ChartJS.Common.Wrappers
-@using ChartJs.Blazor.ChartJS.Common.Handlers
-@using ChartJs.Blazor.ChartJS.Common.Time
-@using ChartJs.Blazor.ChartJS.BarChart
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.BarChart.Axes
 
 <h1>@Localize["Summary"]</h1>
 
 <div class="card">
   <div class="card-body">
     <h5 class="card-title text-center">@Localize["Different Individuals"]</h5>
-    <table class="table table-sm table-striped text-right">
-      <thead>
-        <tr>
-          <th scope="col">@Localize["Conditions"]</th>
-          <th scope="col">@Localize["All Years"]</th>
-          @for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
-            <th scope="col">@year</th>
-          }
-        </tr>
-      </thead>
-      <tbody>
-        @foreach (var dby in this.IndividualData) {
-          <tr>
-            <td scope="col">@dby.Name</td>
-            <td scope="col">@dby.AllYears</td>
-            @for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
-              <td scope="col">@dby.ByYear[year-ProjectYearBegin]</td>
-            }
-          </tr>
-        }
-      </tbody>
-    </table>
-    <p class="text-center">
-      @Localize["Gezählt werden alle verschiedenen Individuen,die im jeweiligen Zeitraum mindestens einmal die Bedingungen erfüllen."]
-    </p>
-    <ChartJs.Blazor.Charts.ChartJsBarChart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+    <Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
   </div>
 </div>
 <p></p>
-<div class="card">
-  <div class="card-body">
-    <h5 class="card-title text-center">@Localize["Other elements"]</h5>
-    <table class="table table-sm table-striped text-right">
-      <thead>
-        <tr>
-          <th scope="col"></th>
-          <th scope="col">@Localize["All Years"]</th>
-          @for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
-            <th scope="col">@year</th>
-          }
-        </tr>
-      </thead>
-      <tbody>
-        @foreach (var dby in this.OtherData) {
-          <tr>
-            <td scope="col">@dby.Name</td>
-            <td scope="col">@dby.AllYears</td>
-            @for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
-              <td scope="col">@dby.ByYear[year-ProjectYearBegin]</td>
-            }
-          </tr>
-        }
-      </tbody>
-    </table>
-    <p class="text-center">
-      @Localize[""]
-    </p>
-  </div>
-</div>
 
 @code {
   private int ProjectYearBegin;
@@ -90,13 +33,13 @@
     public string[] ByYear;
   }
   private BarConfig _config;
-  private ChartJsBarChart _chartJs;
+  private Chart _chartJs;
   private readonly List<DataByYears_t> IndividualData = new List<DataByYears_t>();
   private readonly List<DataByYears_t> OtherData = new List<DataByYears_t>();
   protected override void OnInitialized() {
     base.OnInitialized();
     ProjectYearBegin=DS.ProjectStart.Year;
-    ProjectYearEnd=DateTime.Now.Year;
+    ProjectYearEnd=Math.Max(2024,DateTime.Now.Year);
     _config = new BarConfig {
       Options = new BarOptions {
         Animation=new Animation {
@@ -109,6 +52,22 @@
         Legend = new Legend {
           Display = true,
         },
+        Scales = new BarScales {
+          XAxes = new List<CartesianAxis>
+                    {
+                        new BarCategoryAxis
+                        {
+                            Stacked = true
+                        }
+                    },
+          YAxes = new List<CartesianAxis>
+                    {
+                        new BarLinearCartesianAxis
+                        {
+                            Stacked = true
+                        }
+                    }
+        }
       },
     };
     SD.Filters.FilterChanged+=(sender,ev) => {
@@ -123,130 +82,40 @@
     for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
       _config.Data.Labels.Add(ConvInvar.ToString(year));
     }
-    var dsTotal = new BarDataset<Int32Wrapper>() { Label=Localize["Totals"] };
-    var dsHatchlings = new BarDataset<Int32Wrapper>() { Label=Localize["Hatchlings"] };
+    var dsTotal = new BarDataset<int>() { Label=Localize["Totals"] };
+    var dsHatchlings = new BarDataset<int>() { Label=Localize["Hatchlings"] };
     //
-    this.IndividualData.Clear();
+    var aaIndisByIId = DS.GetIndividuals();
+    int nIndex = 0;
     foreach (var indiSpec in new[] {
-      new Tuple<string,string,BarDataset<Int32Wrapper>>(Localize["Totals"],"",dsTotal),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>(">= 38 mm","indivdata.headbodylength>=38",null),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>(">= 33 mm","indivdata.headbodylength>=33",null),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>("< 33 mm","indivdata.headbodylength<33",null),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>("0 "+Localize["Hibernations"],"indivdata.winters==0",dsHatchlings),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>("1 "+Localize["Hibernations"],"indivdata.winters==1",null),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>("2 "+Localize["Hibernations"],"indivdata.winters==2",null),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>("3+ "+Localize["Hibernations"],"indivdata.winters>=3",null),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>(Localize["Female"],"indivdata.gender='fa'",null),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>(Localize["Male"],"indivdata.gender='ma'",null),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>(Localize["Female"]+" >= 38 mm","indivdata.gender='fa' AND indivdata.headbodylength>=38",null),
-      new Tuple<string,string,BarDataset<Int32Wrapper>>(Localize["Male"]+" >= 38 mm","indivdata.gender='ma' AND indivdata.headbodylength>=38",null),
+      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["Known individuals"],(ea,year)=>ea.Any(el=>el.ElementProp.CreationTime.Year<year) && ea[ea.Count-1].ElementProp.CreationTime.Year>=year,1),
+      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["New individuals"]+" 1+ "+Localize["Hibernations"],(ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()>=1,1),
+      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["New individuals"]+" 0 "+Localize["Hibernations"],(ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()<1,1),
+      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["Missed individuals"]+" 1+ "+Localize["Hibernations"],(ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()>=1,-1),
+      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["Missed individuals"]+" 0 "+Localize["Hibernations"],(ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()<1,-1),
     }) {
-      var aaIndisByIId = DS.GetIndividuals(null,indiSpec.Item2);
-      int nAllYears = 0;
-      var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
-      foreach (var iid in aaIndisByIId.Keys) {
-        foreach (var el in aaIndisByIId[iid]) {
-          int year = el.ElementProp.CreationTime.Year;
-          if (year>=ProjectYearBegin && year<=ProjectYearEnd) {
-            nAllYears++;
-            break;
-          }
-        }
-        for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
-          foreach (var el in aaIndisByIId[iid]) {
-            if (el.ElementProp.CreationTime.Year==year) {
-              aByYears[year-ProjectYearBegin]++;
-              break;
-            }
-          }
-        }
-      }
-      this.IndividualData.Add(
-        new DataByYears_t {
-          Name=indiSpec.Item1,
-          AllYears=nAllYears.ToString(),
-          ByYear=Array.ConvertAll<int,string>(aByYears,(n) => n.ToString()),
-        }
-      );
-      if (indiSpec.Item3!=null) {
-        for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
-          indiSpec.Item3.Add(aByYears[year-ProjectYearBegin]);
-        }
-        _config.Data.Datasets.Add(indiSpec.Item3);
-      }
-    }
-    //
-    {
-      var aaIndisByIId = DS.GetIndividuals();
-      foreach (var indiSpec in new[] {
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["Missed individuals"],
-        (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1),
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["Missed individuals"]+" >= 38 mm",
-        (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].ElementProp.IndivData.MeasuredData.HeadBodyLength>=38),
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["Missed individuals"]+" < 38 mm",
-        (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].ElementProp.IndivData.MeasuredData.HeadBodyLength<38),
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["New individuals"],
-        (ea,year)=>ea[0].ElementProp.CreationTime.Year==year),
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["New individuals"]+" >= 38 mm",
-        (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[ea.Count-1].ElementProp.IndivData.MeasuredData.HeadBodyLength>=38),
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["New individuals"]+" < 38 mm",
-        (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[ea.Count-1].ElementProp.IndivData.MeasuredData.HeadBodyLength<38),
-      }) {
-        var lCounts = new List<int>();
-        for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
-          int nCount = 0;
-          foreach (var ea in aaIndisByIId.Values) {
-            if (indiSpec.Item2(ea,year)) {
-              nCount++;
-            }
-          }
-          lCounts.Add(nCount);
-        }
-        this.IndividualData.Add(
-          new DataByYears_t {
-            Name=indiSpec.Item1,
-            AllYears="",
-            ByYear=Array.ConvertAll<int,string>(lCounts.ToArray(),(n) => n.ToString()),
-          }
-        );
-      }
-    }
-    //
-    this.OtherData.Clear();
-    foreach (var indiSpec in new[] {
-      new Tuple<string,string>(Localize["Totals"],""),
-      new Tuple<string,string>(Localize["ID Cards"],"elements.category=350"),
-      new Tuple<string,string>(Localize["Other photos and local news"],"elements.category<>350"),
-    }) {
-      var aEls = DS.GetElements(null,indiSpec.Item2);
-      int nAllYears = 0;
-      var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
-      foreach (var el in aEls) {
-        int year = el.ElementProp.CreationTime.Year;
-        if (year>=ProjectYearBegin && year<=ProjectYearEnd) {
-          nAllYears++;
-        }
-      }
+      var ds = new BarDataset<int>() { Label=indiSpec.Item1,BackgroundColor=this.GetColor(nIndex) };
       for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
-        foreach (var el in aEls) {
-          if (el.ElementProp.CreationTime.Year==year) {
-            aByYears[year-ProjectYearBegin]++;
+        int nCount = 0;
+        foreach (var ea in aaIndisByIId.Values) {
+          if (indiSpec.Item2(ea,year)) {
+            nCount++;
           }
         }
+        ds.Add(nCount*indiSpec.Item3);
       }
-      this.OtherData.Add(
-        new DataByYears_t {
-          Name=indiSpec.Item1,
-          AllYears=nAllYears.ToString(),
-          ByYear=Array.ConvertAll<int,string>(aByYears,(n) => n.ToString()),
-        }
-      );
+      _config.Data.Datasets.Add(ds);
+      nIndex++;
     }
   }
+  public string GetColor(int nIndex) {
+    return _Colors[nIndex % _Colors.Length];
   }
+  private string[] _Colors = new string[] {
+    ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.Green),
+    ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.Blue),
+    ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.Cyan),
+    ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.DarkMagenta),
+    ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.Magenta),
+  };
+}
