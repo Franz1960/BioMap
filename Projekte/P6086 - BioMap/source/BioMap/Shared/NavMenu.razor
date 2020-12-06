@@ -9,139 +9,43 @@
 </div>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-  <ul class="nav flex-column">
-    <li class="nav-item px-2">
-      <NavLink class="nav-link" href="/">
-        <span class="oi oi-home" aria-hidden="true"></span> @Localize["Home"]
-      </NavLink>
-    </li>
-    <li class="nav-item px-2">
-      <NavLink class="nav-link" href="/Map">
-        <span class="oi oi-map" aria-hidden="true"></span> @Localize["Map"]
-      </NavLink>
-    </li>
-    <li class="nav-item px-2">
-      <NavLink class="nav-link" @onclick='()=>toggleSubNav("Add")'>
-        <span class="oi oi-plus" aria-hidden="true"></span> @Localize["Add"]
-      </NavLink>
-      @if (expandedSubNav == "Add") {
-        <ul class="nav flex-column">
-          <li class="nav-item px-4">
-            <NavLink class="expand-menu" href="/Add/Image">
-              <span class="oi oi-image" aria-hidden="true"></span> @Localize["Image"]
-            </NavLink>
-          </li>
-        </ul>
-      }
-    </li>
-    <li class="nav-item px-2">
-      <NavLink class="nav-link" @onclick='()=>toggleSubNav("Lists")'>
-        <span class="oi oi-list" aria-hidden="true"></span> @Localize["Lists"]
-      </NavLink>
-      @if (expandedSubNav == "Lists") {
-    <ul class="nav flex-column">
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/Lists/AllElements">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Elements"]
-        </NavLink>
-      </li>
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/Lists/AllIndividuals">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Individuals"]
-        </NavLink>
-      </li>
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/Lists/AllImages">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["All Images"]
-        </NavLink>
-      </li>
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/Lists/IdCardsByPlaces">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["ID Cards by Places"]
-        </NavLink>
-      </li>
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/Lists/IdCards">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["ID Cards"]
-        </NavLink>
-      </li>
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/Lists/Log">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["Log"]
-        </NavLink>
-      </li>
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/Lists/Notes">
-          <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["Notes"]
-        </NavLink>
-      </li>
-    </ul>
-      }
-    </li>
-    <li class="nav-item px-2">
-      <NavLink class="nav-link" @onclick='()=>toggleSubNav("Diagrams")'>
-        <span class="oi oi-graph" aria-hidden="true"></span> @Localize["Diagrams"]
-      </NavLink>
-      @if (expandedSubNav == "Diagrams") {
-        <ul class="nav flex-column">
-          <li class="nav-item px-4">
-            <NavLink class="expand-menu" href="/Charts/SizeTimeChart">
-              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["Length / Time Chart"]
-            </NavLink>
-          </li>
-          <li class="nav-item px-4">
-            <NavLink class="expand-menu" href="/Charts/FrequencyByPlace">
-              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["Frequency by Place / Time Chart"]
-            </NavLink>
-          </li>
-          <li class="nav-item px-4">
-            <NavLink class="expand-menu" href="/Charts/NumberYoBChart">
-              <span class="oi oi-list-rich" aria-hidden="true"></span> @Localize["Numbers / Year of Birth Chart"]
-            </NavLink>
-          </li>
-        </ul>
-      }
-    </li>
-    <li class="nav-item px-2">
-      <NavLink class="nav-link" @onclick='()=>toggleSubNav("Statistics")'>
-        <span class="oi oi-pie-chart" aria-hidden="true"></span> @Localize["Statistics"]
-      </NavLink>
-      @if (expandedSubNav == "Statistics") {
-    <ul class="nav flex-column">
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/Statistics/Summary">
-          <span class="oi oi-pie-chart" aria-hidden="true"></span> @Localize["Summary"]
-        </NavLink>
-      </li>
-      <li class="nav-item px-4">
-        <NavLink class="expand-menu" href="/Statistics/ByCategories">
-          <span class="oi oi-pie-chart" aria-hidden="true"></span> @Localize["ByCategories"]
-        </NavLink>
-      </li>
-    </ul>
-      }
-    </li>
-    <li class="nav-item px-2">
-      <NavLink class="nav-link" href="/Impressum">
-        <span class="oi oi-document" aria-hidden="true"></span> @Localize["Impressum"]
-      </NavLink>
-    </li>
-  </ul>
+  <BlazoredMenu MenuBuilder="@MenuBuilder" Css="navmenu-biomap" />
 </div>
 
 @code {
-  private static string expandedSubNav = "";
-  private static void toggleSubNav(string navId) {
-    if (string.CompareOrdinal(expandedSubNav,navId) == 0) {
-      expandedSubNav = "";
-    } else {
-      expandedSubNav = navId;
-    }
-  }
-
   private bool collapseNavMenu = true;
   private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
   private void ToggleNavMenu() {
     collapseNavMenu = !collapseNavMenu;
+  }
+
+  MenuBuilder MenuBuilder = new MenuBuilder();
+
+  protected override void OnInitialized() {
+    MenuBuilder.AddItem(100,Localize["Home"],"/",match: NavLinkMatch.All)
+               .AddItem(200,Localize["Map"],"/Map",isEnabled: true)
+               .AddSubMenu(300,Localize["Add"],new MenuBuilder()
+               .AddItem(1,Localize["Image"],"/Add/Image")
+               )
+               .AddSubMenu(400,Localize["Lists"],new MenuBuilder()
+               .AddItem(100,Localize["All Elements"],"/Lists/AllElements")
+               .AddItem(200,Localize["All Individuals"],"/Lists/AllIndividuals")
+               .AddItem(300,Localize["All Images"],"/Lists/AllImages")
+               .AddItem(400,Localize["ID Cards by Places"],"/Lists/IdCardsByPlaces")
+               .AddItem(500,Localize["ID Cards"],"/Lists/IdCards")
+               .AddItem(600,Localize["Log"],"/Lists/Log")
+               .AddItem(700,Localize["Notes"],"/Lists/Notes")
+               )
+               .AddSubMenu(500,Localize["Diagrams"],new MenuBuilder()
+               .AddItem(100,Localize["Length / Time Chart"],"/Charts/SizeTimeChart")
+               .AddItem(200,Localize["Frequency by Place / Time Chart"],"/Charts/FrequencyByPlace")
+               .AddItem(300,Localize["Numbers / Year of Birth Chart"],"/Charts/NumberYoBChart")
+               )
+               .AddSubMenu(600,Localize["Statistics"],new MenuBuilder()
+               .AddItem(100,Localize["Summary"],"/Statistics/Summary")
+               .AddItem(200,Localize["ByCategories"],"/Statistics/ByCategories")
+               )
+               .AddItem(900,Localize["Impressum"],"/Impressum")
+               ;
   }
 }

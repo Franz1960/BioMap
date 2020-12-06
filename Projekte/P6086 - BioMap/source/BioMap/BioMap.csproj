@@ -46,6 +46,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Menu\src\Blazored.Menu\Blazored.Menu.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Resources\App.en.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
