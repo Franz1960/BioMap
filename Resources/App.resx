@@ -231,6 +231,9 @@
   <data name="Juveniles" xml:space="preserve">
     <value>Juvenile</value>
   </data>
+  <data name="Known individuals" xml:space="preserve">
+    <value>Bekannte Individuen</value>
+  </data>
   <data name="Length" xml:space="preserve">
     <value>Länge</value>
   </data>

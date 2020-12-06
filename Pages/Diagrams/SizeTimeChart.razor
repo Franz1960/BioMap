@@ -29,7 +29,7 @@
       @if (SD.SizeTimeChartShowGrowingCurves) {
         <CheckBox Checked="@SD.SizeTimeChartFit" LabelText=@Localize["Fit growing curves"] OnAnyChangedCallback="@CheckBoxFit_CheckedChanged" />
       }
-      </div>
+    </div>
     <div class="col">
       @if (SD.SizeTimeChartFit && SD.SizeTimeChartIncludeSinglePoints) {
         <button @onclick="()=>OnSaveYoBClick()">@Localize["Save calculated year-of-birth values"]</button>
@@ -62,18 +62,20 @@
         Scales = new Scales {
           XAxes = new List<CartesianAxis>
         {
-            new TimeAxis
+            new LinearCartesianAxis
             {
-              Distribution = TimeDistribution.Linear,
-              Time = new TimeOptions
-              {
-                Unit = TimeMeasurement.Month,
-                Round = TimeMeasurement.Day,
-                TooltipFormat = "DD.MM.YYYY HH:mm:ss",
-              },
               ScaleLabel = new ScaleLabel
               {
                 LabelString = Localize["Time"]
+              },
+              GridLines = new GridLines
+              {
+                Display = false
+              },
+              Ticks = new LinearCartesianTicks
+              {
+                //StepSize=1,
+                Precision=2,
               }
             }
           }
@@ -113,8 +115,8 @@
     // Ideale Wachstumskurven hinzufügen.
     for (int nYoB = 2012;nYoB<2021;nYoB++) {
       string sYobColor = Element.GetColorForYearOfBirth(nYoB);
-      var lineSet = new LineDataset<TimePoint> {
-        BackgroundColor = sYobColor,
+      var lineSet = new LineDataset<Point> {
+        BackgroundColor = ColorUtil.FromDrawingColor(System.Drawing.Color.White),
         BorderWidth = 4,
         BorderDash= new[] { 10,5 },
         PointHoverBorderWidth = 4,
@@ -130,7 +132,7 @@
         try {
           var l = fg.GetSize(dt);
           if (l > 10) {
-            lineSet.Add(new TimePoint(dt,l));
+            lineSet.Add(new Point(Utilities.Years_from_DateTime(dt),l));
           }
         } catch { }
       }
@@ -139,34 +141,34 @@
       }
     }
 #if trueX
-    // Kurvenschar hinzufügen.
-    for (var dtB = new DateTime(2012,1,1);dtB.Year<2021;dtB+=TimeSpan.FromDays(7)) {
-      string sYobColor = Element.GetColorForYearOfBirth(dtB.Year);
-      var lineSet = new LineDataset<TimePoint> {
-        BackgroundColor = sYobColor,
-        BorderWidth = 2,
-        PointHoverBorderWidth = 4,
-        BorderColor = sYobColor,
-        PointRadius = 0,
-        CubicInterpolationMode = CubicInterpolationMode.Monotone,
-        //ShowLine = true,
-      };
-      var fg = new GrowthFunc() {
-        DateOfBirth=dtB,
-      };
-      //for (var dt = dtProjectStart;dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
-      for (var dt = new DateTime(2015,11,1);dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
-        try {
-          var l = fg.GetSize(dt);
-          if (l > 10) {
-            lineSet.Add(new TimePoint(dt,l));
-          }
-        } catch { }
-      }
-      if (lineSet.Data.Count>=2) {
-        _config.Data.Datasets.Add(lineSet);
-      }
+  // Kurvenschar hinzufügen.
+  for (var dtB = new DateTime(2012,1,1);dtB.Year<2021;dtB+=TimeSpan.FromDays(7)) {
+    string sYobColor = Element.GetColorForYearOfBirth(dtB.Year);
+    var lineSet = new LineDataset<Point> {
+      BackgroundColor = sYobColor,
+      BorderWidth = 2,
+      PointHoverBorderWidth = 4,
+      BorderColor = sYobColor,
+      PointRadius = 0,
+      CubicInterpolationMode = CubicInterpolationMode.Monotone,
+      //ShowLine = true,
+    };
+    var fg = new GrowthFunc() {
+      DateOfBirth=dtB,
+    };
+    //for (var dt = dtProjectStart;dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
+    for (var dt = new DateTime(2015,11,1);dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
+      try {
+        var l = fg.GetSize(dt);
+        if (l > 10) {
+          lineSet.Add(new Point(Utilities.Years_from_DateTime(dt),l));
+        }
+      } catch { }
     }
+    if (lineSet.Data.Count>=2) {
+      _config.Data.Datasets.Add(lineSet);
+    }
+  }
 #endif
     // Wachstumskurven der Individuen hinzufügen.
     foreach (var idx in aaIndisByIId.Keys) {
@@ -243,7 +245,7 @@
                 DateOfBirth=dtDateOfBirth.Value,
               };
               string sYobColor = Element.GetColorForYearOfBirth(growthFunc.DateOfBirth.Year);
-              var lineSetCurve = new LineDataset<TimePoint> {
+              var lineSetCurve = new LineDataset<Point> {
                 BackgroundColor = sYobColor,
                 BorderWidth = 2,
                 PointHoverBorderWidth = 0,
@@ -265,7 +267,7 @@
                   try {
                     var l = growthFunc.GetSize(dt);
                     if (l > 10) {
-                      lineSetCurve.Add(new TimePoint(dt,l));
+                      lineSetCurve.Add(new Point(Utilities.Years_from_DateTime(dt),l));
                     }
                   } catch { }
                 }
@@ -279,7 +281,7 @@
           // Datenpunkte.
           {
             string sYobColor = Element.GetColorForYearOfBirth(dtFittedYearOfBirth.HasValue ? dtFittedYearOfBirth.Value.Year : aaIndisByIId[idx][0].ElementProp.IndivData?.DateOfBirth.Year);
-            var lineSetPoints = new LineDataset<TimePoint> {
+            var lineSetPoints = new LineDataset<Point> {
               BackgroundColor = sYobColor,
               BorderWidth = 0,
               PointHoverBorderWidth = 4,
@@ -291,7 +293,7 @@
               try {
                 var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
                 if (l>0) {
-                  lineSetPoints.Add(new TimePoint(el.ElementProp.CreationTime,l));
+                  lineSetPoints.Add(new Point(Utilities.Years_from_DateTime(el.ElementProp.CreationTime),l));
                 }
               } catch { }
             }
@@ -302,7 +304,7 @@
         } else {
           // Interpolation durch Datenpunkte.
           string sYobColor = aaIndisByIId[idx][0].GetColorForYearOfBirth();
-          var lineSet = new LineDataset<TimePoint> {
+          var lineSet = new LineDataset<Point> {
             BackgroundColor = sYobColor,
             BorderWidth = 2,
             PointHoverBorderWidth = 4,
@@ -315,7 +317,7 @@
             try {
               var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
               if (l!=0) {
-                lineSet.Add(new TimePoint(el.ElementProp.CreationTime,l));
+                lineSet.Add(new Point(Utilities.Years_from_DateTime(el.ElementProp.CreationTime),l));
               }
             } catch { }
           }
