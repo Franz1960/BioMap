@@ -38,18 +38,20 @@
         Scales = new Scales {
           XAxes = new List<CartesianAxis>
           {
-            new TimeAxis
+            new LinearCartesianAxis
             {
-              Distribution = TimeDistribution.Linear,
-              Time = new TimeOptions
-              {
-                Unit = TimeMeasurement.Month,
-                Round = TimeMeasurement.Day,
-                TooltipFormat = "DD.MM.YYYY",
-              },
               ScaleLabel = new ScaleLabel
               {
-                LabelString = "Time"
+                LabelString = Localize["Time"]
+              },
+              GridLines = new GridLines
+              {
+                Display = false
+              },
+              Ticks = new LinearCartesianTicks
+              {
+                //StepSize=1,
+                Precision=2,
               }
             }
           },
@@ -88,13 +90,13 @@
     var lPlaces = new List<string>(countByPlaceAndDate.Keys);
     lPlaces.Sort();
     _config.Data.YLabels.Clear();
-    _config.Data.YLabels.Union(lPlaces);
     for (int idxPlace = 0;idxPlace<lPlaces.Count;idxPlace++) {
       string sPlace = lPlaces[idxPlace];
+      _config.Data.YLabels.Add(sPlace);
       var lDates = new List<DateTime>(countByPlaceAndDate[sPlace].Keys);
       lDates.Sort();
       foreach (var date in lDates) {
-        var lineSetCurve = new LineDataset<TimePoint> {
+        var lineSetCurve = new LineDataset<Point> {
           BackgroundColor = "rgba(239,209,0,0.8)",
           BorderWidth = 1,
           PointHoverBorderWidth = 1,
@@ -102,7 +104,7 @@
           PointRadius = (int)Math.Round(2*Math.Sqrt(countByPlaceAndDate[sPlace][date])),
           ShowLine = false,
         };
-        lineSetCurve.Add(new TimePoint(date,idxPlace));
+        lineSetCurve.Add(new Point(Utilities.Years_from_DateTime(date),idxPlace));
         if (lineSetCurve.Data.Count>=1) {
           _config.Data.Datasets.Add(lineSetCurve);
         }
