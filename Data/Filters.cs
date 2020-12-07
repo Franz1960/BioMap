@@ -153,9 +153,9 @@ namespace BioMap
     }
     public string AddAllFiltersToWhereClause(string sBasicWhereClause) {
       string sResult = sBasicWhereClause;
-      sResult = this.AddToWhereClause(sResult,"indivdata.iid",this.IndiFilter);
-      sResult = this.AddToWhereClause(sResult,"elements.place",this.PlaceFilter);
-      sResult = this.AddToWhereClause(sResult,"elements.category",this.CatFilter);
+      sResult = this.AddToWhereClause(sResult,"indivdata.iid",ExpandIndiFilter(this.IndiFilter));
+      sResult = this.AddToWhereClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
+      sResult = this.AddToWhereClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
       if (this.OnlyFirstIndiFilter) {
         sResult = Filters.AddToWhereClause(sResult,this.OnlyFirstIndiFilterExp);
       }
@@ -166,6 +166,52 @@ namespace BioMap
         sResult = Filters.AddToWhereClause(sResult,this.ExcludeFreshBornFilterExp);
       }
       return sResult;
+    }
+    private string ExpandIndiFilter(string sFilter) {
+      return ExpandFilter(sFilter,(sIndiA,sIndiB) => {
+        var sbExp = new System.Text.StringBuilder();
+        int nIndiA = int.Parse(sIndiA);
+        int nIndiB = int.Parse(sIndiB);
+        for (int nIndi = nIndiA;nIndi<=nIndiB;nIndi++) {
+          sbExp.Append(ConvInvar.ToString(nIndi));
+          sbExp.Append(" ");
+        }
+        return sbExp.ToString();
+      });
+    }
+    private string ExpandCatFilter(string sFilter) {
+      return ExpandFilter(sFilter,(sCatA,sCatB) => {
+        var sbExp = new System.Text.StringBuilder();
+        int nCatA = int.Parse(sCatA);
+        int nCatB = int.Parse(sCatB);
+        for (int nCat = nCatA;nCat<=nCatB;nCat++) {
+          sbExp.Append(ConvInvar.ToString(nCat));
+          sbExp.Append(" ");
+        }
+        return sbExp.ToString();
+      });
+    }
+    private string ExpandPlaceFilter(string sFilter) {
+      return sFilter;
+    }
+    private string ExpandFilter(string sFilter,Func<string,string,string> funcExpand) {
+      var sbExp = new System.Text.StringBuilder();
+      if (sFilter.StartsWith("!") || sFilter.StartsWith("^") || sFilter.StartsWith("-")) {
+        sbExp.Append("!");
+        sFilter=sFilter.Substring(1);
+      }
+      var saParts = sFilter.Split(' ',',',';','|','+');
+      for (int i=0;i<saParts.Length;i++) {
+        var sPart = saParts[i];
+        var sa1=System.Text.RegularExpressions.Regex.Split(sPart,@"(\d+)(-|\.\.)(\d+)");
+        if (sa1.Length==1) {
+          sbExp.Append(sa1[0]);
+          sbExp.Append(" ");
+        } else if (sa1.Length==5) {
+          sbExp.Append(funcExpand(sa1[1],sa1[3]));
+        }
+      }
+      return sbExp.ToString().Trim();
     }
   }
 }

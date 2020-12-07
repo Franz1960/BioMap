@@ -6,7 +6,7 @@
 @using BioMap
 
 <div class="form-group">
-  <span data-toggle="tooltip" title="@Localize["A list of categories, e.g. '100,320,330' or '!350,351' if negated."]">@Localize["Category filter"]: </span>
+  <span data-toggle="tooltip" title="@Localize["A list of categories, e.g. '100,140-169,320,330' or '!350,351' if negated."]">@Localize["Category filter"]: </span>
   <input type="text" value="@SD.Filters.CatFilter" @onchange="CatInput_Changed" />
 </div>
 

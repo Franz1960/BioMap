@@ -117,11 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="A list of categories, e.g. '100,320,330' or '!350,351' if negated." xml:space="preserve">
-    <value>Eine Liste von Kategorien, z.B. '100,320,330' oder '!350,351' wenn negiert.</value>
+  <data name="A list of categories, e.g. '100,140-169,320,330' or '!350,351' if negated." xml:space="preserve">
+    <value>Eine Liste von Kategorien, z.B. '100,140-169,320,330' oder '!350,351' wenn negiert.</value>
   </data>
-  <data name="A list of individuals, e.g. '60', '57,58,59,60' or '!42' if negated." xml:space="preserve">
-    <value>Eine Liste von Individuen, z.B. '60', '57,58,59,60' oder '!42', falls verneint.</value>
+  <data name="A list of individuals, e.g. '60', '3-9,57,58,59,60' or '!42' if negated." xml:space="preserve">
+    <value>Eine Liste von Individuen, z.B. '60', '3-9,57,58,59,60' oder '!42', falls verneint.</value>
   </data>
   <data name="A list of places, e.g. 'B2,B3,C1' or '!B1,M1' if negated." xml:space="preserve">
     <value>Eine Liste von Plätzen, z.B. 'B2,B3,C1' oder '!B1,M1' zum Negieren.</value>
