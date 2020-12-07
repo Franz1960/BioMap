@@ -38,21 +38,18 @@
         Scales = new Scales {
           XAxes = new List<CartesianAxis>
           {
-            new LinearCartesianAxis
+            new TimeAxis
             {
               ScaleLabel = new ScaleLabel
               {
                 LabelString = Localize["Time"]
               },
-              GridLines = new GridLines
+              Time = new TimeOptions
               {
-                Display = false
+                Unit = TimeMeasurement.Month,
+                Round = TimeMeasurement.Day,
+                TooltipFormat = "DD.MM.YYYY",
               },
-              Ticks = new LinearCartesianTicks
-              {
-                //StepSize=1,
-                Precision=2,
-              }
             }
           },
           YAxes = new List<CartesianAxis>
@@ -96,7 +93,7 @@
       var lDates = new List<DateTime>(countByPlaceAndDate[sPlace].Keys);
       lDates.Sort();
       foreach (var date in lDates) {
-        var lineSetCurve = new LineDataset<Point> {
+        var lineSetCurve = new LineDataset<TimePoint> {
           BackgroundColor = "rgba(239,209,0,0.8)",
           BorderWidth = 1,
           PointHoverBorderWidth = 1,
@@ -104,7 +101,7 @@
           PointRadius = (int)Math.Round(2*Math.Sqrt(countByPlaceAndDate[sPlace][date])),
           ShowLine = false,
         };
-        lineSetCurve.Add(new Point(Utilities.Years_from_DateTime(date),idxPlace));
+        lineSetCurve.Add(new TimePoint(date,idxPlace));
         if (lineSetCurve.Data.Count>=1) {
           _config.Data.Datasets.Add(lineSetCurve);
         }
