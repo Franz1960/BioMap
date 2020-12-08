@@ -92,6 +92,19 @@ namespace BioMap
     }
     private bool _ExcludeFreshBornFilter = false;
     private readonly string ExcludeFreshBornFilterExp = "indivdata.winters>=1";
+    public bool OnlyFreshBornFilter {
+      get {
+        return this._OnlyFreshBornFilter;
+      }
+      set {
+        if (value!=this._OnlyFreshBornFilter) {
+          this._OnlyFreshBornFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private bool _OnlyFreshBornFilter = false;
+    private readonly string OnlyFreshBornFilterExp = "indivdata.winters<1";
     public string PlaceFilter {
       get {
         return this._PlaceFilter;
@@ -186,6 +199,9 @@ namespace BioMap
         }
         if (this.ExcludeFreshBornFilter) {
           sResult = Filters.AddToWhereClause(sResult,this.ExcludeFreshBornFilterExp);
+        }
+        if (this.OnlyFreshBornFilter) {
+          sResult = Filters.AddToWhereClause(sResult,this.OnlyFreshBornFilterExp);
         }
       }
       if (this.FilteringTarget==FilteringTargetEnum.Elements) {

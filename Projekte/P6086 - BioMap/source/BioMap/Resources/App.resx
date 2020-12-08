@@ -270,6 +270,9 @@
   <data name="Only first image" xml:space="preserve">
     <value>Nur erstes Bild</value>
   </data>
+  <data name="Only fresh born" xml:space="preserve">
+    <value>Nur Hüpferlinge</value>
+  </data>
   <data name="Only last image" xml:space="preserve">
     <value>Nur letztes Bild</value>
   </data>
