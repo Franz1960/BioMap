@@ -9,28 +9,34 @@
   <CardDeck>
     @if (FilteringTarget==Filters.FilteringTargetEnum.Log) {
     } else@if (FilteringTarget==Filters.FilteringTargetEnum.Notes) {
-    } else {
-    <Card>
+} else {
+  <Card>
+    <CardBody>
       <PlaceFilter />
+    </CardBody>
+  </Card>
+  @if (FilteringTarget==Filters.FilteringTargetEnum.Individuals) {
+    <Card>
+      <CardBody>
+        <IndiFilter />
+      </CardBody>
     </Card>
-    @if (FilteringTarget==Filters.FilteringTargetEnum.Individuals) {
-  <Card>
-    <IndiFilter />
-  </Card>
-  <Card>
-    <OnlyFirstIndiFilter />
-    <OnlyLastIndiFilter />
-  </Card>
-  <Card>
-    <ExcludeFreshBornFilter />
-  </Card>
-    }
-    @if (FilteringTarget==Filters.FilteringTargetEnum.Elements) {
-  <Card>
-    <CatFilter />
-  </Card>
-    }
+    <Card>
+      <CardBody>
+        <OnlyFirstIndiFilter />
+        <OnlyLastIndiFilter />
+        <ExcludeFreshBornFilter />
+      </CardBody>
+    </Card>
   }
+  @if (FilteringTarget==Filters.FilteringTargetEnum.Elements) {
+    <Card>
+      <CardBody>
+        <CatFilter />
+      </CardBody>
+    </Card>
+  }
+}
   </CardDeck>
 </Fields>
 

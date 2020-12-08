@@ -116,16 +116,18 @@ namespace BioMap
       }
     }
     private string _CatFilter = "";
+    public static char[] NegateChars { get; } = new char[] { '-','!','^' };
+    public static char[] SeparateChars { get; } = new char[] { ' ',',',';','|','+' };
     private string GetFilterTermForWhereClause(string sFilter) {
       string sFilterTerm = null;
       if (!string.IsNullOrEmpty(sFilter)) {
         string sList = sFilter;
         string[] saParts;
-        bool bNegate = (sList.StartsWith("!") || sList.StartsWith("^") || sList.StartsWith("-"));
+        bool bNegate = (sList.IndexOfAny(Filters.NegateChars)==0);
         if (bNegate) {
           sList=sList.Substring(1);
         }
-        saParts=sList.Split(' ',',',';','|','+');
+        saParts=sList.Split(Filters.SeparateChars);
         string sSqlIndis = "";
         string sDelim = "(";
         foreach (var sPlace in saParts) {
@@ -143,11 +145,11 @@ namespace BioMap
       if (!string.IsNullOrEmpty(sFilterTerm)) {
         string sList = this.IndiFilter;
         string[] saIndis;
-        bool bNegate = (sList.StartsWith("!") || sList.StartsWith("^") || sList.StartsWith("-"));
+        bool bNegate = (sList.IndexOfAny(Filters.NegateChars)==0);
         if (bNegate) {
           sList=sList.Substring(1);
         }
-        saIndis=sList.Split(' ',',',';','|','+');
+        saIndis=sList.Split(Filters.SeparateChars);
         string sSqlIndis = "";
         string sDelim = "(";
         foreach (var sPlace in saIndis) {
@@ -225,7 +227,7 @@ namespace BioMap
         sbExp.Append("!");
         sFilter=sFilter.Substring(1);
       }
-      var saParts = sFilter.Split(' ',',',';','|','+');
+      var saParts = sFilter.Split(Filters.SeparateChars);
       for (int i=0;i<saParts.Length;i++) {
         var sPart = saParts[i];
         var sa1=System.Text.RegularExpressions.Regex.Split(sPart,@"(\d+)(-|\.\.)(\d+)");

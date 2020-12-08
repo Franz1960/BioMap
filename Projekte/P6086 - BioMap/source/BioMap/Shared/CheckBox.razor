@@ -4,10 +4,12 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<div class="form-group">
+<Switch Color="Color.Success" TValue="bool" Checked="@Checked" CheckedChanged="@((e)=>Checked_Changed(e))">@LabelText</Switch>
+
+@*<div class="form-group">
   <span data-toggle="tooltip" title="@LabelToolTip">@LabelText: </span>
   <input type="checkbox" checked="@Checked" @onchange="Checked_Changed" />
-</div>
+</div>*@
 
 @code {
   [Parameter]
@@ -19,8 +21,10 @@
   [Parameter]
   public EventCallback<ChangeEventArgs> OnAnyChangedCallback { get; set; }
   //
-  private void Checked_Changed(ChangeEventArgs e) {
-    this.Checked=bool.Parse(e.Value.ToString());
-    this.OnAnyChangedCallback.InvokeAsync(e);
+  private void Checked_Changed(bool e) {
+    this.Checked=e;
+    var ea = new ChangeEventArgs();
+    ea.Value=e;
+    this.OnAnyChangedCallback.InvokeAsync(ea);
   }
 }
