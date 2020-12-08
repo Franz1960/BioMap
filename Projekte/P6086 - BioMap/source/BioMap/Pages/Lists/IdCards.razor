@@ -5,6 +5,8 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
+<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
+
 <h1>@Localize["ID Cards"]</h1>
 
 <PhotoPopup @ref="PhotoPopup1" />
@@ -27,8 +29,7 @@
   private PhotoPopup PhotoPopup1;
   protected override void OnInitialized() {
     base.OnInitialized();
-    SD.Filters.FilterChanged+=(sender,ev) =>
-    {
+    SD.Filters.FilterChanged+=(sender,ev) => {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };

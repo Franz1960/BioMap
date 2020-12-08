@@ -5,6 +5,8 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
+<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
+
 <h1>@Localize["All Elements"]</h1>
 
 <p>Anzahl Elemente: @Elements.Length</p>
@@ -51,6 +53,7 @@
   }
   private void RefreshData() {
     this.Elements = Elements = DataService.Instance.GetElements(SD.Filters,"","elements.creationtime DESC");
+    i=0;
   }
   private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);

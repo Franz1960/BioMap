@@ -1,0 +1,34 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Fields>
+  @if (FilteringTarget==Filters.FilteringTargetEnum.Log) {
+  } else@if (FilteringTarget==Filters.FilteringTargetEnum.Notes) {
+} else {
+<PlaceFilter />
+@if (FilteringTarget==Filters.FilteringTargetEnum.Individuals) {
+  <IndiFilter />
+  <OnlyFirstIndiFilter />
+  <OnlyLastIndiFilter />
+  <ExcludeFreshBornFilter />
+}
+@if (FilteringTarget==Filters.FilteringTargetEnum.Elements) {
+  <CatFilter />
+}
+}
+</Fields>
+
+@code {
+  [Parameter]
+  public Filters.FilteringTargetEnum FilteringTarget { get; set; }
+  [Parameter]
+  public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
+  //
+  protected override void OnInitialized() {
+    SD.Filters.FilteringTarget=this.FilteringTarget;
+  }
+}

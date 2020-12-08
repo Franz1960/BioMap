@@ -5,6 +5,8 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
+<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Notes" />
+
 <h1>@Localize["Notes"]</h1>
 
 <table class="table table-striped">
@@ -16,10 +18,10 @@
   </thead>
   <tbody>
     @foreach (var pe in ProtocolEntries) {
-    <tr>
-      <td>@pe.CreationTime.ToString("yyyy-MM-dd")<br />@pe.Author</td>
-      <td>@((MarkupString)pe.Text)</td>
-    </tr>
+      <tr>
+        <td>@pe.CreationTime.ToString("yyyy-MM-dd")<br />@pe.Author</td>
+        <td>@((MarkupString)pe.Text)</td>
+      </tr>
     }
   </tbody>
 </table>
@@ -29,8 +31,7 @@
   private ProtocolEntry[] ProtocolEntries = new ProtocolEntry[0];
   protected override void OnInitialized() {
     base.OnInitialized();
-    SD.Filters.FilterChanged+=(sender,ev) =>
-    {
+    SD.Filters.FilterChanged+=(sender,ev) => {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };

@@ -13,6 +13,8 @@
 @using ChartJs.Blazor.LineChart
 @using ChartJs.Blazor.Util
 
+<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
+
 <h1>@Localize["Frequency by Place / Time Chart"]</h1>
 
 <ChartJs.Blazor.Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />

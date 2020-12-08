@@ -5,22 +5,85 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<div class="form-group">
-  <span data-toggle="tooltip" title="@Localize["A list of places, e.g. 'B2,B3,C1' or '!B1,M1' if negated."]">@Localize["Place filter"]: </span>
-  <input type="text" value="@SD.Filters.PlaceFilter" @onchange="PlaceInput_Changed" />
-</div>
+<Field>
+  <Row>
+    <Column ColumnSize="ColumnSize.Is6">
+      <Label>@Localize["Place filter"]</Label>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is3">
+      <Switch Color="Color.Warning" TValue="bool" Checked="@GetInvert()" CheckedChanged="@((e)=>InvertedChanged(e))">@Localize["Invert"]</Switch>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is2">
+      <Button Size="Size.Small" Color="Color.Primary" Clicked="@((e)=>Clear())">@Localize["Clear"]</Button>
+    </Column>
+  </Row>
+  <Row>
+    <Column>
+      <Select TValue="string" Multiple="true" MaxVisibleItems="5" SelectedValues="@GetCurrentPlaceFilter()" SelectedValuesChanged="@((e)=>SelectedValuesChanged(e))">
+        @foreach (var place in DS.AllPlaces) {
+          <SelectItem Value="@place.Name">@place.Name</SelectItem>
+        }
+      </Select>
+    </Column>
+  </Row>
+  <FieldHelp>
+    @Localize["Select one or more. Negate by switch."]
+  </FieldHelp>
+</Field>
 
 @code {
   [Parameter]
-  public string SelectedValue { get; set; }
-  [Parameter]
-  public string[] Places { get; set; }
-  [Parameter]
   public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
   //
-  private void PlaceInput_Changed(ChangeEventArgs e) {
-    SD.Filters.PlaceFilter=e.Value.ToString();
+  private void Clear() {
+    this.Invert=false;
+    this.SelectedValues=null;
+    this.AnyValueChanged();
+    //base.InvokeAsync(StateHasChanged);
+  }
+  private bool Invert = false;
+  private void InvertedChanged(bool e) {
+    this.Invert=e;
+    this.AnyValueChanged();
+  }
+  private IReadOnlyList<string> SelectedValues = new string[0];
+  private void SelectedValuesChanged(IReadOnlyList<string> e) {
+    this.SelectedValues=e;
+    this.AnyValueChanged();
+  }
+  private void AnyValueChanged() {
+    var sb = new System.Text.StringBuilder();
+    if (this.SelectedValues!=null && this.SelectedValues.Count>=1) {
+      if (this.Invert) {
+        sb.Append("-");
+      }
+      for (int i = 0;i<this.SelectedValues.Count;i++) {
+        if (i!=0) {
+          sb.Append(" ");
+        }
+        sb.Append(this.SelectedValues[i]);
+      }
+    } else {
+      this.Invert=false;
+    }
+    SD.Filters.PlaceFilter=sb.ToString();
     this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
   }
-
+  private bool GetInvert() {
+    string sPlaceFilter = SD.Filters.PlaceFilter;
+    return (this.Invert=sPlaceFilter.StartsWith("-"));
+  }
+  private IReadOnlyList<string> GetCurrentPlaceFilter() {
+    string sPlaceFilter = SD.Filters.PlaceFilter;
+    if (sPlaceFilter.StartsWith("-")) {
+      sPlaceFilter=sPlaceFilter.Substring(1);
+    }
+    var l = new List<string>();
+    foreach (var s in sPlaceFilter.Split(' ')) {
+      if (!string.IsNullOrEmpty(s)) {
+        l.Add(s);
+      }
+    }
+    return this.SelectedValues=(l.Count<1)?null:l;
+  }
 }
