@@ -6,20 +6,32 @@
 @using BioMap
 
 <Fields>
-  @if (FilteringTarget==Filters.FilteringTargetEnum.Log) {
-  } else@if (FilteringTarget==Filters.FilteringTargetEnum.Notes) {
-} else {
-<PlaceFilter />
-@if (FilteringTarget==Filters.FilteringTargetEnum.Individuals) {
-  <IndiFilter />
-  <OnlyFirstIndiFilter />
-  <OnlyLastIndiFilter />
-  <ExcludeFreshBornFilter />
-}
-@if (FilteringTarget==Filters.FilteringTargetEnum.Elements) {
-  <CatFilter />
-}
-}
+  <CardDeck>
+    @if (FilteringTarget==Filters.FilteringTargetEnum.Log) {
+    } else@if (FilteringTarget==Filters.FilteringTargetEnum.Notes) {
+    } else {
+    <Card>
+      <PlaceFilter />
+    </Card>
+    @if (FilteringTarget==Filters.FilteringTargetEnum.Individuals) {
+  <Card>
+    <IndiFilter />
+  </Card>
+  <Card>
+    <OnlyFirstIndiFilter />
+    <OnlyLastIndiFilter />
+  </Card>
+  <Card>
+    <ExcludeFreshBornFilter />
+  </Card>
+    }
+    @if (FilteringTarget==Filters.FilteringTargetEnum.Elements) {
+  <Card>
+    <CatFilter />
+  </Card>
+    }
+  }
+  </CardDeck>
 </Fields>
 
 @code {
