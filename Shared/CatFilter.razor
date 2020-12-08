@@ -5,22 +5,70 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<div class="form-group">
-  <span data-toggle="tooltip" title="@Localize["A list of categories, e.g. '100,140-169,320,330' or '!350,351' if negated."]">@Localize["Category filter"]: </span>
-  <input type="text" value="@SD.Filters.CatFilter" @onchange="CatInput_Changed" />
-</div>
+<Field ColumnSize="ColumnSize.Is4.OnTablet.Is3.OnWidescreen.Is12.OnMobile">
+  <FieldLabel>
+    @Localize["Category filter"]
+  </FieldLabel>
+  <Addons>
+    <Addon AddonType="AddonType.Start">
+      <Switch Color="Color.Warning" TValue="bool" Checked="@GetInvert()" CheckedChanged="@((e)=>InvertedChanged(e))"></Switch>
+    </Addon>
+    <Addon AddonType="AddonType.Body">
+      <Select TValue="int" Multiple="true" MaxVisibleItems="5" SelectedValues="@GetCurrentCatFilter()" SelectedValuesChanged="@((e)=>SelectedValuesChanged(e))">
+        @foreach (var cat in Element.Category.AllCategories) {
+          <SelectItem Value="@cat.Num">@cat.Num - @cat.Name</SelectItem>
+        }
+      </Select>
+    </Addon>
+  </Addons>
+  <FieldHelp>@Localize["Select one or more. Negate by switch."]</FieldHelp>
+</Field>
 
 @code {
   [Parameter]
-  public string SelectedValue { get; set; }
-  [Parameter]
-  public string[] Categories { get; set; }
-  [Parameter]
   public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
   //
-  private void CatInput_Changed(ChangeEventArgs e) {
-    SD.Filters.CatFilter=e.Value.ToString();
+  private bool Invert = false;
+  private void InvertedChanged(bool e) {
+    this.Invert=e;
+    this.AnyValueChanged();
+  }
+  private IReadOnlyList<int> SelectedValues= new int[0];
+  private void SelectedValuesChanged(IReadOnlyList<int> e) {
+    this.SelectedValues=e;
+    this.AnyValueChanged();
+  }
+  private void AnyValueChanged() {
+    var sb = new System.Text.StringBuilder();
+    if (this.SelectedValues!=null && this.SelectedValues.Count>=1) {
+      if (this.Invert) {
+        sb.Append("-");
+      }
+      for (int i = 0;i<this.SelectedValues.Count;i++) {
+        if (i!=0) {
+          sb.Append(" ");
+        }
+        sb.Append(ConvInvar.ToString(this.SelectedValues[i]));
+      }
+    } else {
+      this.Invert=false;
+    }
+    SD.Filters.CatFilter=sb.ToString();
     this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
   }
-
+  private bool GetInvert() {
+    string sCatFilter = SD.Filters.CatFilter;
+    return (this.Invert=sCatFilter.StartsWith("-"));
+  }
+  private IReadOnlyList<int> GetCurrentCatFilter() {
+    string sCatFilter = SD.Filters.CatFilter;
+    if (sCatFilter.StartsWith("-")) {
+      sCatFilter=sCatFilter.Substring(1);
+    }
+    var l = new List<int>();
+    foreach (var s in sCatFilter.Split(' ')) {
+      l.Add(ConvInvar.ToInt(s));
+    }
+    return this.SelectedValues=l;
+  }
 }

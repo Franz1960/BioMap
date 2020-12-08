@@ -5,6 +5,8 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
+<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Log" />
+
 <h1>@Localize["Log"]</h1>
 
 <table class="table table-striped table-sm">
@@ -17,11 +19,11 @@
   </thead>
   <tbody>
     @foreach (var le in LogEntries) {
-    <tr>
-      <td>@le.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
-      <td>@le.User</td>
-      <td>@le.Action</td>
-    </tr>
+      <tr>
+        <td>@le.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+        <td>@le.User</td>
+        <td>@le.Action</td>
+      </tr>
     }
   </tbody>
 </table>
@@ -31,8 +33,7 @@
   private LogEntry[] LogEntries = new LogEntry[0];
   protected override void OnInitialized() {
     base.OnInitialized();
-    SD.Filters.FilterChanged+=(sender,ev) =>
-    {
+    SD.Filters.FilterChanged+=(sender,ev) => {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };

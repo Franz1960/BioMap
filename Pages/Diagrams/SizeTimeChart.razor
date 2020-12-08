@@ -13,6 +13,8 @@
 @using ChartJs.Blazor.LineChart
 @using ChartJs.Blazor.Util
 
+<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
+
 <h1>@Localize["Length / Time Chart"]</h1>
 
 <div class="container">
@@ -141,32 +143,32 @@
 #if trueX
 // Kurvenschar hinzufügen.
 for (var dtB = new DateTime(2012,1,1);dtB.Year<2021;dtB+=TimeSpan.FromDays(7)) {
-  string sYobColor = Element.GetColorForYearOfBirth(dtB.Year);
-  var lineSet = new LineDataset<TimePoint> {
-    BackgroundColor = sYobColor,
-    BorderWidth = 2,
-    PointHoverBorderWidth = 4,
-    BorderColor = sYobColor,
-    PointRadius = 0,
-    CubicInterpolationMode = CubicInterpolationMode.Monotone,
-    Fill=FillingMode.Disabled,
-    //ShowLine = true,
-  };
-  var fg = new GrowthFunc() {
-    DateOfBirth=dtB,
-  };
-  //for (var dt = dtProjectStart;dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
-  for (var dt = new DateTime(2015,11,1);dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
-    try {
-      var l = fg.GetSize(dt);
-      if (l > 10) {
-        lineSet.Add(new TimePoint(dt,l));
-      }
-    } catch { }
-  }
-  if (lineSet.Data.Count>=2) {
-    _config.Data.Datasets.Add(lineSet);
-  }
+string sYobColor = Element.GetColorForYearOfBirth(dtB.Year);
+var lineSet = new LineDataset<TimePoint> {
+  BackgroundColor = sYobColor,
+  BorderWidth = 2,
+  PointHoverBorderWidth = 4,
+  BorderColor = sYobColor,
+  PointRadius = 0,
+  CubicInterpolationMode = CubicInterpolationMode.Monotone,
+  Fill=FillingMode.Disabled,
+  //ShowLine = true,
+};
+var fg = new GrowthFunc() {
+  DateOfBirth=dtB,
+};
+//for (var dt = dtProjectStart;dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
+for (var dt = new DateTime(2015,11,1);dt<new DateTime(2020,11,1);dt+=TimeSpan.FromDays(7)) {
+  try {
+    var l = fg.GetSize(dt);
+    if (l > 10) {
+      lineSet.Add(new TimePoint(dt,l));
+    }
+  } catch { }
+}
+if (lineSet.Data.Count>=2) {
+  _config.Data.Datasets.Add(lineSet);
+}
 }
 #endif
     // Wachstumskurven der Individuen hinzufügen.
@@ -212,18 +214,18 @@ for (var dtB = new DateTime(2012,1,1);dtB.Year<2021;dtB+=TimeSpan.FromDays(7)) {
                     var fg = new GrowthFunc() {
                       DateOfBirth=Utilities.DateTime_from_Years(dyTimeOfBirth),
                     };
-                    //System.Diagnostics.Debug.Write(fg.DateOfBirth.ToString()+": ");
-                    double dDevSum = 0;
+                  //System.Diagnostics.Debug.Write(fg.DateOfBirth.ToString()+": ");
+                  double dDevSum = 0;
                     for (int i = 0;i<daaPoints.Length;i++) {
                       double dyTime = daaPoints[i][0];
                       double lReal = daaPoints[i][1];
                       double lCalc = fg.GetSize(dyTime);
                       double dDev = lReal-lCalc;
                       dDevSum+=(dDev*dDev);
-                      //System.Diagnostics.Debug.Write(" Dev="+ConvInvar.ToDecimalString(dDev,5));
-                    }
-                    //System.Diagnostics.Debug.WriteLine(" DevSum="+ConvInvar.ToDecimalString(dDevSum,5));
-                    return dDevSum;
+                    //System.Diagnostics.Debug.Write(" Dev="+ConvInvar.ToDecimalString(dDev,5));
+                  }
+                  //System.Diagnostics.Debug.WriteLine(" DevSum="+ConvInvar.ToDecimalString(dDevSum,5));
+                  return dDevSum;
                   },
                   -0.02,
                   0.0001,

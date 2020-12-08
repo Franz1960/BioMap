@@ -291,6 +291,9 @@
   <data name="Select" xml:space="preserve">
     <value>Auswählen</value>
   </data>
+  <data name="Select one or more. Negate by switch." xml:space="preserve">
+    <value>Einen oder mehrere auswählen. Mit Schalter Auswahl umkehren.</value>
+  </data>
   <data name="Show growing curves" xml:space="preserve">
     <value>Wachstumskurven anzeigen</value>
   </data>

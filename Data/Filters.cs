@@ -10,7 +10,27 @@ namespace BioMap
 {
   public class Filters
   {
+    public enum FilteringTargetEnum
+    {
+      None=0,
+      Elements,
+      Individuals,
+      Log,
+      Notes,
+    }
     public event EventHandler FilterChanged;
+    public FilteringTargetEnum FilteringTarget {
+      get {
+        return this._FilteringTarget;
+      }
+      set {
+        if (value!=this._FilteringTarget) {
+          this._FilteringTarget=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private FilteringTargetEnum _FilteringTarget = FilteringTargetEnum.None;
     public string IndiFilter {
       get {
         return this._IndiFilter;
@@ -153,17 +173,22 @@ namespace BioMap
     }
     public string AddAllFiltersToWhereClause(string sBasicWhereClause) {
       string sResult = sBasicWhereClause;
-      sResult = this.AddToWhereClause(sResult,"indivdata.iid",ExpandIndiFilter(this.IndiFilter));
-      sResult = this.AddToWhereClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
-      sResult = this.AddToWhereClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
-      if (this.OnlyFirstIndiFilter) {
-        sResult = Filters.AddToWhereClause(sResult,this.OnlyFirstIndiFilterExp);
+      if (this.FilteringTarget==FilteringTargetEnum.Individuals) {
+        sResult = this.AddToWhereClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
+        sResult = this.AddToWhereClause(sResult,"indivdata.iid",ExpandIndiFilter(this.IndiFilter));
+        if (this.OnlyFirstIndiFilter) {
+          sResult = Filters.AddToWhereClause(sResult,this.OnlyFirstIndiFilterExp);
+        }
+        if (this.OnlyLastIndiFilter) {
+          sResult = Filters.AddToWhereClause(sResult,this.OnlyLastIndiFilterExp);
+        }
+        if (this.ExcludeFreshBornFilter) {
+          sResult = Filters.AddToWhereClause(sResult,this.ExcludeFreshBornFilterExp);
+        }
       }
-      if (this.OnlyLastIndiFilter) {
-        sResult = Filters.AddToWhereClause(sResult,this.OnlyLastIndiFilterExp);
-      }
-      if (this.ExcludeFreshBornFilter) {
-        sResult = Filters.AddToWhereClause(sResult,this.ExcludeFreshBornFilterExp);
+      if (this.FilteringTarget==FilteringTargetEnum.Elements) {
+        sResult = this.AddToWhereClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
+        sResult = this.AddToWhereClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
       }
       return sResult;
     }

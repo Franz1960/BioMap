@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace BioMap
 {
@@ -32,6 +35,13 @@ namespace BioMap
       services.AddScoped<SessionData>();
       services.AddLocalization(options => options.ResourcesPath = "Resources");
       services.AddControllers();
+      services
+      .AddBlazorise(options =>
+       {
+         options.ChangeTextOnKeyPress = true; // optional
+       })
+      .AddBootstrapProviders()
+      .AddFontAwesomeIcons();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +70,10 @@ namespace BioMap
         //
         endpoints.MapControllers();
       });
+
+      app.ApplicationServices
+        .UseBootstrapProviders()
+        .UseFontAwesomeIcons();
 
       var ds = app.ApplicationServices.GetRequiredService<DataService>();
       ds.Init();
