@@ -39,6 +39,8 @@ namespace BioMap
       .AddBlazorise(options =>
        {
          options.ChangeTextOnKeyPress = true; // optional
+         options.DelayTextOnKeyPress = true;
+         options.DelayTextOnKeyPressInterval = 500;
        })
       .AddBootstrapProviders()
       .AddFontAwesomeIcons();

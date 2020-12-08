@@ -4,10 +4,27 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<div class="form-group">
-  <span data-toggle="tooltip" title="@Localize["A list of individuals, e.g. '60', '3-9,57,58,59,60' or '!42' if negated."]">@Localize["Individuals"]: </span>
-  <input type="text" value="@SD.Filters.IndiFilter" @onchange="IndiInput_Changed" />
-</div>
+<Field>
+  <Row>
+    <Column ColumnSize="ColumnSize.Is5">
+      <Label>@Localize["Individuals"]</Label>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is3">
+      <Switch Color="Color.Warning" TValue="bool" Checked="@GetInvert()" CheckedChanged="@((e)=>InvertedChanged(e))">@Localize["Invert"]</Switch>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is2">
+        <Button Size="Size.Small" Color="Color.Primary" Clicked="@((e)=>Clear())">@Localize["Clear"]</Button>
+      </Column>
+  </Row>
+  <Row>
+    <Column>
+      <TextEdit Text="@SD.Filters.IndiFilter" TextChanged="@((e)=>IndiInput_Changed(e))"></TextEdit>
+    </Column>
+  </Row>
+  <FieldHelp>
+    @Localize["A list of individuals, e.g. '60', '3-9,57,58,59,60' or '!42' if negated."]
+  </FieldHelp>
+</Field>
 
 @code {
   [Parameter]
@@ -17,8 +34,24 @@
   [Parameter]
   public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
   //
-  private void IndiInput_Changed(ChangeEventArgs e) {
-    SD.Filters.IndiFilter=e.Value.ToString();
+  private void Clear() {
+    this.IndiInput_Changed("");
+  }
+  private bool GetInvert() {
+    return (SD.Filters.IndiFilter.IndexOfAny(Filters.NegateChars)==0);
+  }
+  private void InvertedChanged(bool e) {
+    if (this.GetInvert()!=e) {
+      if (e) {
+        SD.Filters.IndiFilter=Filters.NegateChars[0]+SD.Filters.IndiFilter;
+      } else {
+        SD.Filters.IndiFilter=SD.Filters.IndiFilter.Substring(1);
+      }
+      this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
+    }
+  }
+  private void IndiInput_Changed(string e) {
+    SD.Filters.IndiFilter=(e==null)?string.Empty:e;
     this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
   }
 }

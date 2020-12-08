@@ -13,9 +13,9 @@
     <Column ColumnSize="ColumnSize.Is3">
       <Switch Color="Color.Warning" TValue="bool" Checked="@GetInvert()" CheckedChanged="@((e)=>InvertedChanged(e))">@Localize["Invert"]</Switch>
     </Column>
-    <Column ColumnSize="ColumnSize.Is2">
+    @*<Column ColumnSize="ColumnSize.Is2">
       <Button Size="Size.Small" Color="Color.Primary" Clicked="@((e)=>Clear())">@Localize["Clear"]</Button>
-    </Column>
+    </Column>*@
   </Row>
   <Row>
     <Column>
