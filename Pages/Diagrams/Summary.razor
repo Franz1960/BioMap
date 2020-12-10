@@ -67,7 +67,7 @@
                   Stacked = true
               }
           }
-        }
+        },
       },
     };
     SD.Filters.FilterChanged+=(sender,ev) => {
@@ -82,8 +82,6 @@
     for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
       _config.Data.Labels.Add(ConvInvar.ToString(year));
     }
-    var dsTotal = new BarDataset<int>() { Label=Localize["Totals"] };
-    var dsHatchlings = new BarDataset<int>() { Label=Localize["Hatchlings"] };
     //
     var aaIndisByIId = DS.GetIndividuals();
     int nIndex = 0;

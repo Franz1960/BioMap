@@ -95,14 +95,18 @@
       var lDates = new List<DateTime>(countByPlaceAndDate[sPlace].Keys);
       lDates.Sort();
       foreach (var date in lDates) {
+        int nRadius = (int)Math.Round(2*Math.Sqrt(countByPlaceAndDate[sPlace][date]));
         var lineSetCurve = new LineDataset<TimePoint> {
           BackgroundColor = "rgba(239,209,0,0.8)",
           BorderWidth = 1,
           PointHoverBorderWidth = 1,
           BorderColor = "rgba(239,209,0,0.8)",
-          PointRadius = (int)Math.Round(2*Math.Sqrt(countByPlaceAndDate[sPlace][date])),
+          PointRadius = nRadius,
+          PointHoverRadius = nRadius,
+          PointHitRadius = nRadius,
           ShowLine = false,
         };
+        lineSetCurve.Label=sPlace+" "+ConvInvar.ToString(countByPlaceAndDate[sPlace][date])+" "+Localize["Individuals"];
         lineSetCurve.Add(new TimePoint(date,idxPlace));
         if (lineSetCurve.Data.Count>=1) {
           _config.Data.Datasets.Add(lineSetCurve);
