@@ -23,12 +23,12 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
   <script language="javascript" type="text/javascript" src="lib/glmatrix/gl-matrix-min.js"></script>
   <script language="javascript" type="text/javascript" src="lib/fhlib/fhutils.js"></script>
-  <script language="javascript" type="text/javascript" src="scripts/usermgt.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/cookies.js"></script>
   <script language="javascript" type="text/javascript" src="scripts/element.js"></script>
-  <script language="javascript" type="text/javascript" src="scripts/place.js"></script>
+  @*<script language="javascript" type="text/javascript" src="scripts/place.js"></script>
   <script language="javascript" type="text/javascript" src="scripts/preppic.js"></script>
   <script language="javascript" type="text/javascript" src="scripts/identify.js"></script>
-  <script language="javascript" type="text/javascript" src="scripts/geolocation.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/geolocation.js"></script>*@
   <!-- Some styling -->
   <link href="_content/Blazored.Menu/blazored-menu.css" rel="stylesheet" />
   <link href="css/site.css" rel="stylesheet" />
@@ -87,8 +87,31 @@
   <script src="~/workaround-gradient.js"></script>
 
   <script>
-    function UploadImageFiles_Init(idInput, idUploadUI) {
-      //alert("UploadImageFiles_Init(" + idInput + "," + idUploadUI + ") called.");
+    function ApiCall(sPhpFile, fetchArgs, aArgs) {
+      return new Promise((resolve, reject) => {
+        try {
+          var sUrlParams = window.location.search;
+          aArgs.forEach((arg, index, array) => {
+            sUrlParams += ((sUrlParams.length < 1) ? '?' : '&') + arg.name + "=" + arg.value;
+          });
+          fetch(sPhpFile + sUrlParams, fetchArgs)
+            .then((response) => {
+              resolve(response);
+            })
+            .catch((error) => {
+              if (reject) {
+                reject(error);
+              }
+            })
+            ;
+        } catch (ex) {
+          if (reject) {
+            reject("" + ex);
+          }
+        }
+      });
+    }
+    function UploadImageFiles_Init(idInput) {
       document.getElementById(idInput).addEventListener('change', UploadImageFiles, false);
     }
     function UploadImageFiles_Click(idInput) {
@@ -104,7 +127,7 @@
             // Send selected file.
             const formData = new FormData();
             formData.append('files[]', file);
-            CurrentUser.ApiCall('/api/photos', {
+            ApiCall('/api/photos', {
               method: 'POST',
               body: formData
             }, [

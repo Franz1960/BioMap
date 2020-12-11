@@ -107,6 +107,7 @@ namespace BioMap
       try {
         var lFileNames = System.IO.Directory.GetFiles(System.IO.Path.Combine(sMigSrcDir,"logs"),"log_*.txt")?.ToList();
         lFileNames.Sort();
+        int nTotalLineCount = 0;
         ds.AddLogEntry("Migration","Processing "+lFileNames.Count+" log files beginning with "+lFileNames?[0]);
         ds.OperateOnDb((command) => {
           var regEx = new System.Text.RegularExpressions.Regex("(.*) User\\((.*)\\): (.*)");
@@ -118,6 +119,7 @@ namespace BioMap
                 if (string.IsNullOrEmpty(sLine)) {
                   break;
                 } else {
+                  nTotalLineCount++;
                   var saLogEntry = regEx.Split(sLine);
                   var le = new LogEntry() {
                     CreationTime=DateTime.Parse(saLogEntry[1]),
@@ -127,16 +129,18 @@ namespace BioMap
                   command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('" + saLogEntry[1] + "'),'" + le.User + "','" + le.Action + "')";
                   command.ExecuteNonQuery();
                 }
-              } catch (Exception ex) {
-                command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('now','localtime'),'" + "Migration" + "','" + "Exception: "+ex.ToString() + "')";
+              } catch (Exception ex1) {
+                command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('now','localtime'),'" + "Migration" + "','" + "Exception: "+ex1.ToString() + "')";
                 command.ExecuteNonQuery();
               }
             }
             sr.Close();
           }
         });
-
-      } catch { }
+        ds.AddLogEntry("Migration","Migrated "+nTotalLineCount +" log lines");
+      } catch (Exception ex) {
+        ds.AddLogEntry("Migration","Exception migrating logs: "+ex.ToString());
+      }
       #endregion
       #region elements
       try {

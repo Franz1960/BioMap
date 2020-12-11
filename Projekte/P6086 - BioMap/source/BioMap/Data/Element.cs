@@ -97,18 +97,18 @@ namespace BioMap
     public int? SpeciesId;
     public int? ProjectId;
     //
-    public static Element CreateFromImageFile(string sImageFilePath) {
+    public static Element CreateFromImageFile(string sImageFilePath,string sUserId) {
       var metaData = ImageMetadataReader.ReadMetadata(sImageFilePath);
       var ifd0Directory = metaData.OfType<ExifIfd0Directory>().FirstOrDefault();
       var subIfdDirectory = metaData.OfType<ExifSubIfdDirectory>().FirstOrDefault();
       var gpsDirectory = metaData.OfType<GpsDirectory>().FirstOrDefault();
-      var geoLocation = gpsDirectory.GetGeoLocation();
+      var geoLocation = gpsDirectory?.GetGeoLocation();
       var el = new Element();
       el.ElementName = System.IO.Path.GetFileName(sImageFilePath);
       el.ElementProp=new ElementProp_t();
       el.ElementProp.UploadInfo=new Element.UploadInfo_t {
         Timestamp = DateTime.Now,
-        UserId = DataService.Instance.CurrentUser.EMail,
+        UserId = sUserId,
       };
       el.ElementProp.MarkerInfo=new MarkerInfo_t();
       el.ElementProp.MarkerInfo.category=100;
