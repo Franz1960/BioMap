@@ -10,6 +10,7 @@ namespace BioMap
 {
   public class SessionData
   {
+    public User CurrentUser { get; } = new User();
     public Filters Filters { get; } = new Filters();
     public bool SizeTimeChartShowGrowingCurves { get; set; } = true;
     public bool SizeTimeChartIncludeSinglePoints { get; set; } = true;

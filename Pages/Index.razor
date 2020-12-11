@@ -1,7 +1,59 @@
 ﻿@page "/"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
-@inject DataService DS
+@inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject DataService DS
+@inject SessionData SD
 @using BioMap
 
-<h1>@Localize["Welcome to BioMap!"]</h1>
+<Row>
+  <Column>
+    <Card Margin="Margin.Is4.OnY">
+      <CardHeader>
+        <CardTitle>@Localize["Welcome to BioMap!"]</CardTitle>
+      </CardHeader>
+      <CardBody>
+        <p>BioMap wird die neue Unken-App!</p>
+      </CardBody>
+    </Card>
+  </Column>
+</Row>
+@if (SD.CurrentUser.Level<200) {
+  <Row>
+    <Column>
+      <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+          <CardTitle>@Localize["Register"]</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <Button Color="Color.Primary" Clicked="@((e) => NavigationManager.NavigateTo("/Administration/UserMgt"))">Register</Button>
+        </CardBody>
+      </Card>
+    </Column>
+  </Row>
+}
+
+@code {
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
+    {
+      bool bAnyChanged = false;
+      try {
+        var sEMail = await JSRuntime.InvokeAsync<string>("getCookie","UserId");
+        if (string.CompareOrdinal(sEMail,SD.CurrentUser.EMail)!=0) {
+          SD.CurrentUser.EMail = await JSRuntime.InvokeAsync<string>("getCookie","UserId");
+          bAnyChanged=true;
+        }
+        var sUserPermTicket = await JSRuntime.InvokeAsync<string>("getCookie","UserPermTicket");
+        var user = new User();
+        DS.LoadUser(SD.CurrentUser.EMail,sUserPermTicket,user);
+        if (!object.Equals(user,SD.CurrentUser)) {
+          DS.LoadUser(SD.CurrentUser.EMail,sUserPermTicket,SD.CurrentUser);
+          bAnyChanged=true;
+        }
+      } catch { }
+      if (bAnyChanged) {
+        StateHasChanged();
+      }
+    }
+  }
+}

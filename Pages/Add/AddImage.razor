@@ -14,8 +14,6 @@
 </form>
 
 @code {
-  protected override async void OnInitialized() {
-  }
   protected override async Task OnAfterRenderAsync(bool firstRender) {
     if (firstRender) {
       await JSRuntime.InvokeAsync<string>("UploadImageFiles_Init","inputImageFiles","uploadUI");

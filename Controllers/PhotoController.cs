@@ -79,6 +79,7 @@ namespace BioMap
     }
     [HttpPost]
     public IActionResult Upload() {
+      string EMailAddr = this.HttpContext.Request.Cookies["UserId"];
       var ds = DataService.Instance;
       var sImagesOrigDir = System.IO.Path.Combine(ds.DataDir,"images_orig");
       try {
@@ -91,7 +92,7 @@ namespace BioMap
             using (var stream = new System.IO.FileStream(fullPath,System.IO.FileMode.Create)) {
               file.CopyTo(stream);
             }
-            var el = Element.CreateFromImageFile(fullPath);
+            var el = Element.CreateFromImageFile(fullPath,EMailAddr);
             ds.WriteElement(el);
             return Ok(fileName);
           }

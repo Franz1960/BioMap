@@ -76,6 +76,13 @@ namespace BioMap
           "user TEXT," +
           "action TEXT)";
           command.ExecuteNonQuery();
+          command.CommandText = "CREATE TABLE IF NOT EXISTS users (" +
+          "emailaddr TEXT PRIMARY KEY NOT NULL," +
+          "fullname TEXT," +
+          "level INT," +
+          "tan TEXT," +
+          "permticket TEXT)";
+          command.ExecuteNonQuery();
           command.CommandText = "CREATE TABLE IF NOT EXISTS species (" +
           "spec_id INTEGER PRIMARY KEY AUTOINCREMENT," +
           "genus TEXT NOT NULL," +
@@ -161,11 +168,111 @@ namespace BioMap
         }
       });
     }
-    public User CurrentUser { get; } = new User {
-      EMail="f.x.haering@gmail.com", // Vorerst konstant vorbesetzen.
-      FullName="Franz Häring",
-      Level=700,
-    };
+    public bool SendMail(string sTo,string sSubject,string sTextBody) {
+      // EMail per REST-API auf Server itools.de versenden.
+      try {
+        var client = new System.Net.Http.HttpClient();
+        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+        var requestContent = new System.Net.Http.StringContent("{\"Cmd\":\"SendMail\",\"To\":\""+sTo+"\",\"Subject\":\""+sSubject+"\",\"TextBody\":\""+sTextBody+"\"}");
+        requestContent.Headers.ContentType=new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+        bool bSuccess=client.PostAsync("https://itools.de/rfapi/rfapi.php",requestContent).Wait(4000);
+        return bSuccess;
+      } catch (Exception ex) {
+        this.AddLogEntry("SendMail","Exception: "+ex.ToString());
+      }
+      return false;
+    }
+    public bool RequestTAN(string sUser,string sFullName) {
+      var rng = new Random();
+      string sNewTAN = rng.Next(0,999999999).ToString("000000000");
+      string sPermTicket = "";
+      int nLevel = 100;
+      this.OperateOnDb((command) => {
+        command.CommandText = "SELECT emailaddr,permticket,level,fullname" +
+          " FROM users" +
+          " WHERE emailaddr='"+sUser+"'" +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read()) {
+          sPermTicket=dr.GetString(1);
+          nLevel=dr.GetInt32(2);
+          if (string.IsNullOrEmpty(sFullName)) {
+            sFullName=dr.GetString(3);
+          }
+          break;
+        }
+        dr.Close();
+        if (string.IsNullOrEmpty(sPermTicket)) {
+          sPermTicket = rng.Next(0,999999999).ToString("000000000");
+        }
+        command.CommandText =
+          "REPLACE INTO users (emailaddr,tan,permticket,level,fullname) " +
+          "VALUES ('" + sUser + "','" + sNewTAN + "','" + sPermTicket + "','" + ConvInvar.ToString(nLevel) + "','" + sFullName + "')" +
+          "";
+        command.ExecuteNonQuery();
+        this.SendMail(
+          sUser,
+          "Gelbbauchunken-Projekt TAN: "+sNewTAN,
+          "Geben Sie die TAN "+sNewTAN+" in das TAN-Feld auf der Web-Seite ein und bestätigen Sie es.");
+      });
+      return false;
+    }
+    public string ConfirmTAN(string sUser,string sTAN) {
+      string sPermTicket = "";
+      this.OperateOnDb((command) => {
+        command.CommandText = "SELECT tan,permticket" +
+          " FROM users" +
+          " WHERE emailaddr='"+sUser+"'" +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read()) {
+          string sRealTAN=dr.GetString(0);
+          if (string.CompareOrdinal(sTAN,sRealTAN)==0) {
+            sPermTicket=dr.GetString(1);
+          }
+          break;
+        }
+        dr.Close();
+      });
+      return sPermTicket;
+    }
+    public int GetUserLevel(string sUserId,string sPermTicket) {
+      int nLevel = 0;
+      this.OperateOnDb((command) => {
+        command.CommandText = "SELECT level" +
+          " FROM users" +
+          " WHERE emailaddr='"+sUserId+"' AND permticket='"+sPermTicket+"'" +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read()) {
+          nLevel=dr.GetInt32(0);
+          break;
+        }
+        dr.Close();
+      });
+      return nLevel;
+    }
+    public void LoadUser(string sUserId,string sPermTicket,User user) {
+      int nLevel = 0;
+      this.OperateOnDb((command) => {
+        command.CommandText = "SELECT permticket,level,fullname" +
+          " FROM users" +
+          " WHERE emailaddr='"+sUserId+"'" +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read()) {
+          var sRealPermTicket=dr.GetString(0);
+          if (string.CompareOrdinal(sPermTicket,sRealPermTicket)==0) {
+            nLevel=dr.GetInt32(1);
+          }
+          user.FullName=dr.GetString(2);
+          break;
+        }
+        dr.Close();
+      });
+      user.Level=nLevel;
+      user.EMail=sUserId;
+    }
     public void AddLogEntry(string sUser,string sAction) {
       this.OperateOnDb((command) => {
         command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('now','localtime'),'" + sUser + "','" + sAction + "')";

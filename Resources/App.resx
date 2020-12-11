@@ -126,6 +126,9 @@
   <data name="A list of places, e.g. 'B2,B3,C1' or '!B1,M1' if negated." xml:space="preserve">
     <value>Eine Liste von Plätzen, z.B. 'B2,B3,C1' oder '!B1,M1' zum Negieren.</value>
   </data>
+  <data name="Access level" xml:space="preserve">
+    <value>Zugangsstufe</value>
+  </data>
   <data name="Action" xml:space="preserve">
     <value>Aktion</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="Add Image" xml:space="preserve">
     <value>Foto hinzufügen</value>
+  </data>
+  <data name="Administration" xml:space="preserve">
+    <value>Verwaltung</value>
   </data>
   <data name="Adults" xml:space="preserve">
     <value>Adulti</value>
@@ -171,6 +177,9 @@
   <data name="Conditions" xml:space="preserve">
     <value>Bedingungen</value>
   </data>
+  <data name="Confirm TAN" xml:space="preserve">
+    <value>TAN bestätigen</value>
+  </data>
   <data name="Counted are all the different individuals who fulfill the conditions at least once in the respective period." xml:space="preserve">
     <value>Gezählt werden alle verschiedenen Individuen,die im jeweiligen Zeitraum mindestens einmal die Bedingungen erfüllen.</value>
   </data>
@@ -186,6 +195,9 @@
   <data name="Edit AOI" xml:space="preserve">
     <value>AOI bearbeiten</value>
   </data>
+  <data name="EMail address" xml:space="preserve">
+    <value>EMail-Adresse</value>
+  </data>
   <data name="Exclude fresh born" xml:space="preserve">
     <value>Ohne Hüpferlinge</value>
   </data>
@@ -200,6 +212,9 @@
   </data>
   <data name="Frequency by Place / Time Chart" xml:space="preserve">
     <value>Häufigkeit nach Ort / Zeit Diagramm</value>
+  </data>
+  <data name="Full name" xml:space="preserve">
+    <value>Vor- und Nachname</value>
   </data>
   <data name="Gender" xml:space="preserve">
     <value>Geschlecht</value>
@@ -227,6 +242,9 @@
   </data>
   <data name="Individuals" xml:space="preserve">
     <value>Individuen</value>
+  </data>
+  <data name="Insert TAN" xml:space="preserve">
+    <value>TAN eingeben</value>
   </data>
   <data name="Juveniles" xml:space="preserve">
     <value>Juvenile</value>
@@ -288,6 +306,9 @@
   <data name="Place filter" xml:space="preserve">
     <value>Platzfilter</value>
   </data>
+  <data name="Register" xml:space="preserve">
+    <value>Registrieren</value>
+  </data>
   <data name="Save calculated year-of-birth values" xml:space="preserve">
     <value>Berechnete Jahrgänge speichern</value>
   </data>
@@ -317,6 +338,9 @@
   </data>
   <data name="User" xml:space="preserve">
     <value>Benutzer</value>
+  </data>
+  <data name="User Management" xml:space="preserve">
+    <value>Benutzerverwaltung</value>
   </data>
   <data name="Vintage" xml:space="preserve">
     <value>Jahrgang</value>
