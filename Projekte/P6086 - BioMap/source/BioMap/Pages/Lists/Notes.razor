@@ -9,6 +9,34 @@
 
 <h1>@Localize["Notes"]</h1>
 
+@*<DataGrid TItem="ProtocolEntry" Data="ProtocolEntries" Editable="true" EditMode="DataGridEditMode.Inline">
+  <DataGridColumns>
+    <DataGridCommandColumn TItem="ProtocolEntry" Width="170px">
+      <NewCommandTemplate>
+      </NewCommandTemplate>
+      <EditCommandTemplate>
+        <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
+      </EditCommandTemplate>
+      <SaveCommandTemplate>
+        <Button Color="Color.Primary" Clicked="@context.Clicked">Save</Button>
+      </SaveCommandTemplate>
+      <DeleteCommandTemplate>
+        <Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>
+      </DeleteCommandTemplate>
+      <CancelCommandTemplate>
+        <Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Button>
+      </CancelCommandTemplate>
+      <ClearFilterCommandTemplate>
+        <Button Color="Color.Warning" Clicked="@context.Clicked">Clear Filter</Button>
+      </ClearFilterCommandTemplate>
+    </DataGridCommandColumn>
+    <DataGridColumn TItem="ProtocolEntry" Field="@nameof(ProtocolEntry.CreationTime)" Caption="@Localize["Time"]" Sortable="true" />
+    <DataGridColumn TItem="ProtocolEntry" Field="@nameof(ProtocolEntry.Author)" Caption="@Localize["Author"]" Sortable="true" />
+    <DataGridColumn TItem="ProtocolEntry" Field="@nameof(ProtocolEntry.Text)" Caption="@Localize["Text"]" Editable="true">
+    </DataGridColumn>
+  </DataGridColumns>
+</DataGrid>*@
+
 <table class="table table-striped">
   <thead>
     <tr>
