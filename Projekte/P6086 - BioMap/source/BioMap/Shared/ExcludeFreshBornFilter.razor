@@ -12,6 +12,9 @@
   //
   private void CheckBox_CheckedChanged(ChangeEventArgs e) {
     SD.Filters.ExcludeFreshBornFilter=bool.Parse(e.Value.ToString());
+    if (SD.Filters.ExcludeFreshBornFilter) {
+      SD.Filters.OnlyFreshBornFilter=false;
+    }
     this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
   }
 
