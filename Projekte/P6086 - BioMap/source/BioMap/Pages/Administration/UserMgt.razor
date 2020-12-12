@@ -12,31 +12,56 @@
         <CardTitle>@Localize["Register"]</CardTitle>
       </CardHeader>
       <CardBody>
+        <Validations Mode="ValidationMode.Auto" Model="@SD.CurrentUser">
+          <Validation>
+            <Field Horizontal="true">
+              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["EMail address"]</FieldLabel>
+              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Role="TextRole.Email" Placeholder="myname@example.com" @bind-Text="SD.CurrentUser.EMail">
+                  <Feedback>
+                    <ValidationError />
+                  </Feedback>
+                </TextEdit>
+              </FieldBody>
+            </Field>
+          </Validation>
+          <Validation>
+            <Field Horizontal="true">
+              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["Full name"]</FieldLabel>
+              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="John Doe" @bind-Text="SD.CurrentUser.FullName">
+                  <Feedback>
+                    <ValidationError />
+                  </Feedback>
+                </TextEdit>
+              </FieldBody>
+            </Field>
+          </Validation>
+        </Validations>
         <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["EMail address"]</FieldLabel>
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
+            <Button Color="Color.Primary" Disabled="TanRequested" Clicked="@((e)=>RequestTAN_Clicked())">
+              @Localize["Request TAN"]
+              @if (TanRequested) {
+                <BarIcon IconName="IconName.Check" />
+              }
+            </Button>
+          </FieldLabel>
           <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-            <TextEdit Role="TextRole.Email" Placeholder="myname@example.com" @bind-Text="SD.CurrentUser.EMail" />
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["Full name"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-            <TextEdit Placeholder="John Doe" @bind-Text="SD.CurrentUser.FullName" />
+            <TextEdit Placeholder=@Localize["Insert TAN"] @bind-Text="TAN">
+            </TextEdit>
           </FieldBody>
         </Field>
         <Field Horizontal="true">
           <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
-            <Button Color="Color.Primary" Clicked="@((e)=>RequestTAN_Clicked())">@Localize["Request TAN"]</Button>
           </FieldLabel>
           <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-            <TextEdit Placeholder=@Localize["Insert TAN"] @bind-Text="TAN" />
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
-          </FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-            <Button Color="Color.Primary" Clicked="@((e)=>ConfirmTAN_Clicked())">@Localize["Confirm TAN"]</Button>
+            <Button Color="Color.Primary" Disabled="TanConfirmed" Clicked="@((e) => ConfirmTAN_Clicked())">
+              @Localize["Confirm TAN"]
+              @if (TanConfirmed) {
+                <BarIcon IconName="IconName.Check" />
+              }
+            </Button>
           </FieldBody>
         </Field>
         <Field Horizontal="true">
@@ -54,13 +79,21 @@
   private string EMailAddr;
   private string FullName;
   private string TAN;
+  private bool TanRequested = false;
+  private bool TanConfirmed = false;
+
   private async void RequestTAN_Clicked() {
-    await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserId",SD.CurrentUser.EMail.Trim() });
-    DS.RequestTAN(SD.CurrentUser.EMail.Trim(),SD.CurrentUser.FullName.Trim());
+    await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserId",SD.CurrentUser.EMail?.Trim() });
+    TanRequested=DS.RequestTAN(SD.CurrentUser.EMail?.Trim(),SD.CurrentUser.FullName?.Trim());
+    StateHasChanged();
   }
   private async void ConfirmTAN_Clicked() {
-    string sPermTicket=DS.ConfirmTAN(SD.CurrentUser.EMail,TAN.Trim());
+    string sPermTicket=DS.ConfirmTAN(SD.CurrentUser.EMail,TAN?.Trim());
     await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserPermTicket",sPermTicket });
     SD.CurrentUser.Level=DS.GetUserLevel(SD.CurrentUser.EMail,sPermTicket);
+    if (SD.CurrentUser.Level>=100) {
+      TanConfirmed=true;
+    }
+    StateHasChanged();
   }
 }
