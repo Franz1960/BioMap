@@ -104,6 +104,9 @@
       validations.ClearAll();
       await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserId",SD.CurrentUser.EMail?.Trim() });
       TanRequested=DS.RequestTAN(SD.CurrentUser.EMail?.Trim(),SD.CurrentUser.FullName?.Trim());
+      if (TanRequested) {
+        DS.AddLogEntry(SD.CurrentUser.EMail,"TAN requested.");
+      }
     }
     StateHasChanged();
   }
@@ -115,6 +118,7 @@
       SD.CurrentUser.Level=DS.GetUserLevel(SD.CurrentUser.EMail,sPermTicket);
       if (SD.CurrentUser.Level>=100) {
         TanConfirmed=true;
+        DS.AddLogEntry(SD.CurrentUser.EMail,"TAN confirmed with "+TAN+". Level "+SD.CurrentUser.Level+" returned.");
       }
     }
     StateHasChanged();

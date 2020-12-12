@@ -1,9 +1,9 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 :root {
-  --b-bar-dark-background: #1b5e20;
+  --b-bar-dark-background: #1c5320;
   --b-bar-dark-color: #fff;
-  --b-bar-dropdown-dark-background: #1b5e20;
+  --b-bar-dropdown-dark-background: #226d27;
   --b-bar-dropdown-dark-color: #fff;
 }
 

@@ -255,6 +255,9 @@
   <data name="Known individuals" xml:space="preserve">
     <value>Bekannte Individuen</value>
   </data>
+  <data name="Latitude" xml:space="preserve">
+    <value>Breitengrad</value>
+  </data>
   <data name="Length" xml:space="preserve">
     <value>Länge</value>
   </data>
@@ -266,6 +269,9 @@
   </data>
   <data name="Log" xml:space="preserve">
     <value>Protokoll</value>
+  </data>
+  <data name="Longitude" xml:space="preserve">
+    <value>Längengrad</value>
   </data>
   <data name="Male" xml:space="preserve">
     <value>Männlich</value>
@@ -308,6 +314,9 @@
   </data>
   <data name="Place filter" xml:space="preserve">
     <value>Platzfilter</value>
+  </data>
+  <data name="Places" xml:space="preserve">
+    <value>Orte</value>
   </data>
   <data name="Register" xml:space="preserve">
     <value>Registrieren</value>

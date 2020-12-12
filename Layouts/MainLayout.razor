@@ -114,7 +114,12 @@
                 </BarDropdownToggle>
                 <BarDropdownMenu>
                   <BarDropdownItem To="/Administration/UserMgt">
-                    @Localize["User Management"]
+                    <BarIcon IconName="IconName.User" />
+                    @Localize["User"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Administration/Places">
+                    <BarIcon IconName="IconName.LocationArrow" />
+                    @Localize["Places"]
                   </BarDropdownItem>
                 </BarDropdownMenu>
               </BarDropdown>
