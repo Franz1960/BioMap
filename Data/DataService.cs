@@ -183,6 +183,7 @@ namespace BioMap
       return false;
     }
     public bool RequestTAN(string sUser,string sFullName) {
+      bool bSuccess = false;
       var rng = new Random();
       string sNewTAN = rng.Next(0,999999999).ToString("000000000");
       string sPermTicket = "";
@@ -210,12 +211,12 @@ namespace BioMap
           "VALUES ('" + sUser + "','" + sNewTAN + "','" + sPermTicket + "','" + ConvInvar.ToString(nLevel) + "','" + sFullName + "')" +
           "";
         command.ExecuteNonQuery();
-        this.SendMail(
+        bSuccess = this.SendMail(
           sUser,
           "Gelbbauchunken-Projekt TAN: "+sNewTAN,
           "Geben Sie die TAN "+sNewTAN+" in das TAN-Feld auf der Web-Seite ein und bestätigen Sie es.");
       });
-      return false;
+      return bSuccess;
     }
     public string ConfirmTAN(string sUser,string sTAN) {
       string sPermTicket = "";
@@ -233,6 +234,10 @@ namespace BioMap
           break;
         }
         dr.Close();
+        command.CommandText =
+          "UPDATE users SET tan='' WHERE emailaddr='" + sUser + "'" +
+          "";
+        command.ExecuteNonQuery();
       });
       return sPermTicket;
     }
