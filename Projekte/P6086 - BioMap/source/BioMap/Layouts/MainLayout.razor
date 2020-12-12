@@ -1,0 +1,148 @@
+﻿@layout RootLayout
+@inherits LayoutComponentBase
+@inject SessionData SD
+
+<Layout Sider="true">
+  <LayoutSider>
+    <LayoutSiderContent>
+      <Bar Breakpoint="Breakpoint.Desktop" NavigationBreakpoint="Breakpoint.Tablet" ThemeContrast="ThemeContrast.Dark"
+           Mode="BarMode.VerticalInline" CollapseMode="BarCollapseMode.Small">
+        <BarToggler />
+        <BarBrand>
+          <BarItem>
+            <BarLink To="/">
+              <BarIcon IconName="customIcon" />
+              BioMap
+            </BarLink>
+          </BarItem>
+        </BarBrand>
+        <BarMenu>
+          <BarStart>
+            <BarItem>
+              <BarLink To="/Map">
+                <BarIcon IconName="IconName.Map" />
+                @Localize["Map"]
+              </BarLink>
+            </BarItem>
+            <BarItem>
+              <BarDropdown>
+                <BarDropdownToggle>
+                  <BarIcon IconName="IconName.Add" />
+                  @Localize["Add"]
+                </BarDropdownToggle>
+                <BarDropdownMenu>
+                  <BarDropdownItem To="/Add/Image">
+                    @Localize["Image"]
+                  </BarDropdownItem>
+                </BarDropdownMenu>
+              </BarDropdown>
+            </BarItem>
+            <BarItem>
+              <BarDropdown>
+                <BarDropdownToggle>
+                  <BarIcon IconName="IconName.List" />
+                  @Localize["Lists"]
+                </BarDropdownToggle>
+                <BarDropdownMenu>
+                  <BarDropdownItem To="/Lists/AllElements">
+                    @Localize["All Elements"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Lists/AllIndividuals">
+                    @Localize["All Individuals"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Lists/AllImages">
+                    @Localize["All Images"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Lists/IdCardsByPlaces">
+                    @Localize["ID Cards by Places"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Lists/IdCards">
+                    @Localize["ID Cards"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Lists/Log">
+                    @Localize["Log"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Lists/Notes">
+                    @Localize["Notes"]
+                  </BarDropdownItem>
+                </BarDropdownMenu>
+              </BarDropdown>
+            </BarItem>
+            <BarItem>
+              <BarDropdown>
+                <BarDropdownToggle>
+                  <BarIcon IconName="IconName.ChartPie" />
+                  @Localize["Diagrams"]
+                </BarDropdownToggle>
+                <BarDropdownMenu>
+                  <BarDropdownItem To="/Charts/SizeTimeChart">
+                    @Localize["Length / Time Chart"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Charts/FrequencyByPlace">
+                    @Localize["Frequency by Place / Time Chart"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Charts/NumberYoBChart">
+                    @Localize["Numbers / Year of Birth Chart"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Charts/Summary">
+                    @Localize["Summary"]
+                  </BarDropdownItem>
+                </BarDropdownMenu>
+              </BarDropdown>
+            </BarItem>
+            <BarItem>
+              <BarDropdown>
+                <BarDropdownToggle>
+                  <BarIcon IconName="IconName.List" />
+                  @Localize["Statistics"]
+                </BarDropdownToggle>
+                <BarDropdownMenu>
+                  <BarDropdownItem To="/Statistics/Summary">
+                    @Localize["Summary"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Statistics/ByCategories">
+                    @Localize["ByCategories"]
+                  </BarDropdownItem>
+                </BarDropdownMenu>
+              </BarDropdown>
+            </BarItem>
+            <BarItem>
+              <BarDropdown>
+                <BarDropdownToggle>
+                  <BarIcon IconName="IconName.SliderHorizontal" />
+                  @Localize["Administration"]
+                </BarDropdownToggle>
+                <BarDropdownMenu>
+                  <BarDropdownItem To="/Administration/UserMgt">
+                    @Localize["User Management"]
+                  </BarDropdownItem>
+                </BarDropdownMenu>
+              </BarDropdown>
+            </BarItem>
+          </BarStart>
+          <BarEnd>
+            <BarItem>
+              <BarLink To="/Impressum">
+                <BarIcon IconName="IconName.Book" />
+                @Localize["Impressum"]
+              </BarLink>
+            </BarItem>
+          </BarEnd>
+        </BarMenu>
+      </Bar>
+    </LayoutSiderContent>
+  </LayoutSider>
+  <Layout>
+    <LayoutContent Padding="Padding.Is4.OnX">
+      @Body
+    </LayoutContent>
+  </Layout>
+</Layout>
+
+@code{
+  private bool uiElementsVisible = true;
+
+  [CascadingParameter] protected Theme Theme { get; set; }
+
+  RenderFragment customIcon =@<img src="/favicon-96x96.png" style="width:32px; height: 32px" />;
+}
