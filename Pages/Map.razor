@@ -6,7 +6,9 @@
 
 <div id="googleMap" style="height:1000px;width:100%;">
 </div>
-<button @onclick="()=>OnEditClick()">@Localize["Edit AOI"]</button>
+@if (SD.CurrentUser.Level>=700) {
+  <Button Color="Color.Primary" @onclick="() => OnEditClick()">@Localize["Edit AOI"]</Button>
+}
 
 @code{
 
