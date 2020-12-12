@@ -225,6 +225,9 @@
   <data name="Home" xml:space="preserve">
     <value>Startseite</value>
   </data>
+  <data name="I confirm that I have read and agree with the privacy policy." xml:space="preserve">
+    <value>Ich bestätige, dass ich die Datenschutzerklärung zur Kenntnis genommen habe und damit einverstanden bin.</value>
+  </data>
   <data name="ID Cards" xml:space="preserve">
     <value>Passbilder</value>
   </data>
