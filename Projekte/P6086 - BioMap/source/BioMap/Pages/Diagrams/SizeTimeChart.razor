@@ -34,7 +34,7 @@
     </div>
     <div class="col">
       @if (SD.SizeTimeChartFit && SD.SizeTimeChartIncludeSinglePoints) {
-        <button @onclick="()=>OnSaveYoBClick()">@Localize["Save calculated year-of-birth values"]</button>
+        <Button Color="Color.Primary" Disabled="SD.CurrentUser.Level<600" @onclick="()=>OnSaveYoBClick()">@Localize["Save calculated year-of-birth values"]</Button>
       }
     </div>
   </div>
