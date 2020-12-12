@@ -49,7 +49,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ChartJs.Blazor\src\ChartJs.Blazor\ChartJs.Blazor.csproj" />
-    <ProjectReference Include="..\Menu\src\Blazored.Menu\Blazored.Menu.csproj" />
   </ItemGroup>
 
   <ItemGroup>
