@@ -12,8 +12,8 @@
         <CardTitle>@Localize["Register"]</CardTitle>
       </CardHeader>
       <CardBody>
-        <Validations Mode="ValidationMode.Auto" Model="@SD.CurrentUser">
-          <Validation>
+        <Validations @ref="validations" Mode="ValidationMode.Manual">
+          <Validation Validator="@ValidationRule.IsEmail">
             <Field Horizontal="true">
               <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["EMail address"]</FieldLabel>
               <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -25,7 +25,7 @@
               </FieldBody>
             </Field>
           </Validation>
-          <Validation>
+          <Validation Validator="@ValidationRule.IsNotEmpty">
             <Field Horizontal="true">
               <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["Full name"]</FieldLabel>
               <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -54,9 +54,14 @@
         </Field>
         <Field Horizontal="true">
           <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
+            <Check TValue="bool" @bind-Checked="UserAcknowledgeTerms">
+              <ChildContent>
+                @Localize["I confirm that I have read and agree with the privacy policy."]
+              </ChildContent>
+            </Check>
           </FieldLabel>
           <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-            <Button Color="Color.Primary" Disabled="TanConfirmed" Clicked="@((e) => ConfirmTAN_Clicked())">
+            <Button Color="Color.Primary" Disabled="TanConfirmed || !UserAcknowledgeTerms || TAN==null || TAN.Trim().Length!=9" Clicked="@((e) => ConfirmTAN_Clicked())">
               @Localize["Confirm TAN"]
               @if (TanConfirmed) {
                 <BarIcon IconName="IconName.Check" />
@@ -76,23 +81,41 @@
 </Row>
 
 @code {
-  private string EMailAddr;
-  private string FullName;
+  private Validations validations;
   private string TAN;
+  private bool UserAcknowledgeTerms {
+    get {
+      return _UserAcknowledgeTerms;
+    }
+    set {
+      if (value!=_UserAcknowledgeTerms) {
+        _UserAcknowledgeTerms=value;
+        StateHasChanged();
+      }
+    }
+  }
+  private bool _UserAcknowledgeTerms = false;
+
   private bool TanRequested = false;
   private bool TanConfirmed = false;
 
   private async void RequestTAN_Clicked() {
-    await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserId",SD.CurrentUser.EMail?.Trim() });
-    TanRequested=DS.RequestTAN(SD.CurrentUser.EMail?.Trim(),SD.CurrentUser.FullName?.Trim());
+    if (validations.ValidateAll()) {
+      validations.ClearAll();
+      await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserId",SD.CurrentUser.EMail?.Trim() });
+      TanRequested=DS.RequestTAN(SD.CurrentUser.EMail?.Trim(),SD.CurrentUser.FullName?.Trim());
+    }
     StateHasChanged();
   }
   private async void ConfirmTAN_Clicked() {
-    string sPermTicket=DS.ConfirmTAN(SD.CurrentUser.EMail,TAN?.Trim());
-    await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserPermTicket",sPermTicket });
-    SD.CurrentUser.Level=DS.GetUserLevel(SD.CurrentUser.EMail,sPermTicket);
-    if (SD.CurrentUser.Level>=100) {
-      TanConfirmed=true;
+    if (validations.ValidateAll()) {
+      validations.ClearAll();
+      string sPermTicket = DS.ConfirmTAN(SD.CurrentUser.EMail,TAN?.Trim());
+      await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserPermTicket",sPermTicket });
+      SD.CurrentUser.Level=DS.GetUserLevel(SD.CurrentUser.EMail,sPermTicket);
+      if (SD.CurrentUser.Level>=100) {
+        TanConfirmed=true;
+      }
     }
     StateHasChanged();
   }
