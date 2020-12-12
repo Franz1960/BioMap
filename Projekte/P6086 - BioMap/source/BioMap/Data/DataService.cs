@@ -60,6 +60,10 @@ namespace BioMap
           "lat REAL," +
           "lng REAL)";
           command.ExecuteNonQuery();
+          try {
+            command.CommandText = "ALTER TABLE places ADD COLUMN traitvalues TEXT";
+            command.ExecuteNonQuery();
+          } catch { }
           command.CommandText = "CREATE TABLE IF NOT EXISTS monitoringevents (" +
           "place TEXT," +
           "kw INT," +
@@ -296,7 +300,7 @@ namespace BioMap
       var lPlaces = new List<Place>();
       this.PlacesByNames.Clear();
       this.OperateOnDb((command) => {
-        command.CommandText = "SELECT name,radius,lat,lng" +
+        command.CommandText = "SELECT name,radius,lat,lng,traitvalues" +
           " FROM places" +
           " ORDER BY name" +
           "";
@@ -310,13 +314,35 @@ namespace BioMap
               lng = dr.GetDouble(3),
             },
           };
+          var sTraitsJson = dr.GetValue(4) as string;
+          if (!string.IsNullOrEmpty(sTraitsJson)) {
+            var naTraitValues=JsonConvert.DeserializeObject<int[]>(sTraitsJson);
+            for (int i = 0;i<naTraitValues.Length;i++) {
+              place.TraitValues[i]=naTraitValues[i];
+            }
+          }
           lPlaces.Add(place);
           this.PlacesByNames.Add(place.Name,place);
         }
         dr.Close();
       });
       this.AllPlaces=lPlaces.ToArray();
-
+    }
+    public void WriteAllPlaces() {
+      this.OperateOnDb((command) => {
+        foreach (var place in this.AllPlaces) {
+          var sTraitJson = JsonConvert.SerializeObject(place.TraitValues);
+          command.CommandText =
+            "REPLACE INTO places (name,radius,lat,lng,traitvalues) " +
+            "VALUES ('" + place.Name +
+            "','" + ConvInvar.ToString(place.Radius) +
+            "','" + ConvInvar.ToString(place.LatLng.lat) +
+            "','" + ConvInvar.ToString(place.LatLng.lng) +
+            "','" + sTraitJson +
+            "')";
+          command.ExecuteNonQuery();
+        }
+      });
     }
     public int? GetSpeciesId(string sGenus,string sSpecies) {
       int? nSpeciesId = null;

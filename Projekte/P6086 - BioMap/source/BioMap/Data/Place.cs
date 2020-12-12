@@ -1,10 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace BioMap
 {
   [JsonObject(MemberSerialization.Fields)]
   public class Place
   {
+    public Place() {
+      this.TraitValues=new List<int>(new int[Places.Traits.Length]);
+    }
     public string Name;
     public double Radius = 150;
     public LatLng LatLng;
@@ -21,5 +25,6 @@ namespace BioMap
       }
       return nearestPlace;
     }
+    public readonly List<int> TraitValues = new List<int>();
   }
 }
