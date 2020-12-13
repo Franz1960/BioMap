@@ -338,6 +338,10 @@ namespace BioMap
           nReqWidth=(nReqHeight*imgSrc.Width)/imgSrc.Height;
         }
         imgSrc.Mutate(x => x.Resize(nReqWidth,nReqHeight));
+        // GPS-Daten löschen.
+        if (imgSrc?.Metadata?.ExifProfile!=null) {
+          imgSrc.Metadata.ExifProfile.Parts=SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifParts.ExifTags | SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifParts.IfdTags;
+        }
         imgSrc.SaveAsJpeg(sDestFile);
       }
     }

@@ -162,7 +162,9 @@ namespace BioMap
         this.AddLogEntry("System","Web service started");
         //
         if (bMigrate) {
+          this.IsMigrationInProcess=true;
           Migration.MigrateData();
+          this.IsMigrationInProcess=false;
         }
         this.RefreshAllUsers();
         this.RefreshAllPlaces();
@@ -173,6 +175,7 @@ namespace BioMap
         }
       });
     }
+    public bool IsMigrationInProcess = false;
     public bool SendMail(string sTo,string sSubject,string sTextBody) {
       // EMail per REST-API auf Server itools.de versenden.
       try {
