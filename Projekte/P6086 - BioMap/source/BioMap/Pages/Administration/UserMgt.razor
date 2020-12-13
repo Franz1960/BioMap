@@ -1,5 +1,6 @@
 ﻿@page "/Administration/UserMgt"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject NavigationManager NM
 @inject DataService DS
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
@@ -79,6 +80,41 @@
     </Card>
   </Column>
 </Row>
+@if (SD.CurrentUser.MaySeeOtherUsers) {
+  <Row>
+    <Column>
+      <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+          <CardTitle>@Localize["Users"]</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">@Localize["EMail address"]</th>
+                <th scope="col">@Localize["Access level"]</th>
+                <th scope="col">@Localize["Full name"]</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach (var user in AllUsers) {
+                <tr>
+                  <th scope="row">@user.EMail</th>
+                  <td>
+                    <NumericEdit TValue="int" Disabled="!SD.CurrentUser.MayChangeOtherUsers" @bind-Value="user.Level" />
+                  </td>
+                  <td>
+                    <TextEdit Disabled="!SD.CurrentUser.MayChangeOtherUsers" @bind-Value="user.FullName" />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </CardBody>
+      </Card>
+    </Column>
+  </Row>
+}
 
 @code {
   private Validations validations;
@@ -121,6 +157,20 @@
         DS.AddLogEntry(SD.CurrentUser.EMail,"TAN confirmed with "+TAN+". Level "+SD.CurrentUser.Level+" returned.");
       }
     }
+    StateHasChanged();
+  }
+  private User[] AllUsers = new User[0];
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    NM.LocationChanged+=NM_LocationChanged;
+    RefreshData();
+  }
+  private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
+    NM.LocationChanged-=NM_LocationChanged;
+    DS.WriteAllUsers(SD.CurrentUser);
+  }
+  private void RefreshData() {
+    this.AllUsers = DS.AllUsers;
     StateHasChanged();
   }
 }

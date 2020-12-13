@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 
 namespace BioMap
 {
+  [JsonObject(MemberSerialization.Fields)]
   public class User
   {
     [Required]
