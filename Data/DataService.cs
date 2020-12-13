@@ -292,6 +292,7 @@ namespace BioMap
       get;
       private set;
     }
+    private string[] PrevAllPlaces = null;
     public Dictionary<string,Place> PlacesByNames {
       get;
       private set;
@@ -327,22 +328,35 @@ namespace BioMap
         dr.Close();
       });
       this.AllPlaces=lPlaces.ToArray();
+      this.PrevAllPlaces=this.AllPlaces.Select(a => JsonConvert.SerializeObject(a)).ToArray();
     }
-    public void WriteAllPlaces() {
-      this.OperateOnDb((command) => {
-        foreach (var place in this.AllPlaces) {
-          var sTraitJson = JsonConvert.SerializeObject(place.TraitValues);
-          command.CommandText =
-            "REPLACE INTO places (name,radius,lat,lng,traitvalues) " +
-            "VALUES ('" + place.Name +
-            "','" + ConvInvar.ToString(place.Radius) +
-            "','" + ConvInvar.ToString(place.LatLng.lat) +
-            "','" + ConvInvar.ToString(place.LatLng.lng) +
-            "','" + sTraitJson +
-            "')";
-          command.ExecuteNonQuery();
+    public void WriteAllPlaces(User user) {
+      var lChangedPlaces = new List<Place>();
+      for (int idx = 0;idx<this.AllPlaces.Length;idx++) {
+        var s1 = JsonConvert.SerializeObject(this.AllPlaces[idx]);
+        var s2 = this.PrevAllPlaces[idx];
+        if (string.CompareOrdinal(s1,s2)!=0) {
+          this.AddLogEntry(user.EMail,"Place changed: "+s1+" --> "+s2);
+          lChangedPlaces.Add(this.AllPlaces[idx]);
         }
-      });
+      }
+      if (lChangedPlaces.Count>=1) {
+        this.OperateOnDb((command) => {
+          foreach (var place in lChangedPlaces) {
+            var sTraitJson = JsonConvert.SerializeObject(place.TraitValues);
+            command.CommandText =
+              "REPLACE INTO places (name,radius,lat,lng,traitvalues) " +
+              "VALUES ('" + place.Name +
+              "','" + ConvInvar.ToString(place.Radius) +
+              "','" + ConvInvar.ToString(place.LatLng.lat) +
+              "','" + ConvInvar.ToString(place.LatLng.lng) +
+              "','" + sTraitJson +
+              "')";
+            command.ExecuteNonQuery();
+          }
+        });
+        this.PrevAllPlaces=this.AllPlaces.Select(a => JsonConvert.SerializeObject(a)).ToArray();
+      }
     }
     public int? GetSpeciesId(string sGenus,string sSpecies) {
       int? nSpeciesId = null;

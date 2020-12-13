@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace BioMap
 {
   [JsonObject(MemberSerialization.Fields)]
-  public class Place
+  public class Place : ICloneable
   {
     public Place() {
       this.TraitValues=new List<int>(new int[Places.Traits.Length]);
@@ -25,6 +26,11 @@ namespace BioMap
       }
       return nearestPlace;
     }
+
+    public object Clone() {
+      return this.MemberwiseClone();
+    }
+
     public readonly List<int> TraitValues = new List<int>();
   }
 }

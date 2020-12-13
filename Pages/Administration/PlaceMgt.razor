@@ -17,8 +17,10 @@
           <thead>
             <tr>
               <th scope="col">@Localize["Place"]</th>
-              <th scope="col">@Localize["Latitude"]</th>
-              <th scope="col">@Localize["Longitude"]</th>
+              @if (SD.CurrentUser.MaySeeLocations) {
+                <th scope="col">@Localize["Latitude"]</th>
+                <th scope="col">@Localize["Longitude"]</th>
+              }
               <th scope="col">@Localize["Radius"]</th>
               @foreach (var trait in Places.Traits) {
                 <th scope="col">@trait.Name</th>
@@ -27,27 +29,29 @@
           </thead>
           <tbody>
             @foreach (var place in AllPlaces) {
-            <tr>
-              <th scope="row">@place.Name</th>
-              <td>
-                <NumericEdit TValue="double" Disabled="IsReadOnly()" @bind-Value="place.LatLng.lat" />
-              </td>
-              <td>
-                <NumericEdit TValue="double" Disabled="IsReadOnly()" @bind-Value="place.LatLng.lng" />
-              </td>
-              <td>
-                <NumericEdit TValue="double" Disabled="IsReadOnly()" @bind-Value="place.Radius" />
-              </td>
-              @foreach (var idx in Enumerable.Range(0,Places.Traits.Length)) {
+              <tr>
+                <th scope="row">@place.Name</th>
+                @if (SD.CurrentUser.MaySeeLocations) {
+                  <td>
+                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" />
+                  </td>
+                  <td>
+                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lng" />
+                  </td>
+                }
                 <td>
-                  <Select Disabled="IsReadOnly()" @bind-SelectedValue="place.TraitValues[idx]">
-                    @foreach (var idx1 in Enumerable.Range(0,Places.Traits[idx].ValueNames.Length)) {
-                      <SelectItem Value="idx1">@Places.Traits[idx].ValueNames[idx1]</SelectItem>
-                    }
-                  </Select>
+                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" />
                 </td>
-              }
-            </tr>
+                @foreach (var idx in Enumerable.Range(0,Places.Traits.Length)) {
+                  <td>
+                    <Select Disabled="!SD.CurrentUser.MayChangeElements" @bind-SelectedValue="place.TraitValues[idx]">
+                      @foreach (var idx1 in Enumerable.Range(0,Places.Traits[idx].ValueNames.Length)) {
+                        <SelectItem Value="idx1">@Places.Traits[idx].ValueNames[idx1]</SelectItem>
+                      }
+                    </Select>
+                  </td>
+                }
+              </tr>
             }
           </tbody>
         </table>
@@ -63,12 +67,11 @@
     NM.LocationChanged+=NM_LocationChanged;
     RefreshData();
   }
-  private void NM_LocationChanged(object sender, LocationChangedEventArgs e) {
+  private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
     NM.LocationChanged-=NM_LocationChanged;
-    DS.WriteAllPlaces();
+    DS.WriteAllPlaces(SD.CurrentUser);
   }
   private void RefreshData() {
     this.AllPlaces = DataService.Instance.AllPlaces;
   }
-  private bool IsReadOnly() => SD.CurrentUser.Level<600;
 }

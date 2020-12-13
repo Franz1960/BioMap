@@ -13,5 +13,10 @@ namespace BioMap
     [Required]
     public string FullName;
     public int Level;
+    public bool MaySeeLocations { get => Level>=400; }
+    public bool MayChangeLocations { get => Level>=500; }
+    public bool MaySeeOtherUsers { get => Level>=500; }
+    public bool MayChangeOtherUsers { get => Level>=600; }
+    public bool MayChangeElements { get => Level>=500; }
   }
 }
