@@ -267,6 +267,9 @@
   <data name="Lists" xml:space="preserve">
     <value>Listen</value>
   </data>
+  <data name="Load all" xml:space="preserve">
+    <value>Alle laden</value>
+  </data>
   <data name="Log" xml:space="preserve">
     <value>Protokoll</value>
   </data>

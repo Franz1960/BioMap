@@ -72,6 +72,7 @@
     DS.WriteAllPlaces(SD.CurrentUser);
   }
   private void RefreshData() {
-    this.AllPlaces = DataService.Instance.AllPlaces;
+    this.AllPlaces = DS.AllPlaces;
+    StateHasChanged();
   }
 }

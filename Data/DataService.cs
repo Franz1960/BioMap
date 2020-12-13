@@ -164,6 +164,7 @@ namespace BioMap
         if (bMigrate) {
           Migration.MigrateData();
         }
+        this.RefreshAllUsers();
         this.RefreshAllPlaces();
         //
         lock (this.lockInitialized) {
@@ -199,7 +200,7 @@ namespace BioMap
           "";
         var dr = command.ExecuteReader();
         while (dr.Read()) {
-          sPermTicket=dr.GetString(1);
+          sPermTicket=dr.GetValue(1) as string;
           nLevel=dr.GetInt32(2);
           if (string.IsNullOrEmpty(sFullName)) {
             sFullName=dr.GetString(3);
@@ -212,7 +213,7 @@ namespace BioMap
         }
         command.CommandText =
           "REPLACE INTO users (emailaddr,tan,permticket,level,fullname) " +
-          "VALUES ('" + sUser + "','" + sNewTAN + "','" + sPermTicket + "','" + ConvInvar.ToString(nLevel) + "','" + sFullName + "')" +
+          "VALUES ('" + sUser + "','" + sNewTAN + "','" + sPermTicket + "'," + ConvInvar.ToString(nLevel) + ",'" + sFullName + "')" +
           "";
         command.ExecuteNonQuery();
         bSuccess = this.SendMail(
@@ -270,7 +271,7 @@ namespace BioMap
           "";
         var dr = command.ExecuteReader();
         while (dr.Read()) {
-          var sRealPermTicket=dr.GetString(0);
+          var sRealPermTicket = dr.GetValue(0) as string;
           if (string.CompareOrdinal(sPermTicket,sRealPermTicket)==0) {
             nLevel=dr.GetInt32(1);
           }
@@ -282,12 +283,69 @@ namespace BioMap
       user.Level=nLevel;
       user.EMail=sUserId;
     }
-    public void AddLogEntry(string sUser,string sAction) {
-      this.OperateOnDb((command) => {
-        command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('now','localtime'),'" + sUser + "','" + sAction + "')";
-        command.ExecuteNonQuery();
-      });
+    #region Users.
+    public User[] AllUsers {
+      get;
+      private set;
     }
+    private string[] PrevAllUsers = null;
+    public Dictionary<string,User> UsersByNames {
+      get;
+      private set;
+    } = new Dictionary<string,User>();
+    public void RefreshAllUsers() {
+      var lUsers = new List<User>();
+      this.UsersByNames.Clear();
+      this.OperateOnDb((command) => {
+        command.CommandText = "SELECT emailaddr,level,fullname" +
+          " FROM users" +
+          " ORDER BY emailaddr" +
+          "";
+        var dr = command.ExecuteReader();
+        try {
+          while (dr.Read()) {
+            var user = new User {
+              EMail=dr.GetString(0),
+              Level=dr.GetInt32(1),
+              FullName=dr.GetString(2),
+            };
+            lUsers.Add(user);
+            this.UsersByNames.Add(user.EMail,user);
+          }
+        } finally {
+          dr.Close();
+        }
+      });
+      this.AllUsers=lUsers.ToArray();
+      this.PrevAllUsers=this.AllUsers.Select(a => JsonConvert.SerializeObject(a)).ToArray();
+    }
+    public void WriteAllUsers(User user) {
+      var lChangedUsers = new List<User>();
+      for (int idx = 0;idx<this.AllUsers.Length;idx++) {
+        var s1 = this.PrevAllUsers[idx];
+        var s2 = JsonConvert.SerializeObject(this.AllUsers[idx]);
+        if (string.CompareOrdinal(s1,s2)!=0) {
+          this.AddLogEntry(user.EMail,"User changed: "+s1+" --> "+s2);
+          lChangedUsers.Add(this.AllUsers[idx]);
+        }
+      }
+      if (lChangedUsers.Count>=1) {
+        this.OperateOnDb((command) => {
+          foreach (var user in lChangedUsers) {
+            command.CommandText =
+              "REPLACE INTO users (emailaddr,level,fullname) " +
+              "VALUES ('" + user.EMail +
+              "','" + ConvInvar.ToString(user.Level) +
+              "','" + user.FullName +
+              "')";
+            command.ExecuteNonQuery();
+          }
+        });
+        this.PrevAllUsers=this.AllUsers.Select(a => JsonConvert.SerializeObject(a)).ToArray();
+      }
+    }
+    #endregion
+    #region Places.
     public Place[] AllPlaces {
       get;
       private set;
@@ -317,7 +375,7 @@ namespace BioMap
           };
           var sTraitsJson = dr.GetValue(4) as string;
           if (!string.IsNullOrEmpty(sTraitsJson)) {
-            var naTraitValues=JsonConvert.DeserializeObject<int[]>(sTraitsJson);
+            var naTraitValues = JsonConvert.DeserializeObject<int[]>(sTraitsJson);
             for (int i = 0;i<naTraitValues.Length;i++) {
               place.TraitValues[i]=naTraitValues[i];
             }
@@ -333,8 +391,8 @@ namespace BioMap
     public void WriteAllPlaces(User user) {
       var lChangedPlaces = new List<Place>();
       for (int idx = 0;idx<this.AllPlaces.Length;idx++) {
-        var s1 = JsonConvert.SerializeObject(this.AllPlaces[idx]);
-        var s2 = this.PrevAllPlaces[idx];
+        var s1 = this.PrevAllPlaces[idx];
+        var s2 = JsonConvert.SerializeObject(this.AllPlaces[idx]);
         if (string.CompareOrdinal(s1,s2)!=0) {
           this.AddLogEntry(user.EMail,"Place changed: "+s1+" --> "+s2);
           lChangedPlaces.Add(this.AllPlaces[idx]);
@@ -358,6 +416,7 @@ namespace BioMap
         this.PrevAllPlaces=this.AllPlaces.Select(a => JsonConvert.SerializeObject(a)).ToArray();
       }
     }
+    #endregion
     public int? GetSpeciesId(string sGenus,string sSpecies) {
       int? nSpeciesId = null;
       this.OperateOnDb((command) => {
@@ -616,6 +675,12 @@ namespace BioMap
         dr.Close();
       });
       return lProtocolEntries.ToArray();
+    }
+    public void AddLogEntry(string sUser,string sAction) {
+      this.OperateOnDb((command) => {
+        command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('now','localtime'),'" + sUser + "','" + sAction + "')";
+        command.ExecuteNonQuery();
+      });
     }
     public LogEntry[] GetLogEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "log.dt") {
       if (filters!=null) {

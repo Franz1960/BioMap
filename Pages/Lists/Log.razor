@@ -7,29 +7,40 @@
 
 <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Log" />
 
-<h1>@Localize["Log"]</h1>
-
-<table class="table table-striped table-sm">
-  <thead>
-    <tr>
-      <th scope="col">@Localize["Time"]</th>
-      <th scope="col">@Localize["User"]</th>
-      <th scope="col">@Localize["Action"]</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (var le in LogEntries) {
-      <tr>
-        <td>@le.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
-        <td>@le.User</td>
-        <td>@le.Action</td>
-      </tr>
-    }
-  </tbody>
-</table>
+<Row>
+  <Column>
+    <Card Margin="Margin.Is4.OnY">
+      <CardHeader>
+        <CardTitle>@Localize["Log"]</CardTitle>
+        <Button Class="float-right small" Color="Color.Primary" Clicked="((e)=> { LoadAll=true; RefreshData(); })">@Localize["Load all"]</Button>
+      </CardHeader>
+      <CardBody>
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th scope="col">@Localize["Time"]</th>
+              <th scope="col">@Localize["User"]</th>
+              <th scope="col">@Localize["Action"]</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var le in LogEntries) {
+              <tr>
+                <td>@le.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@le.User</td>
+                <td>@le.Action</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </CardBody>
+    </Card>
+  </Column>
+</Row>
 
 @code {
   private int i = 0;
+  private bool LoadAll = false;
   private LogEntry[] LogEntries = new LogEntry[0];
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -40,6 +51,11 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.LogEntries = DataService.Instance.GetLogEntries(SD.Filters,"dt>'2018-08-01'","log.dt DESC");
+    string sCondition = "";
+    if (!LoadAll) {
+      sCondition="dt>'"+(DateTime.Now-TimeSpan.FromDays(60)).ToString("yyyy-MM-dd")+"'";
+    }
+    this.LogEntries = DataService.Instance.GetLogEntries(SD.Filters,sCondition,"log.dt DESC");
+    StateHasChanged();
   }
 }
