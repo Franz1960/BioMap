@@ -43,6 +43,30 @@ namespace BioMap
       }
     }
     private string _IndiFilter = "";
+    public string GenderFilter {
+      get {
+        return this._GenderFilter;
+      }
+      set {
+        if (value!=this._GenderFilter) {
+          this._GenderFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private string _GenderFilter = "";
+    public string HibernationsFilter {
+      get {
+        return this._HibernationsFilter;
+      }
+      set {
+        if (value!=this._HibernationsFilter) {
+          this._HibernationsFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private string _HibernationsFilter = "";
     public bool OnlyFirstIndiFilter {
       get {
         return this._OnlyFirstIndiFilter;
@@ -79,32 +103,6 @@ namespace BioMap
       " LEFT JOIN indivdata i1 ON (i1.name=e1.name)" +
       " WHERE (i1.iid=indivdata.iid AND e1.category=350 AND e1.creationtime>elements.creationtime)" +
       ")";
-    public bool ExcludeFreshBornFilter {
-      get {
-        return this._ExcludeFreshBornFilter;
-      }
-      set {
-        if (value!=this._ExcludeFreshBornFilter) {
-          this._ExcludeFreshBornFilter=value;
-          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
-        }
-      }
-    }
-    private bool _ExcludeFreshBornFilter = false;
-    private readonly string ExcludeFreshBornFilterExp = "indivdata.winters>=1";
-    public bool OnlyFreshBornFilter {
-      get {
-        return this._OnlyFreshBornFilter;
-      }
-      set {
-        if (value!=this._OnlyFreshBornFilter) {
-          this._OnlyFreshBornFilter=value;
-          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
-        }
-      }
-    }
-    private bool _OnlyFreshBornFilter = false;
-    private readonly string OnlyFreshBornFilterExp = "indivdata.winters<1";
     public string PlaceFilter {
       get {
         return this._PlaceFilter;
@@ -131,7 +129,7 @@ namespace BioMap
     private string _CatFilter = "";
     public static char[] NegateChars { get; } = new char[] { '-','!','^' };
     public static char[] SeparateChars { get; } = new char[] { ' ',',',';','|','+' };
-    private string GetFilterTermForWhereClause(string sFilter) {
+    private string GetFilterTermForWhereInClause(string sFilter) {
       string sFilterTerm = null;
       if (!string.IsNullOrEmpty(sFilter)) {
         string sList = sFilter;
@@ -143,8 +141,8 @@ namespace BioMap
         saParts=sList.Split(Filters.SeparateChars);
         string sSqlIndis = "";
         string sDelim = "(";
-        foreach (var sPlace in saParts) {
-          sSqlIndis+=sDelim+"'"+sPlace.ToUpperInvariant()+"'";
+        foreach (var sPart in saParts) {
+          sSqlIndis+=sDelim+"'"+sPart+"'";
           sDelim=",";
         }
         sSqlIndis+=")";
@@ -152,9 +150,9 @@ namespace BioMap
       }
       return sFilterTerm;
     }
-    private string AddToWhereClause(string sBasicWhereClause,string sTableRow,string sFilter) {
+    private string AddToWhereInClause(string sBasicWhereClause,string sTableRow,string sFilter) {
       string sWhereClause = sBasicWhereClause;
-      var sFilterTerm = this.GetFilterTermForWhereClause(sFilter);
+      var sFilterTerm = this.GetFilterTermForWhereInClause(sFilter);
       if (!string.IsNullOrEmpty(sFilterTerm)) {
         string sList = this.IndiFilter;
         string[] saIndis;
@@ -174,6 +172,14 @@ namespace BioMap
       }
       return sWhereClause;
     }
+    private string AddToWhereCompareClause(string sBasicWhereClause,string sTableRow,string sFilter) {
+      string sWhereClause = sBasicWhereClause;
+      var sFilterTerm = sFilter?.Replace("{0}",sTableRow)?.Trim();
+      if (!string.IsNullOrEmpty(sFilterTerm)) {
+        sWhereClause = Filters.AddToWhereClause(sBasicWhereClause,sFilterTerm);
+      }
+      return sWhereClause;
+    }
     public static string AddToWhereClause(string sBasicWhereClause,string sWhereClause) {
       System.Text.StringBuilder sb = new System.Text.StringBuilder(sBasicWhereClause);
       if (!string.IsNullOrEmpty(sWhereClause)) {
@@ -189,24 +195,20 @@ namespace BioMap
     public string AddAllFiltersToWhereClause(string sBasicWhereClause) {
       string sResult = sBasicWhereClause;
       if (this.FilteringTarget==FilteringTargetEnum.Individuals) {
-        sResult = this.AddToWhereClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
-        sResult = this.AddToWhereClause(sResult,"indivdata.iid",ExpandIndiFilter(this.IndiFilter));
+        sResult = this.AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
+        sResult = this.AddToWhereInClause(sResult,"indivdata.iid",ExpandIndiFilter(this.IndiFilter));
+        sResult = this.AddToWhereInClause(sResult,"indivdata.gender",ExpandGenderFilter(this.GenderFilter));
+        sResult = this.AddToWhereCompareClause(sResult,"indivdata.winters",ExpandHibernationsFilter(this.HibernationsFilter));
         if (this.OnlyFirstIndiFilter) {
           sResult = Filters.AddToWhereClause(sResult,this.OnlyFirstIndiFilterExp);
         }
         if (this.OnlyLastIndiFilter) {
           sResult = Filters.AddToWhereClause(sResult,this.OnlyLastIndiFilterExp);
         }
-        if (this.ExcludeFreshBornFilter) {
-          sResult = Filters.AddToWhereClause(sResult,this.ExcludeFreshBornFilterExp);
-        }
-        if (this.OnlyFreshBornFilter) {
-          sResult = Filters.AddToWhereClause(sResult,this.OnlyFreshBornFilterExp);
-        }
       }
       if (this.FilteringTarget==FilteringTargetEnum.Elements) {
-        sResult = this.AddToWhereClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
-        sResult = this.AddToWhereClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
+        sResult = this.AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
+        sResult = this.AddToWhereInClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
       }
       return sResult;
     }
@@ -222,6 +224,30 @@ namespace BioMap
         return sbExp.ToString();
       });
     }
+    private string ExpandGenderFilter(string sFilter) {
+      if (sFilter=="-" || sFilter=="*") {
+        return "";
+      } else {
+        var sResult = "";
+        if (sFilter.Contains("j")) {
+          sResult+="j0 j1 j2 j3 ";
+        }
+        if (sFilter.Contains("m")) {
+          sResult+="ma ";
+        }
+        if (sFilter.Contains("f")) {
+          sResult+="fa ";
+        }
+        return sResult.Trim();
+      }
+    }
+    private string ExpandHibernationsFilter(string sFilter) {
+      string sResult = sFilter.Trim();
+      if (sResult=="-" || sResult=="*") {
+        return "";
+      }
+      return sResult;
+    }
     private string ExpandCatFilter(string sFilter) {
       return ExpandFilter(sFilter,(sCatA,sCatB) => {
         var sbExp = new System.Text.StringBuilder();
@@ -235,7 +261,7 @@ namespace BioMap
       });
     }
     private string ExpandPlaceFilter(string sFilter) {
-      return sFilter;
+      return sFilter.ToUpperInvariant();
     }
     private string ExpandFilter(string sFilter,Func<string,string,string> funcExpand) {
       var sbExp = new System.Text.StringBuilder();

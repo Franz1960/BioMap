@@ -1,0 +1,30 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Row>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">@Localize["Hibernations"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">
+        <Select TValue="string" @bind-SelectedValue="SD.Filters.HibernationsFilter">
+          <SelectItem TValue="string" Value="@("*")">@Localize["All"]</SelectItem>
+          <SelectItem TValue="string" Value="@("{0}==0")">0</SelectItem>
+          <SelectItem TValue="string" Value="@("{0}==1")">1</SelectItem>
+          <SelectItem TValue="string" Value="@("{0}==2")">2</SelectItem>
+          <SelectItem TValue="string" Value="@("{0}<=1")">-1</SelectItem>
+          <SelectItem TValue="string" Value="@("{0}<=2")">-2</SelectItem>
+          <SelectItem TValue="string" Value="@("{0}<=3")">-3</SelectItem>
+          <SelectItem TValue="string" Value="@("{0}>=1")">1+</SelectItem>
+          <SelectItem TValue="string" Value="@("{0}>=2")">2+</SelectItem>
+          <SelectItem TValue="string" Value="@("{0}>=3")">3+</SelectItem>
+        </Select>
+      </FieldBody>
+    </Field>
+  </Column>
+</Row>
+
+@code {
+}

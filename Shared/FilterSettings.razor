@@ -23,10 +23,10 @@
     </Card>
     <Card>
       <CardBody>
+        <GenderFilter />
+        <HibernationsFilter />
         <OnlyFirstIndiFilter />
         <OnlyLastIndiFilter />
-        <OnlyFreshBornFilter OnAnyChangedCallback="@((e)=>AnyValueChanged())" />
-        <ExcludeFreshBornFilter OnAnyChangedCallback="@((e)=>AnyValueChanged())" />
       </CardBody>
     </Card>
   }

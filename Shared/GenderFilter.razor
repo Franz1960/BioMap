@@ -1,0 +1,27 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Row>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["Gender"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+        <Select TValue="string" @bind-SelectedValue="SD.Filters.GenderFilter">
+          <SelectItem TValue="string" Value="@("*")">@Localize["All"]</SelectItem>
+          <SelectItem TValue="string" Value="@("j")">@Localize["Other"]</SelectItem>
+          <SelectItem TValue="string" Value="@("f")">@Localize["Female"]</SelectItem>
+          <SelectItem TValue="string" Value="@("m")">@Localize["Male"]</SelectItem>
+          <SelectItem TValue="string" Value="@("fm")">@Localize["Weiblich und männlich"]</SelectItem>
+          <SelectItem TValue="string" Value="@("fj")">@Localize["Weiblich und sonstige"]</SelectItem>
+          <SelectItem TValue="string" Value="@("mj")">@Localize["Männlich und sonstige"]</SelectItem>
+        </Select>
+      </FieldBody>
+    </Field>
+  </Column>
+</Row>
+
+@code {
+}
