@@ -19,12 +19,15 @@
   [Parameter]
   public bool Checked { get; set; }
   [Parameter]
+  public EventCallback<bool> CheckedChanged { get; set; }
+  [Parameter]
   public EventCallback<ChangeEventArgs> OnAnyChangedCallback { get; set; }
   //
   private void Checked_Changed(bool e) {
     this.Checked=e;
     var ea = new ChangeEventArgs();
     ea.Value=e;
+    this.CheckedChanged.InvokeAsync(e);
     this.OnAnyChangedCallback.InvokeAsync(ea);
   }
 }

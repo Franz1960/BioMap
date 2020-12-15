@@ -147,6 +147,9 @@
   <data name="Adults from 38 mm" xml:space="preserve">
     <value>Adulti ab 38 mm</value>
   </data>
+  <data name="All" xml:space="preserve">
+    <value>Alle</value>
+  </data>
   <data name="All Elements" xml:space="preserve">
     <value>Alle Elemente</value>
   </data>
@@ -203,6 +206,12 @@
   </data>
   <data name="Female" xml:space="preserve">
     <value>Weiblich</value>
+  </data>
+  <data name="Female and male" xml:space="preserve">
+    <value>Weiblich und männlich</value>
+  </data>
+  <data name="Female and other" xml:space="preserve">
+    <value>Weiblich und sonstige</value>
   </data>
   <data name="Fire-bellied toad" xml:space="preserve">
     <value>Rotbauchunke</value>
@@ -279,6 +288,9 @@
   <data name="Male" xml:space="preserve">
     <value>Männlich</value>
   </data>
+  <data name="Male and other" xml:space="preserve">
+    <value>Männlich und sonstige</value>
+  </data>
   <data name="Map" xml:space="preserve">
     <value>Karte</value>
   </data>
@@ -305,6 +317,9 @@
   </data>
   <data name="Only last image" xml:space="preserve">
     <value>Nur letztes Bild</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Sonstige</value>
   </data>
   <data name="Other elements" xml:space="preserve">
     <value>Sonstige Elemente</value>
