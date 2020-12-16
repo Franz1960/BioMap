@@ -81,7 +81,7 @@ namespace BioMap
           "action TEXT)";
           command.ExecuteNonQuery();
           command.CommandText = "CREATE TABLE IF NOT EXISTS users (" +
-          "emailaddr TEXT PRIMARY KEY NOT NULL," +
+          "emailaddr TEXT PRIMARY KEY NOT NULL COLLATE NOCASE," +
           "fullname TEXT," +
           "level INT," +
           "tan TEXT," +
