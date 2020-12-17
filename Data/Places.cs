@@ -62,8 +62,20 @@ namespace BioMap
           "",
           "1 Gewässer",
           "2-3 Gewässer",
-          "4-5 Gewässer",
-          "5+ Gewässer",
+          "4-5 Gewässer, homogen",
+          "5+ Gewässer homogen",
+          "4-5 Gewässer heterogen",
+          "5+ Gewässer heterogen",
+        },
+      },
+      new Trait {
+        Name="Störung Habitat",
+        Description="Gravierende Änderungen Habitat im Verlauf der Saison oder über zwei Saisonen",
+        ValueNames=new [] {
+          "",
+          "Störung während Saison (Harvester)",
+          "Austrocknung während Saison",
+          "Wesentliche Änderung von einer zur nächsten Saison",
         },
       },
     };
