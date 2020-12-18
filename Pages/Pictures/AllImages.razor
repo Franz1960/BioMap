@@ -1,0 +1,65 @@
+﻿@page "/Pictures/AllImages"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
+
+<h1>@Localize["All Images"]</h1>
+
+<PhotoPopup @ref="PhotoPopup1" />
+
+@foreach (var sPlace in ElementsByPlaces.Keys) {
+  <div class="row">
+    <h2>@sPlace</h2>
+  </div>
+  <div class="row">
+    @foreach (var el in ElementsByPlaces[sPlace]) {
+      <div class="card" style="width: 240px;">
+        <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">
+          <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240" style="max-width:100%;max-height:100%;margin-top:1px;" />
+        </a>
+        <div class="card-footer">
+          <small>(@el.GetIsoDate()/@el.GetCategoryOrIId()/@el.GetPlace()?.Name)</small>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+@code {
+  private Dictionary<string,List<Element>> ElementsByPlaces = new Dictionary<string,List<Element>>();
+  private PhotoPopup PhotoPopup1;
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    SD.Filters.FilterChanged+=(sender,ev) => {
+      RefreshData();
+      base.InvokeAsync(StateHasChanged);
+    };
+    RefreshData();
+
+    var c = Element.Category.AllCategories;
+  }
+  private void RefreshData() {
+    var els = DataService.Instance.GetElements(SD.Filters,"","elements.place ASC,elements.creationtime ASC");
+    this.ElementsByPlaces.Clear();
+    foreach (var el in els) {
+      if (!string.IsNullOrEmpty(PhotoController.GetImageFilePath(el.ElementName))) {
+        var sPlace = el.GetPlace()?.Name;
+        if (sPlace==null) {
+          sPlace="";
+        }
+        if (!this.ElementsByPlaces.TryGetValue(sPlace,out List<Element> lEls)) {
+          lEls=new List<Element>();
+          this.ElementsByPlaces.Add(sPlace,lEls);
+        }
+        lEls.Add(el);
+      }
+    }
+  }
+  private void OnSelectClick(Element el) {
+    this.PhotoPopup1.Show(el);
+  }
+}

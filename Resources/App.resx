@@ -327,6 +327,9 @@
   <data name="Other photos and local news" xml:space="preserve">
     <value>Sonstige Fotos und Ortsmeldungen</value>
   </data>
+  <data name="Pictures" xml:space="preserve">
+    <value>Bilder</value>
+  </data>
   <data name="Place" xml:space="preserve">
     <value>Ort</value>
   </data>
@@ -335,6 +338,9 @@
   </data>
   <data name="Places" xml:space="preserve">
     <value>Orte</value>
+  </data>
+  <data name="Recaptures" xml:space="preserve">
+    <value>Wiederfänge</value>
   </data>
   <data name="Register" xml:space="preserve">
     <value>Registrieren</value>
