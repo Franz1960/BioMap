@@ -379,7 +379,7 @@ namespace BioMap
           var sTraitsJson = dr.GetValue(4) as string;
           if (!string.IsNullOrEmpty(sTraitsJson)) {
             var naTraitValues = JsonConvert.DeserializeObject<int[]>(sTraitsJson);
-            for (int i = 0;i<naTraitValues.Length;i++) {
+            for (int i = 0;i<Math.Min(naTraitValues.Length,place.TraitValues.Count);i++) {
               place.TraitValues[i]=naTraitValues[i];
             }
           }

@@ -33,18 +33,18 @@
                 <th scope="row">@place.Name</th>
                 @if (SD.CurrentUser.MaySeeLocations) {
                   <td>
-                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" />
+                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" @onfocusout="(e)=>ChangeByUser()" />
                   </td>
                   <td>
-                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lng" />
+                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lng" @onfocusout="(e)=>ChangeByUser()" />
                   </td>
                 }
                 <td>
-                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" />
+                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" @onfocusout="(e)=>ChangeByUser()" />
                 </td>
                 @foreach (var idx in Enumerable.Range(0,Places.Traits.Length)) {
                   <td>
-                    <Select Disabled="!SD.CurrentUser.MayChangeElements" @bind-SelectedValue="place.TraitValues[idx]">
+                    <Select TValue="int" Disabled="!SD.CurrentUser.MayChangeElements" SelectedValue="place.TraitValues[idx]" SelectedValueChanged="(value)=>TraitValueChanged(place,idx,value)">
                       @foreach (var idx1 in Enumerable.Range(0,Places.Traits[idx].ValueNames.Length)) {
                         <SelectItem Value="idx1">@Places.Traits[idx].ValueNames[idx1]</SelectItem>
                       }
@@ -69,10 +69,17 @@
   }
   private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
     NM.LocationChanged-=NM_LocationChanged;
-    DS.WriteAllPlaces(SD.CurrentUser);
+    this.ChangeByUser();
   }
   private void RefreshData() {
     this.AllPlaces = DS.AllPlaces;
     StateHasChanged();
+  }
+  private void TraitValueChanged(Place place,int idx,int value) {
+    place.TraitValues[idx]=value;
+    this.ChangeByUser();
+  }
+  private void ChangeByUser() {
+    DS.WriteAllPlaces(SD.CurrentUser);
   }
 }

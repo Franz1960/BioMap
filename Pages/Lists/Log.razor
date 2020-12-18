@@ -12,7 +12,6 @@
     <Card Margin="Margin.Is4.OnY">
       <CardHeader>
         <CardTitle>@Localize["Log"]</CardTitle>
-        <Button Class="float-right small" Color="Color.Primary" Clicked="((e)=> { LoadAll=true; RefreshData(); })">@Localize["Load all"]</Button>
       </CardHeader>
       <CardBody>
         <table class="table table-striped table-sm">
@@ -34,6 +33,9 @@
           </tbody>
         </table>
       </CardBody>
+      <CardFooter>
+        <Button Class="float-right small" Color="Color.Primary" Clicked="((e)=> { LoadAll=true; RefreshData(); })">@Localize["Load all"]</Button>
+      </CardFooter>
     </Card>
   </Column>
 </Row>
