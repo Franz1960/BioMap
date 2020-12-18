@@ -3,6 +3,7 @@ var AoiCenterLat, AoiCenterLng, AoiRadiusMax;
 const AoiRadiusTolerance = 0.50;
 var AoiBounds;
 var AoiAreaHa;
+var Elements;
 function InitMap() {
     var mapProp = {
         center: new google.maps.LatLng(48.994249, 12.190451),
@@ -114,4 +115,7 @@ function ToggleEditAoiBounds() {
         }
     }
     return null;
+}
+function SetElements(aElements) {
+    Elements = aElements;
 }

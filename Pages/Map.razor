@@ -3,23 +3,64 @@
 @inject DataService DS
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
+@using GoogleMapsComponents
+@using GoogleMapsComponents.Maps
 
-<div id="googleMap" style="height:1000px;width:100%;">
-</div>
+<GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
+
 @if (SD.CurrentUser.Level>=700) {
   <Button Color="Color.Primary" @onclick="() => OnEditClick()">@Localize["Edit AOI"]</Button>
 }
 
 @code{
+  private GoogleMap googleMap;
+  private MapOptions mapOptions;
+
+  protected override void OnInitialized() {
+    mapOptions = new MapOptions() {
+      Zoom = 12,
+      Center = new LatLngLiteral() {
+        Lat = 48.994249,
+        Lng = 12.190451
+      },
+      MapTypeId = MapTypeId.Roadmap,
+      StreetViewControl=false,
+    };
+  }
 
   protected override async Task OnAfterRenderAsync(bool firstRender) {
     if (firstRender) {
-      await JSRuntime.InvokeVoidAsync("InitMap",null);
       if (SD.CurrentUser.Level>=400) {
-        await JSRuntime.InvokeVoidAsync("InitPlaces",Newtonsoft.Json.JsonConvert.SerializeObject(DS.AllPlaces));
+        foreach (var place in DS.AllPlaces) {
+          var circle = await Circle.CreateAsync(googleMap.JsRuntime,new CircleOptions {
+            Map=googleMap.InteropObject,
+            Center=new LatLngLiteral(place.LatLng.lng,place.LatLng.lat),
+            Radius=place.Radius,
+            StrokeColor="Orange",
+            StrokeOpacity=0.8f,
+            StrokeWeight=3,
+            FillColor="Orange",
+            FillOpacity=0.02f,
+          });
+          var marker = await Marker.CreateAsync(googleMap.JsRuntime,new MarkerOptions {
+            Map=googleMap.InteropObject,
+            Position=new LatLngLiteral(place.LatLng.lng,place.LatLng.lat - 0.0000120 * place.Radius),
+            Label=new MarkerLabel {
+              Text=place.Name,
+              FontSize="18px",
+              FontWeight="bold",
+              Color="DarkOrange",
+            },
+            Icon = "symbols/PlaceLabel.svg",
+          });
+          await marker.AddListener("click",async () => {
+            var s = place.Name;
+          });
+
+        }
       }
-      await JSRuntime.InvokeVoidAsync("InitAoiBounds",System.IO.File.ReadAllText(DS.DataDir + "conf/aoi.json"));
-      StateHasChanged();
+      //await JSRuntime.InvokeVoidAsync("InitAoiBounds",System.IO.File.ReadAllText(DS.DataDir + "conf/aoi.json"));
+      //StateHasChanged();
     }
   }
 
