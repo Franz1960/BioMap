@@ -1,4 +1,5 @@
-﻿var AoiCenterLat, AoiCenterLng, AoiRadiusMax;
+﻿var map;
+var AoiCenterLat, AoiCenterLng, AoiRadiusMax;
 const AoiRadiusTolerance = 0.50;
 var AoiBounds;
 var AoiAreaHa;
