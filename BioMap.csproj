@@ -32,7 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Geo" Version="1.0.0" />
     <PackageReference Include="MetadataExtractor" Version="2.4.3" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="5.0.1" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.1.2">
@@ -50,6 +49,7 @@
     <ProjectReference Include="..\Blazorise\Source\Extensions\Blazorise.DataGrid\Blazorise.DataGrid.csproj" />
     <ProjectReference Include="..\Blazorise\Source\Extensions\Blazorise.Icons.FontAwesome\Blazorise.Icons.FontAwesome.csproj" />
     <ProjectReference Include="..\ChartJs.Blazor\src\ChartJs.Blazor\ChartJs.Blazor.csproj" />
+    <ProjectReference Include="..\Geo\Geo\Geo.csproj" />
   </ItemGroup>
 
   <ItemGroup>

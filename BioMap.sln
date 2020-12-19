@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazorise", "..\Blazorise\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleMapsComponents", "..\BlazorGoogleMaps\GoogleMapsComponents\GoogleMapsComponents.csproj", "{AD43E8AC-D18D-49E6-8D9B-4A33F0547D32}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geo", "..\Geo\Geo\Geo.csproj", "{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,18 @@ Global
 		{AD43E8AC-D18D-49E6-8D9B-4A33F0547D32}.Release|x64.Build.0 = Release|Any CPU
 		{AD43E8AC-D18D-49E6-8D9B-4A33F0547D32}.Release|x86.ActiveCfg = Release|Any CPU
 		{AD43E8AC-D18D-49E6-8D9B-4A33F0547D32}.Release|x86.Build.0 = Release|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Debug|x64.Build.0 = Debug|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Debug|x86.Build.0 = Debug|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Release|x64.ActiveCfg = Release|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Release|x64.Build.0 = Release|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Release|x86.ActiveCfg = Release|Any CPU
+		{142FCB97-BB4F-48FA-B7D1-6C2AC4096CF6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

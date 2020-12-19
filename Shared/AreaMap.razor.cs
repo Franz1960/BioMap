@@ -22,10 +22,10 @@ namespace BioMap.Shared
     [Parameter]
     public bool ShowPlaces { get; set; } = true;
     //
-    protected GoogleMap googleMap=new GoogleMap();
+    protected GoogleMap googleMap;
     protected MapOptions mapOptions;
     //
-    protected override async void OnInitialized() {
+    protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
       mapOptions = new MapOptions() {
         Zoom = 12,
