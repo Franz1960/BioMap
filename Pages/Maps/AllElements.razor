@@ -16,6 +16,7 @@
 </Row>
 <Row>
   <Column>
+    <CheckBox Checked="DynaZoomed" CheckedChanged="(e)=>DynaZoomed_CheckedChanged(e)" LabelText="Dyn. Zoom"/>
   </Column>
 </Row>
 <PhotoPopup @ref="PhotoPopup1" />
@@ -54,5 +55,9 @@
       }
     }
     base.ElementMarkers=lElementMarkers.ToArray();
+  }
+  private async void DynaZoomed_CheckedChanged(bool e) {
+    base.DynaZoomed=e;
+    await base.InvokeAsync(StateHasChanged);
   }
 }
