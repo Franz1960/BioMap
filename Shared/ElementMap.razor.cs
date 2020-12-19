@@ -21,7 +21,9 @@ namespace BioMap.Shared
       public string Color;
       public LatLngLiteral Position;
       public Element Element;
+      public ElementMarker PrevMarker;
       internal Circle Circle;
+      internal Polyline Connector;
       internal int ZIndex = 1000000;
     }
     [Parameter]
@@ -34,6 +36,7 @@ namespace BioMap.Shared
           if (this._ElementMarkers!=null) {
             foreach (var elm in this._ElementMarkers) {
               elm?.Circle?.SetMap(null);
+              elm?.Connector?.SetMap(null);
             }
           }
           this._ElementMarkers=value;
@@ -82,6 +85,7 @@ namespace BioMap.Shared
         }
         this.AfterRenderUpDownCnt++;
         var lCircles = new List<Circle>();
+        var lConnectors = new List<Polyline>();
         try {
           bool bCancelled = false;
           foreach (var elm in this.ElementMarkers.ToArray()) {
@@ -118,6 +122,28 @@ namespace BioMap.Shared
                 }
               }
             });
+            elm?.Connector?.SetMap(null);
+            elm.Connector=null;
+            if (elm.PrevMarker!=null) {
+              var connector = await Polyline.CreateAsync(googleMap.JsRuntime,new PolylineOptions {
+                Map=googleMap.InteropObject,
+                Geodesic=true,
+                StrokeColor="#50D020",
+                StrokeOpacity=0.7f,
+                StrokeWeight=2,
+                Icons=new[] {
+                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_CLOSED_ARROW }, Offset="100%" },
+                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_OPEN_ARROW }, Offset="66%" },
+                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_OPEN_ARROW }, Offset="33%" },
+                },
+                Path=new [] {
+                  elm.PrevMarker.Position,
+                  elm.Position,
+                },
+              });
+              elm.Connector=connector;
+              lConnectors.Add(connector);
+            }
             if (this.AfterRenderCancelReq) {
               bCancelled=true;
               break;
@@ -131,6 +157,9 @@ namespace BioMap.Shared
           if (this.AfterRenderCancelReq) {
             foreach (var circle in lCircles) {
               await circle.SetMap(null);
+            }
+            foreach (var connector in lConnectors) {
+              await connector.SetMap(null);
             }
             this.AfterRenderCancelReq=false;
           }
