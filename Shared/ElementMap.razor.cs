@@ -30,12 +30,14 @@ namespace BioMap.Shared
         return this._ElementMarkers;
       }
       set {
-        if (this._ElementMarkers!=null) {
-          foreach (var elm in this._ElementMarkers) {
-            elm?.Circle?.SetMap(null);
+        lock (this.ElementMarkersLock) {
+          if (this._ElementMarkers!=null) {
+            foreach (var elm in this._ElementMarkers) {
+              elm?.Circle?.SetMap(null);
+            }
           }
+          this._ElementMarkers=value;
         }
-        this._ElementMarkers=value;
         this.StateHasChanged();
       }
     }
@@ -53,12 +55,16 @@ namespace BioMap.Shared
       }
     }
     private bool _DynaZoomed = false;
+    //
+    private readonly object ElementMarkersLock = new object();
+    private int AfterRenderUpDownCnt = 0;
+    private bool AfterRenderCancelReq = false;
     private Blazorise.Utils.ValueDelayer zoomValueDelayer;
     private double RadiusFactor = 1;
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
       this.zoomValueDelayer = new Blazorise.Utils.ValueDelayer(800);
-      this.zoomValueDelayer.Delayed += this.OnZoomValueDelayed;
+      this.zoomValueDelayer.Delayed += async (sender,sValue) =>await this.OnZoomValueDelayed(sValue);
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
@@ -68,43 +74,70 @@ namespace BioMap.Shared
         });
       }
       if (this.ElementMarkers!=null) {
-        foreach (var elm in this.ElementMarkers) {
-          var circle = await Circle.CreateAsync(googleMap.JsRuntime,new CircleOptions {
-            Map=googleMap.InteropObject,
-            Center=elm.Position,
-            Radius=elm.Radius,
-            StrokeColor=elm.Color,
-            StrokeOpacity=0.60f,
-            StrokeWeight=2,
-            FillColor=elm.Color,
-            FillOpacity=0.35f,
-            ZIndex=1000000,
-          });
-          elm?.Circle?.SetMap(null);
-          elm.Circle=circle;
-          await circle.AddListener("click",async () => {
-            if (this.PhotoPopup!=null) {
-              this.PhotoPopup.Show(elm.Element);
-              // Set below lowest Z index.
-              int? minZIndex = null;
-              foreach (var elm1 in this.ElementMarkers) {
-                int zIndex = elm1.ZIndex;
-                if (!minZIndex.HasValue || zIndex<minZIndex.Value) {
-                  minZIndex = zIndex;
+        if (this.AfterRenderUpDownCnt>=1) {
+          this.AfterRenderCancelReq=true;
+          while (this.AfterRenderCancelReq) {
+            await Task.Delay(100);
+          }
+        }
+        this.AfterRenderUpDownCnt++;
+        var lCircles = new List<Circle>();
+        try {
+          bool bCancelled = false;
+          foreach (var elm in this.ElementMarkers.ToArray()) {
+            var circle = await Circle.CreateAsync(googleMap.JsRuntime,new CircleOptions {
+              Map=googleMap.InteropObject,
+              Center=elm.Position,
+              Radius=elm.Radius,
+              StrokeColor=elm.Color,
+              StrokeOpacity=0.60f,
+              StrokeWeight=2,
+              FillColor=elm.Color,
+              FillOpacity=0.35f,
+              ZIndex=1000000,
+            });
+            elm?.Circle?.SetMap(null);
+            elm.Circle=circle;
+            lCircles.Add(circle);
+            await circle.AddListener("click",async () => {
+              if (this.PhotoPopup!=null) {
+                this.PhotoPopup.Show(elm.Element);
+                // Set below lowest Z index.
+                int? minZIndex = null;
+                foreach (var elm1 in this.ElementMarkers) {
+                  int zIndex = elm1.ZIndex;
+                  if (!minZIndex.HasValue || zIndex<minZIndex.Value) {
+                    minZIndex = zIndex;
+                  }
+                }
+                if (minZIndex.HasValue) {
+                  elm.ZIndex=minZIndex.Value-1;
+                  await elm.Circle.SetOptions(new CircleOptions {
+                    ZIndex=elm.ZIndex,
+                  });
                 }
               }
-              if (minZIndex.HasValue) {
-                elm.ZIndex=minZIndex.Value-1;
-                await elm.Circle.SetOptions(new CircleOptions {
-                  ZIndex=elm.ZIndex,
-                });
-              }
+            });
+            if (this.AfterRenderCancelReq) {
+              bCancelled=true;
+              break;
             }
-          });
+          }
+          if (!bCancelled) {
+            await this.OnZoomValueDelayed(null);
+          }
+        } finally {
+          this.AfterRenderUpDownCnt--;
+          if (this.AfterRenderCancelReq) {
+            foreach (var circle in lCircles) {
+              await circle.SetMap(null);
+            }
+            this.AfterRenderCancelReq=false;
+          }
         }
       }
     }
-    private async void OnZoomValueDelayed(object sender,string sValue) {
+    private async Task OnZoomValueDelayed(string sValue) {
       if (!this.DynaZoomed) {
         return;
       }
