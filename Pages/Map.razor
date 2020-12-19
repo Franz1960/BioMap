@@ -76,9 +76,31 @@
           Paths = new List<List<LatLngLiteral>>(new[] { path }),
         });
       } catch { }
+      await this.RefreshElementMarkers();
     }
   }
-
+  private async Task RefreshElementMarkers() {
+    if (SD.CurrentUser.Level>=400) {
+      foreach (var el in DS.GetElements(SD.Filters)) {
+        var latLng = new LatLngLiteral(el.ElementProp.MarkerInfo.position.lng,el.ElementProp.MarkerInfo.position.lat);
+        var symbolProps = el.GetSymbolProperties();
+        var circle = await Circle.CreateAsync(googleMap.JsRuntime,new CircleOptions {
+          Map=googleMap.InteropObject,
+          Center=latLng,
+          Radius=symbolProps.Radius,
+          StrokeColor=symbolProps.FgColor,
+          StrokeOpacity=0.60f,
+          StrokeWeight=2,
+          FillColor=symbolProps.BgColor,
+          FillOpacity=0.35f,
+          ZIndex=1000000,
+        });
+        await circle.AddListener("click",async () => {
+          var s = el.ElementName;
+        });
+      }
+    }
+  }
   private async void OnEditClick() {
     var sAoiBounds = await JSRuntime.InvokeAsync<string>("ToggleEditAoiBounds");
     if (sAoiBounds != null) {

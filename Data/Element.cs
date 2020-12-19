@@ -45,6 +45,12 @@ namespace BioMap
         AllCategories=l.ToArray();
       }
     }
+    public class SymbolProperties
+    {
+      public double Radius;
+      public string BgColor;
+      public string FgColor;
+    }
     public class UploadInfo_t
     {
       public DateTime Timestamp;
@@ -191,6 +197,14 @@ namespace BioMap
         return "#"+sIId;
       }
     }
+    public string GetCategoryColor() {
+      int nCat = this.GetCategoryNum();
+      if (Category.CategoriesByNum.TryGetValue(nCat,out var category)) {
+        return category.BgColor;
+      } else {
+        return "#777777";
+      }
+    }
     public string GetIId() {
       if (this.ElementProp.IndivData!=null) {
         return ConvInvar.ToString(this.ElementProp.IndivData.IId);
@@ -248,6 +262,16 @@ namespace BioMap
         return ConvInvar.ToDecimalString(this.ElementProp.IndivData.MeasuredData.HeadBodyLength,1)+" mm";
       }
       return "";
+    }
+    public SymbolProperties GetSymbolProperties() {
+      var dHBL = this.GetHeadBodyLengthMm();
+      var bgColor = this.GetCategoryColor();
+      var sb = new SymbolProperties {
+        Radius=(dHBL==0) ? 3 : (dHBL*0.10),
+        BgColor=bgColor,
+        FgColor=bgColor,
+      };
+      return sb;
     }
   }
 }
