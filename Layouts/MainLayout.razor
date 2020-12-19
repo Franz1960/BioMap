@@ -19,10 +19,17 @@
         <BarMenu>
           <BarStart>
             <BarItem>
-              <BarLink To="/Map">
-                <BarIcon IconName="IconName.Map" />
-                @Localize["Map"]
-              </BarLink>
+              <BarDropdown>
+                <BarDropdownToggle>
+                  <BarIcon IconName="IconName.Map" />
+                  @Localize["Maps"]
+                </BarDropdownToggle>
+                <BarDropdownMenu>
+                  <BarDropdownItem To="/Maps/AllElements">
+                    @Localize["AllElements"]
+                  </BarDropdownItem>
+                </BarDropdownMenu>
+              </BarDropdown>
             </BarItem>
             <BarItem>
               <BarDropdown>
