@@ -9,15 +9,32 @@
 @using GoogleMapsComponents.Maps
 @inherits ElementMap
 
+<Row>
+  <Column>
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
+  </Column>
+</Row>
+<Row>
+  <Column>
+  </Column>
+</Row>
+<PhotoPopup @ref="PhotoPopup1" />
 <GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
 
 @code{
+  private PhotoPopup PhotoPopup1;
   protected override async Task OnInitializedAsync() {
     await base.OnInitializedAsync();
+    SD.Filters.FilterChanged+=async (sender,ev) => {
+      await this.RefreshElementMarkers();
+      await base.InvokeAsync(StateHasChanged);
+    };
   }
   protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
     if (firstRender) {
+      base.PhotoPopup=this.PhotoPopup1;
+      base.DynaZoomed=false;
       await this.RefreshElementMarkers();
     }
   }

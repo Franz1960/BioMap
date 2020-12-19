@@ -40,6 +40,9 @@ namespace BioMap.Shared
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
+        while (googleMap.InteropObject==null) {
+          await Task.Delay(100);
+        }
         if (this.ShowPlaces && SD.CurrentUser.Level>=400) {
           foreach (var place in DS.AllPlaces) {
             var circle = await Circle.CreateAsync(googleMap.JsRuntime,new CircleOptions {

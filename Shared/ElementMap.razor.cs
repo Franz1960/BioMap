@@ -22,6 +22,7 @@ namespace BioMap.Shared
       public LatLngLiteral Position;
       public Element Element;
       internal Circle Circle;
+      internal int ZIndex = 1000000;
     }
     [Parameter]
     public ElementMarker[] ElementMarkers {
@@ -29,11 +30,29 @@ namespace BioMap.Shared
         return this._ElementMarkers;
       }
       set {
+        if (this._ElementMarkers!=null) {
+          foreach (var elm in this._ElementMarkers) {
+            elm?.Circle?.SetMap(null);
+          }
+        }
         this._ElementMarkers=value;
         this.StateHasChanged();
       }
     }
     private ElementMarker[] _ElementMarkers = null;
+    [Parameter]
+    public PhotoPopup PhotoPopup { get; set; }
+    [Parameter]
+    public bool DynaZoomed {
+      get {
+        return this._DynaZoomed;
+      }
+      set {
+        this._DynaZoomed=value;
+        this.StateHasChanged();
+      }
+    }
+    private bool _DynaZoomed = false;
     private Blazorise.Utils.ValueDelayer zoomValueDelayer;
     private double RadiusFactor = 1;
     protected override async Task OnInitializedAsync() {
@@ -61,14 +80,34 @@ namespace BioMap.Shared
             FillOpacity=0.35f,
             ZIndex=1000000,
           });
+          elm?.Circle?.SetMap(null);
           elm.Circle=circle;
           await circle.AddListener("click",async () => {
-            var s = elm.Element.ElementName;
+            if (this.PhotoPopup!=null) {
+              this.PhotoPopup.Show(elm.Element);
+              // Set below lowest Z index.
+              int? minZIndex = null;
+              foreach (var elm1 in this.ElementMarkers) {
+                int zIndex = elm1.ZIndex;
+                if (!minZIndex.HasValue || zIndex<minZIndex.Value) {
+                  minZIndex = zIndex;
+                }
+              }
+              if (minZIndex.HasValue) {
+                elm.ZIndex=minZIndex.Value-1;
+                await elm.Circle.SetOptions(new CircleOptions {
+                  ZIndex=elm.ZIndex,
+                });
+              }
+            }
           });
         }
       }
     }
     private async void OnZoomValueDelayed(object sender,string sValue) {
+      if (!this.DynaZoomed) {
+        return;
+      }
       try {
         var bounds = await this.googleMap.InteropObject.GetBounds();
         var fHeight = Math.Abs(bounds.North-bounds.South)*111000;
