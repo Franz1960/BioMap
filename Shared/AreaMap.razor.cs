@@ -122,6 +122,7 @@ namespace BioMap.Shared
               },
               Icon = new Symbol { Path="M -15,10 L 15,10 z",StrokeColor="DarkOrange",},
             });
+            await marker.SetOptions(new MarkerOptions { Icon = new Symbol { Path="M -15,10 L 15,15 z",StrokeColor="DarkGreen",} });
             this.visiblePlaceMarkers.Add(marker);
             await this.placesBounds.Extend(new LatLngLiteral(place.LatLng.lng,place.LatLng.lat));
             await marker.AddListener("click",async () => {

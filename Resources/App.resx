@@ -171,6 +171,12 @@
   <data name="Cat." xml:space="preserve">
     <value>Kat.</value>
   </data>
+  <data name="Catch numbers per month" xml:space="preserve">
+    <value>Fangzahlen pro Monat</value>
+  </data>
+  <data name="Catches" xml:space="preserve">
+    <value>Fänge</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Kategorie</value>
   </data>
@@ -233,6 +239,9 @@
   </data>
   <data name="Gender" xml:space="preserve">
     <value>Geschlecht</value>
+  </data>
+  <data name="Head-body-length of all catches" xml:space="preserve">
+    <value>Kopf-Rumpf-Länge aller Fänge</value>
   </data>
   <data name="Hibernations" xml:space="preserve">
     <value>Überwinterungen</value>

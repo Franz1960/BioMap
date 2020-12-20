@@ -15,13 +15,18 @@
 
 <h1>@Localize["Summary"]</h1>
 
-<div class="card">
-  <div class="card-body">
-    <h5 class="card-title text-center">@Localize["Different Individuals"]</h5>
-    <Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
-  </div>
-</div>
-<p></p>
+<Row>
+  <Column>
+    <Card>
+      <CardTitle>
+        @Localize["Different Individuals"]
+      </CardTitle>
+      <CardBody>
+        <Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+      </CardBody>
+    </Card>
+  </Column>
+</Row>
 
 @code {
   private int ProjectYearBegin;
