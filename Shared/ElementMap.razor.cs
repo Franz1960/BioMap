@@ -41,7 +41,7 @@ namespace BioMap.Shared
           }
           this._ElementMarkers=value;
         }
-        this.StateHasChanged();
+        this.DelayedStateHasChanged();
       }
     }
     private ElementMarker[] _ElementMarkers = null;
@@ -54,10 +54,23 @@ namespace BioMap.Shared
       }
       set {
         this._DynaZoomed=value;
-        this.StateHasChanged();
+        this.DelayedStateHasChanged();
       }
     }
     private bool _DynaZoomed = false;
+    [Parameter]
+    public bool DisplayConnectors {
+      get {
+        return this._DisplayConnectors;
+      }
+      set {
+        this._DisplayConnectors=value;
+        this.DelayedStateHasChanged();
+      }
+    }
+    private bool _DisplayConnectors = true;
+    //
+    protected LatLngBounds elementBounds;
     //
     private readonly object ElementMarkersLock = new object();
     private int AfterRenderUpDownCnt = 0;
@@ -76,6 +89,7 @@ namespace BioMap.Shared
           this.zoomValueDelayer.Update(ConvInvar.ToString(await this.googleMap.InteropObject.GetZoom()));
         });
       }
+      this.elementBounds = await LatLngBounds.CreateAsync(googleMap.JsRuntime);
       if (this.ElementMarkers!=null) {
         if (this.AfterRenderUpDownCnt>=1) {
           this.AfterRenderCancelReq=true;
@@ -100,7 +114,9 @@ namespace BioMap.Shared
               FillOpacity=0.35f,
               ZIndex=1000000,
             });
-            elm?.Circle?.SetMap(null);
+            if (elm?.Circle!=null) {
+              await elm.Circle.SetMap(null);
+            }
             elm.Circle=circle;
             lCircles.Add(circle);
             await circle.AddListener("click",async () => {
@@ -122,9 +138,12 @@ namespace BioMap.Shared
                 }
               }
             });
-            elm?.Connector?.SetMap(null);
+            await this.elementBounds.Extend(elm.Position);
+            if (elm?.Connector!=null) {
+              await elm.Connector.SetMap(null);
+            }
             elm.Connector=null;
-            if (elm.PrevMarker!=null) {
+            if (elm.PrevMarker!=null && this.DisplayConnectors) {
               var connector = await Polyline.CreateAsync(googleMap.JsRuntime,new PolylineOptions {
                 Map=googleMap.InteropObject,
                 Geodesic=true,
@@ -224,6 +243,14 @@ namespace BioMap.Shared
           }
         }
       } catch { }
+    }
+    protected override async Task FitBounds() {
+      if (this.elementBounds==null || await this.elementBounds.IsEmpty()) {
+        await base.FitBounds();
+      } else {
+        var boundsLiteral = await this.elementBounds.ToJson();
+        await this.googleMap.InteropObject.FitBounds(boundsLiteral,OneOf.OneOf<int,Padding>.FromT0(5));
+      }
     }
   }
 }

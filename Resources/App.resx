@@ -195,6 +195,9 @@
   <data name="Different Individuals" xml:space="preserve">
     <value>Verschiedene Individuen</value>
   </data>
+  <data name="Dyn. zoom" xml:space="preserve">
+    <value>Dyn. Zoom</value>
+  </data>
   <data name="Edit AOI" xml:space="preserve">
     <value>AOI bearbeiten</value>
   </data>
@@ -218,6 +221,9 @@
   </data>
   <data name="Fit growing curves" xml:space="preserve">
     <value>Wachstumskurven fitten</value>
+  </data>
+  <data name="Fit visible area" xml:space="preserve">
+    <value>Anzeigebereich anpassen</value>
   </data>
   <data name="Frequency by Place / Time Chart" xml:space="preserve">
     <value>Häufigkeit nach Ort / Zeit Diagramm</value>
@@ -356,6 +362,12 @@
   </data>
   <data name="Show growing curves" xml:space="preserve">
     <value>Wachstumskurven anzeigen</value>
+  </data>
+  <data name="Show movements" xml:space="preserve">
+    <value>Wanderungen anzeigen</value>
+  </data>
+  <data name="Show places" xml:space="preserve">
+    <value>Orte anzeigen</value>
   </data>
   <data name="Statistics" xml:space="preserve">
     <value>Statistik</value>

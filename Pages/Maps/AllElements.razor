@@ -16,7 +16,13 @@
 </Row>
 <Row>
   <Column>
-    <CheckBox Checked="DynaZoomed" CheckedChanged="(e)=>DynaZoomed_CheckedChanged(e)" LabelText="Dyn. Zoom"/>
+    <Button Color="Color.Primary" Clicked="async ()=>await FitBounds()">@Localize["Fit visible area"]</Button>
+  </Column>
+  <Column>
+    <CheckBox Checked="ShowPlaces" CheckedChanged="(e)=>ShowPlaces=e" LabelText=@Localize["Show places"] />
+  </Column>
+  <Column>
+    <CheckBox Checked="DynaZoomed" CheckedChanged="(e)=>DynaZoomed=e" LabelText=@Localize["Dyn. zoom"] />
   </Column>
 </Row>
 <PhotoPopup @ref="PhotoPopup1" />
@@ -28,7 +34,7 @@
     await base.OnInitializedAsync();
     SD.Filters.FilterChanged+=async (sender,ev) => {
       await this.RefreshElementMarkers();
-      await base.InvokeAsync(StateHasChanged);
+      this.DelayedStateHasChanged();
     };
   }
   protected override async Task OnAfterRenderAsync(bool firstRender) {
@@ -55,9 +61,5 @@
       }
     }
     base.ElementMarkers=lElementMarkers.ToArray();
-  }
-  private async void DynaZoomed_CheckedChanged(bool e) {
-    base.DynaZoomed=e;
-    await base.InvokeAsync(StateHasChanged);
   }
 }
