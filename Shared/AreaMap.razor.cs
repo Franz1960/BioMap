@@ -30,6 +30,7 @@ namespace BioMap.Shared
       }
     }
     private bool _ShowPlaces = true;
+    private bool? PrevShowPlaces = null;
     //
     protected GoogleMap googleMap;
     protected MapOptions mapOptions;
@@ -79,47 +80,54 @@ namespace BioMap.Shared
           foreach (var latLng in path) {
             await this.aoiBounds.Extend(latLng);
           }
-          await this.FitBounds();
+          if (!await this.aoiBounds.IsEmpty()) {
+            var boundsLiteral = await this.aoiBounds.ToJson();
+            await this.googleMap.InteropObject.FitBounds(boundsLiteral,OneOf.OneOf<int,Padding>.FromT0(5));
+          }
         } catch { }
       }
       this.placesBounds = await LatLngBounds.CreateAsync(googleMap.JsRuntime);
-      foreach (var circle in this.visiblePlaceCircles.ToArray()) {
-        await circle.SetMap(null);
-      }
-      this.visiblePlaceCircles.Clear();
-      foreach (var marker in this.visiblePlaceMarkers.ToArray()) {
-        await marker.SetMap(null);
-      }
-      this.visiblePlaceMarkers.Clear();
-      if (this.ShowPlaces && SD.CurrentUser.Level>=400) {
-        foreach (var place in DS.AllPlaces) {
-          var circle = await Circle.CreateAsync(googleMap.JsRuntime,new CircleOptions {
-            Map=googleMap.InteropObject,
-            Center=new LatLngLiteral(place.LatLng.lng,place.LatLng.lat),
-            Radius=place.Radius,
-            StrokeColor="Orange",
-            StrokeOpacity=0.8f,
-            StrokeWeight=3,
-            FillColor="Orange",
-            FillOpacity=0.02f,
-          });
-          this.visiblePlaceCircles.Add(circle);
-          var marker = await Marker.CreateAsync(googleMap.JsRuntime,new MarkerOptions {
-            Map=googleMap.InteropObject,
-            Position=new LatLngLiteral(place.LatLng.lng,place.LatLng.lat - 0.0000096 * place.Radius),
-            Label=new MarkerLabel {
-              Text=place.Name,
-              FontSize="18px",
-              FontWeight="bold",
-              Color="DarkOrange",
-            },
-            Icon = new Symbol { Path="M -15,10 L 15,10 z",StrokeColor="DarkOrange",},
-          });
-          this.visiblePlaceMarkers.Add(marker);
-          await this.placesBounds.Extend(new LatLngLiteral(place.LatLng.lng,place.LatLng.lat));
-          await marker.AddListener("click",async () => {
-            var s = place.Name;
-          });
+      bool bShowPlaces = (this.ShowPlaces && SD.CurrentUser.Level>=400);
+      if (!this.PrevShowPlaces.HasValue || bShowPlaces!=this.PrevShowPlaces) {
+        this.PrevShowPlaces=bShowPlaces;
+        foreach (var circle in this.visiblePlaceCircles.ToArray()) {
+          await circle.SetMap(null);
+        }
+        this.visiblePlaceCircles.Clear();
+        foreach (var marker in this.visiblePlaceMarkers.ToArray()) {
+          await marker.SetMap(null);
+        }
+        this.visiblePlaceMarkers.Clear();
+        if (bShowPlaces) {
+          foreach (var place in DS.AllPlaces) {
+            var circle = await Circle.CreateAsync(googleMap.JsRuntime,new CircleOptions {
+              Map=googleMap.InteropObject,
+              Center=new LatLngLiteral(place.LatLng.lng,place.LatLng.lat),
+              Radius=place.Radius,
+              StrokeColor="Orange",
+              StrokeOpacity=0.8f,
+              StrokeWeight=3,
+              FillColor="Orange",
+              FillOpacity=0.02f,
+            });
+            this.visiblePlaceCircles.Add(circle);
+            var marker = await Marker.CreateAsync(googleMap.JsRuntime,new MarkerOptions {
+              Map=googleMap.InteropObject,
+              Position=new LatLngLiteral(place.LatLng.lng,place.LatLng.lat - 0.0000096 * place.Radius),
+              Label=new MarkerLabel {
+                Text=place.Name,
+                FontSize="18px",
+                FontWeight="bold",
+                Color="DarkOrange",
+              },
+              Icon = new Symbol { Path="M -15,10 L 15,10 z",StrokeColor="DarkOrange",},
+            });
+            this.visiblePlaceMarkers.Add(marker);
+            await this.placesBounds.Extend(new LatLngLiteral(place.LatLng.lng,place.LatLng.lat));
+            await marker.AddListener("click",async () => {
+              var s = place.Name;
+            });
+          }
         }
       }
     }
