@@ -68,9 +68,10 @@ namespace BioMap.Shared
         this.DelayedStateHasChanged();
       }
     }
-    private bool _DisplayConnectors = true;
+    private bool _DisplayConnectors = false;
     //
-    protected LatLngBounds elementBounds;
+    private readonly Dictionary<string, CircleOptions> circleListDict = new Dictionary<string, CircleOptions>();
+    private CircleList circleList=null;
     //
     private readonly object ElementMarkersLock = new object();
     private int AfterRenderUpDownCnt = 0;
@@ -85,11 +86,11 @@ namespace BioMap.Shared
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
+        this.circleList = await CircleList.CreateAsync(this.googleMap.JsRuntime,circleListDict);
         await this.googleMap.InteropObject.AddListener("zoom_changed",async () => {
           this.zoomValueDelayer.Update(ConvInvar.ToString(await this.googleMap.InteropObject.GetZoom()));
         });
       }
-      this.elementBounds = await LatLngBounds.CreateAsync(googleMap.JsRuntime);
       if (this.ElementMarkers!=null) {
         if (this.AfterRenderUpDownCnt>=1) {
           this.AfterRenderCancelReq=true;
@@ -102,8 +103,12 @@ namespace BioMap.Shared
         var lConnectors = new List<Polyline>();
         try {
           bool bCancelled = false;
+          var lToRemove = new List<string>();
+          var dictToAdd = new Dictionary<string,CircleOptions>();
+          var dictToChange = new Dictionary<string,CircleOptions>();
+          var dictCurrent = new Dictionary<string,CircleOptions>();
           foreach (var elm in this.ElementMarkers.ToArray()) {
-            var circle = await Circle.CreateAsync(googleMap.JsRuntime,new CircleOptions {
+            var circleOptions = new CircleOptions {
               Map=googleMap.InteropObject,
               Center=elm.Position,
               Radius=elm.Radius,
@@ -113,61 +118,28 @@ namespace BioMap.Shared
               FillColor=elm.Color,
               FillOpacity=0.35f,
               ZIndex=1000000,
-            });
-            if (elm?.Circle!=null) {
-              await elm.Circle.SetMap(null);
-            }
-            elm.Circle=circle;
-            lCircles.Add(circle);
-            await circle.AddListener("click",async () => {
-              if (this.PhotoPopup!=null) {
-                this.PhotoPopup.Show(elm.Element);
-                // Set below lowest Z index.
-                int? minZIndex = null;
-                foreach (var elm1 in this.ElementMarkers) {
-                  int zIndex = elm1.ZIndex;
-                  if (!minZIndex.HasValue || zIndex<minZIndex.Value) {
-                    minZIndex = zIndex;
-                  }
-                }
-                if (minZIndex.HasValue) {
-                  elm.ZIndex=minZIndex.Value-1;
-                  await elm.Circle.SetOptions(new CircleOptions {
-                    ZIndex=elm.ZIndex,
-                  });
-                }
-              }
-            });
-            await this.elementBounds.Extend(elm.Position);
-            if (elm?.Connector!=null) {
-              await elm.Connector.SetMap(null);
-            }
-            elm.Connector=null;
-            if (elm.PrevMarker!=null && this.DisplayConnectors) {
-              var connector = await Polyline.CreateAsync(googleMap.JsRuntime,new PolylineOptions {
-                Map=googleMap.InteropObject,
-                Geodesic=true,
-                StrokeColor="#50D020",
-                StrokeOpacity=0.7f,
-                StrokeWeight=2,
-                Icons=new[] {
-                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_CLOSED_ARROW }, Offset="100%" },
-                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_OPEN_ARROW }, Offset="66%" },
-                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_OPEN_ARROW }, Offset="33%" },
-                },
-                Path=new [] {
-                  elm.PrevMarker.Position,
-                  elm.Position,
-                },
-              });
-              elm.Connector=connector;
-              lConnectors.Add(connector);
-            }
-            if (this.AfterRenderCancelReq) {
-              bCancelled=true;
-              break;
+            };
+            dictCurrent[elm.Element.ElementName]=circleOptions;
+          }
+          foreach (var sKey in this.circleListDict.Keys) {
+            if (!dictCurrent.ContainsKey(sKey)) {
+              lToRemove.Add(sKey);
             }
           }
+          foreach (var sKey in lToRemove) {
+            this.circleListDict.Remove(sKey);
+          }
+          foreach (var sKey in dictCurrent.Keys) {
+            if (this.circleListDict.ContainsKey(sKey)) {
+              dictToChange[sKey]=dictCurrent[sKey];
+            } else {
+              dictToAdd[sKey]=dictCurrent[sKey];
+            }
+            this.circleListDict[sKey]=dictToAdd[sKey];
+          }
+          await this.circleList.RemoveMultipleAsync(lToRemove);
+          await this.circleList.AddMultipleAsync(dictToAdd);
+          await this.circleList.SetOptions(dictToChange);
           if (!bCancelled) {
             await this.OnZoomValueDelayed(null);
           }
@@ -245,12 +217,13 @@ namespace BioMap.Shared
       } catch { }
     }
     protected override async Task FitBounds() {
-      if (this.elementBounds==null || await this.elementBounds.IsEmpty()) {
-        await base.FitBounds();
-      } else {
-        var boundsLiteral = await this.elementBounds.ToJson();
-        await this.googleMap.InteropObject.FitBounds(boundsLiteral,OneOf.OneOf<int,Padding>.FromT0(5));
-      }
+      //var bounds = await this.circleList.GetBounds();
+      //if (bounds==null || await bounds.IsEmpty()) {
+      //  await base.FitBounds();
+      //} else {
+      //  var boundsLiteral = await bounds;
+      //  await this.googleMap.InteropObject.FitBounds(boundsLiteral,OneOf.OneOf<int,Padding>.FromT0(5));
+      //}
     }
   }
 }

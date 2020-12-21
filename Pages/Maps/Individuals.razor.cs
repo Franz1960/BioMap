@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GoogleMapsComponents;
 using GoogleMapsComponents.Maps;
+using GoogleMapsComponents.Maps.Extension;
 using BioMap.Shared;
 
 namespace BioMap.Pages.Maps
@@ -20,6 +21,7 @@ namespace BioMap.Pages.Maps
     protected SessionData SD { get; set; }
     //
     private PhotoPopup PhotoPopup1;
+    //
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
       SD.Filters.FilterChanged+=async (sender,ev) => {
@@ -39,6 +41,7 @@ namespace BioMap.Pages.Maps
       var lElementMarkers = new List<ElementMarker>();
       if (SD.CurrentUser.Level>=400) {
         var dictIndividuals = DataService.Instance.GetIndividuals(SD.Filters);
+        var dictCircleList = new Dictionary<string, CircleOptions>();
         foreach (var iid in dictIndividuals.Keys) {
           ElementMarker prevMarker = null;
           foreach (var el in dictIndividuals[iid]) {
