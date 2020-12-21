@@ -28,12 +28,15 @@ namespace BioMap.Pages.Diagrams
     [Inject]
     protected SessionData SD { get; set; }
     //
+    private BarConfig _configOverTime;
+    private Chart _chartJsOverTime;
     private BarConfig _configPerMonth;
     private Chart _chartJsPerMonth;
     private BarConfig _configHeadBodyLength;
     private Chart _chartJsHeadBodyLength;
-    private BarConfig _configOverTime;
-    private Chart _chartJsOverTime;
+    private BarConfig _configGenderRatio;
+    private Chart _chartJsGenderRatio;
+    private BarLinearCartesianAxis _yAxisGenderRatioCnt;
     //
     private string selectedTab = "OverTime";
 
@@ -143,6 +146,48 @@ namespace BioMap.Pages.Diagrams
                 {
                     Stacked = true
                 }
+            }
+          },
+        },
+      };
+      _yAxisGenderRatioCnt = new BarLinearCartesianAxis {
+        ID="cnt",
+        ScaleLabel=new ScaleLabel {
+          Display=true,
+        },
+        Stacked = true
+      };
+      _configGenderRatio = new BarConfig {
+        Options = new BarOptions {
+          Animation=new Animation {
+            Duration=0,
+          },
+          Title = new OptionsTitle {
+            Text="XXX",
+            Display = false,
+          },
+          Legend = new Legend {
+            Display = true,
+          },
+          Scales = new BarScales {
+            XAxes = new List<CartesianAxis> {
+                new BarCategoryAxis {
+                    Stacked = true
+                },
+            },
+            YAxes = new List<CartesianAxis> {
+                _yAxisGenderRatioCnt,
+                new LinearCartesianAxis {
+                  ID="ratio",
+                  ScaleLabel=new ScaleLabel {
+                    LabelString="%",
+                    Display=true,
+                  },
+                  Ticks= new LinearCartesianTicks {
+                    Min=0,
+                    Max=100,
+                  },
+                },
             }
           },
         },
@@ -302,6 +347,57 @@ namespace BioMap.Pages.Diagrams
           }
           _configHeadBodyLength.Data.Datasets.Add(ds);
           nIndex++;
+        }
+      }
+      {
+        _configGenderRatio.Data.Labels.Clear();
+        _configGenderRatio.Data.Datasets.Clear();
+        //
+        {
+          var aFemaleCount = new int[12];
+          var aMaleCount = new int[12];
+          foreach (var ea in aaIndisByIId.Values) {
+            foreach (var el in ea) {
+              string sGender=el.GetGender();
+              if (sGender.StartsWith("f")) {
+                aFemaleCount[el.ElementProp.CreationTime.Month-1]++;
+              } else if (sGender.StartsWith("m")) {
+                aMaleCount[el.ElementProp.CreationTime.Month-1]++;
+              }
+            }
+          }
+          var dsFemale = new BarDataset<int>() {
+            Label=Localize["Female"],
+            BackgroundColor=ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200,System.Drawing.Color.Red)),
+          };
+          var dsMale = new BarDataset<int>() {
+            Label=Localize["Male"],
+            BackgroundColor=ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200,System.Drawing.Color.Blue)),
+          };
+          var dsRatio = new LineDataset<double>() {
+            Label=Localize["Male"]+" %",
+            BackgroundColor = "rgba(0,0,0,0)",
+            BorderWidth = 2,
+            PointHoverBorderWidth = 0,
+            BorderColor = "Green",
+            PointRadius = 3,
+            YAxisId="ratio",
+          };
+          for (int month = 4;month<=10;month++) {
+            _configGenderRatio.Data.Labels.Add(month.ToString("00"));
+            dsFemale.Add(-aFemaleCount[month-1]);
+            dsMale.Add(aMaleCount[month-1]);
+            int nSum=aFemaleCount[month-1]+aMaleCount[month-1];
+            dsRatio.Add(nSum<10 ? 50 : ((aMaleCount[month-1]*100.0)/nSum));
+          }
+          var nMaxCnt = Math.Max(-dsFemale.Min(),dsMale.Max());
+          _yAxisGenderRatioCnt.Ticks = new LinearCartesianTicks {
+            Min=-nMaxCnt,
+            Max=nMaxCnt,
+          };
+          _configGenderRatio.Data.Datasets.Add(dsFemale);
+          _configGenderRatio.Data.Datasets.Add(dsMale);
+          _configGenderRatio.Data.Datasets.Add(dsRatio);
         }
       }
     }
