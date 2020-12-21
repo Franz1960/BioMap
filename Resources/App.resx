@@ -360,6 +360,9 @@
   <data name="Places" xml:space="preserve">
     <value>Orte</value>
   </data>
+  <data name="Precipitation" xml:space="preserve">
+    <value>Niederschlag</value>
+  </data>
   <data name="Recaptures" xml:space="preserve">
     <value>Wiederfänge</value>
   </data>
@@ -389,6 +392,9 @@
   </data>
   <data name="Summary" xml:space="preserve">
     <value>Zusammenfassung</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>Temperatur</value>
   </data>
   <data name="Text" xml:space="preserve">
     <value>Text</value>
