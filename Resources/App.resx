@@ -171,6 +171,9 @@
   <data name="Cat." xml:space="preserve">
     <value>Kat.</value>
   </data>
+  <data name="Catch numbers over time" xml:space="preserve">
+    <value>Fangzahlen / Zeit</value>
+  </data>
   <data name="Catch numbers per month" xml:space="preserve">
     <value>Fangzahlen pro Monat</value>
   </data>
@@ -308,6 +311,9 @@
   </data>
   <data name="Map" xml:space="preserve">
     <value>Karte</value>
+  </data>
+  <data name="Maps" xml:space="preserve">
+    <value>Karten</value>
   </data>
   <data name="Missed individuals" xml:space="preserve">
     <value>Vermisste Individuen</value>

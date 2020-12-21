@@ -17,39 +17,71 @@
 
 <h1>@Localize["Catches"]</h1>
 
-<Row>
-  <Column>
-    <Card>
-      <CardTitle>
-        @Localize["Catch numbers per month"]
-      </CardTitle>
-      <CardBody>
-        <Chart @ref="_chartJsPerMonth" Config="@_configPerMonth" Width="600" Height="300" />
-      </CardBody>
-    </Card>
-  </Column>
-</Row>
-<Row>
-  <Column>
-    <Card>
-      <CardTitle>
-        @Localize["Head-body-length of all catches"]
-      </CardTitle>
-      <CardBody>
-        <Chart @ref="_chartJsHeadBodyLength" Config="@_configHeadBodyLength" Width="600" Height="300" />
-      </CardBody>
-    </Card>
-  </Column>
-</Row>
+<Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+  <Items>
+    <Tab Name="OverTime">@Localize["Catch numbers over time"]</Tab>
+    <Tab Name="PerMonth">@Localize["Catch numbers per month"]</Tab>
+    <Tab Name="HeadBodyLength">@Localize["Head-body-length of all catches"]</Tab>
+  </Items>
+  <Content>
+    <TabPanel Name="OverTime">
+      <Chart @ref="_chartJsOverTime" Config="@_configOverTime" Width="600" Height="300" />
+    </TabPanel>
+    <TabPanel Name="PerMonth">
+      <Chart @ref="_chartJsPerMonth" Config="@_configPerMonth" Width="600" Height="300" />
+    </TabPanel>
+    <TabPanel Name="HeadBodyLength">
+      <Chart @ref="_chartJsHeadBodyLength" Config="@_configHeadBodyLength" Width="600" Height="300" />
+    </TabPanel>
+  </Content>
+</Tabs>
 
 @code {
   private BarConfig _configPerMonth;
-  private BarConfig _configHeadBodyLength;
   private Chart _chartJsPerMonth;
+  private BarConfig _configHeadBodyLength;
   private Chart _chartJsHeadBodyLength;
+  private BarConfig _configOverTime;
+  private Chart _chartJsOverTime;
+  //
+  private string selectedTab = "OverTime";
+
+  private void OnSelectedTabChanged(string name) {
+    selectedTab = name;
+  }
   //
   protected override void OnInitialized() {
     base.OnInitialized();
+    _configOverTime = new BarConfig {
+      Options = new BarOptions {
+        Animation=new Animation {
+          Duration=0,
+        },
+        Title = new OptionsTitle {
+          Text="XXX",
+          Display = false,
+        },
+        Legend = new Legend {
+          Display = true,
+        },
+        Scales = new BarScales {
+          XAxes = new List<CartesianAxis>
+      {
+              new BarCategoryAxis
+              {
+                  Stacked = true
+              }
+          },
+          YAxes = new List<CartesianAxis>
+      {
+              new BarLinearCartesianAxis
+              {
+                  Stacked = true
+              }
+          }
+        },
+      },
+    };
     _configPerMonth = new BarConfig {
       Options = new BarOptions {
         Animation=new Animation {
@@ -94,14 +126,14 @@
         },
         Scales = new BarScales {
           XAxes = new List<CartesianAxis>
-        {
+      {
               new BarCategoryAxis
               {
                   Stacked = true
               }
           },
           YAxes = new List<CartesianAxis>
-        {
+      {
               new BarLinearCartesianAxis
               {
                   Stacked = true
@@ -118,6 +150,45 @@
   }
   private void RefreshData() {
     var aaIndisByIId = DS.GetIndividuals(SD.Filters);
+    {
+      _configOverTime.Data.Labels.Clear();
+      _configOverTime.Data.Datasets.Clear();
+      //
+      int nIndex = 0;
+      foreach (var indiSpec in new[] {
+        new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
+        new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
+        new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
+      }) {
+        var dictCatches = new Dictionary<string,int>();
+        foreach (var ea in aaIndisByIId.Values) {
+          foreach (var el in ea) {
+            if (indiSpec.Item2(el)) {
+              string sKey = el.GetIsoDateTime().Substring(2,5);
+              if (!dictCatches.ContainsKey(sKey)) {
+                dictCatches[sKey]=0;
+              }
+              dictCatches[sKey]++;
+            }
+          }
+        }
+        var ds = new BarDataset<int>() {
+          Label=indiSpec.Item1,
+          BackgroundColor=this.GetColor(nIndex),
+        };
+        var lDates = new List<string>(dictCatches.Keys);
+        lDates.Sort();
+        for (int idx=0;idx<lDates.Count;idx++) {
+          string sKey=lDates[idx];
+          if (nIndex==0) {
+            _configOverTime.Data.Labels.Add(sKey);
+          }
+          ds.Add(dictCatches[sKey]);
+        }
+        _configOverTime.Data.Datasets.Add(ds);
+        nIndex++;
+      }
+    }
     {
       _configPerMonth.Data.Labels.Clear();
       _configPerMonth.Data.Datasets.Clear();
