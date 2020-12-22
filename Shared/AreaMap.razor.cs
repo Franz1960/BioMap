@@ -37,8 +37,8 @@ namespace BioMap.Shared
     protected LatLngBoundsLiteral aoiBounds;
     protected LatLngBoundsLiteral placesBounds;
     //
-    private readonly List<Circle> visiblePlaceCircles = new List<Circle>();
-    private readonly List<Marker> visiblePlaceMarkers = new List<Marker>();
+    private CircleList placeCircleList = null;
+    private MarkerList placeMarkerList = null;
     private Blazorise.Utils.ValueDelayer stateChangedDelayer;
     //
     protected override async Task OnInitializedAsync() {
@@ -91,17 +91,11 @@ namespace BioMap.Shared
         if (!this.PrevShowPlaces.HasValue || bShowPlaces!=this.PrevShowPlaces) {
           LatLngBoundsLiteral bounds=null;
           this.PrevShowPlaces=bShowPlaces;
-          foreach (var circle in this.visiblePlaceCircles.ToArray()) {
-            await circle.SetMap(null);
-          }
-          this.visiblePlaceCircles.Clear();
-          foreach (var marker in this.visiblePlaceMarkers.ToArray()) {
-            await marker.SetMap(null);
-          }
-          this.visiblePlaceMarkers.Clear();
+          var dictPlaceCircles = new Dictionary<string,CircleOptions>();
+          var dictPlaceMarkers = new Dictionary<string,MarkerOptions>();
           if (bShowPlaces) {
             foreach (var place in DS.AllPlaces) {
-              var circle = await Circle.CreateAsync(googleMap.JsRuntime,new CircleOptions {
+              var circleOptions = new CircleOptions {
                 Map=googleMap.InteropObject,
                 Center=new LatLngLiteral(place.LatLng.lng,place.LatLng.lat),
                 Radius=place.Radius,
@@ -110,9 +104,9 @@ namespace BioMap.Shared
                 StrokeWeight=3,
                 FillColor="Orange",
                 FillOpacity=0.02f,
-              });
-              this.visiblePlaceCircles.Add(circle);
-              var marker = await Marker.CreateAsync(googleMap.JsRuntime,new MarkerOptions {
+              };
+              dictPlaceCircles[place.Name]=circleOptions;
+              var markerOptions = new MarkerOptions {
                 Map=googleMap.InteropObject,
                 Position=new LatLngLiteral(place.LatLng.lng,place.LatLng.lat - 0.0000096 * place.Radius),
                 Label=new MarkerLabel {
@@ -122,10 +116,20 @@ namespace BioMap.Shared
                   Color="DarkOrange",
                 },
                 Icon = new Symbol { Path="M -15,10 L 15,10 z",StrokeColor="DarkOrange",},
-              });
-              this.visiblePlaceMarkers.Add(marker);
+              };
+              dictPlaceMarkers[place.Name]=markerOptions;
               LatLngBoundsLiteral.CreateOrExtend(ref bounds,new LatLngLiteral(place.LatLng.lng,place.LatLng.lat));
             }
+          }
+          if (this.placeCircleList==null) {
+            this.placeCircleList = await CircleList.CreateAsync(this.googleMap.JsRuntime,dictPlaceCircles);
+          } else {
+            await this.placeCircleList.SetMultipleAsync(dictPlaceCircles);
+          }
+          if (this.placeMarkerList==null) {
+            this.placeMarkerList = await MarkerList.CreateAsync(this.googleMap.JsRuntime,dictPlaceMarkers);
+          } else {
+            await this.placeMarkerList.SetMultipleAsync(dictPlaceMarkers);
           }
           this.placesBounds = bounds;
         }
