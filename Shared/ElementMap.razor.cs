@@ -140,11 +140,8 @@ namespace BioMap.Shared
               dictConnectors[elm.Element.ElementName]=connectorOption;
             }
           }
-          if (this.circleList==null) {
-            this.circleList = await CircleList.CreateAsync(this.googleMap.JsRuntime,dictCircles);
-          } else {
-            await this.circleList.SetMultipleAsync(dictCircles);
-          }
+          this.circleList = await CircleList.ManageAsync(this.circleList,this.googleMap.JsRuntime,dictCircles);
+          this.connectorList = await PolylineList.ManageAsync(this.connectorList,this.googleMap.JsRuntime,dictConnectors);
           if (dictConnectors.Count==0) {
             if (this.connectorList!=null) {
               await this.connectorList.SetMultipleAsync(dictConnectors);
