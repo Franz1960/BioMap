@@ -91,6 +91,28 @@ namespace BioMap.Shared
         await this.googleMap.InteropObject.AddListener("zoom_changed",async () => {
           this.zoomValueDelayer.Update(ConvInvar.ToString(await this.googleMap.InteropObject.GetZoom()));
         });
+        await this.googleMap.InteropObject.AddListener<MouseEvent>("click",async (e) => {
+          var elm = this.GetNearestElementMarker(e.LatLng);
+          if (elm!=null && elm.Element!=null) {
+            if (this.PhotoPopup!=null) {
+              this.PhotoPopup.Show(elm.Element);
+              // Set below lowest Z index.
+              int? minZIndex = null;
+              foreach (var elm1 in this.ElementMarkers) {
+                int zIndex = elm1.ZIndex;
+                if (!minZIndex.HasValue || zIndex<minZIndex.Value) {
+                  minZIndex = zIndex;
+                }
+              }
+              if (minZIndex.HasValue) {
+                elm.ZIndex=minZIndex.Value-1;
+                //await elm.Circle.SetOptions(new CircleOptions {
+                //  ZIndex=elm.ZIndex,
+                //});
+              }
+            }
+          }
+        });
       }
       if (this.ElementMarkers!=null) {
         if (this.AfterRenderUpDownCnt>=1) {
@@ -140,7 +162,28 @@ namespace BioMap.Shared
               dictConnectors[elm.Element.ElementName]=connectorOption;
             }
           }
-          this.circleList = await CircleList.ManageAsync(this.circleList,this.googleMap.JsRuntime,dictCircles);
+          this.circleList = await CircleList.ManageAsync(this.circleList,this.googleMap.JsRuntime,dictCircles,(ev,sKey,entity)=>{
+            var elm = this.GetElementMarker(sKey);
+            if (elm!=null && elm.Element!=null) {
+              if (this.PhotoPopup!=null) {
+                this.PhotoPopup.Show(elm.Element);
+                // Set below lowest Z index.
+                int? minZIndex = null;
+                foreach (var elm1 in this.ElementMarkers) {
+                  int zIndex = elm1.ZIndex;
+                  if (!minZIndex.HasValue || zIndex<minZIndex.Value) {
+                    minZIndex = zIndex;
+                  }
+                }
+                if (minZIndex.HasValue) {
+                  elm.ZIndex=minZIndex.Value-1;
+                  ((Circle)entity).SetOptions(new CircleOptions {
+                    ZIndex=elm.ZIndex,
+                  });
+                }
+              }
+            }
+          });
           this.connectorList = await PolylineList.ManageAsync(this.connectorList,this.googleMap.JsRuntime,dictConnectors);
           if (dictConnectors.Count==0) {
             if (this.connectorList!=null) {
@@ -233,6 +276,26 @@ namespace BioMap.Shared
       } else {
         await this.googleMap.InteropObject.FitBounds(this.elementBounds,OneOf.OneOf<int,Padding>.FromT0(5));
       }
+    }
+    public ElementMarker GetElementMarker(string sKey) {
+      foreach (var elm in this.ElementMarkers) {
+        if (elm.Element.ElementName==sKey) {
+          return elm;
+        }
+      }
+      return null;
+    }
+    public ElementMarker GetNearestElementMarker(LatLngLiteral latLng) {
+      ElementMarker nearestElementMarker = null;
+      double minDistance = double.MaxValue;
+      foreach (var elm in this.ElementMarkers) {
+        var d = GeoCalculator.GetDistance(elm.Position.Lat,elm.Position.Lng,latLng.Lat,latLng.Lng);
+        if (nearestElementMarker==null || d<minDistance) {
+          nearestElementMarker=elm;
+          minDistance=d;
+        }
+      }
+      return nearestElementMarker;
     }
   }
 }
