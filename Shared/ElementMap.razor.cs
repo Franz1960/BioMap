@@ -71,6 +71,7 @@ namespace BioMap.Shared
     private bool _DisplayConnectors = false;
     //
     private CircleList circleList=null;
+    private PolylineList connectorList=null;
     //
     protected LatLngBoundsLiteral elementBounds=null;
     //
@@ -100,11 +101,10 @@ namespace BioMap.Shared
         }
         this.AfterRenderUpDownCnt++;
         LatLngBoundsLiteral bounds=null;
-        var lCircles = new List<Circle>();
-        var lConnectors = new List<Polyline>();
         try {
           bool bCancelled = false;
-          var dictCurrent = new Dictionary<string,CircleOptions>();
+          var dictCircles = new Dictionary<string,CircleOptions>();
+          var dictConnectors = new Dictionary<string,PolylineOptions>();
           foreach (var elm in this.ElementMarkers.ToArray()) {
             var circleOptions = new CircleOptions {
               Map=googleMap.InteropObject,
@@ -117,13 +117,45 @@ namespace BioMap.Shared
               FillOpacity=0.35f,
               ZIndex=1000000,
             };
-            dictCurrent[elm.Element.ElementName]=circleOptions;
+            dictCircles[elm.Element.ElementName]=circleOptions;
             LatLngBoundsLiteral.CreateOrExtend(ref bounds,elm.Position);
+            elm.Connector=null;
+            if (elm.PrevMarker!=null && this.DisplayConnectors) {
+              var connectorOption = new PolylineOptions {
+                Map=googleMap.InteropObject,
+                Geodesic=true,
+                StrokeColor="#50D020",
+                StrokeOpacity=0.7f,
+                StrokeWeight=2,
+                Icons=new[] {
+                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_CLOSED_ARROW }, Offset="100%" },
+                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_OPEN_ARROW }, Offset="66%" },
+                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_OPEN_ARROW }, Offset="33%" },
+                },
+                Path=new [] {
+                  elm.PrevMarker.Position,
+                  elm.Position,
+                },
+              };
+              dictConnectors[elm.Element.ElementName]=connectorOption;
+            }
           }
           if (this.circleList==null) {
-            this.circleList = await CircleList.CreateAsync(this.googleMap.JsRuntime,dictCurrent);
+            this.circleList = await CircleList.CreateAsync(this.googleMap.JsRuntime,dictCircles);
           } else {
-            await this.circleList.SetMultipleAsync(dictCurrent);
+            await this.circleList.SetMultipleAsync(dictCircles);
+          }
+          if (dictConnectors.Count==0) {
+            if (this.connectorList!=null) {
+              await this.connectorList.SetMultipleAsync(dictConnectors);
+              this.connectorList=null;
+            }
+          } else {
+            if (this.connectorList==null) {
+              this.connectorList = await PolylineList.CreateAsync(this.googleMap.JsRuntime,dictConnectors);
+            } else {
+              await this.connectorList.SetMultipleAsync(dictConnectors);
+            }
           }
           if (!bCancelled) {
             await this.OnZoomValueDelayed(null);
@@ -132,12 +164,6 @@ namespace BioMap.Shared
           this.AfterRenderUpDownCnt--;
           this.elementBounds=bounds;
           if (this.AfterRenderCancelReq) {
-            foreach (var circle in lCircles) {
-              await circle.SetMap(null);
-            }
-            foreach (var connector in lConnectors) {
-              await connector.SetMap(null);
-            }
             this.AfterRenderCancelReq=false;
           }
         }
