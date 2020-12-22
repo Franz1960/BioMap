@@ -70,8 +70,9 @@ namespace BioMap.Shared
     }
     private bool _DisplayConnectors = false;
     //
-    private readonly Dictionary<string, CircleOptions> circleListDict = new Dictionary<string, CircleOptions>();
     private CircleList circleList=null;
+    //
+    protected LatLngBoundsLiteral elementBounds=null;
     //
     private readonly object ElementMarkersLock = new object();
     private int AfterRenderUpDownCnt = 0;
@@ -86,7 +87,6 @@ namespace BioMap.Shared
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
-        this.circleList = await CircleList.CreateAsync(this.googleMap.JsRuntime,circleListDict);
         await this.googleMap.InteropObject.AddListener("zoom_changed",async () => {
           this.zoomValueDelayer.Update(ConvInvar.ToString(await this.googleMap.InteropObject.GetZoom()));
         });
@@ -99,13 +99,11 @@ namespace BioMap.Shared
           }
         }
         this.AfterRenderUpDownCnt++;
+        LatLngBoundsLiteral bounds=null;
         var lCircles = new List<Circle>();
         var lConnectors = new List<Polyline>();
         try {
           bool bCancelled = false;
-          var lToRemove = new List<string>();
-          var dictToAdd = new Dictionary<string,CircleOptions>();
-          var dictToChange = new Dictionary<string,CircleOptions>();
           var dictCurrent = new Dictionary<string,CircleOptions>();
           foreach (var elm in this.ElementMarkers.ToArray()) {
             var circleOptions = new CircleOptions {
@@ -120,31 +118,19 @@ namespace BioMap.Shared
               ZIndex=1000000,
             };
             dictCurrent[elm.Element.ElementName]=circleOptions;
+            LatLngBoundsLiteral.CreateOrExtend(ref bounds,elm.Position);
           }
-          foreach (var sKey in this.circleListDict.Keys) {
-            if (!dictCurrent.ContainsKey(sKey)) {
-              lToRemove.Add(sKey);
-            }
+          if (this.circleList==null) {
+            this.circleList = await CircleList.CreateAsync(this.googleMap.JsRuntime,dictCurrent);
+          } else {
+            await this.circleList.SetMultipleAsync(dictCurrent);
           }
-          foreach (var sKey in lToRemove) {
-            this.circleListDict.Remove(sKey);
-          }
-          foreach (var sKey in dictCurrent.Keys) {
-            if (this.circleListDict.ContainsKey(sKey)) {
-              dictToChange[sKey]=dictCurrent[sKey];
-            } else {
-              dictToAdd[sKey]=dictCurrent[sKey];
-            }
-            this.circleListDict[sKey]=dictToAdd[sKey];
-          }
-          await this.circleList.RemoveMultipleAsync(lToRemove);
-          await this.circleList.AddMultipleAsync(dictToAdd);
-          await this.circleList.SetOptions(dictToChange);
           if (!bCancelled) {
             await this.OnZoomValueDelayed(null);
           }
         } finally {
           this.AfterRenderUpDownCnt--;
+          this.elementBounds=bounds;
           if (this.AfterRenderCancelReq) {
             foreach (var circle in lCircles) {
               await circle.SetMap(null);
@@ -203,27 +189,27 @@ namespace BioMap.Shared
               }
             }
           }
+          var dictCenters = new Dictionary<string,LatLngLiteral>();
+          var dictRadii = new Dictionary<string,double>();
           for (int i = 0;i<N-1;i++) {
             var elm = this.ElementMarkers[i];
-            if (elm.Circle!=null) {
-              await elm.Circle.SetCenter(new LatLngLiteral {
-                Lat=elm.Position.Lat+aOffsets[i].Lat,
-                Lng=elm.Position.Lng+aOffsets[i].Lng,
-              });
-              await elm.Circle.SetRadius(this.RadiusFactor*elm.Radius);
-            }
+            dictCenters[elm.Element.ElementName]=new LatLngLiteral {
+              Lat=elm.Position.Lat+aOffsets[i].Lat,
+              Lng=elm.Position.Lng+aOffsets[i].Lng,
+            };
+            dictRadii[elm.Element.ElementName]=this.RadiusFactor*elm.Radius;
           }
+          await this.circleList.SetCenters(dictCenters);
+          await this.circleList.SetRadiuses(dictRadii);
         }
       } catch { }
     }
     protected override async Task FitBounds() {
-      //var bounds = await this.circleList.GetBounds();
-      //if (bounds==null || await bounds.IsEmpty()) {
-      //  await base.FitBounds();
-      //} else {
-      //  var boundsLiteral = await bounds;
-      //  await this.googleMap.InteropObject.FitBounds(boundsLiteral,OneOf.OneOf<int,Padding>.FromT0(5));
-      //}
+      if (this.elementBounds==null || this.elementBounds.East==this.elementBounds.West || this.elementBounds.South==this.elementBounds.North) {
+        await base.FitBounds();
+      } else {
+        await this.googleMap.InteropObject.FitBounds(this.elementBounds,OneOf.OneOf<int,Padding>.FromT0(5));
+      }
     }
   }
 }
