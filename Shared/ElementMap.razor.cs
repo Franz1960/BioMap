@@ -185,18 +185,6 @@ namespace BioMap.Shared
             }
           });
           this.connectorList = await PolylineList.ManageAsync(this.connectorList,this.googleMap.JsRuntime,dictConnectors);
-          if (dictConnectors.Count==0) {
-            if (this.connectorList!=null) {
-              await this.connectorList.SetMultipleAsync(dictConnectors);
-              this.connectorList=null;
-            }
-          } else {
-            if (this.connectorList==null) {
-              this.connectorList = await PolylineList.CreateAsync(this.googleMap.JsRuntime,dictConnectors);
-            } else {
-              await this.connectorList.SetMultipleAsync(dictConnectors);
-            }
-          }
           if (!bCancelled) {
             await this.OnZoomValueDelayed(null);
           }
