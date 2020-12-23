@@ -198,7 +198,7 @@ namespace BioMap.Shared
       }
     }
     private async Task OnZoomValueDelayed(string sValue) {
-      if (!this.DynaZoomed) {
+      if (!this.DynaZoomed || this.circleList==null) {
         return;
       }
       try {

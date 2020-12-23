@@ -1,31 +1,41 @@
-﻿@if (_Show) {
-  <div class="modal fade show" style="display:block;">
-    <div class="modal-dialog modal-dialog-scrollable" style="min-width:640px">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">@Title</h4>
-          <button type="button" class="close" data-dismiss="modal" @onclick="Hide">&times;</button>
-        </div>
-        <div class="modal-body">
-          <img src="api/photos/@ElementName" style="max-width:100%;max-height:100%;margin-top:3px;" />
-          <table class="table">
-            <tbody>
-              @foreach (var p in Properties) {
-                <tr>
-                  <td>@((MarkupString)p[0])</td>
-                  <td>@((MarkupString)p[1])</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="modal-backdrop fade show"></div>
-}
+﻿<Modal @ref="modalRef">
+  <ModalBackdrop />
+  <ModalContent Size="@modalSize" Centered="@centered">
+    <ModalHeader>
+      <ModalTitle>
+        @Title
+      </ModalTitle>
+      <Buttons Role="ButtonsRole.Toolbar">
+        <Buttons Margin="Margin.Is2.FromRight">
+          <Button Clicked="@((e)=>sizeButtonClicked())"><Icon Name="@sizeButtonIconName" /></Button>
+        </Buttons>
+        <CloseButton Clicked="@((e)=>Hide())" />
+      </Buttons>
+    </ModalHeader>
+    <ModalBody MaxHeight="@maxHeight">
+      <img src="api/photos/@ElementName" style="max-width:100%;max-height:100%;margin-top:3px;" />
+      <table class="table">
+        <tbody>
+          @foreach (var p in Properties) {
+            <tr>
+              <td>@((MarkupString)p[0])</td>
+              <td>@((MarkupString)p[1])</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </ModalBody>
+    <ModalFooter>
+    </ModalFooter>
+  </ModalContent>
+</Modal>
 
-@code {
+@code{
+  private Modal modalRef;
+  private IconName sizeButtonIconName=IconName.Expand;
+  private bool centered = false;
+  private ModalSize modalSize = ModalSize.Default;
+  private int? maxHeight = 80;
   [Parameter]
   public string Title { get; set; }
   [Parameter]
@@ -47,12 +57,18 @@
     if (el.HasPhotoData()) {
       this.Properties.Add(new[] { "Camera",el.ElementProp.ExifData.Make+" / "+el.ElementProp.ExifData.Model });
     }
-    _Show=true;
-    StateHasChanged();
+    this.modalRef.Show();
   }
   public void Hide() {
-    _Show=false;
-    StateHasChanged();
+    this.modalRef.Hide();
   }
-
+  private void sizeButtonClicked() {
+    if (this.modalSize==ModalSize.Default) {
+      this.modalSize=ModalSize.Large;
+      this.sizeButtonIconName=IconName.Compress;
+    } else {
+      this.modalSize=ModalSize.Default;
+      this.sizeButtonIconName=IconName.Expand;
+    }
+  }
 }
