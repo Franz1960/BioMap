@@ -54,7 +54,12 @@ namespace BioMap.Shared
       }
       set {
         this._DynaZoomed=value;
-        this.OnZoomValueDelayed(null);
+        if (value) {
+          this.OnZoomValueDelayed(null);
+        } else {
+          this.RadiusFactor=1;
+          DelayedStateHasChanged();
+        }
       }
     }
     private bool _DynaZoomed = false;
@@ -82,7 +87,7 @@ namespace BioMap.Shared
     private double RadiusFactor = 1;
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
-      this.zoomValueDelayer = new Blazorise.Utils.ValueDelayer(800);
+      this.zoomValueDelayer = new Blazorise.Utils.ValueDelayer(400);
       this.zoomValueDelayer.Delayed += async (sender,sValue) =>await this.OnZoomValueDelayed(sValue);
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
@@ -90,28 +95,6 @@ namespace BioMap.Shared
       if (firstRender) {
         await this.googleMap.InteropObject.AddListener("zoom_changed",async () => {
           this.zoomValueDelayer.Update(ConvInvar.ToString(await this.googleMap.InteropObject.GetZoom()));
-        });
-        await this.googleMap.InteropObject.AddListener<MouseEvent>("click",async (e) => {
-          var elm = this.GetNearestElementMarker(e.LatLng);
-          if (elm!=null && elm.Element!=null) {
-            if (this.PhotoPopup!=null) {
-              this.PhotoPopup.Show(elm.Element);
-              // Set below lowest Z index.
-              int? minZIndex = null;
-              foreach (var elm1 in this.ElementMarkers) {
-                int zIndex = elm1.ZIndex;
-                if (!minZIndex.HasValue || zIndex<minZIndex.Value) {
-                  minZIndex = zIndex;
-                }
-              }
-              if (minZIndex.HasValue) {
-                elm.ZIndex=minZIndex.Value-1;
-                //await elm.Circle.SetOptions(new CircleOptions {
-                //  ZIndex=elm.ZIndex,
-                //});
-              }
-            }
-          }
         });
       }
       if (this.ElementMarkers!=null) {
@@ -131,7 +114,7 @@ namespace BioMap.Shared
             var circleOptions = new CircleOptions {
               Map=googleMap.InteropObject,
               Center=elm.Position,
-              Radius=elm.Radius,
+              Radius=elm.Radius*this.RadiusFactor,
               StrokeColor=elm.Color,
               StrokeOpacity=0.60f,
               StrokeWeight=2,
@@ -186,7 +169,7 @@ namespace BioMap.Shared
           });
           this.connectorList = await PolylineList.ManageAsync(this.connectorList,this.googleMap.JsRuntime,dictConnectors);
           if (!bCancelled) {
-            await this.OnZoomValueDelayed(null);
+            //await this.OnZoomValueDelayed(null);
           }
         } finally {
           this.AfterRenderUpDownCnt--;
