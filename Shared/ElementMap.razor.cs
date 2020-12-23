@@ -54,7 +54,7 @@ namespace BioMap.Shared
       }
       set {
         this._DynaZoomed=value;
-        this.DelayedStateHasChanged();
+        this.OnZoomValueDelayed(null);
       }
     }
     private bool _DynaZoomed = false;
@@ -219,53 +219,11 @@ namespace BioMap.Shared
         this.RadiusFactor=fHeight*0.004;
         {
           var N = this.ElementMarkers.Count();
-          var aOffsets = new LatLngLiteral[N];
-          for (int i = 0;i<N;i++) {
-            aOffsets[i]=new LatLngLiteral();
-          }
-          for (int i = 0;i<N-1;i++) {
-            var elm1 = this.ElementMarkers[i];
-            for (int j = i+1;j<N;j++) {
-              var elm2 = this.ElementMarkers[j];
-              var geoDistance = Geo.Geodesy.GeodeticCalculations.CalculateGreatCircleLine(
-                new Geo.Coordinate(elm1.Position.Lat,elm1.Position.Lng),
-                new Geo.Coordinate(elm2.Position.Lat,elm2.Position.Lng))?.Distance;
-              var distance = geoDistance.HasValue ? geoDistance.Value.Value : 0;
-              double minDistance = this.RadiusFactor*(elm1.Radius+elm2.Radius);
-              if (distance>0 && distance<minDistance) {
-                double force =
-                  0.005
-                  *
-                  minDistance
-                  /
-                  (distance)
-                  ;
-                var delta = new LatLngLiteral {
-                  Lat = elm2.Position.Lat-elm1.Position.Lat,
-                  Lng = elm2.Position.Lng-elm1.Position.Lng,
-                };
-                aOffsets[i]=new LatLngLiteral {
-                  Lat = aOffsets[i].Lat-force*delta.Lat,
-                  Lng = aOffsets[i].Lng-force*delta.Lng,
-                };
-                aOffsets[j]=new LatLngLiteral {
-                  Lat = aOffsets[j].Lat+force*delta.Lat,
-                  Lng = aOffsets[j].Lng+force*delta.Lng,
-                };
-              }
-            }
-          }
-          var dictCenters = new Dictionary<string,LatLngLiteral>();
           var dictRadii = new Dictionary<string,double>();
           for (int i = 0;i<N-1;i++) {
             var elm = this.ElementMarkers[i];
-            dictCenters[elm.Element.ElementName]=new LatLngLiteral {
-              Lat=elm.Position.Lat+aOffsets[i].Lat,
-              Lng=elm.Position.Lng+aOffsets[i].Lng,
-            };
             dictRadii[elm.Element.ElementName]=this.RadiusFactor*elm.Radius;
           }
-          await this.circleList.SetCenters(dictCenters);
           await this.circleList.SetRadiuses(dictRadii);
         }
       } catch { }
