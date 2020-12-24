@@ -36,6 +36,9 @@
       @Localize["Gezählt werden alle verschiedenen Individuen,die im jeweiligen Zeitraum mindestens einmal die Bedingungen erfüllen."]
     </p>
   </div>
+  <div class="card-footer">
+    <CheckBox Checked="ShowDetails" CheckedChanged="(e)=>{ ShowDetails=e; RefreshData(); }" LabelText=@Localize["Show details"] />
+  </div>
 </div>
 <p></p>
 <div class="card">
@@ -78,6 +81,7 @@
     public string AllYears;
     public string[] ByYear;
   }
+  private bool ShowDetails=false;
   private readonly List<DataByYears_t> IndividualData = new List<DataByYears_t>();
   private readonly List<DataByYears_t> OtherData = new List<DataByYears_t>();
   protected override void OnInitialized() {
@@ -93,74 +97,102 @@
   private void RefreshData() {
     //
     this.IndividualData.Clear();
-    foreach (var indiSpec in new[] {
-      new Tuple<string,string>(Localize["Totals"],""),
-      new Tuple<string,string>(">= 38 mm","indivdata.headbodylength>=38"),
-      new Tuple<string,string>(">= 33 mm","indivdata.headbodylength>=33"),
-      new Tuple<string,string>("< 33 mm","indivdata.headbodylength<33"),
-      new Tuple<string,string>("0 "+Localize["Hibernations"],"indivdata.winters=0"),
-      new Tuple<string,string>("1 "+Localize["Hibernations"],"indivdata.winters=1"),
-      new Tuple<string,string>("1+ "+Localize["Hibernations"],"indivdata.winters>=1"),
-      new Tuple<string,string>("2 "+Localize["Hibernations"],"indivdata.winters=2"),
-      new Tuple<string,string>("2+ "+Localize["Hibernations"],"indivdata.winters>=2"),
-      new Tuple<string,string>("3 "+Localize["Hibernations"],"indivdata.winters=3"),
-      new Tuple<string,string>("3+ "+Localize["Hibernations"],"indivdata.winters>=3"),
-      new Tuple<string,string>(Localize["Female"],"indivdata.gender='fa'"),
-      new Tuple<string,string>(Localize["Male"],"indivdata.gender='ma'"),
-      new Tuple<string,string>(Localize["Female"]+" >= 38 mm","indivdata.gender='fa' AND indivdata.headbodylength>=38"),
-      new Tuple<string,string>(Localize["Male"]+" >= 38 mm","indivdata.gender='ma' AND indivdata.headbodylength>=38"),
-    }) {
-      var aaIndisByIId = DS.GetIndividuals(null,indiSpec.Item2);
-      int nAllYears = 0;
-      var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
-      foreach (var iid in aaIndisByIId.Keys) {
-        foreach (var el in aaIndisByIId[iid]) {
-          int year = el.ElementProp.CreationTime.Year;
-          if (year>=ProjectYearBegin && year<=ProjectYearEnd) {
-            nAllYears++;
-            break;
-          }
-        }
-        for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
+    {
+      Tuple<string,string>[] aIndiSpecs;
+      if (ShowDetails) {
+        aIndiSpecs = new[] {
+          new Tuple<string,string>(Localize["Totals"],""),
+          new Tuple<string,string>(">= 38 mm","indivdata.headbodylength>=38"),
+          new Tuple<string,string>(">= 33 mm","indivdata.headbodylength>=33"),
+          new Tuple<string,string>("< 33 mm","indivdata.headbodylength<33"),
+          new Tuple<string,string>("0 "+Localize["Hibernations"],"indivdata.winters=0"),
+          new Tuple<string,string>("1 "+Localize["Hibernations"],"indivdata.winters=1"),
+          new Tuple<string,string>("1+ "+Localize["Hibernations"],"indivdata.winters>=1"),
+          new Tuple<string,string>("2 "+Localize["Hibernations"],"indivdata.winters=2"),
+          new Tuple<string,string>("2+ "+Localize["Hibernations"],"indivdata.winters>=2"),
+          new Tuple<string,string>("3 "+Localize["Hibernations"],"indivdata.winters=3"),
+          new Tuple<string,string>("3+ "+Localize["Hibernations"],"indivdata.winters>=3"),
+          new Tuple<string,string>(Localize["Female"],"indivdata.gender='fa'"),
+          new Tuple<string,string>(Localize["Male"],"indivdata.gender='ma'"),
+          new Tuple<string,string>(Localize["Female"]+" >= 38 mm","indivdata.gender='fa' AND indivdata.headbodylength>=38"),
+          new Tuple<string,string>(Localize["Male"]+" >= 38 mm","indivdata.gender='ma' AND indivdata.headbodylength>=38"),
+        };
+      } else {
+        aIndiSpecs = new[] {
+          new Tuple<string,string>(Localize["Totals"],""),
+          new Tuple<string,string>("0 "+Localize["Hibernations"],"indivdata.winters=0"),
+          new Tuple<string,string>("1 "+Localize["Hibernations"],"indivdata.winters=1"),
+          new Tuple<string,string>("2+ "+Localize["Hibernations"],"indivdata.winters>=2"),
+          new Tuple<string,string>(Localize["Female"],"indivdata.gender='fa'"),
+          new Tuple<string,string>(Localize["Male"],"indivdata.gender='ma'"),
+        };
+      }
+      foreach (var indiSpec in aIndiSpecs) {
+        var aaIndisByIId = DS.GetIndividuals(null,indiSpec.Item2);
+        int nAllYears = 0;
+        var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
+        foreach (var iid in aaIndisByIId.Keys) {
           foreach (var el in aaIndisByIId[iid]) {
-            if (el.ElementProp.CreationTime.Year==year) {
-              aByYears[year-ProjectYearBegin]++;
+            int year = el.ElementProp.CreationTime.Year;
+            if (year>=ProjectYearBegin && year<=ProjectYearEnd) {
+              nAllYears++;
               break;
             }
           }
+          for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
+            foreach (var el in aaIndisByIId[iid]) {
+              if (el.ElementProp.CreationTime.Year==year) {
+                aByYears[year-ProjectYearBegin]++;
+                break;
+              }
+            }
+          }
         }
+        this.IndividualData.Add(
+          new DataByYears_t {
+            Name=indiSpec.Item1,
+            AllYears=nAllYears.ToString(),
+            ByYear=Array.ConvertAll<int,string>(aByYears,(n) => n.ToString()),
+          }
+        );
       }
-      this.IndividualData.Add(
-        new DataByYears_t {
-          Name=indiSpec.Item1,
-          AllYears=nAllYears.ToString(),
-          ByYear=Array.ConvertAll<int,string>(aByYears,(n) => n.ToString()),
-        }
-      );
     }
     //
     {
       var aaIndisByIId = DS.GetIndividuals();
-      foreach (var indiSpec in new[] {
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["Missed individuals"],
-        (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1),
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["Missed individuals"]+" 0 "+Localize["Hibernations"],
-        (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()<1),
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["Missed individuals"]+" 1+ "+Localize["Hibernations"],
-        (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()>=1),
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["New individuals"],
-        (ea,year)=>ea[0].ElementProp.CreationTime.Year==year),
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["New individuals"]+" 0 "+Localize["Hibernations"],
-        (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()<1),
-        new Tuple<string,Func<List<Element>,int,bool>>(
-        Localize["New individuals"]+" 1+ "+Localize["Hibernations"],
-        (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()>=1),
-      }) {
+      Tuple<string,Func<List<Element>,int,bool>>[] aIndiSpecs;
+      if (ShowDetails) {
+        aIndiSpecs = new Tuple<string,Func<List<Element>,int,bool>>[] {
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["Missed individuals"],
+          (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1),
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["Missed individuals"]+" 0 "+Localize["Hibernations"],
+          (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()<1),
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["Missed individuals"]+" 1+ "+Localize["Hibernations"],
+          (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()>=1),
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["New individuals"],
+          (ea,year)=>ea[0].ElementProp.CreationTime.Year==year),
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["New individuals"]+" 0 "+Localize["Hibernations"],
+          (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()<1),
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["New individuals"]+" 1+ "+Localize["Hibernations"],
+          (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()>=1),
+        };
+      } else {
+        aIndiSpecs = new Tuple<string,Func<List<Element>,int,bool>>[] {
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["Missed individuals"],
+          (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1),
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["New individuals"],
+          (ea,year)=>ea[0].ElementProp.CreationTime.Year==year),
+        };
+      }
+      foreach (var indiSpec in aIndiSpecs) {
         var lCounts = new List<int>();
         for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
           int nCount = 0;
