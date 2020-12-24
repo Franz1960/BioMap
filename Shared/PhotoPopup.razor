@@ -1,4 +1,7 @@
-﻿<Modal @ref="modalRef">
+﻿@inject DataService DS
+@inject SessionData SD
+
+<Modal @ref="modalRef">
   <ModalBackdrop />
   <ModalContent Size="@modalSize" Centered="@centered">
     <ModalHeader>
@@ -32,7 +35,7 @@
 
 @code{
   private Modal modalRef;
-  private IconName sizeButtonIconName=IconName.Expand;
+  private IconName sizeButtonIconName = IconName.Expand;
   private bool centered = false;
   private ModalSize modalSize = ModalSize.Default;
   private int? maxHeight = 80;
@@ -56,6 +59,13 @@
     this.Properties.Add(new[] { "by",el.ElementProp.UploadInfo.UserId });
     if (el.HasPhotoData()) {
       this.Properties.Add(new[] { "Camera",el.ElementProp.ExifData.Make+" / "+el.ElementProp.ExifData.Model });
+    }
+    if (el.HasIndivData()) {
+      var els = DS.GetElements(null,"indivdata.iid='"+el.GetIId()+"' AND elements.creationtime<'"+el.GetIsoDateTime()+"'","elements.creationtime DESC");
+      if (els.Length>=1) {
+        double dDistance = GeoCalculator.GetDistance(els[0].ElementProp.MarkerInfo.position,el.ElementProp.MarkerInfo.position);
+        this.Properties.Add(new[] { "Migration distance",ConvInvar.ToDecimalString(dDistance,0)+" m" });
+      }
     }
     this.modalRef.Show();
   }
