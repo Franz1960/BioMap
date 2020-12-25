@@ -16,10 +16,12 @@ namespace BioMap
     {
       public Category(int nCatNum,string sCatName,string bgColor) {
         this.Num=nCatNum;
+        this.NumString=ConvInvar.ToString(nCatNum);
         this.Name=sCatName;
         this.BgColor=bgColor;
       }
       public int Num { get; private set; }
+      public string NumString { get; }
       public string Name { get; private set; }
       public string BgColor { get; private set; }
       public static Category[] AllCategories { get; private set; }

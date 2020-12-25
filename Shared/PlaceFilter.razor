@@ -8,28 +8,27 @@
 <Row>
   <Column>
     <Field Horizontal="true">
-      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["Place filter"]</FieldLabel>
-      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Place filter"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
         <Addons>
-          <Addon AddonType="AddonType.Body">
-            <TextEdit @bind-Text="SD.Filters.PlaceFilter" />
-          </Addon>
-          <Addon AddonType="AddonType.End">
-            <Dropdown>
-              <DropdownToggle Color="Color.Primary"></DropdownToggle>
+          <Addon AddonType="AddonType.Start">
+            <Dropdown @ref="dropdown">
+              <Button Color="Color.Primary" Clicked="@dropdown.Toggle"><Icon Name="IconName.AngleDown" /></Button>
               <DropdownMenu>
-                <DropdownItem Clicked="@((e)=>{SD.Filters.PlaceFilter="";})"><Icon Name="IconName.Clear" /> @Localize["Clear"]</DropdownItem>
-                <DropdownDivider></DropdownDivider>
+                <DropdownItem Clicked="@((e)=>{SD.Filters.PlaceFilter="";dropdown.Hide();})"><Icon Name="IconName.Clear" /> @Localize["Clear"]</DropdownItem>
+                <DropdownDivider Style="min-width:400px"></DropdownDivider>
                 @foreach (var place in DS.AllPlaces) {
-                  <Button 
-                    Color="SD.Filters.PlaceFilter.Contains(place.Name)?Color.Primary:Color.None"
-                    Clicked="(e)=>TogglePlace(place.Name)"
-                  >
+                  <Button Color="SD.Filters.PlaceFilter.Contains(place.Name)?Color.Primary:Color.Light"
+                          Class="small" 
+                          Clicked="(e)=>TogglePlace(place.Name)">
                     @place.Name
                   </Button>
                 }
               </DropdownMenu>
             </Dropdown>
+          </Addon>
+          <Addon AddonType="AddonType.Body">
+            <TextEdit @bind-Text="SD.Filters.PlaceFilter" />
           </Addon>
         </Addons>
       </FieldBody>
@@ -38,9 +37,7 @@
 </Row>
 
 @code {
-  [Parameter]
-  public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
-  //
+  Dropdown dropdown;
   private void TogglePlace(string sPlaceName) {
     var lPlaces = new List<string>(SD.Filters.PlaceFilter.Split(Filters.SeparateChars));
     int idx = lPlaces.IndexOf(sPlaceName);
@@ -53,56 +50,5 @@
     var sb = new System.Text.StringBuilder();
     lPlaces.ForEach((p)=>sb.Append(p+" "));
     SD.Filters.PlaceFilter=sb.ToString().Trim();
-  }
-  private void Clear() {
-    this.Invert=false;
-    this.SelectedValues=null;
-    this.AnyValueChanged();
-    //base.InvokeAsync(StateHasChanged);
-  }
-  private bool Invert = false;
-  private void InvertedChanged(bool e) {
-    this.Invert=e;
-    this.AnyValueChanged();
-  }
-  private IReadOnlyList<string> SelectedValues = new string[0];
-  private void SelectedValuesChanged(IReadOnlyList<string> e) {
-    this.SelectedValues=e;
-    this.AnyValueChanged();
-  }
-  private void AnyValueChanged() {
-    var sb = new System.Text.StringBuilder();
-    if (this.SelectedValues!=null && this.SelectedValues.Count>=1) {
-      if (this.Invert) {
-        sb.Append("-");
-      }
-      for (int i = 0;i<this.SelectedValues.Count;i++) {
-        if (i!=0) {
-          sb.Append(" ");
-        }
-        sb.Append(this.SelectedValues[i]);
-      }
-    } else {
-      this.Invert=false;
-    }
-    SD.Filters.PlaceFilter=sb.ToString();
-    this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
-  }
-  private bool GetInvert() {
-    string sPlaceFilter = SD.Filters.PlaceFilter;
-    return (this.Invert=sPlaceFilter.StartsWith("-"));
-  }
-  private IReadOnlyList<string> GetCurrentPlaceFilter() {
-    string sPlaceFilter = SD.Filters.PlaceFilter;
-    if (sPlaceFilter.StartsWith("-")) {
-      sPlaceFilter=sPlaceFilter.Substring(1);
-    }
-    var l = new List<string>();
-    foreach (var s in sPlaceFilter.Split(' ')) {
-      if (!string.IsNullOrEmpty(s)) {
-        l.Add(s);
-      }
-    }
-    return this.SelectedValues=(l.Count<1) ? null : l;
   }
 }
