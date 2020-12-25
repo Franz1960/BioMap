@@ -198,6 +198,9 @@
   <data name="Counted are all the different individuals who fulfill the conditions at least once in the respective period." xml:space="preserve">
     <value>Gezählt werden alle verschiedenen Individuen,die im jeweiligen Zeitraum mindestens einmal die Bedingungen erfüllen.</value>
   </data>
+  <data name="Date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
   <data name="Details" xml:space="preserve">
     <value>Details</value>
   </data>
@@ -239,6 +242,9 @@
   </data>
   <data name="Frequency by Place / Time Chart" xml:space="preserve">
     <value>Häufigkeit nach Ort / Zeit Diagramm</value>
+  </data>
+  <data name="from" xml:space="preserve">
+    <value>von</value>
   </data>
   <data name="Full name" xml:space="preserve">
     <value>Vor- und Nachname</value>
@@ -407,6 +413,9 @@
   </data>
   <data name="Time" xml:space="preserve">
     <value>Zeit</value>
+  </data>
+  <data name="to" xml:space="preserve">
+    <value>bis</value>
   </data>
   <data name="Totals" xml:space="preserve">
     <value>Gesamtzahlen</value>

@@ -1,0 +1,44 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Row>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["from"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+        <Addons>
+          <Addon AddonType="AddonType.Body">
+            <DateEdit TValue="DateTime?" @bind-Date="SD.Filters.DateFromFilter"></DateEdit>
+          </Addon>
+          <Addon AddonType="AddonType.End">
+            <Button Clicked="@((e)=>{SD.Filters.DateFromFilter=null;})"><Icon Name="IconName.Clear" /></Button>
+          </Addon>
+        </Addons>
+      </FieldBody>
+    </Field>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["to"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+        <Addons>
+          <Addon AddonType="AddonType.Body">
+            <DateEdit TValue="DateTime?" @bind-Date="SD.Filters.DateToFilter"></DateEdit>
+          </Addon>
+          <Addon AddonType="AddonType.End">
+            <Button Clicked="@((e)=>{SD.Filters.DateToFilter=null;})"><Icon Name="IconName.Clear" /></Button>
+          </Addon>
+        </Addons>
+      </FieldBody>
+    </Field>
+  </Column>
+</Row>
+
+@code {
+}

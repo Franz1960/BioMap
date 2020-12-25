@@ -103,6 +103,30 @@ namespace BioMap
       " LEFT JOIN indivdata i1 ON (i1.name=e1.name)" +
       " WHERE (i1.iid=indivdata.iid AND e1.category=350 AND e1.creationtime>elements.creationtime)" +
       ")";
+    public DateTime? DateFromFilter {
+      get {
+        return this._DateFromFilter;
+      }
+      set {
+        if (value!=this._DateFromFilter) {
+          this._DateFromFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private DateTime? _DateFromFilter = null;
+    public DateTime? DateToFilter {
+      get {
+        return this._DateToFilter;
+      }
+      set {
+        if (value!=this._DateToFilter) {
+          this._DateToFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private DateTime? _DateToFilter = null;
     public string PlaceFilter {
       get {
         return this._PlaceFilter;
@@ -192,9 +216,23 @@ namespace BioMap
       }
       return sb.ToString();
     }
+    private string GetDateFilterWhereClause() {
+      var sb = new System.Text.StringBuilder();
+      if (this.DateFromFilter.HasValue) {
+        sb.Append("elements.creationtime>='"+this.DateFromFilter.Value.ToString("yyyy-MM-dd")+"'");
+      }
+      if (this.DateToFilter.HasValue) {
+        if (sb.Length>=1) {
+          sb.Append(" AND ");
+        }
+        sb.Append("elements.creationtime<='"+this.DateToFilter.Value.ToString("yyyy-MM-dd")+"'");
+      }
+      return sb.ToString();
+    }
     public string AddAllFiltersToWhereClause(string sBasicWhereClause) {
       string sResult = sBasicWhereClause;
       if (this.FilteringTarget==FilteringTargetEnum.Individuals) {
+        sResult = Filters.AddToWhereClause(sResult,this.GetDateFilterWhereClause());
         sResult = this.AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
         sResult = this.AddToWhereInClause(sResult,"indivdata.iid",ExpandIndiFilter(this.IndiFilter));
         sResult = this.AddToWhereInClause(sResult,"indivdata.gender",ExpandGenderFilter(this.GenderFilter));
@@ -207,6 +245,7 @@ namespace BioMap
         }
       }
       if (this.FilteringTarget==FilteringTargetEnum.Elements) {
+        sResult = Filters.AddToWhereClause(sResult,this.GetDateFilterWhereClause());
         sResult = this.AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
         sResult = this.AddToWhereInClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
       }
