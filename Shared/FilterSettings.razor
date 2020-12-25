@@ -5,41 +5,39 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<Fields>
-  <CardDeck>
-    @if (FilteringTarget==Filters.FilteringTargetEnum.Log) {
-    } else@if (FilteringTarget==Filters.FilteringTargetEnum.Notes) {
-} else {
-  <Card>
-    <CardBody>
-      <PlaceFilter />
-    </CardBody>
-  </Card>
-  @if (FilteringTarget==Filters.FilteringTargetEnum.Individuals) {
+<CardDeck>
+  @if (FilteringTarget==Filters.FilteringTargetEnum.Log) {
+  } else@if (FilteringTarget==Filters.FilteringTargetEnum.Notes) {
+  } else {
     <Card>
       <CardBody>
-        <IndiFilter />
+        <PlaceFilter />
       </CardBody>
     </Card>
-    <Card>
-      <CardBody>
-        <GenderFilter />
-        <HibernationsFilter />
-        <OnlyFirstIndiFilter />
-        <OnlyLastIndiFilter />
-      </CardBody>
-    </Card>
+    @if (FilteringTarget==Filters.FilteringTargetEnum.Individuals) {
+      <Card>
+        <CardBody>
+          <IndiFilter />
+        </CardBody>
+      </Card>
+      <Card>
+        <CardBody>
+          <GenderFilter />
+          <HibernationsFilter />
+          <OnlyFirstIndiFilter />
+          <OnlyLastIndiFilter />
+        </CardBody>
+      </Card>
+    }
+    @if (FilteringTarget==Filters.FilteringTargetEnum.Elements) {
+      <Card>
+        <CardBody>
+          <CatFilter />
+        </CardBody>
+      </Card>
+    }
   }
-  @if (FilteringTarget==Filters.FilteringTargetEnum.Elements) {
-    <Card>
-      <CardBody>
-        <CatFilter />
-      </CardBody>
-    </Card>
-  }
-}
-  </CardDeck>
-</Fields>
+</CardDeck>
 
 @code {
   [Parameter]

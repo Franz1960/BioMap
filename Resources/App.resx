@@ -186,6 +186,9 @@
   <data name="Category filter" xml:space="preserve">
     <value>Kategorie-Filter</value>
   </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
   <data name="Conditions" xml:space="preserve">
     <value>Bedingungen</value>
   </data>
