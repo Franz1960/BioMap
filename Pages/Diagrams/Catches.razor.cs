@@ -112,10 +112,27 @@ namespace BioMap.Pages.Diagrams
             },
             YAxes = new List<CartesianAxis>
           {
-                new BarLinearCartesianAxis
-                {
-                    Stacked = true
-                }
+                new BarLinearCartesianAxis {
+                  ID="cnt",
+                  ScaleLabel=new ScaleLabel {
+                    Display=true,
+                  },
+                  Stacked = true
+                },
+                new LinearCartesianAxis {
+                  ID="tavg",
+                  ScaleLabel=new ScaleLabel {
+                    LabelString="°C",
+                    Display=true,
+                  },
+                },
+                new LinearCartesianAxis {
+                  ID="prcp",
+                  ScaleLabel=new ScaleLabel {
+                    LabelString="mm",
+                    Display=true,
+                  },
+                },
             }
           },
         },
@@ -289,32 +306,76 @@ namespace BioMap.Pages.Diagrams
         _configPerMonth.Data.Labels.Clear();
         _configPerMonth.Data.Datasets.Clear();
         //
-        int nIndex = 0;
-        foreach (var indiSpec in new[] {
-          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
-          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
-          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
-        }) {
-          var aCatchCountsPerMonth = new int[12];
-          foreach (var ea in aaIndisByIId.Values) {
-            foreach (var el in ea) {
-              if (indiSpec.Item2(el)) {
-                aCatchCountsPerMonth[el.ElementProp.CreationTime.Month-1]++;
+        {
+          int nIndex = 0;
+          foreach (var indiSpec in new[] {
+            new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
+            new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
+            new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
+          }) {
+            var aCatchCountsPerMonth = new int[12];
+            foreach (var ea in aaIndisByIId.Values) {
+              foreach (var el in ea) {
+                if (indiSpec.Item2(el)) {
+                  aCatchCountsPerMonth[el.ElementProp.CreationTime.Month-1]++;
+                }
               }
             }
-          }
-          var ds = new BarDataset<int>() {
-            Label=indiSpec.Item1,
-            BackgroundColor=this.GetColor(nIndex),
-          };
-          for (int month = 4;month<=10;month++) {
-            if (nIndex==0) {
-              _configPerMonth.Data.Labels.Add(month.ToString("00"));
+            var ds = new BarDataset<int>() {
+              Label=indiSpec.Item1,
+              BackgroundColor=this.GetColor(nIndex),
+            };
+            for (int month = 4;month<=10;month++) {
+              if (nIndex==0) {
+                _configPerMonth.Data.Labels.Add(month.ToString("00"));
+              }
+              ds.Add(aCatchCountsPerMonth[month-1]);
             }
-            ds.Add(aCatchCountsPerMonth[month-1]);
+            _configPerMonth.Data.Datasets.Add(ds);
+            nIndex++;
           }
-          _configPerMonth.Data.Datasets.Add(ds);
-          nIndex++;
+        }
+        {
+          var csvContent = (new CsvHelper()).ReadCsv("MeteoStat Donaustauf.csv");
+          if (csvContent.Rows.Length>=1) {
+            var dsTemperature = new LineDataset<double>() {
+              Label=Localize["Temperature"],
+              BackgroundColor = "rgba(0,0,0,0)",
+              BorderWidth = 2,
+              PointHoverBorderWidth = 0,
+              BorderColor = "Red",
+              PointRadius = 3,
+              YAxisId="tavg",
+            };
+            var dsPrecipitation = new LineDataset<double>() {
+              Label=Localize["Precipitation"],
+              BackgroundColor = "rgba(0,0,0,0)",
+              BorderWidth = 2,
+              PointHoverBorderWidth = 0,
+              BorderColor = "Blue",
+              PointRadius = 3,
+              YAxisId="prcp",
+            };
+            int nColIdx_Temperature=Array.IndexOf(csvContent.Headers,"tavg")-1;
+            int nColIdx_Precipitation=Array.IndexOf(csvContent.Headers,"prcp")-1;
+            foreach (var sLabel in _configPerMonth.Data.Labels) {
+              int nMonth=ConvInvar.ToInt(sLabel);
+              int nCnt=0;
+              double dSum_Temperature=0;
+              double dSum_Precipitation=0;
+              foreach (var row in csvContent.Rows) {
+                if (row.DateTime.Month==nMonth) {
+                  nCnt++;
+                  dSum_Temperature+=row.Columns[nColIdx_Temperature];
+                  dSum_Precipitation+=row.Columns[nColIdx_Precipitation];
+                }
+              }
+              dsTemperature.Add(dSum_Temperature/nCnt);
+              dsPrecipitation.Add(dSum_Precipitation);
+            }
+            _configPerMonth.Data.Datasets.Insert(0,dsPrecipitation);
+            _configPerMonth.Data.Datasets.Insert(0,dsTemperature);
+          }
         }
       }
       {

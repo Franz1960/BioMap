@@ -121,8 +121,8 @@ namespace BioMap.Shared
               LatLngBoundsLiteral.CreateOrExtend(ref bounds,new LatLngLiteral(place.LatLng.lng,place.LatLng.lat));
             }
           }
-          this.placeCircleList = await CircleList.ManageAsync(this.placeCircleList,this.googleMap.JsRuntime,dictPlaceCircles);
-          this.placeMarkerList = await MarkerList.ManageAsync(this.placeMarkerList,this.googleMap.JsRuntime,dictPlaceMarkers);
+          this.placeCircleList = await CircleList.SyncAsync(this.placeCircleList,this.googleMap.JsRuntime,dictPlaceCircles);
+          this.placeMarkerList = await MarkerList.SyncAsync(this.placeMarkerList,this.googleMap.JsRuntime,dictPlaceMarkers);
           this.placesBounds = bounds;
         }
       }

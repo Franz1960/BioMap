@@ -145,7 +145,7 @@ namespace BioMap.Shared
               dictConnectors[elm.Element.ElementName]=connectorOption;
             }
           }
-          this.circleList = await CircleList.ManageAsync(this.circleList,this.googleMap.JsRuntime,dictCircles,(ev,sKey,entity)=>{
+          this.circleList = await CircleList.SyncAsync(this.circleList,this.googleMap.JsRuntime,dictCircles,(ev,sKey,entity)=>{
             var elm = this.GetElementMarker(sKey);
             if (elm!=null && elm.Element!=null) {
               if (this.PhotoPopup!=null) {
@@ -167,7 +167,7 @@ namespace BioMap.Shared
               }
             }
           });
-          this.connectorList = await PolylineList.ManageAsync(this.connectorList,this.googleMap.JsRuntime,dictConnectors);
+          this.connectorList = await PolylineList.SyncAsync(this.connectorList,this.googleMap.JsRuntime,dictConnectors);
           if (!bCancelled) {
             //await this.OnZoomValueDelayed(null);
           }
