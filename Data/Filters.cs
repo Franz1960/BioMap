@@ -10,6 +10,11 @@ namespace BioMap
 {
   public class Filters
   {
+    public Filters(Func<User> getUserFunc) {
+      this.GetUserFunc=getUserFunc;
+    }
+    private Func<User> GetUserFunc;
+
     public enum FilteringTargetEnum
     {
       None=0,
@@ -248,6 +253,18 @@ namespace BioMap
         sResult = Filters.AddToWhereClause(sResult,this.GetDateFilterWhereClause());
         sResult = this.AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
         sResult = this.AddToWhereInClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
+      }
+      if (this.FilteringTarget==FilteringTargetEnum.Log) {
+        var user = this.GetUserFunc();
+        if (user==null || user.Level<400) {
+          sResult = Filters.AddToWhereClause(sResult,"log.user='"+user.EMail+"'");
+        }
+      }
+      if (this.FilteringTarget==FilteringTargetEnum.Notes) {
+        var user = this.GetUserFunc();
+        if (user==null || user.Level<400) {
+          sResult = Filters.AddToWhereClause(sResult,"protocol.author='"+user.EMail+"'");
+        }
       }
       return sResult;
     }
