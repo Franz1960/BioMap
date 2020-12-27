@@ -21,6 +21,7 @@
     <Tab Name="PerMonth">@Localize["Catch numbers per month"]</Tab>
     <Tab Name="HeadBodyLength">@Localize["Head-body-length of all catches"]</Tab>
     <Tab Name="GenderRatio">@Localize["Gender"]</Tab>
+    <Tab Name="MigrationDistances">@Localize["Migration distances"]</Tab>
   </Items>
   <Content>
     <TabPanel Name="OverTime">
@@ -34,6 +35,13 @@
     </TabPanel>
     <TabPanel Name="GenderRatio">
       <Chart @ref="_chartJsGenderRatio" Config="@_configGenderRatio" Width="600" Height="300" />
+    </TabPanel>
+    <TabPanel Name="MigrationDistances">
+      <Row>
+        <Column>
+          <Chart @ref="_chartJsMigrationDistances" Config="@_configMigrationDistances" Width="600" Height="300" />
+        </Column>
+      </Row>
     </TabPanel>
   </Content>
 </Tabs>

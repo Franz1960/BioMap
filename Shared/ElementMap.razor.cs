@@ -77,7 +77,7 @@ namespace BioMap.Shared
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
-        await this.googleMap.InteropObject.AddListener("zoom_changed",async () => {
+        await this.googleMap.InteropObject.AddListener("zoom_changed",() => {
           this.RefreshRadii();
         });
       }
@@ -91,41 +91,42 @@ namespace BioMap.Shared
         this.AfterRenderUpDownCnt++;
         LatLngBoundsLiteral bounds=null;
         try {
-          bool bCancelled = false;
           var dictCircles = new Dictionary<string,CircleOptions>();
           var dictConnectors = new Dictionary<string,PolylineOptions>();
-          foreach (var elm in this.ElementMarkers.ToArray()) {
-            var circleOptions = new CircleOptions {
-              Map=googleMap.InteropObject,
-              Center=elm.Position,
-              Radius=elm.Radius*this.RadiusFactor,
-              StrokeColor=elm.Color,
-              StrokeOpacity=0.60f,
-              StrokeWeight=2,
-              FillColor=elm.Color,
-              FillOpacity=0.35f,
-              ZIndex=1000000,
-            };
-            dictCircles[elm.Element.ElementName]=circleOptions;
-            LatLngBoundsLiteral.CreateOrExtend(ref bounds,elm.Position);
-            if (elm.PrevMarker!=null && this.DisplayConnectors) {
-              var connectorOption = new PolylineOptions {
+          lock (this.ElementMarkersLock) {
+            foreach (var elm in this.ElementMarkers.ToArray()) {
+              var circleOptions = new CircleOptions {
                 Map=googleMap.InteropObject,
-                Geodesic=true,
-                StrokeColor="#50D020",
-                StrokeOpacity=0.7f,
+                Center=elm.Position,
+                Radius=elm.Radius*this.RadiusFactor,
+                StrokeColor=elm.Color,
+                StrokeOpacity=0.60f,
                 StrokeWeight=2,
-                Icons=new[] {
-                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_CLOSED_ARROW }, Offset="100%" },
-                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_OPEN_ARROW }, Offset="66%" },
-                 new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_OPEN_ARROW }, Offset="33%" },
-                },
-                Path=new [] {
-                  elm.PrevMarker.Position,
-                  elm.Position,
-                },
+                FillColor=elm.Color,
+                FillOpacity=0.35f,
+                ZIndex=1000000,
               };
-              dictConnectors[elm.Element.ElementName]=connectorOption;
+              dictCircles[elm.Element.ElementName]=circleOptions;
+              LatLngBoundsLiteral.CreateOrExtend(ref bounds,elm.Position);
+              if (elm.PrevMarker!=null && this.DisplayConnectors) {
+                var connectorOption = new PolylineOptions {
+                  Map=googleMap.InteropObject,
+                  Geodesic=true,
+                  StrokeColor="#50D020",
+                  StrokeOpacity=0.7f,
+                  StrokeWeight=2,
+                  Icons=new[] {
+                   new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_CLOSED_ARROW }, Offset="100%" },
+                   new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_OPEN_ARROW }, Offset="66%" },
+                   new IconSequence { Icon=new Symbol { Path=SymbolPath.FORWARD_OPEN_ARROW }, Offset="33%" },
+                  },
+                  Path=new [] {
+                    elm.PrevMarker.Position,
+                    elm.Position,
+                  },
+                };
+                dictConnectors[elm.Element.ElementName]=connectorOption;
+              }
             }
           }
           this.circleList = await CircleList.SyncAsync(this.circleList,this.googleMap.JsRuntime,dictCircles,(ev,sKey,entity)=>{
@@ -151,9 +152,6 @@ namespace BioMap.Shared
             }
           });
           this.connectorList = await PolylineList.SyncAsync(this.connectorList,this.googleMap.JsRuntime,dictConnectors);
-          if (!bCancelled) {
-            //await this.OnZoomValueDelayed(null);
-          }
         } finally {
           this.AfterRenderUpDownCnt--;
           this.elementBounds=bounds;
@@ -180,13 +178,15 @@ namespace BioMap.Shared
         if (this.circleList!=null) {
           if (this.RadiusFactor!=this.PrevRadiusFactor) {
             try {
-              var N = this.ElementMarkers.Count();
               var dictRadii = new Dictionary<string,double>();
-              for (int i = 0;i<N;i++) {
-                var elm = this.ElementMarkers[i];
-                dictRadii[elm.Element.ElementName]=this.RadiusFactor*elm.Radius;
+              lock (this.ElementMarkersLock) {
+                var N = this.ElementMarkers.Count();
+                for (int i = 0;i<N;i++) {
+                  var elm = this.ElementMarkers[i];
+                  dictRadii[elm.Element.ElementName]=this.RadiusFactor*elm.Radius;
+                }
+                this.circleList.SetRadiuses(dictRadii).Wait();
               }
-              this.circleList.SetRadiuses(dictRadii).Wait();
             } catch { }
             this.PrevRadiusFactor=this.RadiusFactor;
           }
@@ -201,24 +201,15 @@ namespace BioMap.Shared
       }
     }
     public ElementMarker GetElementMarker(string sKey) {
-      foreach (var elm in this.ElementMarkers) {
-        if (elm.Element.ElementName==sKey) {
-          return elm;
+      lock (this.ElementMarkersLock) {
+        foreach (var elm in this.ElementMarkers) {
+          if (elm.Element.ElementName==sKey) {
+            return elm;
+          }
         }
       }
       return null;
     }
-    public ElementMarker GetNearestElementMarker(LatLngLiteral latLng) {
-      ElementMarker nearestElementMarker = null;
-      double minDistance = double.MaxValue;
-      foreach (var elm in this.ElementMarkers) {
-        var d = GeoCalculator.GetDistance(elm.Position.Lat,elm.Position.Lng,latLng.Lat,latLng.Lng);
-        if (nearestElementMarker==null || d<minDistance) {
-          nearestElementMarker=elm;
-          minDistance=d;
-        }
-      }
-      return nearestElementMarker;
-    }
   }
 }
+

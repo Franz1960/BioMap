@@ -39,12 +39,9 @@ namespace BioMap.Shared
     //
     private CircleList placeCircleList = null;
     private MarkerList placeMarkerList = null;
-    private Blazorise.Utils.ValueDelayer stateChangedDelayer;
     //
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
-      this.stateChangedDelayer = new Blazorise.Utils.ValueDelayer(300);
-      this.stateChangedDelayer.Delayed += async(sender,sValue) => await this.stateChangedDelayer_Delayed();
       mapOptions = new MapOptions() {
         Zoom = 12,
         Center = new LatLngLiteral() {
@@ -139,10 +136,9 @@ namespace BioMap.Shared
       }
     }
     public void DelayedStateHasChanged() {
-      this.stateChangedDelayer.Update(null);
-    }
-    private async Task stateChangedDelayer_Delayed() {
-      await base.InvokeAsync(StateHasChanged);
+      Utilities.CallDelayed(300,()=>{
+        base.InvokeAsync(StateHasChanged).Wait();
+      });
     }
   }
 }

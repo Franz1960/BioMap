@@ -37,6 +37,8 @@ namespace BioMap.Pages.Diagrams
     private BarConfig _configGenderRatio;
     private Chart _chartJsGenderRatio;
     private BarLinearCartesianAxis _yAxisGenderRatioCnt;
+    private BarConfig _configMigrationDistances;
+    private Chart _chartJsMigrationDistances;
     //
     private string selectedTab = "OverTime";
 
@@ -209,6 +211,36 @@ namespace BioMap.Pages.Diagrams
           },
         },
       };
+      _configMigrationDistances = new BarConfig {
+        Options = new BarOptions {
+          Animation=new Animation {
+            Duration=0,
+          },
+          Title = new OptionsTitle {
+            Text="XXX",
+            Display = false,
+          },
+          Legend = new Legend {
+            Display = true,
+          },
+          Scales = new BarScales {
+            XAxes = new List<CartesianAxis>
+        {
+                new BarCategoryAxis
+                {
+                    Stacked = true
+                }
+            },
+            YAxes = new List<CartesianAxis>
+        {
+                new BarLinearCartesianAxis
+                {
+                    Stacked = true
+                }
+            }
+          },
+        },
+      };
       SD.Filters.FilterChanged+=(sender,ev) => {
         RefreshData();
         base.InvokeAsync(StateHasChanged);
@@ -232,7 +264,7 @@ namespace BioMap.Pages.Diagrams
             foreach (var ea in aaIndisByIId.Values) {
               foreach (var el in ea) {
                 if (indiSpec.Item2(el)) {
-                  string sKey = el.GetIsoDateTime().Substring(2,5);
+                  string sKey = el.GetIsoDateTime().Substring(0,7);
                   if (!dictCatches.ContainsKey(sKey)) {
                     dictCatches[sKey]=0;
                   }
@@ -282,8 +314,8 @@ namespace BioMap.Pages.Diagrams
             int nColIdx_Temperature=Array.IndexOf(csvContent.Headers,"tavg")-1;
             int nColIdx_Precipitation=Array.IndexOf(csvContent.Headers,"prcp")-1;
             foreach (var sLabel in _configOverTime.Data.Labels) {
-              int nYear=2000+ConvInvar.ToInt(sLabel.Substring(0,2));
-              int nMonth=ConvInvar.ToInt(sLabel.Substring(3,2));
+              int nYear=ConvInvar.ToInt(sLabel.Substring(0,4));
+              int nMonth=ConvInvar.ToInt(sLabel.Substring(5,2));
               int nCnt=0;
               double dSum_Temperature=0;
               double dSum_Precipitation=0;
@@ -459,6 +491,50 @@ namespace BioMap.Pages.Diagrams
           _configGenderRatio.Data.Datasets.Add(dsFemale);
           _configGenderRatio.Data.Datasets.Add(dsMale);
           _configGenderRatio.Data.Datasets.Add(dsRatio);
+        }
+      }
+      {
+        _configMigrationDistances.Data.Labels.Clear();
+        _configMigrationDistances.Data.Datasets.Clear();
+        //
+        int nIndex = 0;
+        var aDistanceClasses = new double[] { 0,20,50,100,200,500,1000,2000,5000 };
+        var funcGetDistanceClass = new Func<double,int>((dist)=>{
+          for (int idx=aDistanceClasses.Length-1;idx>=0;idx--) {
+            if (dist>=aDistanceClasses[idx]) {
+              return idx;
+            }
+          }
+          return 0;
+        });
+        foreach (var indiSpec in new[] {
+          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
+          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
+          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
+        }) {
+          var countsPerDistanceClass = new int[aDistanceClasses.Length];
+          foreach (var ea in aaIndisByIId.Values) {
+            for (int idx=1;idx<ea.Count;idx++) {
+              var el = ea[idx];
+              if (indiSpec.Item2(el)) {
+                double dDistance = GeoCalculator.GetDistance(ea[idx-1].ElementProp.MarkerInfo.position,el.ElementProp.MarkerInfo.position);
+                var idxDistanceClass = funcGetDistanceClass(dDistance);
+                countsPerDistanceClass[idxDistanceClass]++;
+              }
+            }
+          }
+          var ds = new BarDataset<int>() {
+            Label=indiSpec.Item1,
+            BackgroundColor=this.GetColor(nIndex),
+          };
+          for (int idxKey=0;idxKey<aDistanceClasses.Length;idxKey++) {
+            if (nIndex==0) {
+              _configMigrationDistances.Data.Labels.Add(aDistanceClasses[idxKey]+(idxKey<aDistanceClasses.Length-1?("-"+aDistanceClasses[idxKey+1]):"- \u221E"));
+            }
+            ds.Add(countsPerDistanceClass[idxKey]);
+          }
+          _configMigrationDistances.Data.Datasets.Add(ds);
+          nIndex++;
         }
       }
     }

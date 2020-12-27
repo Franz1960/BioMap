@@ -34,7 +34,7 @@ namespace BioMap.Pages.Maps
       if (firstRender) {
         base.PhotoPopup=this.PhotoPopup1;
         base.DynaZoomed=false;
-        //await this.RefreshElementMarkers();
+        await this.RefreshElementMarkers();
       }
     }
     private async Task RefreshElementMarkers() {
@@ -58,8 +58,8 @@ namespace BioMap.Pages.Maps
             prevMarker=elm;
           }
         }
-        base.ElementMarkers=lElementMarkers.ToArray();
       }
+      base.ElementMarkers=lElementMarkers.ToArray();
     }
   }
 }

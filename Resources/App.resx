@@ -324,6 +324,12 @@
   <data name="Maps" xml:space="preserve">
     <value>Karten</value>
   </data>
+  <data name="Migration" xml:space="preserve">
+    <value>Migration</value>
+  </data>
+  <data name="Migration distances" xml:space="preserve">
+    <value>Wanderdistanzen</value>
+  </data>
   <data name="Missed individuals" xml:space="preserve">
     <value>Vermisste Individuen</value>
   </data>
