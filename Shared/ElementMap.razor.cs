@@ -22,8 +22,6 @@ namespace BioMap.Shared
       public LatLngLiteral Position;
       public Element Element;
       public ElementMarker PrevMarker;
-      internal Circle Circle;
-      internal Polyline Connector;
       internal int ZIndex = 1000000;
     }
     [Parameter]
@@ -33,12 +31,6 @@ namespace BioMap.Shared
       }
       set {
         lock (this.ElementMarkersLock) {
-          if (this._ElementMarkers!=null) {
-            foreach (var elm in this._ElementMarkers) {
-              elm?.Circle?.SetMap(null);
-              elm?.Connector?.SetMap(null);
-            }
-          }
           this._ElementMarkers=value;
         }
         this.DelayedStateHasChanged();
@@ -54,12 +46,7 @@ namespace BioMap.Shared
       }
       set {
         this._DynaZoomed=value;
-        if (value) {
-          this.OnZoomValueDelayed(null);
-        } else {
-          this.RadiusFactor=1;
-          DelayedStateHasChanged();
-        }
+        this.RefreshRadii();
       }
     }
     private bool _DynaZoomed = false;
@@ -83,18 +70,15 @@ namespace BioMap.Shared
     private readonly object ElementMarkersLock = new object();
     private int AfterRenderUpDownCnt = 0;
     private bool AfterRenderCancelReq = false;
-    private Blazorise.Utils.ValueDelayer zoomValueDelayer;
     private double RadiusFactor = 1;
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
-      this.zoomValueDelayer = new Blazorise.Utils.ValueDelayer(400);
-      this.zoomValueDelayer.Delayed += async (sender,sValue) =>await this.OnZoomValueDelayed(sValue);
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
         await this.googleMap.InteropObject.AddListener("zoom_changed",async () => {
-          this.zoomValueDelayer.Update(ConvInvar.ToString(await this.googleMap.InteropObject.GetZoom()));
+          this.RefreshRadii();
         });
       }
       if (this.ElementMarkers!=null) {
@@ -124,7 +108,6 @@ namespace BioMap.Shared
             };
             dictCircles[elm.Element.ElementName]=circleOptions;
             LatLngBoundsLiteral.CreateOrExtend(ref bounds,elm.Position);
-            elm.Connector=null;
             if (elm.PrevMarker!=null && this.DisplayConnectors) {
               var connectorOption = new PolylineOptions {
                 Map=googleMap.InteropObject,
@@ -180,24 +163,35 @@ namespace BioMap.Shared
         }
       }
     }
-    private async Task OnZoomValueDelayed(string sValue) {
-      if (!this.DynaZoomed || this.circleList==null) {
-        return;
-      }
-      try {
-        var bounds = await this.googleMap.InteropObject.GetBounds();
-        var fHeight = Math.Abs(bounds.North-bounds.South)*111000;
-        this.RadiusFactor=fHeight*0.004;
-        {
-          var N = this.ElementMarkers.Count();
-          var dictRadii = new Dictionary<string,double>();
-          for (int i = 0;i<N-1;i++) {
-            var elm = this.ElementMarkers[i];
-            dictRadii[elm.Element.ElementName]=this.RadiusFactor*elm.Radius;
-          }
-          await this.circleList.SetRadiuses(dictRadii);
+    private double? PrevRadiusFactor = null;
+    private void RefreshRadii() {
+      System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff")+": CallDelayed");
+      Utilities.CallDelayed(800,()=>{
+        System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff")+": Elapsed");
+        if (this.DynaZoomed) {
+          try {
+            var bounds = this.googleMap.InteropObject.GetBounds().Result;
+            var fHeight = Math.Abs(bounds.North-bounds.South)*111000;
+            this.RadiusFactor=fHeight*0.004;
+          } catch { }
+        } else {
+          this.RadiusFactor=1;
         }
-      } catch { }
+        if (this.circleList!=null) {
+          if (this.RadiusFactor!=this.PrevRadiusFactor) {
+            try {
+              var N = this.ElementMarkers.Count();
+              var dictRadii = new Dictionary<string,double>();
+              for (int i = 0;i<N;i++) {
+                var elm = this.ElementMarkers[i];
+                dictRadii[elm.Element.ElementName]=this.RadiusFactor*elm.Radius;
+              }
+              this.circleList.SetRadiuses(dictRadii).Wait();
+            } catch { }
+            this.PrevRadiusFactor=this.RadiusFactor;
+          }
+        }
+      });
     }
     protected override async Task FitBounds() {
       if (this.elementBounds==null || this.elementBounds.East==this.elementBounds.West || this.elementBounds.South==this.elementBounds.North) {

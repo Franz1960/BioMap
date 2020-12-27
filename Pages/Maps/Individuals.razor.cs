@@ -26,7 +26,7 @@ namespace BioMap.Pages.Maps
       await base.OnInitializedAsync();
       SD.Filters.FilterChanged+=async (sender,ev) => {
         await this.RefreshElementMarkers();
-        this.DelayedStateHasChanged();
+        //this.DelayedStateHasChanged();
       };
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
@@ -34,7 +34,7 @@ namespace BioMap.Pages.Maps
       if (firstRender) {
         base.PhotoPopup=this.PhotoPopup1;
         base.DynaZoomed=false;
-        await this.RefreshElementMarkers();
+        //await this.RefreshElementMarkers();
       }
     }
     private async Task RefreshElementMarkers() {
