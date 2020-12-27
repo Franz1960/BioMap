@@ -19,7 +19,7 @@ using ChartJs.Blazor.LineChart;
 using ChartJs.Blazor.BarChart;
 using ChartJs.Blazor.BarChart.Axes;
 
-namespace BioMap.Pages.Diagrams
+namespace BioMap.Pages.Statistics
 {
   public partial class Catches : ComponentBase
   {
@@ -255,20 +255,35 @@ namespace BioMap.Pages.Diagrams
         //
         {
           int nIndex = 0;
-          foreach (var indiSpec in new[] {
+          var indiSpecs = new[] {
             new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
             new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
             new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
-          }) {
-            var dictCatches = new Dictionary<string,int>();
+          };
+          var lColLabels = new List<string>();
+          foreach (var indiSpec in indiSpecs) {
             foreach (var ea in aaIndisByIId.Values) {
               foreach (var el in ea) {
                 if (indiSpec.Item2(el)) {
                   string sKey = el.GetIsoDateTime().Substring(0,7);
-                  if (!dictCatches.ContainsKey(sKey)) {
-                    dictCatches[sKey]=0;
+                  if (!lColLabels.Contains(sKey)) {
+                    lColLabels.Add(sKey);
                   }
-                  dictCatches[sKey]++;
+                }
+              }
+            }
+          }
+          lColLabels.Sort();
+          foreach (var sColLabel in lColLabels) {
+            _configOverTime.Data.Labels.Add(sColLabel);
+          }
+          foreach (var indiSpec in indiSpecs) {
+            var cntCatches = new int[lColLabels.Count];
+            foreach (var ea in aaIndisByIId.Values) {
+              foreach (var el in ea) {
+                if (indiSpec.Item2(el)) {
+                  string sKey = el.GetIsoDateTime().Substring(0,7);
+                  cntCatches[lColLabels.IndexOf(sKey)]++;
                 }
               }
             }
@@ -277,15 +292,7 @@ namespace BioMap.Pages.Diagrams
               Label=indiSpec.Item1,
               BackgroundColor=this.GetColor(nIndex),
             };
-            var lDates = new List<string>(dictCatches.Keys);
-            lDates.Sort();
-            for (int idx=0;idx<lDates.Count;idx++) {
-              string sKey=lDates[idx];
-              if (nIndex==0) {
-                _configOverTime.Data.Labels.Add(sKey);
-              }
-              ds.Add(dictCatches[sKey]);
-            }
+            ds.AddRange(cntCatches);
             _configOverTime.Data.Datasets.Add(ds);
             nIndex++;
           }

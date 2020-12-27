@@ -210,6 +210,9 @@
   <data name="Different Individuals" xml:space="preserve">
     <value>Verschiedene Individuen</value>
   </data>
+  <data name="Distance" xml:space="preserve">
+    <value>Distanz</value>
+  </data>
   <data name="Dyn. zoom" xml:space="preserve">
     <value>Dyn. Zoom</value>
   </data>
