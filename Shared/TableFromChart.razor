@@ -1,0 +1,94 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.BarChart.Axes
+@using BioMap
+
+<table class="table table-sm table-striped text-right">
+  @if (ColumnHeaders!=null) {
+    <thead>
+      <tr>
+        <th scope="col">@RowLabel</th>
+        @foreach (var columnHeader in ColumnHeaders) {
+          <th scope="col">@columnHeader</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var idxRow in Enumerable.Range(0,Data.Length)) {
+        <tr>
+          <td scope="col">@Data[idxRow].Label</td>
+          @foreach (var idxCol in Enumerable.Range(0,Data[idxRow].ColData.Length)) {
+            <td scope="col">@Data[idxRow].ColData[idxCol]</td>
+          }
+        </tr>
+      }
+    </tbody>
+  }
+</table>
+
+@code {
+  [Parameter]
+  public BarConfig _config { get; set; } = null;
+  //
+  [Parameter]
+  public string RowLabel { get; set; } = null;
+  //
+  private class DataRow
+  {
+    internal string Label;
+    internal string[] ColData;
+  }
+  private string[] ColumnHeaders;
+  private DataRow[] Data = new DataRow[0];
+  //
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
+    await base.OnAfterRenderAsync(firstRender);
+    if (firstRender) {
+    }
+    var lColumnHeaders = new List<string>();
+    foreach (var idxCol in Enumerable.Range(0,_config.Data.Datasets.Count)) {
+      if (_config.Data.Datasets[idxCol] is BarDataset<int>) {
+        lColumnHeaders.Add(((BarDataset<int>)_config.Data.Datasets[idxCol]).Label);
+      } else if (_config.Data.Datasets[idxCol] is BarDataset<double>) {
+        lColumnHeaders.Add(((BarDataset<double>)_config.Data.Datasets[idxCol]).Label);
+      } else if (_config.Data.Datasets[idxCol] is LineDataset<double>) {
+        lColumnHeaders.Add(((LineDataset<double>)_config.Data.Datasets[idxCol]).Label);
+      }
+    }
+    int nRowCnt = 0;
+    {
+      if (_config.Data.Datasets[0] is LineDataset<double> lds) {
+        nRowCnt=lds.Count;
+      } else if (_config.Data.Datasets[0] is BarDataset<int> bds) {
+        nRowCnt=bds.Count;
+      } else if (_config.Data.Datasets[0] is BarDataset<double> bdds) {
+        nRowCnt=bdds.Count;
+      }
+    }
+    var laData = new List<DataRow>();
+    for (int idxRow = 0;idxRow<nRowCnt;idxRow++) {
+      var dataRow = new DataRow {
+        Label=_config.Data.Labels[idxRow],
+        ColData = new string[lColumnHeaders.Count],
+      };
+      for (int idxCol = 0;idxCol<lColumnHeaders.Count;idxCol++) {
+        if (_config.Data.Datasets[idxCol] is LineDataset<double> lds) {
+          dataRow.ColData[idxCol]=lds[idxRow].ToString("0.00");
+        } else if (_config.Data.Datasets[idxCol] is BarDataset<int> bds) {
+          dataRow.ColData[idxCol]=bds[idxRow].ToString("0");
+        } else if (_config.Data.Datasets[idxCol] is BarDataset<double> bdds) {
+          dataRow.ColData[idxCol]=bdds[idxRow].ToString("0.00");
+        }
+      }
+      laData.Add(dataRow);
+    }
+    ColumnHeaders=lColumnHeaders.ToArray();
+    Data=laData.ToArray();
+    StateHasChanged();
+  }
+}

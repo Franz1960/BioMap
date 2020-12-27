@@ -80,6 +80,7 @@ namespace BioMap.Pages.Statistics
                     LabelString="°C",
                     Display=true,
                   },
+                  Position = Position.Right,
                 },
                 new LinearCartesianAxis {
                   ID="prcp",
@@ -87,6 +88,7 @@ namespace BioMap.Pages.Statistics
                     LabelString="mm",
                     Display=true,
                   },
+                  Position = Position.Right,
                 },
             }
           },
@@ -127,6 +129,7 @@ namespace BioMap.Pages.Statistics
                     LabelString="°C",
                     Display=true,
                   },
+                  Position = Position.Right,
                 },
                 new LinearCartesianAxis {
                   ID="prcp",
@@ -134,6 +137,7 @@ namespace BioMap.Pages.Statistics
                     LabelString="mm",
                     Display=true,
                   },
+                  Position = Position.Right,
                 },
             }
           },
@@ -202,6 +206,7 @@ namespace BioMap.Pages.Statistics
                     LabelString="%",
                     Display=true,
                   },
+                  Position = Position.Right,
                   Ticks= new LinearCartesianTicks {
                     Min=0,
                     Max=100,

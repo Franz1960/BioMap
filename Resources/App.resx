@@ -165,6 +165,9 @@
   <data name="Author" xml:space="preserve">
     <value>Autor</value>
   </data>
+  <data name="By place" xml:space="preserve">
+    <value>Nach Ort</value>
+  </data>
   <data name="ByCategories" xml:space="preserve">
     <value>Nach Kategorien</value>
   </data>
@@ -255,6 +258,9 @@
   <data name="Gender" xml:space="preserve">
     <value>Geschlecht</value>
   </data>
+  <data name="Hatchlings" xml:space="preserve">
+    <value>Hüpferlinge</value>
+  </data>
   <data name="Head-body-length of all catches" xml:space="preserve">
     <value>Kopf-Rumpf-Länge aller Fänge</value>
   </data>
@@ -336,6 +342,9 @@
   <data name="Missed individuals" xml:space="preserve">
     <value>Vermisste Individuen</value>
   </data>
+  <data name="Month" xml:space="preserve">
+    <value>Monat</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
@@ -386,6 +395,12 @@
   </data>
   <data name="Register" xml:space="preserve">
     <value>Registrieren</value>
+  </data>
+  <data name="Reproduction" xml:space="preserve">
+    <value>Fortpflanzung</value>
+  </data>
+  <data name="Reproduction rate" xml:space="preserve">
+    <value>Reproduktionsrate</value>
   </data>
   <data name="Save calculated year-of-birth values" xml:space="preserve">
     <value>Berechnete Jahrgänge speichern</value>

@@ -2,6 +2,7 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject IJSRuntime JSRuntime
 @using BioMap
+@using BioMap.Shared
 @using ChartJs.Blazor.Common.Enums
 @using ChartJs.Blazor.Common.Axes
 @using ChartJs.Blazor.Common.Axes.Ticks
@@ -33,34 +34,7 @@
       </Row>
       <Row>
         <Column>
-          <table class="table table-sm table-striped text-right">
-            <thead>
-              <tr>
-                <th scope="col">@Localize["Month"]</th>
-                @foreach (var idxCol in Enumerable.Range(0,_configOverTime.Data.Datasets.Count)) {
-                  @if (_configOverTime.Data.Datasets[idxCol] is BarDataset<int>) {
-                    <th scope="col">@(((BarDataset<int>)_configOverTime.Data.Datasets[idxCol]).Label)</th>
-                  } else if (_configOverTime.Data.Datasets[idxCol] is LineDataset<double>) {
-                    <th scope="col">@(((LineDataset<double>)_configOverTime.Data.Datasets[idxCol]).Label)</th>
-                  }
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @foreach (var idxRow in Enumerable.Range(0,((LineDataset<double>)_configOverTime.Data.Datasets[0]).Count)) {
-                <tr>
-                  <td scope="col">@_configOverTime.Data.Labels[idxRow]</td>
-                  @foreach (var idxCol in Enumerable.Range(0,_configOverTime.Data.Datasets.Count)) {
-                    @if (_configOverTime.Data.Datasets[idxCol] is BarDataset<int>) {
-                      <td scope="col">@(((BarDataset<int>)_configOverTime.Data.Datasets[idxCol])[idxRow].ToString("0"))</td>
-                    } else if (_configOverTime.Data.Datasets[idxCol] is LineDataset<double>) {
-                      <td scope="col">@(((LineDataset<double>)_configOverTime.Data.Datasets[idxCol])[idxRow].ToString("0"))</td>
-                    }
-                  }
-                </tr>
-              }
-            </tbody>
-          </table>
+          <TableFromChart RowLabel="@Localize["Month"]" _config="@_configOverTime"/>
         </Column>
       </Row>
     </TabPanel>
@@ -72,34 +46,7 @@
       </Row>
       <Row>
         <Column>
-          <table class="table table-sm table-striped text-right">
-            <thead>
-              <tr>
-                <th scope="col">@Localize["Month"]</th>
-                @foreach (var idxCol in Enumerable.Range(0,_configPerMonth.Data.Datasets.Count)) {
-                  @if (_configPerMonth.Data.Datasets[idxCol] is BarDataset<int>) {
-                    <th scope="col">@(((BarDataset<int>)_configPerMonth.Data.Datasets[idxCol]).Label)</th>
-                  } else if (_configPerMonth.Data.Datasets[idxCol] is LineDataset<double>) {
-                    <th scope="col">@(((LineDataset<double>)_configPerMonth.Data.Datasets[idxCol]).Label)</th>
-                  }
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @foreach (var idxRow in Enumerable.Range(0,((LineDataset<double>)_configPerMonth.Data.Datasets[0]).Count)) {
-                <tr>
-                  <td scope="col">@_configPerMonth.Data.Labels[idxRow]</td>
-                  @foreach (var idxCol in Enumerable.Range(0,_configPerMonth.Data.Datasets.Count)) {
-                    @if (_configPerMonth.Data.Datasets[idxCol] is BarDataset<int>) {
-                      <td scope="col">@(((BarDataset<int>)_configPerMonth.Data.Datasets[idxCol])[idxRow].ToString("0"))</td>
-                    } else if (_configPerMonth.Data.Datasets[idxCol] is LineDataset<double>) {
-                      <td scope="col">@(((LineDataset<double>)_configPerMonth.Data.Datasets[idxCol])[idxRow].ToString("0"))</td>
-                    }
-                  }
-                </tr>
-              }
-            </tbody>
-          </table>
+          <TableFromChart RowLabel="@Localize["Month"]" _config="@_configPerMonth" />
         </Column>
       </Row>
     </TabPanel>
@@ -111,34 +58,7 @@
       </Row>
       <Row>
         <Column>
-          <table class="table table-sm table-striped text-right">
-            <thead>
-              <tr>
-                <th scope="col">@Localize["Length"] / mm</th>
-                @foreach (var idxCol in Enumerable.Range(0,_configHeadBodyLength.Data.Datasets.Count)) {
-                  @if (_configHeadBodyLength.Data.Datasets[idxCol] is BarDataset<int>) {
-                    <th scope="col">@(((BarDataset<int>)_configHeadBodyLength.Data.Datasets[idxCol]).Label)</th>
-                  } else if (_configHeadBodyLength.Data.Datasets[idxCol] is LineDataset<double>) {
-                    <th scope="col">@(((LineDataset<double>)_configHeadBodyLength.Data.Datasets[idxCol]).Label)</th>
-                  }
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @foreach (var idxRow in Enumerable.Range(0,((BarDataset<int>)_configHeadBodyLength.Data.Datasets[0]).Count)) {
-                <tr>
-                  <td scope="col">@_configHeadBodyLength.Data.Labels[idxRow]</td>
-                  @foreach (var idxCol in Enumerable.Range(0,_configHeadBodyLength.Data.Datasets.Count)) {
-                    @if (_configHeadBodyLength.Data.Datasets[idxCol] is BarDataset<int>) {
-                      <td scope="col">@(((BarDataset<int>)_configHeadBodyLength.Data.Datasets[idxCol])[idxRow].ToString("0"))</td>
-                    } else if (_configHeadBodyLength.Data.Datasets[idxCol] is LineDataset<double>) {
-                      <td scope="col">@(((LineDataset<double>)_configHeadBodyLength.Data.Datasets[idxCol])[idxRow].ToString("0"))</td>
-                    }
-                  }
-                </tr>
-              }
-            </tbody>
-          </table>
+          <TableFromChart RowLabel="@(Localize["Length"]+" / mm")" _config="@_configHeadBodyLength" />
         </Column>
       </Row>
     </TabPanel>
@@ -150,34 +70,7 @@
       </Row>
       <Row>
         <Column>
-          <table class="table table-sm table-striped text-right">
-            <thead>
-              <tr>
-                <th scope="col">@Localize["Month"]</th>
-                @foreach (var idxCol in Enumerable.Range(0,_configGenderRatio.Data.Datasets.Count)) {
-                  @if (_configGenderRatio.Data.Datasets[idxCol] is BarDataset<int>) {
-                    <th scope="col">@(((BarDataset<int>)_configGenderRatio.Data.Datasets[idxCol]).Label)</th>
-                  } else if (_configGenderRatio.Data.Datasets[idxCol] is LineDataset<double>) {
-                    <th scope="col">@(((LineDataset<double>)_configGenderRatio.Data.Datasets[idxCol]).Label)</th>
-                  }
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @foreach (var idxRow in Enumerable.Range(0,((BarDataset<int>)_configGenderRatio.Data.Datasets[0]).Count)) {
-              <tr>
-                <td scope="col">@_configGenderRatio.Data.Labels[idxRow]</td>
-                @foreach (var idxCol in Enumerable.Range(0,_configGenderRatio.Data.Datasets.Count)) {
-                  @if (_configGenderRatio.Data.Datasets[idxCol] is BarDataset<int>) {
-                    <td scope="col">@(((BarDataset<int>)_configGenderRatio.Data.Datasets[idxCol])[idxRow].ToString("0"))</td>
-                  } else if (_configGenderRatio.Data.Datasets[idxCol] is LineDataset<double>) {
-                    <td scope="col">@(((LineDataset<double>)_configGenderRatio.Data.Datasets[idxCol])[idxRow].ToString("0"))</td>
-                  }
-                }
-              </tr>
-              }
-            </tbody>
-          </table>
+          <TableFromChart RowLabel="@(Localize["Month"])" _config="@_configGenderRatio" />
         </Column>
       </Row>
     </TabPanel>
@@ -189,26 +82,7 @@
       </Row>
       <Row>
         <Column>
-          <table class="table table-sm table-striped text-right">
-            <thead>
-              <tr>
-                <th scope="col">@Localize["Distance"] / m</th>
-                @foreach (var idxCol in Enumerable.Range(0,_configMigrationDistances.Data.Datasets.Count)) {
-                  <th scope="col">@(((BarDataset<int>)_configMigrationDistances.Data.Datasets[idxCol]).Label)</th>
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @foreach (var idxRow in Enumerable.Range(0,((BarDataset<int>)_configMigrationDistances.Data.Datasets[0]).Count)) {
-                <tr>
-                  <td scope="col">@_configMigrationDistances.Data.Labels[idxRow]</td>
-                  @foreach (var idxCol in Enumerable.Range(0,_configMigrationDistances.Data.Datasets.Count)) {
-                    <td scope="col">@(((BarDataset<int>)_configMigrationDistances.Data.Datasets[idxCol])[idxRow].ToString("0"))</td>
-                  }
-                </tr>
-              }
-            </tbody>
-          </table>
+          <TableFromChart RowLabel="@(Localize["Distance"]+" / m")" _config="@_configMigrationDistances" />
         </Column>
       </Row>
     </TabPanel>
