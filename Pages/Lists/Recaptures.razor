@@ -28,7 +28,7 @@
   </thead>
   <tbody>
     @foreach (var iid in SortedIIds) {
-      @if (this.Individuals[iid].Count>=2) {
+      @if (this.Individuals[iid].Count>=2 @*&& !ArePlacesConsistent(iid)*@) {
         <tr style=@GetTrStyle(iid)>
           <th scope="row">@(iid)</th>
           <td>
@@ -137,6 +137,18 @@
         if (sGender!=null) {
           return false;
         }
+      }
+    }
+    return true;
+  }
+  private bool ArePlacesConsistent(int iid) {
+    string sPlace = null;
+    foreach (var el in this.Individuals[iid]) {
+      string p = el.GetPlace()?.Name;
+      if (sPlace==null) {
+        sPlace=p;
+      } else if (string.CompareOrdinal(p,sPlace)!=0) {
+        return false;
       }
     }
     return true;
