@@ -605,11 +605,10 @@ namespace BioMap
                   {
                     int nIdx = 13;
                     foreach (var sTraitName in new string[] { "YellowDominance","BlackDominance","VertBlackBreastCenterStrip","HorizBlackBreastBellyStrip","ManyIsolatedBlackBellyDots" }) {
-                      var oValue = dr.GetValue(nIdx++);
-                      var sValue = oValue as string;
-                      if (int.TryParse(sValue,out int nValue)) {
+                      try {
+                        var nValue = dr.GetInt32(nIdx++);
                         el.ElementProp.IndivData.TraitValues.Add(sTraitName,nValue);
-                      }
+                      } catch { }
                     }
                   }
                   el.ElementProp.IndivData.MeasuredData = new Element.IndivData_t.MeasuredData_t {
