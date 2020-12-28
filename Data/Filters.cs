@@ -156,6 +156,30 @@ namespace BioMap
       }
     }
     private string _CatFilter = "";
+    public string NotesAuthorFilter {
+      get {
+        return this._NotesAuthorFilter;
+      }
+      set {
+        if (value!=this._NotesAuthorFilter) {
+          this._NotesAuthorFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private string _NotesAuthorFilter = "";
+    public string NotesTextFilter {
+      get {
+        return this._NotesTextFilter;
+      }
+      set {
+        if (value!=this._NotesTextFilter) {
+          this._NotesTextFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private string _NotesTextFilter = "";
     public static char[] NegateChars { get; } = new char[] { '-','!','^' };
     public static char[] SeparateChars { get; } = new char[] { ' ',',',';','|','+' };
     private string GetFilterTermForWhereInClause(string sFilter) {
@@ -264,6 +288,12 @@ namespace BioMap
         var user = this.GetUserFunc();
         if (user==null || user.Level<400) {
           sResult = Filters.AddToWhereClause(sResult,"protocol.author='"+user.EMail+"'");
+        }
+        if (!string.IsNullOrEmpty(this.NotesAuthorFilter)) {
+          sResult = Filters.AddToWhereClause(sResult,"protocol.author='"+this.NotesAuthorFilter+"'");
+        }
+        if (!string.IsNullOrEmpty(this.NotesTextFilter)) {
+          sResult = Filters.AddToWhereClause(sResult,"protocol.text LIKE '%"+this.NotesTextFilter+"%'");
         }
       }
       return sResult;

@@ -8,6 +8,11 @@
 <CardDeck>
   @if (FilteringTarget==Filters.FilteringTargetEnum.Log) {
   } else@if (FilteringTarget==Filters.FilteringTargetEnum.Notes) {
+    <Card>
+      <CardBody>
+        <NotesFilter />
+      </CardBody>
+    </Card>
   } else {
     <Card>
       <CardBody>

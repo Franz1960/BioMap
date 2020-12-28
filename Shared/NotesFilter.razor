@@ -1,0 +1,33 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Row>
+  <Column ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">
+    <Field Horizontal="false">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">@Localize["EMail address"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+        <Select TValue="string" @bind-SelectedValue="SD.Filters.NotesAuthorFilter">
+          <SelectItem TValue="string" Value="@("")"></SelectItem>
+          @foreach (var userEMail in DS.UsersByNames.Keys) {
+            <SelectItem TValue="string" Value="userEMail">@userEMail</SelectItem>
+          }
+        </Select>
+      </FieldBody>
+    </Field>
+  </Column>
+  <Column ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+    <Field Horizontal="false">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Text"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+        <TextEdit @bind-Text="SD.Filters.NotesTextFilter" />
+      </FieldBody>
+    </Field>
+  </Column>
+</Row>
+
+@code {
+}
