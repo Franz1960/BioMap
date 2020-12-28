@@ -72,7 +72,10 @@ namespace BioMap.Pages.Statistics
                   ScaleLabel=new ScaleLabel {
                     Display=true,
                   },
-                  Stacked = true
+                  Stacked = true,
+                  Ticks=new LinearCartesianTicks {
+                    Min=0,
+                  },
                 },
                 new LinearCartesianAxis {
                   ID="tavg",
@@ -111,7 +114,7 @@ namespace BioMap.Pages.Statistics
           {
                 new BarCategoryAxis
                 {
-                    Stacked = true
+                    Stacked = true,
                 }
             },
             YAxes = new List<CartesianAxis>
@@ -121,7 +124,10 @@ namespace BioMap.Pages.Statistics
                   ScaleLabel=new ScaleLabel {
                     Display=true,
                   },
-                  Stacked = true
+                  Stacked = true,
+                  Ticks=new LinearCartesianTicks {
+                    Min=0,
+                  },
                 },
                 new LinearCartesianAxis {
                   ID="tavg",
@@ -157,18 +163,21 @@ namespace BioMap.Pages.Statistics
           },
           Scales = new BarScales {
             XAxes = new List<CartesianAxis>
-        {
-                new BarCategoryAxis
-                {
-                    Stacked = true
-                }
+            {
+              new BarCategoryAxis
+              {
+                  Stacked = true,
+              },
             },
             YAxes = new List<CartesianAxis>
-        {
-                new BarLinearCartesianAxis
-                {
-                    Stacked = true
-                }
+            {
+              new BarLinearCartesianAxis
+              {
+                Stacked = true,
+                Ticks=new LinearCartesianTicks {
+                  Min=0,
+                },
+              },
             }
           },
         },
@@ -230,19 +239,22 @@ namespace BioMap.Pages.Statistics
           },
           Scales = new BarScales {
             XAxes = new List<CartesianAxis>
-        {
-                new BarCategoryAxis
-                {
-                    Stacked = true
-                }
+            {
+              new BarCategoryAxis
+              {
+                Stacked = true,
+              },
             },
             YAxes = new List<CartesianAxis>
-        {
-                new BarLinearCartesianAxis
-                {
-                    Stacked = true
-                }
-            }
+            {
+              new BarLinearCartesianAxis
+              {
+                Stacked = true,
+                Ticks=new LinearCartesianTicks {
+                  Min=0,
+                },
+              },
+            },
           },
         },
       };

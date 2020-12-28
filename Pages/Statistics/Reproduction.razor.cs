@@ -64,6 +64,9 @@ namespace BioMap.Pages.Statistics
                     Display=true,
                   },
                   Stacked = false,
+                  Ticks=new LinearCartesianTicks {
+                    Min=0,
+                  },
                 },
                 new BarLinearCartesianAxis {
                   ID="reprate",
@@ -73,6 +76,9 @@ namespace BioMap.Pages.Statistics
                   },
                   Stacked = false,
                   Position = Position.Right,
+                  Ticks=new LinearCartesianTicks {
+                    Min=0,
+                  },
                 },
             }
           },
