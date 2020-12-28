@@ -38,24 +38,43 @@
   </tbody>
 </table>
 
+@if (SD.CurrentUser.Level>=500) {
+  <Button Color="Color.Primary" Clicked="@(async (e)=>DownloadCsv_Clicked())">Download CSV</Button>
+}
+
 @code {
   private int i = 0;
   private Element[] Elements = new Element[0];
   private PhotoPopup PhotoPopup1;
   protected override void OnInitialized() {
     base.OnInitialized();
-    SD.Filters.FilterChanged+=(sender,ev) =>
-    {
+    SD.Filters.FilterChanged+=(sender,ev) => {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
   }
   private void RefreshData() {
-    this.Elements = Elements = DataService.Instance.GetElements(SD.Filters,"","elements.creationtime DESC");
+    this.Elements = Elements = DS.GetElements(SD.Filters,"","elements.creationtime DESC");
     i=0;
   }
   private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);
+  }
+  private async void DownloadCsv_Clicked() {
+    var sep = "\t";
+    var csv = new System.Text.StringBuilder();
+    csv.Append("ElementName"+sep+"TimeStamp"+sep+"Cat"+sep+"GpsLat"+sep+"GpsLng"+sep+"Place"+"\n");
+    foreach (var el in DS.GetElements(SD.Filters)) {
+      var place = el.GetPlace();
+      csv.Append('"'+el.ElementName+'"');
+      csv.Append(sep+'"'+el.GetIsoDateTime()+'"');
+      csv.Append(sep+'"'+el.GetCategoryNum()+'"');
+      csv.Append(sep+ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat,12));
+      csv.Append(sep+ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng,12));
+      csv.Append(sep+(place==null ? "" : place.Name));
+      csv.Append('\n');
+    }
+    await JSRuntime.InvokeVoidAsync("DownloadTextFile","AllElements.csv",csv.ToString());
   }
 }

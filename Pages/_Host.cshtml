@@ -153,6 +153,16 @@
         }
       }
     }
+    function DownloadTextFile(filename, content) {
+      const file = new File([content], filename, { type: "data:text/csv;charset=utf-8" });
+      const exportUrl = URL.createObjectURL(file);
+      const hiddenElement = document.createElement('a');
+      hiddenElement.href = URL.createObjectURL(file);
+      hiddenElement.target = '_blank';
+      hiddenElement.download = filename;
+      hiddenElement.click();
+      URL.revokeObjectURL(hiddenElement.href);
+    }
   </script>
 </body>
 </html>

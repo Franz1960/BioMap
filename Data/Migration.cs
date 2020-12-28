@@ -237,7 +237,7 @@ namespace BioMap
                   };
                   if (jIndivData["TraitValues"] != null) {
                     var jTraitValues = jIndivData["TraitValues"];
-                    foreach (var jTraitValue in jTraitValues) {
+                    foreach (var jTraitValue in jTraitValues.Children()) {
                       if (jTraitValue is JProperty jProperty) {
                         indivData.TraitValues.Add(jProperty.Name,jTraitValues[jProperty.Name].Value<int>());
                       }
