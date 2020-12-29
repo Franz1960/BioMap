@@ -6,6 +6,7 @@
 @using BioMap
 
 <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Notes" />
+<NotePopup @ref="refNotePopup" />
 
 <h1>@Localize["Notes"]</h1>
 
@@ -45,10 +46,13 @@
     </tr>
   </thead>
   <tbody>
-    @foreach (var pe in ProtocolEntries) {
+    @foreach (var idx in Enumerable.Range(0,ProtocolEntries.Length)) {
       <tr>
-        <td>@pe.CreationTime.ToString("yyyy-MM-dd")<br />@pe.Author</td>
-        <td>@((MarkupString)pe.Text)</td>
+        <td>@ProtocolEntries[idx].CreationTime.ToString("yyyy-MM-dd")<br />@ProtocolEntries[idx].Author</td>
+        <td>
+          @((MarkupString)ProtocolEntries[idx].Text)
+          <Button Float="Float.Right" Color="Color.Light" Clicked="@((e)=>{ refNotePopup.Show(ProtocolEntries[idx]); })"><Icon Name="IconName.Edit"></Icon></Button>
+        </td>
       </tr>
     }
   </tbody>
@@ -56,6 +60,7 @@
 
 @code {
   private int i = 0;
+  private NotePopup refNotePopup;
   private ProtocolEntry[] ProtocolEntries = new ProtocolEntry[0];
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -66,6 +71,6 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.ProtocolEntries = DataService.Instance.GetProtocolEntries(SD.Filters,"","protocol.dt DESC");
+    this.ProtocolEntries = DataService.Instance.GetProtocolEntries(SD.Filters,"","notes.dt DESC");
   }
 }

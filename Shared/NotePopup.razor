@@ -1,0 +1,43 @@
+﻿@inject DataService DS
+@inject SessionData SD
+
+<Modal @ref="modalRef">
+  @*<ModalBackdrop />*@
+  <ModalContent Size="@modalSize" Centered="@centered">
+    <ModalHeader>
+      <ModalTitle>
+        @if (ProtocolEntry!=null) {
+           @ProtocolEntry.CreationTime.ToString("yyyy-MM-dd")<br/>
+           @ProtocolEntry.Author
+        }
+      </ModalTitle>
+      <Buttons Role="ButtonsRole.Toolbar">
+        <Buttons Margin="Margin.Is2.FromRight">
+          <Button Clicked="@((e)=>sizeButtonClicked())"><Icon Name="@sizeButtonIconName" /></Button>
+        </Buttons>
+      </Buttons>
+    </ModalHeader>
+    <ModalBody MaxHeight="@maxHeight">
+      @if (ProtocolEntry!=null) {
+        <MemoEdit @bind-Text="ProtocolEntry.Text" Style="min-height:400px"></MemoEdit>
+      }
+    </ModalBody>
+    <ModalFooter>
+      <Buttons Role="ButtonsRole.Toolbar">
+        <Buttons Margin="Margin.Is2.FromRight">
+          <Button Color="Color.Primary" Clicked="@((e)=>{ DS.AddOrUpdateProtocolEntry(ProtocolEntry);Hide(); })">
+            <Icon Name="IconName.Save" />
+            @Localize["Save"]
+          </Button>
+          <Button Color="Color.Warning" Clicked="@((e)=>{ OrigProtocolEntry=ProtocolEntry;Hide(); })">
+            @Localize["Close without saving"]
+          </Button>
+        </Buttons>
+        <CloseButton Clicked="@((e)=>Hide())" />
+      </Buttons>
+    </ModalFooter>
+  </ModalContent>
+</Modal>
+
+@code{
+}

@@ -70,10 +70,10 @@ namespace BioMap
           "user TEXT," +
           "value TEXT)";
           command.ExecuteNonQuery();
-          command.CommandText = "CREATE TABLE IF NOT EXISTS protocol (" +
+          command.CommandText = "CREATE TABLE IF NOT EXISTS notes (" +
           "dt DATETIME NOT NULL," +
           "author TEXT," +
-          "text TEXT)";
+          "text TEXT,UNIQUE(dt,author))";
           command.ExecuteNonQuery();
           command.CommandText = "CREATE TABLE IF NOT EXISTS log (" +
           "dt DATETIME NOT NULL," +
@@ -650,16 +650,22 @@ namespace BioMap
       }
       return aaIndisByIId;
     }
-    public ProtocolEntry[] GetProtocolEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "protocol.dt",uint nLimit = 0) {
+    public void AddOrUpdateProtocolEntry(ProtocolEntry pe) {
+      this.OperateOnDb((command) => {
+        command.CommandText = "REPLACE INTO notes (dt,author,text) VALUES ('" + ConvInvar.ToString(pe.CreationTime) + "','"+pe.Author+"','"+pe.Text+"')";
+        command.ExecuteNonQuery();
+      });
+    }
+    public ProtocolEntry[] GetProtocolEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "notes.dt",uint nLimit = 0) {
       if (filters!=null) {
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
       }
       var lProtocolEntries = new List<ProtocolEntry>();
       this.OperateOnDb((command) => {
-        command.CommandText = "SELECT protocol.dt" +
-          ",protocol.author" +
-          ",protocol.text" +
-          " FROM protocol" +
+        command.CommandText = "SELECT notes.dt" +
+          ",notes.author" +
+          ",notes.text" +
+          " FROM notes" +
           (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
           (string.IsNullOrEmpty(sSqlOrderBy) ? "" : (" ORDER BY "+sSqlOrderBy+"")) +
           (nLimit==0 ? "" : (" LIMIT "+nLimit+"")) +
@@ -683,7 +689,7 @@ namespace BioMap
       string sSqlCondition = filters.AddAllFiltersToWhereClause("");
       var lProtocolAuthors = new List<string>();
       this.OperateOnDb((command) => {
-        command.CommandText = "SELECT DISTINCT author FROM protocol" +
+        command.CommandText = "SELECT DISTINCT author FROM notes" +
           (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
           "";
         var dr = command.ExecuteReader();
@@ -696,7 +702,7 @@ namespace BioMap
     }
     public void AddLogEntry(string sUser,string sAction) {
       this.OperateOnDb((command) => {
-        command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('now','localtime'),'" + sUser + "','" + sAction + "')";
+        command.CommandText = "INSERT INTO log (dt,user,action) VALUES ('"+ConvInvar.ToString(DateTime.Now)+"','" + sUser + "','" + sAction + "')";
         command.ExecuteNonQuery();
       });
     }

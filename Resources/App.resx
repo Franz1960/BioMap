@@ -402,6 +402,9 @@
   <data name="Reproduction rate" xml:space="preserve">
     <value>Reproduktionsrate</value>
   </data>
+  <data name="Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
   <data name="Save calculated year-of-birth values" xml:space="preserve">
     <value>Berechnete Jahrgänge speichern</value>
   </data>

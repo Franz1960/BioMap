@@ -317,13 +317,13 @@ namespace BioMap
       if (this.FilteringTarget==FilteringTargetEnum.Notes) {
         var user = this.GetUserFunc();
         if (user==null || user.Level<400) {
-          sResult = Filters.AddToWhereClause(sResult,"protocol.author='"+user.EMail+"'");
+          sResult = Filters.AddToWhereClause(sResult,"notes.author='"+user.EMail+"'");
         }
         if (!string.IsNullOrEmpty(this.NotesAuthorFilter)) {
-          sResult = Filters.AddToWhereClause(sResult,"protocol.author LIKE '"+this.NotesAuthorFilter+"'");
+          sResult = Filters.AddToWhereClause(sResult,"notes.author LIKE '"+this.NotesAuthorFilter+"'");
         }
         if (!string.IsNullOrEmpty(this.NotesTextFilter)) {
-          sResult = Filters.AddToWhereClause(sResult,"protocol.text LIKE '%"+this.NotesTextFilter+"%'");
+          sResult = Filters.AddToWhereClause(sResult,"notes.text LIKE '%"+this.NotesTextFilter+"%'");
         }
       }
       return sResult;

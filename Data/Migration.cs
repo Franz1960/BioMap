@@ -87,7 +87,7 @@ namespace BioMap
 
       } catch { }
       #endregion
-      #region protocol
+      #region notes
       try {
         var aFileNames = System.IO.Directory.GetFiles(System.IO.Path.Combine(sMigSrcDir,"protocol"),"protocol_*.json");
         ds.OperateOnDb((command) => {
@@ -96,7 +96,8 @@ namespace BioMap
             var sJson = sr.ReadToEnd();
             var pe = JsonConvert.DeserializeObject<Protocol_t>(sJson);
             sr.Close();
-            command.CommandText = "INSERT INTO protocol (dt,author,text) VALUES ('" + pe.Content.Timestamp + "','" + pe.Content.Author + "','" + pe.Content.Text + "')";
+            var dt = DateTime.Parse(pe.Content.Timestamp);
+            command.CommandText = "INSERT INTO notes (dt,author,text) VALUES ('" + ConvInvar.ToString(dt) + "','" + pe.Content.Author + "','" + pe.Content.Text + "')";
             command.ExecuteNonQuery();
           }
         });
@@ -126,11 +127,11 @@ namespace BioMap
                     User=saLogEntry[2],
                     Action=saLogEntry[3],
                   };
-                  command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('" + saLogEntry[1] + "'),'" + le.User + "','" + le.Action + "')";
+                  command.CommandText = "INSERT INTO log (dt,user,action) VALUES ('"+ConvInvar.ToString(le.CreationTime)+"','" + le.User + "','" + le.Action + "')";
                   command.ExecuteNonQuery();
                 }
               } catch (Exception ex1) {
-                command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('now','localtime'),'" + "Migration" + "','" + "Exception: "+ex1.ToString() + "')";
+                command.CommandText = "INSERT INTO log (dt,user,action) VALUES ('"+ConvInvar.ToString(DateTime.Now)+"','" + "Migration" + "','" + "Exception: "+ex1.ToString() + "')";
                 command.ExecuteNonQuery();
               }
             }
