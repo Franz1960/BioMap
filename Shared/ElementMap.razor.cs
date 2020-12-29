@@ -163,9 +163,9 @@ namespace BioMap.Shared
     }
     private double? PrevRadiusFactor = null;
     private void RefreshRadii() {
-      System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff")+": CallDelayed");
+      //System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff")+": CallDelayed");
       Utilities.CallDelayed(800,()=>{
-        System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff")+": Elapsed");
+        //System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff")+": Elapsed");
         if (this.DynaZoomed) {
           try {
             var bounds = this.googleMap.InteropObject.GetBounds().Result;

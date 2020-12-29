@@ -136,7 +136,7 @@ namespace BioMap.Shared
       }
     }
     public void DelayedStateHasChanged() {
-      Utilities.CallDelayed(300,()=>{
+      Utilities.CallDelayed(900,()=>{
         base.InvokeAsync(StateHasChanged).Wait();
       });
     }
