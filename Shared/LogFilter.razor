@@ -10,9 +10,9 @@
     <Field Horizontal="false">
       <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">@Localize["EMail address"]</FieldLabel>
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-        <Select TValue="string" @bind-SelectedValue="SD.Filters.NotesAuthorFilter">
+        <Select TValue="string" @bind-SelectedValue="SD.Filters.LogUserFilter">
           <SelectItem TValue="string" Value="@("")"></SelectItem>
-          @foreach (var userEMail in DS.GetProtocolAuthors(SD.Filters)) {
+          @foreach (var userEMail in DS.GetLogUsers(SD.Filters)) {
             <SelectItem TValue="string" Value="userEMail">@userEMail</SelectItem>
           }
         </Select>
@@ -23,7 +23,7 @@
     <Field Horizontal="false">
       <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Text"]</FieldLabel>
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
-        <TextEdit @bind-Text="SD.Filters.NotesTextFilter" />
+        <TextEdit @bind-Text="SD.Filters.LogActionFilter" />
       </FieldBody>
     </Field>
   </Column>

@@ -53,11 +53,7 @@
     RefreshData();
   }
   private void RefreshData() {
-    string sCondition = "";
-    if (!LoadAll) {
-      sCondition="dt>'"+(DateTime.Now-TimeSpan.FromDays(60)).ToString("yyyy-MM-dd")+"'";
-    }
-    this.LogEntries = DataService.Instance.GetLogEntries(SD.Filters,sCondition,"log.dt DESC");
+    this.LogEntries = DataService.Instance.GetLogEntries(SD.Filters,"","log.dt DESC",(uint)(this.LoadAll ? 0 : 200));
     StateHasChanged();
   }
 }

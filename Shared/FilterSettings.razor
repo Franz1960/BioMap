@@ -7,42 +7,47 @@
 
 <CardDeck>
   @if (FilteringTarget==Filters.FilteringTargetEnum.Log) {
+    <Card>
+      <CardBody>
+        <LogFilter />
+      </CardBody>
+    </Card>
   } else@if (FilteringTarget==Filters.FilteringTargetEnum.Notes) {
-    <Card>
-      <CardBody>
-        <NotesFilter />
-      </CardBody>
-    </Card>
-  } else {
-    <Card>
-      <CardBody>
-        <DateFilter />
-        <PlaceFilter />
-      </CardBody>
-    </Card>
-    @if (FilteringTarget==Filters.FilteringTargetEnum.Individuals) {
-      <Card>
-        <CardBody>
-          <IndiFilter />
-        </CardBody>
-      </Card>
-      <Card>
-        <CardBody>
-          <GenderFilter />
-          <HibernationsFilter />
-          <OnlyFirstIndiFilter />
-          <OnlyLastIndiFilter />
-        </CardBody>
-      </Card>
-    }
-    @if (FilteringTarget==Filters.FilteringTargetEnum.Elements) {
-      <Card>
-        <CardBody>
-          <CatFilter />
-        </CardBody>
-      </Card>
-    }
-  }
+<Card>
+  <CardBody>
+    <NotesFilter />
+  </CardBody>
+</Card>
+} else {
+<Card>
+  <CardBody>
+    <DateFilter />
+    <PlaceFilter />
+  </CardBody>
+</Card>
+@if (FilteringTarget==Filters.FilteringTargetEnum.Individuals) {
+  <Card>
+    <CardBody>
+      <IndiFilter />
+    </CardBody>
+  </Card>
+  <Card>
+    <CardBody>
+      <GenderFilter />
+      <HibernationsFilter />
+      <OnlyFirstIndiFilter />
+      <OnlyLastIndiFilter />
+    </CardBody>
+  </Card>
+}
+@if (FilteringTarget==Filters.FilteringTargetEnum.Elements) {
+  <Card>
+    <CardBody>
+      <CatFilter />
+    </CardBody>
+  </Card>
+}
+}
 </CardDeck>
 
 @code {

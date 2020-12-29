@@ -156,6 +156,30 @@ namespace BioMap
       }
     }
     private string _CatFilter = "";
+    public string LogUserFilter {
+      get {
+        return this._LogUserFilter;
+      }
+      set {
+        if (value!=this._LogUserFilter) {
+          this._LogUserFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private string _LogUserFilter = "";
+    public string LogActionFilter {
+      get {
+        return this._LogActionFilter;
+      }
+      set {
+        if (value!=this._LogActionFilter) {
+          this._LogActionFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private string _LogActionFilter = "";
     public string NotesAuthorFilter {
       get {
         return this._NotesAuthorFilter;
@@ -283,6 +307,12 @@ namespace BioMap
         if (user==null || user.Level<400) {
           sResult = Filters.AddToWhereClause(sResult,"log.user='"+user.EMail+"'");
         }
+        if (!string.IsNullOrEmpty(this.LogUserFilter)) {
+          sResult = Filters.AddToWhereClause(sResult,"log.user LIKE '"+this.LogUserFilter+"'");
+        }
+        if (!string.IsNullOrEmpty(this.LogActionFilter)) {
+          sResult = Filters.AddToWhereClause(sResult,"log.action LIKE '%"+this.LogActionFilter+"%'");
+        }
       }
       if (this.FilteringTarget==FilteringTargetEnum.Notes) {
         var user = this.GetUserFunc();
@@ -290,7 +320,7 @@ namespace BioMap
           sResult = Filters.AddToWhereClause(sResult,"protocol.author='"+user.EMail+"'");
         }
         if (!string.IsNullOrEmpty(this.NotesAuthorFilter)) {
-          sResult = Filters.AddToWhereClause(sResult,"protocol.author='"+this.NotesAuthorFilter+"'");
+          sResult = Filters.AddToWhereClause(sResult,"protocol.author LIKE '"+this.NotesAuthorFilter+"'");
         }
         if (!string.IsNullOrEmpty(this.NotesTextFilter)) {
           sResult = Filters.AddToWhereClause(sResult,"protocol.text LIKE '%"+this.NotesTextFilter+"%'");

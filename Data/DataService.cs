@@ -650,7 +650,7 @@ namespace BioMap
       }
       return aaIndisByIId;
     }
-    public ProtocolEntry[] GetProtocolEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "protocol.dt") {
+    public ProtocolEntry[] GetProtocolEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "protocol.dt",uint nLimit = 0) {
       if (filters!=null) {
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
       }
@@ -662,6 +662,7 @@ namespace BioMap
           " FROM protocol" +
           (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
           (string.IsNullOrEmpty(sSqlOrderBy) ? "" : (" ORDER BY "+sSqlOrderBy+"")) +
+          (nLimit==0 ? "" : (" LIMIT "+nLimit+"")) +
           "";
         var dr = command.ExecuteReader();
         while (dr.Read()) {
@@ -678,13 +679,28 @@ namespace BioMap
       });
       return lProtocolEntries.ToArray();
     }
+    public string[] GetProtocolAuthors(Filters filters = null) {
+      string sSqlCondition = filters.AddAllFiltersToWhereClause("");
+      var lProtocolAuthors = new List<string>();
+      this.OperateOnDb((command) => {
+        command.CommandText = "SELECT DISTINCT author FROM protocol" +
+          (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read()) {
+          lProtocolAuthors.Add(dr.GetString(0));
+        }
+        dr.Close();
+      });
+      return lProtocolAuthors.ToArray();
+    }
     public void AddLogEntry(string sUser,string sAction) {
       this.OperateOnDb((command) => {
         command.CommandText = "INSERT INTO log (dt,user,action) VALUES (datetime('now','localtime'),'" + sUser + "','" + sAction + "')";
         command.ExecuteNonQuery();
       });
     }
-    public LogEntry[] GetLogEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "log.dt") {
+    public LogEntry[] GetLogEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "log.dt",uint nLimit = 0) {
       if (filters!=null) {
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
       }
@@ -693,6 +709,7 @@ namespace BioMap
         command.CommandText = "SELECT dt,user,action FROM log" +
           (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
           (string.IsNullOrEmpty(sSqlOrderBy) ? "" : (" ORDER BY "+sSqlOrderBy+"")) +
+          (nLimit==0 ? "" : (" LIMIT "+nLimit+"")) +
           "";
         var dr = command.ExecuteReader();
         while (dr.Read()) {
@@ -708,6 +725,21 @@ namespace BioMap
         dr.Close();
       });
       return lLogEntries.ToArray();
+    }
+    public string[] GetLogUsers(Filters filters = null) {
+      string sSqlCondition = filters.AddAllFiltersToWhereClause("");
+      var lLogUsers = new List<string>();
+      this.OperateOnDb((command) => {
+        command.CommandText = "SELECT DISTINCT user FROM log" +
+          (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
+          "";
+        var dr = command.ExecuteReader();
+        while (dr.Read()) {
+          lLogUsers.Add(dr.GetString(0));
+        }
+        dr.Close();
+      });
+      return lLogUsers.ToArray();
     }
   }
 }
