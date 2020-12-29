@@ -1,7 +1,7 @@
 ﻿@inject DataService DS
 @inject SessionData SD
 
-<Modal @ref="modalRef">
+<Modal @ref="modalRef" Closed="OnClosed">
   <ModalBackdrop />
   <ModalContent Size="@modalSize" Centered="@centered">
     <ModalHeader>
@@ -16,7 +16,18 @@
       </Buttons>
     </ModalHeader>
     <ModalBody MaxHeight="@maxHeight">
-      <img src="api/photos/@ElementName" style="max-width:100%;max-height:100%;margin-top:3px;" />
+      @if (Element!=null) {
+        @if (hasPhoto) {
+          <img src="api/photos/@ElementName" style="max-width:100%;max-height:100%;margin-top:3px;" />
+        } else {
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Time"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+              <DateEdit TValue="DateTime" @bind-Date="Element.ElementProp.CreationTime" ReadOnly="@(SD.CurrentUser.Level<500)" />
+            </FieldBody>
+          </Field>
+        }
+      }
       <table class="table">
         <tbody>
           @foreach (var p in Properties) {
@@ -39,13 +50,15 @@
   private bool centered = false;
   private ModalSize modalSize = ModalSize.Default;
   private int? maxHeight = 80;
-  [Parameter]
+  private bool hasPhoto = false;
+  public Element Element { get; private set; } = null;
   public string Title { get; set; }
-  [Parameter]
   public string ElementName { get; set; }
   private Boolean _Show { get; set; }
   private List<string[]> Properties { get; set; } = new List<string[]>();
   public void Show(Element el) {
+    this.hasPhoto=el.HasPhotoData();
+    this.Element=el;
     this.ElementName=el.ElementName;
     this.Title=el.ElementName;
     this.Properties.Clear();
@@ -54,10 +67,12 @@
     }
     this.Properties.Add(new[] { "Cat.",el.GetCategoryNice() });
     this.Properties.Add(new[] { "File name",el.ElementName });
-    this.Properties.Add(new[] { "Time",ConvInvar.ToString(el.ElementProp.CreationTime) });
+    if (hasPhoto) {
+      this.Properties.Add(new[] { "Time",ConvInvar.ToString(el.ElementProp.CreationTime) });
+    }
     this.Properties.Add(new[] { "Uploaded",ConvInvar.ToString(el.ElementProp.UploadInfo.Timestamp) });
     this.Properties.Add(new[] { "by",el.ElementProp.UploadInfo.UserId });
-    if (el.HasPhotoData()) {
+    if (this.hasPhoto) {
       this.Properties.Add(new[] { "Camera",el.ElementProp.ExifData.Make+" / "+el.ElementProp.ExifData.Model });
     }
     if (el.HasIndivData()) {
@@ -67,6 +82,7 @@
         this.Properties.Add(new[] { "Migration distance",ConvInvar.ToDecimalString(dDistance,0)+" m" });
       }
     }
+    this.StateHasChanged();
     this.modalRef.Show();
   }
   public void Hide() {
@@ -79,6 +95,11 @@
     } else {
       this.modalSize=ModalSize.Default;
       this.sizeButtonIconName=IconName.Expand;
+    }
+  }
+  private void OnClosed() {
+    if (this.Element!=null) {
+      DS.WriteElement(this.Element);
     }
   }
 }

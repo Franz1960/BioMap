@@ -245,7 +245,7 @@ namespace BioMap
       return "";
     }
     public bool HasPhotoData() {
-      return (this.ElementProp.ExifData!=null);
+      return (!string.IsNullOrEmpty(this.ElementProp.ExifData?.Make) || !string.IsNullOrEmpty(this.ElementProp.ExifData?.Model));
     }
     public bool HasIndivData() {
       return (this.ElementProp.IndivData!=null);
