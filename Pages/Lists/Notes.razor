@@ -5,58 +5,54 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Notes" />
-<NotePopup @ref="refNotePopup" />
+<NotePopup @ref="refNotePopup" Changed="(pe)=>{ RefreshData();StateHasChanged(); }" />
 
-<h1>@Localize["Notes"]</h1>
-
-@*<DataGrid TItem="ProtocolEntry" Data="ProtocolEntries" Editable="true" EditMode="DataGridEditMode.Inline">
-  <DataGridColumns>
-    <DataGridCommandColumn TItem="ProtocolEntry" Width="170px">
-      <NewCommandTemplate>
-      </NewCommandTemplate>
-      <EditCommandTemplate>
-        <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
-      </EditCommandTemplate>
-      <SaveCommandTemplate>
-        <Button Color="Color.Primary" Clicked="@context.Clicked">Save</Button>
-      </SaveCommandTemplate>
-      <DeleteCommandTemplate>
-        <Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>
-      </DeleteCommandTemplate>
-      <CancelCommandTemplate>
-        <Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Button>
-      </CancelCommandTemplate>
-      <ClearFilterCommandTemplate>
-        <Button Color="Color.Warning" Clicked="@context.Clicked">Clear Filter</Button>
-      </ClearFilterCommandTemplate>
-    </DataGridCommandColumn>
-    <DataGridColumn TItem="ProtocolEntry" Field="@nameof(ProtocolEntry.CreationTime)" Caption="@Localize["Time"]" Sortable="true" />
-    <DataGridColumn TItem="ProtocolEntry" Field="@nameof(ProtocolEntry.Author)" Caption="@Localize["Author"]" Sortable="true" />
-    <DataGridColumn TItem="ProtocolEntry" Field="@nameof(ProtocolEntry.Text)" Caption="@Localize["Text"]" Editable="true">
-    </DataGridColumn>
-  </DataGridColumns>
-</DataGrid>*@
-
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th scope="col">@Localize["Time"]<br />@Localize["Author"]</th>
-      <th scope="col">@Localize["Text"]</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (var idx in Enumerable.Range(0,ProtocolEntries.Length)) {
-      <tr>
-        <td>@ProtocolEntries[idx].CreationTime.ToString("yyyy-MM-dd")<br />@ProtocolEntries[idx].Author</td>
-        <td>
-          @((MarkupString)ProtocolEntries[idx].Text)
-          <Button Float="Float.Right" Color="Color.Light" Clicked="@((e)=>{ refNotePopup.Show(ProtocolEntries[idx]); })"><Icon Name="IconName.Edit"></Icon></Button>
-        </td>
-      </tr>
-    }
-  </tbody>
-</table>
+<Row>
+  <Column>
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Notes" />
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <h1>
+      @Localize["Notes"]
+      <Button Float="Float.Right" Color="Color.Light" Clicked="@((e)=>{ AddProtocolEntry(); })"><Icon Name="IconName.PlusCircle"></Icon></Button>
+    </h1>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Table Class="table-striped">
+      <TableHeader>
+        <TableRow>
+          <TableHeaderCell>
+            <th scope="col">@Localize["Time"]<br />@Localize["Author"]</th>
+          </TableHeaderCell>
+          <TableHeaderCell>
+            <th scope="col">@Localize["Text"]</th>
+          </TableHeaderCell>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        @foreach (var idx in Enumerable.Range(0,ProtocolEntries.Length)) {
+          <TableRow>
+            <TableRowCell>
+              @ProtocolEntries[idx].CreationTime.ToString("yyyy-MM-dd HH:mm:ss")<br />@ProtocolEntries[idx].Author
+            </TableRowCell>
+            <TableRowCell>
+              @((MarkupString)ProtocolEntries[idx].Text)
+              <Button Float="Float.Right" Color="Color.Light" Clicked="@((e)=>{ refNotePopup.Show(ProtocolEntries[idx]); })"><Icon Name="IconName.Edit"></Icon></Button>
+            </TableRowCell>
+          </TableRow>
+        }
+      </TableBody>
+    </Table>
+  </Column>
+</Row>
+<Row>
+  <Column>
+  </Column>
+</Row>
 
 @code {
   private int i = 0;
@@ -72,5 +68,13 @@
   }
   private void RefreshData() {
     this.ProtocolEntries = DataService.Instance.GetProtocolEntries(SD.Filters,"","notes.dt DESC");
+  }
+  private void AddProtocolEntry() {
+    var pe = new ProtocolEntry {
+      CreationTime=DateTime.Now,
+      Author=SD.CurrentUser.EMail,
+      Text="",
+    };
+    refNotePopup.Show(pe);
   }
 }

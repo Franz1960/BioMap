@@ -25,15 +25,16 @@
     <ModalFooter>
       <Buttons Role="ButtonsRole.Toolbar">
         <Buttons Margin="Margin.Is2.FromRight">
-          <Button Color="Color.Primary" Clicked="@((e)=>{ DS.AddOrUpdateProtocolEntry(ProtocolEntry);Hide(); })">
-            <Icon Name="IconName.Save" />
-            @Localize["Save"]
-          </Button>
-          <Button Color="Color.Warning" Clicked="@((e)=>{ OrigProtocolEntry=ProtocolEntry;Hide(); })">
+          <Button Color="Color.Warning" Clicked="@((e)=>{ ProtocolEntry.Text=OrigProtocolEntry.Text;Hide(); })">
             @Localize["Close without saving"]
           </Button>
         </Buttons>
-        <CloseButton Clicked="@((e)=>Hide())" />
+        <Buttons Margin="Margin.Is2.FromRight">
+          <Button Color="Color.Primary" Clicked="@((e)=>{ Save();Hide(); })">
+            <Icon Name="IconName.Save" />
+            @Localize["Save"]
+          </Button>
+        </Buttons>
       </Buttons>
     </ModalFooter>
   </ModalContent>

@@ -12,6 +12,9 @@ namespace BioMap.Shared
 {
   public partial class NotePopup : ComponentBase
   {
+    [Parameter]
+    public EventCallback<ProtocolEntry> Changed { get; set; }
+    //
     private Modal modalRef;
     private IconName sizeButtonIconName = IconName.Expand;
     private bool centered = false;
@@ -36,6 +39,15 @@ namespace BioMap.Shared
     }
     public void Hide() {
       this.modalRef.Hide();
+    }
+    public void Save() {
+      DS.AddOrUpdateProtocolEntry(ProtocolEntry);
+      if (!string.IsNullOrEmpty(OrigProtocolEntry.Text) && string.CompareOrdinal(OrigProtocolEntry.Text,ProtocolEntry.Text)!=0) {
+        DS.AddLogEntry(SD.CurrentUser.EMail,"Note changed. "+ConvInvar.ToString(ProtocolEntry.CreationTime)+" / "+ProtocolEntry.Author+": "+OrigProtocolEntry.Text+" --> "+ProtocolEntry.Text);
+        Changed.InvokeAsync(ProtocolEntry);
+      } else if (string.IsNullOrEmpty(OrigProtocolEntry.Text) && !string.IsNullOrEmpty(ProtocolEntry.Text)) {
+        Changed.InvokeAsync(ProtocolEntry);
+      }
     }
     private void sizeButtonClicked() {
       if (this.modalSize==ModalSize.Large) {
