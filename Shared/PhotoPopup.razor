@@ -1,5 +1,8 @@
 ﻿@inject DataService DS
 @inject SessionData SD
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
 
 <Modal @ref="modalRef" Closed="OnClosed">
   <ModalBackdrop />
@@ -56,9 +59,11 @@
   public string ElementName { get; set; }
   private Boolean _Show { get; set; }
   private List<string[]> Properties { get; set; } = new List<string[]>();
+  private string OrigJson = null;
   public void Show(Element el) {
-    this.hasPhoto=el.HasPhotoData();
     this.Element=el;
+    this.OrigJson=JsonConvert.SerializeObject(el);
+    this.hasPhoto=el.HasPhotoData();
     this.ElementName=el.ElementName;
     this.Title=el.ElementName;
     this.Properties.Clear();
@@ -98,8 +103,12 @@
     }
   }
   private void OnClosed() {
-    if (this.Element!=null) {
-      DS.WriteElement(this.Element);
+    if (this.Element!=null && this.OrigJson!=null) {
+      string sJson = JsonConvert.SerializeObject(this.Element);
+      if (string.CompareOrdinal(sJson,this.OrigJson)!=0) {
+        DS.WriteElement(this.Element);
+        DS.AddLogEntry(SD.CurrentUser.EMail,"Changed element "+this.Element.ElementName+" --> "+sJson);
+      }
     }
   }
 }
