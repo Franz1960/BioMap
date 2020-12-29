@@ -652,7 +652,11 @@ namespace BioMap
     }
     public void AddOrUpdateProtocolEntry(ProtocolEntry pe) {
       this.OperateOnDb((command) => {
-        command.CommandText = "REPLACE INTO notes (dt,author,text) VALUES ('" + ConvInvar.ToString(pe.CreationTime) + "','"+pe.Author+"','"+pe.Text+"')";
+        if (string.IsNullOrEmpty(pe.Text)) {
+          command.CommandText = "DELETE FROM notes WHERE (dt='" + ConvInvar.ToString(pe.CreationTime) + "' AND author='"+pe.Author+"')";
+        } else {
+          command.CommandText = "REPLACE INTO notes (dt,author,text) VALUES ('" + ConvInvar.ToString(pe.CreationTime) + "','"+pe.Author+"','"+pe.Text+"')";
+        }
         command.ExecuteNonQuery();
       });
     }
