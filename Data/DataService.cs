@@ -109,6 +109,7 @@ namespace BioMap
           "markerposlat REAL," +
           "markerposlng REAL," +
           "place TEXT," +
+          "comment TEXT," +
           "uploadtime DATETIME NOT NULL," +
           "uploader TEXT NOT NULL," +
           "creationtime DATETIME NOT NULL)";
@@ -453,7 +454,7 @@ namespace BioMap
     public void WriteElement(Element el) {
       this.OperateOnDb((command) => {
         command.CommandText =
-          "REPLACE INTO elements (name,species_id,project_id,category,markerposlat,markerposlng,place,uploadtime,uploader,creationtime) " +
+          "REPLACE INTO elements (name,species_id,project_id,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
           "VALUES ('" + el.ElementName + "'," +
           (el.SpeciesId.HasValue ? ("'" + ConvInvar.ToString(el.SpeciesId.Value) + "'") : ("NULL")) + "," +
           (el.ProjectId.HasValue ? ("'" + ConvInvar.ToString(el.ProjectId.Value) + "'") : ("NULL")) + "," +
@@ -461,6 +462,7 @@ namespace BioMap
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lat) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lng) +
           "','" + el.ElementProp.MarkerInfo.PlaceName +
+          "','" + el.ElementProp.UploadInfo.Comment +
           "','" + ConvInvar.ToString(el.ElementProp.UploadInfo.Timestamp) +
           "','" + el.ElementProp.UploadInfo.UserId +
           "','" + ConvInvar.ToString(el.ElementProp.CreationTime) +
@@ -557,6 +559,7 @@ namespace BioMap
           ",indivdata.normcirclepos2x" +
           ",indivdata.normcirclepos2y" +
           ",elements.place" +
+          ",elements.comment" +
           " FROM elements" +
           " LEFT JOIN indivdata ON (indivdata.name=elements.name)" +
           " LEFT JOIN photos ON (photos.name=elements.name)" +
@@ -584,6 +587,7 @@ namespace BioMap
                 UploadInfo = new Element.UploadInfo_t {
                   Timestamp = dr.GetDateTime(4),
                   UserId = dr.GetString(5),
+                  Comment = dr.GetString(34),
                 },
                 CreationTime = dr.GetDateTime(6),
               }

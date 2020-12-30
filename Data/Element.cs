@@ -57,6 +57,7 @@ namespace BioMap
     {
       public DateTime Timestamp;
       public string UserId;
+      public string Comment;
     }
     [JsonObject(MemberSerialization.Fields)]
     public class MarkerInfo_t

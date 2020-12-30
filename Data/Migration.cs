@@ -260,6 +260,7 @@ namespace BioMap
                     UploadInfo=new Element.UploadInfo_t {
                       Timestamp = jel["ElementProp"]["UploadInfo"]["Timestamp"].Value<DateTime>(),
                       UserId = jel["ElementProp"]["UploadInfo"]["UserId"].Value<string>(),
+                      Comment = (jel["ElementProp"]["UploadInfo"]["Comment"]==null) ? "" : jel["ElementProp"]["UploadInfo"]["Comment"].Value<string>(),
                     },
                     ExifData = exifData,
                     IndivData = indivData,
