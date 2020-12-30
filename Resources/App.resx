@@ -318,6 +318,9 @@
   <data name="Load all" xml:space="preserve">
     <value>Alle laden</value>
   </data>
+  <data name="Located element" xml:space="preserve">
+    <value>Ortselement</value>
+  </data>
   <data name="Log" xml:space="preserve">
     <value>Protokoll</value>
   </data>

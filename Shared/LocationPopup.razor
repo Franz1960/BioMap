@@ -1,14 +1,14 @@
 ﻿@inject DataService DS
 @inject SessionData SD
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@inherits AreaMap
 
-<Modal @ref="modalRef">
+<Modal @ref="modalRef" Closed="@((e)=>{ Closed.InvokeAsync(Location); })">
   <ModalContent Size="@modalSize" Centered="@centered">
     <ModalHeader>
       <ModalTitle>
-        @if (ProtocolEntry!=null) {
-           @ProtocolEntry.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")<br/>
-           @ProtocolEntry.Author
-        }
+        @Localize["Select location"]
       </ModalTitle>
       <Buttons Role="ButtonsRole.Toolbar">
         <Buttons Margin="Margin.Is2.FromRight">
@@ -16,20 +16,13 @@
         </Buttons>
       </Buttons>
     </ModalHeader>
-    <ModalBody MaxHeight="@maxHeight">
-      @if (ProtocolEntry!=null) {
-        <MemoEdit @bind-Text="ProtocolEntry.Text" Style="min-height:400px"></MemoEdit>
-      }
+    <ModalBody MaxHeight="@maxHeight" Style="min-height:600px;">
+      <GoogleMapsComponents.GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="600px"></GoogleMapsComponents.GoogleMap>
     </ModalBody>
     <ModalFooter>
       <Buttons Role="ButtonsRole.Toolbar">
         <Buttons Margin="Margin.Is2.FromRight">
-          <Button Color="Color.Warning" Clicked="@((e)=>{ ProtocolEntry.Text=OrigProtocolEntry.Text;Hide(); })">
-            @Localize["Close without saving"]
-          </Button>
-        </Buttons>
-        <Buttons Margin="Margin.Is2.FromRight">
-          <Button Color="Color.Primary" Clicked="@((e)=>{ Save();Hide(); })">
+          <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save();Hide(); })">
             <Icon Name="IconName.Save" />
             @Localize["Save"]
           </Button>

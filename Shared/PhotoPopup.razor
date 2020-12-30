@@ -30,6 +30,22 @@
             </FieldBody>
           </Field>
         }
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Cat."]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+            <Select @bind-SelectedValue="Element.ElementProp.MarkerInfo.category" ReadOnly="@(SD.CurrentUser.Level<500)">
+              @foreach (var category in Element.Category.AllCategories) {
+                <SelectItem Value="category.Num">@category.Num - @category.Name</SelectItem>
+              }
+            </Select>
+          </FieldBody>
+        </Field>
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Comment"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+            <MemoEdit @bind-Text="Element.ElementProp.UploadInfo.Comment" ReadOnly="@(SD.CurrentUser.Level<500)" />
+          </FieldBody>
+        </Field>
       }
       <table class="table">
         <tbody>
@@ -43,11 +59,25 @@
       </table>
     </ModalBody>
     <ModalFooter>
+      @*<Buttons Role="ButtonsRole.Toolbar">
+        <Buttons Margin="Margin.Is2.FromRight">
+          <Button Color="Color.Warning" Clicked="@((e)=>{ Hide(); })">
+            @Localize["Close without saving"]
+          </Button>
+        </Buttons>
+        <Buttons Margin="Margin.Is2.FromRight">
+          <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save();Hide(); })">
+            <Icon Name="IconName.Save" />
+            @Localize["Save"]
+          </Button>
+        </Buttons>
+      </Buttons>*@
     </ModalFooter>
   </ModalContent>
 </Modal>
 
 @code{
+  //
   private Modal modalRef;
   private IconName sizeButtonIconName = IconName.Expand;
   private bool centered = false;
@@ -70,7 +100,6 @@
     if (el.HasIndivData() && el.HasMeasuredData()) {
       this.Properties.Add(new[] { "Individual","<b>"+el.GetIId()+"</b> ("+el.GetGender()+" / "+el.GetHeadBodyLengthNice()+" / "+el.GetPlace().Name+")" });
     }
-    this.Properties.Add(new[] { "Cat.",el.GetCategoryNice() });
     this.Properties.Add(new[] { "File name",el.ElementName });
     if (hasPhoto) {
       this.Properties.Add(new[] { "Time",ConvInvar.ToString(el.ElementProp.CreationTime) });

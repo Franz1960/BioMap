@@ -571,8 +571,10 @@ namespace BioMap
           try {
             var sElementName = dr.GetString(0);
             DateTime dtDateTimeOriginal = dr.GetDateTime(4);
-            var sDateTimeOriginal = dr.GetString(9);
-            DateTime.TryParse(sDateTimeOriginal,out dtDateTimeOriginal);
+            var oDateTimeOriginal = dr.GetValue(9);
+            if (oDateTimeOriginal is string sDateTimeOriginal) {
+              DateTime.TryParse(sDateTimeOriginal,out dtDateTimeOriginal);
+            }
             var el = new Element {
               ElementName = sElementName,
               ElementProp = new Element.ElementProp_t {
