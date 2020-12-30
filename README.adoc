@@ -2,6 +2,6 @@
 
 Map based biological monitoring
 
-BioMap is a one page web application based  on server side Blazor. It uses the https://github.com/stsrki/Blazorise[Blazorise] and https://github.com/mariusmuntean/ChartJs.Blazor[ChartJs.Blazor] libraries.
+BioMap is a one page web application based  on server side Blazor. It uses the https://github.com/stsrki/Blazorise[Blazorise], https://github.com/rungwiroon/BlazorGoogleMaps[BlazorGoogleMaps] and https://github.com/mariusmuntean/ChartJs.Blazor[ChartJs.Blazor] libraries.
 
 The web app has been developed for a nature protection project in Germany. The population of yellow-bellied toads (bombina variegata) is studied in a forest area in Bavaria and observed over a longer period of time. By regularly catching and identifying toads, growth and migration movements of individuals are recorded. The results are processed numerically and graphically.
