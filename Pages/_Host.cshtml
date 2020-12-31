@@ -1,4 +1,7 @@
 ﻿@page "/"
+@using System.Globalization
+@using Microsoft.AspNetCore.Localization
+@inject SessionData SD
 @namespace BioMap.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -6,7 +9,7 @@
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@this.HttpContext.Request.Cookies["lang"]">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,6 +44,22 @@
   </app>
 
   <div id="app"></div>
+
+  @{
+    var currentCulture = CultureInfo.CurrentCulture;
+    var currentUICulture = CultureInfo.CurrentUICulture;
+    var sLang = this.HttpContext.Request.Cookies["lang"];
+    if (!string.IsNullOrEmpty(sLang)) {
+      currentCulture = CultureInfo.CurrentCulture = new CultureInfo(sLang);
+      currentUICulture = CultureInfo.CurrentUICulture = new CultureInfo(sLang);
+    }
+    this.HttpContext.Response.Cookies.Append(
+        CookieRequestCultureProvider.DefaultCookieName,
+        CookieRequestCultureProvider.MakeCookieValue(
+            new RequestCulture(
+                currentCulture,
+                currentUICulture)));
+  }
 
   <!-- inside of body section and after the div/app tag  -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

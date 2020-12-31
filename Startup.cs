@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Localization;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
@@ -34,6 +36,19 @@ namespace BioMap
       services.AddSingleton<DataService>();
       services.AddScoped<SessionData>();
       services.AddLocalization(options => options.ResourcesPath = "Resources");
+      services.Configure<RequestLocalizationOptions>(options =>
+        {
+            // Define the list of cultures your app will support
+            var supportedCultures = new List<CultureInfo>()
+            {
+                new CultureInfo("en"),
+                new CultureInfo("de")
+            };
+            // Set the default culture
+            options.DefaultRequestCulture = new RequestCulture("en");
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
+        });
       services.AddControllers();
       services
       .AddBlazorise(options =>
@@ -64,6 +79,8 @@ namespace BioMap
       app.UseStaticFiles();
 
       app.UseRouting();
+
+      app.UseRequestLocalization(app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value);
 
       app.UseEndpoints(endpoints =>
       {

@@ -1,0 +1,471 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="A list of categories, e.g. '100,140-169,320,330' or '!350,351' if negated." xml:space="preserve">
+    <value>Eine Liste von Kategorien, z.B. '100,140-169,320,330' oder '!350,351' wenn negiert.</value>
+  </data>
+  <data name="A list of individuals, e.g. '60', '3-9,57,58,59,60' or '!42' if negated." xml:space="preserve">
+    <value>Eine Liste von Individuen, z.B. '60', '3-9,57,58,59,60' oder '!42', falls verneint.</value>
+  </data>
+  <data name="A list of places, e.g. 'B2,B3,C1' or '!B1,M1' if negated." xml:space="preserve">
+    <value>Eine Liste von Plätzen, z.B. 'B2,B3,C1' oder '!B1,M1' zum Negieren.</value>
+  </data>
+  <data name="Access level" xml:space="preserve">
+    <value>Zugangsstufe</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Aktion</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Hinzufügen</value>
+  </data>
+  <data name="Add Image" xml:space="preserve">
+    <value>Foto hinzufügen</value>
+  </data>
+  <data name="Administration" xml:space="preserve">
+    <value>Verwaltung</value>
+  </data>
+  <data name="Adults" xml:space="preserve">
+    <value>Adulti</value>
+  </data>
+  <data name="Adults from 38 mm" xml:space="preserve">
+    <value>Adulti ab 38 mm</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="All Elements" xml:space="preserve">
+    <value>Alle Elemente</value>
+  </data>
+  <data name="All Images" xml:space="preserve">
+    <value>Alle Bilder</value>
+  </data>
+  <data name="All Individuals" xml:space="preserve">
+    <value>Alle Individuen</value>
+  </data>
+  <data name="All Years" xml:space="preserve">
+    <value>Alle Jahre</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Autor</value>
+  </data>
+  <data name="By place" xml:space="preserve">
+    <value>Nach Ort</value>
+  </data>
+  <data name="ByCategories" xml:space="preserve">
+    <value>Nach Kategorien</value>
+  </data>
+  <data name="Cat." xml:space="preserve">
+    <value>Kat.</value>
+  </data>
+  <data name="Catch numbers over time" xml:space="preserve">
+    <value>Fangzahlen / Zeit</value>
+  </data>
+  <data name="Catch numbers per month" xml:space="preserve">
+    <value>Fangzahlen pro Monat</value>
+  </data>
+  <data name="Catches" xml:space="preserve">
+    <value>Fänge</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Kategorie</value>
+  </data>
+  <data name="Category filter" xml:space="preserve">
+    <value>Kategorie-Filter</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="Close without saving" xml:space="preserve">
+    <value>Schließen ohne speichern</value>
+  </data>
+  <data name="Conditions" xml:space="preserve">
+    <value>Bedingungen</value>
+  </data>
+  <data name="Confirm TAN" xml:space="preserve">
+    <value>TAN bestätigen</value>
+  </data>
+  <data name="Counted are all the different individuals who fulfill the conditions at least once in the respective period." xml:space="preserve">
+    <value>Gezählt werden alle verschiedenen Individuen,die im jeweiligen Zeitraum mindestens einmal die Bedingungen erfüllen.</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Diagrams" xml:space="preserve">
+    <value>Diagramme</value>
+  </data>
+  <data name="Different Individuals" xml:space="preserve">
+    <value>Verschiedene Individuen</value>
+  </data>
+  <data name="Distance" xml:space="preserve">
+    <value>Distanz</value>
+  </data>
+  <data name="Dyn. zoom" xml:space="preserve">
+    <value>Dyn. Zoom</value>
+  </data>
+  <data name="Edit AOI" xml:space="preserve">
+    <value>AOI bearbeiten</value>
+  </data>
+  <data name="EMail address" xml:space="preserve">
+    <value>EMail-Adresse</value>
+  </data>
+  <data name="Exclude fresh born" xml:space="preserve">
+    <value>Ohne Hüpferlinge</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>Weiblich</value>
+  </data>
+  <data name="Female and male" xml:space="preserve">
+    <value>Weiblich und männlich</value>
+  </data>
+  <data name="Female and other" xml:space="preserve">
+    <value>Weiblich und sonstige</value>
+  </data>
+  <data name="Fire-bellied toad" xml:space="preserve">
+    <value>Rotbauchunke</value>
+  </data>
+  <data name="Fit growing curves" xml:space="preserve">
+    <value>Wachstumskurven fitten</value>
+  </data>
+  <data name="Fit visible area" xml:space="preserve">
+    <value>Anzeigebereich anpassen</value>
+  </data>
+  <data name="Frequency by Place / Time Chart" xml:space="preserve">
+    <value>Häufigkeit nach Ort / Zeit Diagramm</value>
+  </data>
+  <data name="from" xml:space="preserve">
+    <value>von</value>
+  </data>
+  <data name="Full name" xml:space="preserve">
+    <value>Vor- und Nachname</value>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>Geschlecht</value>
+  </data>
+  <data name="Hatchlings" xml:space="preserve">
+    <value>Hüpferlinge</value>
+  </data>
+  <data name="Head-body-length of all catches" xml:space="preserve">
+    <value>Kopf-Rumpf-Länge aller Fänge</value>
+  </data>
+  <data name="Hibernations" xml:space="preserve">
+    <value>Überwinterungen</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Startseite</value>
+  </data>
+  <data name="I confirm that I have read and agree with the privacy policy." xml:space="preserve">
+    <value>Ich bestätige, dass ich die Datenschutzerklärung zur Kenntnis genommen habe und damit einverstanden bin.</value>
+  </data>
+  <data name="ID Cards" xml:space="preserve">
+    <value>Passbilder</value>
+  </data>
+  <data name="ID Cards by Places" xml:space="preserve">
+    <value>Passbilder nach Orten</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Bild</value>
+  </data>
+  <data name="Impressum" xml:space="preserve">
+    <value>Impressum</value>
+  </data>
+  <data name="Include single catches" xml:space="preserve">
+    <value>Einzelfänge einschließen</value>
+  </data>
+  <data name="Individuals" xml:space="preserve">
+    <value>Individuen</value>
+  </data>
+  <data name="Insert TAN" xml:space="preserve">
+    <value>TAN eingeben</value>
+  </data>
+  <data name="Juveniles" xml:space="preserve">
+    <value>Juvenile</value>
+  </data>
+  <data name="Known individuals" xml:space="preserve">
+    <value>Bekannte Individuen</value>
+  </data>
+  <data name="Latitude" xml:space="preserve">
+    <value>Breitengrad</value>
+  </data>
+  <data name="Length" xml:space="preserve">
+    <value>Länge</value>
+  </data>
+  <data name="Length / Time Chart" xml:space="preserve">
+    <value>Längen-Zeit-Diagramm</value>
+  </data>
+  <data name="Lists" xml:space="preserve">
+    <value>Listen</value>
+  </data>
+  <data name="Load all" xml:space="preserve">
+    <value>Alle laden</value>
+  </data>
+  <data name="Located element" xml:space="preserve">
+    <value>Ortselement</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>Protokoll</value>
+  </data>
+  <data name="Longitude" xml:space="preserve">
+    <value>Längengrad</value>
+  </data>
+  <data name="Male" xml:space="preserve">
+    <value>Männlich</value>
+  </data>
+  <data name="Male and other" xml:space="preserve">
+    <value>Männlich und sonstige</value>
+  </data>
+  <data name="Map" xml:space="preserve">
+    <value>Karte</value>
+  </data>
+  <data name="Maps" xml:space="preserve">
+    <value>Karten</value>
+  </data>
+  <data name="Migration" xml:space="preserve">
+    <value>Migration</value>
+  </data>
+  <data name="Migration distances" xml:space="preserve">
+    <value>Wanderdistanzen</value>
+  </data>
+  <data name="Missed individuals" xml:space="preserve">
+    <value>Vermisste Individuen</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Monat</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="New individuals" xml:space="preserve">
+    <value>Neue Individuen</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notizen</value>
+  </data>
+  <data name="Numbers / Year of Birth Chart" xml:space="preserve">
+    <value>Anzahl-Jahrgang-Diagramm</value>
+  </data>
+  <data name="Only first image" xml:space="preserve">
+    <value>Nur erstes Bild</value>
+  </data>
+  <data name="Only fresh born" xml:space="preserve">
+    <value>Nur Hüpferlinge</value>
+  </data>
+  <data name="Only last image" xml:space="preserve">
+    <value>Nur letztes Bild</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Sonstige</value>
+  </data>
+  <data name="Other elements" xml:space="preserve">
+    <value>Sonstige Elemente</value>
+  </data>
+  <data name="Other photos and local news" xml:space="preserve">
+    <value>Sonstige Fotos und Ortsmeldungen</value>
+  </data>
+  <data name="Pictures" xml:space="preserve">
+    <value>Bilder</value>
+  </data>
+  <data name="Place" xml:space="preserve">
+    <value>Ort</value>
+  </data>
+  <data name="Place filter" xml:space="preserve">
+    <value>Platzfilter</value>
+  </data>
+  <data name="Places" xml:space="preserve">
+    <value>Orte</value>
+  </data>
+  <data name="Precipitation" xml:space="preserve">
+    <value>Niederschlag</value>
+  </data>
+  <data name="Recaptures" xml:space="preserve">
+    <value>Wiederfänge</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Registrieren</value>
+  </data>
+  <data name="Reproduction" xml:space="preserve">
+    <value>Fortpflanzung</value>
+  </data>
+  <data name="Reproduction rate" xml:space="preserve">
+    <value>Reproduktionsrate</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="Save calculated year-of-birth values" xml:space="preserve">
+    <value>Berechnete Jahrgänge speichern</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Auswählen</value>
+  </data>
+  <data name="Select one or more. Negate by switch." xml:space="preserve">
+    <value>Einen oder mehrere auswählen. Mit Schalter Auswahl umkehren.</value>
+  </data>
+  <data name="Show details" xml:space="preserve">
+    <value>Details anzeigen</value>
+  </data>
+  <data name="Show growing curves" xml:space="preserve">
+    <value>Wachstumskurven anzeigen</value>
+  </data>
+  <data name="Show movements" xml:space="preserve">
+    <value>Wanderungen anzeigen</value>
+  </data>
+  <data name="Show places" xml:space="preserve">
+    <value>Orte anzeigen</value>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Statistik</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Zusammenfassung</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>Temperatur</value>
+  </data>
+  <data name="Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Zeit</value>
+  </data>
+  <data name="to" xml:space="preserve">
+    <value>bis</value>
+  </data>
+  <data name="Totals" xml:space="preserve">
+    <value>Gesamtzahlen</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Benutzer</value>
+  </data>
+  <data name="User Management" xml:space="preserve">
+    <value>Benutzerverwaltung</value>
+  </data>
+  <data name="Vintage" xml:space="preserve">
+    <value>Jahrgang</value>
+  </data>
+  <data name="Welcome to BioMap!" xml:space="preserve">
+    <value>Willkommen bei BioMap!</value>
+  </data>
+  <data name="Yellow-bellied toad" xml:space="preserve">
+    <value>Gelbbauchunke</value>
+  </data>
+</root>
