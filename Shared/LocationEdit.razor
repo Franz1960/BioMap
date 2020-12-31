@@ -1,0 +1,10 @@
+﻿@inject DataService DS
+@inject SessionData SD
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@inherits AreaMap
+
+<GoogleMapsComponents.GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" OnAfterInit="@OnAfterInitAsync" Height="600px"></GoogleMapsComponents.GoogleMap>
+
+@code{
+}

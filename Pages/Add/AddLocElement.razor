@@ -1,37 +1,65 @@
 ﻿@page "/Add/LocElement"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
 @inject DataService DS
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
 @using BioMap.Shared
 
-<h1>@Localize["Located element"]</h1>
-
-<LocationPopup @ref="LocationPopupRef" Closed="@((e)=>{ LocationPopup_Closed(e); })" />
-<PhotoPopup @ref="PhotoPopupRef" />
+<Row>
+  <Column>
+    <h1>@Localize["Located element"]</h1>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <ElementEdit @ref="ElementEditRef" Edit="true" />
+  </Column>
+  <Column>
+    <LocationEdit @ref="LocationEditRef" LocationChanged="@(async (e)=>{ await LocationEdit_LocationChanged(e); })" />
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Buttons Role="ButtonsRole.Toolbar">
+      <Buttons Margin="Margin.Is2.FromRight">
+        <Button Color="Color.Primary" Clicked="@((e)=>{ Save();CreateNewElement(); })">
+          <Icon Name="IconName.Save" />
+          @Localize["Save"]
+        </Button>
+      </Buttons>
+    </Buttons>
+  </Column>
+</Row>
 
 @code {
-  private LocationPopup LocationPopupRef;
-  private PhotoPopup PhotoPopupRef;
-
+  private LocationEdit LocationEditRef;
+  private ElementEdit ElementEditRef;
+  //
+  protected override async Task OnInitializedAsync() {
+    await base.OnInitializedAsync();
+  }
   protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
     if (firstRender) {
-      LocationPopupRef.Show();
+      this.CreateNewElement();
     }
   }
-  private async Task LocationPopup_Closed(GoogleMapsComponents.Maps.LatLngLiteral latLngLiteral) {
+  private async Task LocationEdit_LocationChanged(GoogleMapsComponents.Maps.LatLngLiteral latLngLiteral) {
+    var el = this.ElementEditRef.Element;
+    el.ElementProp.MarkerInfo.position=new LatLng { lat=latLngLiteral.Lat,lng=latLngLiteral.Lng };
+    el.ElementProp.MarkerInfo.PlaceName=Place.GetNearestPlace(el.ElementProp.MarkerInfo.position).Name;
+    this.StateHasChanged();
+  }
+  private void CreateNewElement() {
     var el = new Element {
       ElementName="LOC_"+DateTime.Now.ToString("yyyyMMddTHHmmssZ"),
       ElementProp=new Element.ElementProp_t {
         CreationTime=DateTime.Now,
         MarkerInfo=new Element.MarkerInfo_t {
           category=100,
-          position=new LatLng {
-            lat=latLngLiteral.Lat,
-            lng=latLngLiteral.Lng,
-          }
         },
         UploadInfo=new Element.UploadInfo_t {
           UserId=SD.CurrentUser.EMail,
@@ -40,7 +68,16 @@
         },
       }
     };
-    el.ElementProp.MarkerInfo.PlaceName=Place.GetNearestPlace(el.ElementProp.MarkerInfo.position).Name;
-    this.PhotoPopupRef.Show(el);
+    this.ElementEditRef.Element=el;
+    if (this.LocationEditRef?.Location!=null) {
+      this.LocationEdit_LocationChanged(this.LocationEditRef.Location).Wait();
+    }
+  }
+  private void Save() {
+    if (this.ElementEditRef.EditingChangedContent()) {
+      DS.WriteElement(this.ElementEditRef.Element);
+      string sJson = JsonConvert.SerializeObject(this.ElementEditRef.Element);
+      DS.AddLogEntry(SD.CurrentUser.EMail,"Changed element "+this.ElementEditRef.Element.ElementName+" --> "+sJson);
+    }
   }
 }

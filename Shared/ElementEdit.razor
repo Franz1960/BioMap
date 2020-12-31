@@ -18,7 +18,7 @@
   <Field Horizontal="true">
     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Cat."]</FieldLabel>
     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
-      <Select @bind-SelectedValue="Element.ElementProp.MarkerInfo.category" ReadOnly="@(!Edit)">
+      <Select @bind-SelectedValue="Element.ElementProp.MarkerInfo.category" Disabled="@(!Edit)">
         @foreach (var category in Element.Category.AllCategories) {
           <SelectItem Value="category.Num">@category.Num - @category.Name</SelectItem>
         }
