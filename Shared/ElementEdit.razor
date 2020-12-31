@@ -1,0 +1,48 @@
+﻿@inject DataService DS
+@inject SessionData SD
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
+
+@if (Element!=null) {
+  @if (hasPhoto) {
+    <img src="api/photos/@Element.ElementName" style="max-width:100%;max-height:100%;margin-top:3px;" />
+  } else {
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Time"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+        <DateEdit TValue="DateTime" @bind-Date="Element.ElementProp.CreationTime" ReadOnly="@(!Edit)" />
+      </FieldBody>
+    </Field>
+  }
+  <Field Horizontal="true">
+    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Cat."]</FieldLabel>
+    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+      <Select @bind-SelectedValue="Element.ElementProp.MarkerInfo.category" ReadOnly="@(!Edit)">
+        @foreach (var category in Element.Category.AllCategories) {
+          <SelectItem Value="category.Num">@category.Num - @category.Name</SelectItem>
+        }
+      </Select>
+    </FieldBody>
+  </Field>
+  <Field Horizontal="true">
+    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Comment"]</FieldLabel>
+    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+      <MemoEdit @bind-Text="Element.ElementProp.UploadInfo.Comment" ReadOnly="@(!Edit)" />
+    </FieldBody>
+  </Field>
+}
+<table class="table">
+  <tbody>
+    @foreach (var p in Properties) {
+      <tr>
+        <td>@((MarkupString)p[0])</td>
+        <td>@((MarkupString)p[1])</td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+@code{
+  //
+}

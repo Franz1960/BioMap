@@ -19,59 +19,22 @@
       </Buttons>
     </ModalHeader>
     <ModalBody MaxHeight="@maxHeight">
-      @if (Element!=null) {
-        @if (hasPhoto) {
-          <img src="api/photos/@ElementName" style="max-width:100%;max-height:100%;margin-top:3px;" />
-        } else {
-          <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Time"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
-              <DateEdit TValue="DateTime" @bind-Date="Element.ElementProp.CreationTime" ReadOnly="@(SD.CurrentUser.Level<500)" />
-            </FieldBody>
-          </Field>
-        }
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Cat."]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
-            <Select @bind-SelectedValue="Element.ElementProp.MarkerInfo.category" ReadOnly="@(SD.CurrentUser.Level<500)">
-              @foreach (var category in Element.Category.AllCategories) {
-                <SelectItem Value="category.Num">@category.Num - @category.Name</SelectItem>
-              }
-            </Select>
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Comment"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
-            <MemoEdit @bind-Text="Element.ElementProp.UploadInfo.Comment" ReadOnly="@(SD.CurrentUser.Level<500)" />
-          </FieldBody>
-        </Field>
-      }
-      <table class="table">
-        <tbody>
-          @foreach (var p in Properties) {
-            <tr>
-              <td>@((MarkupString)p[0])</td>
-              <td>@((MarkupString)p[1])</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+      <ElementEdit @ref="ElementEditRef" Edit="@(SD.CurrentUser.Level>=500)" />
     </ModalBody>
     <ModalFooter>
       @*<Buttons Role="ButtonsRole.Toolbar">
-        <Buttons Margin="Margin.Is2.FromRight">
-          <Button Color="Color.Warning" Clicked="@((e)=>{ Hide(); })">
-            @Localize["Close without saving"]
-          </Button>
-        </Buttons>
-        <Buttons Margin="Margin.Is2.FromRight">
-          <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save();Hide(); })">
-            <Icon Name="IconName.Save" />
-            @Localize["Save"]
-          </Button>
-        </Buttons>
-      </Buttons>*@
+          <Buttons Margin="Margin.Is2.FromRight">
+            <Button Color="Color.Warning" Clicked="@((e)=>{ Hide(); })">
+              @Localize["Close without saving"]
+            </Button>
+          </Buttons>
+          <Buttons Margin="Margin.Is2.FromRight">
+            <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save();Hide(); })">
+              <Icon Name="IconName.Save" />
+              @Localize["Save"]
+            </Button>
+          </Buttons>
+        </Buttons>*@
     </ModalFooter>
   </ModalContent>
 </Modal>
@@ -79,43 +42,17 @@
 @code{
   //
   private Modal modalRef;
+  private ElementEdit ElementEditRef;
   private IconName sizeButtonIconName = IconName.Expand;
   private bool centered = false;
   private ModalSize modalSize = ModalSize.Default;
   private int? maxHeight = 80;
-  private bool hasPhoto = false;
-  public Element Element { get; private set; } = null;
   public string Title { get; set; }
   public string ElementName { get; set; }
-  private Boolean _Show { get; set; }
-  private List<string[]> Properties { get; set; } = new List<string[]>();
-  private string OrigJson = null;
   public void Show(Element el) {
-    this.Element=el;
-    this.OrigJson=JsonConvert.SerializeObject(el);
-    this.hasPhoto=el.HasPhotoData();
+    this.ElementEditRef.Element=el;
     this.ElementName=el.ElementName;
     this.Title=el.ElementName;
-    this.Properties.Clear();
-    if (el.HasIndivData() && el.HasMeasuredData()) {
-      this.Properties.Add(new[] { "Individual","<b>"+el.GetIId()+"</b> ("+el.GetGender()+" / "+el.GetHeadBodyLengthNice()+" / "+el.GetPlace().Name+")" });
-    }
-    this.Properties.Add(new[] { "File name",el.ElementName });
-    if (hasPhoto) {
-      this.Properties.Add(new[] { "Time",ConvInvar.ToString(el.ElementProp.CreationTime) });
-    }
-    this.Properties.Add(new[] { "Uploaded",ConvInvar.ToString(el.ElementProp.UploadInfo.Timestamp) });
-    this.Properties.Add(new[] { "by",el.ElementProp.UploadInfo.UserId });
-    if (this.hasPhoto) {
-      this.Properties.Add(new[] { "Camera",el.ElementProp.ExifData.Make+" / "+el.ElementProp.ExifData.Model });
-    }
-    if (el.HasIndivData()) {
-      var els = DS.GetElements(null,"indivdata.iid='"+el.GetIId()+"' AND elements.creationtime<'"+el.GetIsoDateTime()+"'","elements.creationtime DESC");
-      if (els.Length>=1) {
-        double dDistance = GeoCalculator.GetDistance(els[0].ElementProp.MarkerInfo.position,el.ElementProp.MarkerInfo.position);
-        this.Properties.Add(new[] { "Migration distance",ConvInvar.ToDecimalString(dDistance,0)+" m" });
-      }
-    }
     this.StateHasChanged();
     this.modalRef.Show();
   }
@@ -132,12 +69,10 @@
     }
   }
   private void OnClosed() {
-    if (this.Element!=null && this.OrigJson!=null) {
-      string sJson = JsonConvert.SerializeObject(this.Element);
-      if (string.CompareOrdinal(sJson,this.OrigJson)!=0) {
-        DS.WriteElement(this.Element);
-        DS.AddLogEntry(SD.CurrentUser.EMail,"Changed element "+this.Element.ElementName+" --> "+sJson);
-      }
+    if (this.ElementEditRef.EditingChangedContent()) {
+      DS.WriteElement(this.ElementEditRef.Element);
+      string sJson = JsonConvert.SerializeObject(this.ElementEditRef.Element);
+      DS.AddLogEntry(SD.CurrentUser.EMail,"Changed element "+this.ElementEditRef.Element.ElementName+" --> "+sJson);
     }
   }
 }
