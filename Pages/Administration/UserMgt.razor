@@ -80,29 +80,6 @@
     </Card>
   </Column>
 </Row>
-<Row>
-  <Column>
-    <Card Margin="Margin.Is4.OnY">
-      <CardHeader>
-        <CardTitle>@Localize["Preferences"]</CardTitle>
-      </CardHeader>
-      <CardBody>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
-            @Localize["Language"]
-          </FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-            <Buttons Role="ButtonsRole.Toolbar">
-              @foreach (var lang in new[] { "en-US","de-DE" }) {
-                <Button Color="(string.CompareOrdinal(CurrentCulture,lang)==0)?Color.Primary:Color.Light" Clicked="@(async (e)=>{ await SetCulture(lang); })">@lang</Button>
-              }
-            </Buttons>
-          </FieldBody>
-        </Field>
-      </CardBody>
-    </Card>
-  </Column>
-</Row>
 @if (SD.CurrentUser.MaySeeOtherUsers) {
   <Row>
     <Column>
@@ -182,14 +159,6 @@
     }
     StateHasChanged();
   }
-  private async Task SetCulture(string sCulture) {
-    if (sCulture != null) {
-      await JSRuntime.InvokeVoidAsync("setCookie",new[] { "lang",sCulture });
-      this.CurrentCulture=sCulture;
-      StateHasChanged();
-    }
-  }
-  private string CurrentCulture = "";
   private User[] AllUsers = new User[0];
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -199,11 +168,6 @@
   protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
     if (firstRender) {
-      var sCurrentCulture = await JSRuntime.InvokeAsync<string>("getCookie","lang");
-      if (string.CompareOrdinal(sCurrentCulture,this.CurrentCulture)!=0) {
-        this.CurrentCulture = await JSRuntime.InvokeAsync<string>("getCookie","lang");
-        StateHasChanged();
-      }
     }
   }
   private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {

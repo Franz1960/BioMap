@@ -9,7 +9,7 @@
 }
 
 <!DOCTYPE html>
-<html lang="@this.HttpContext.Request.Cookies["lang"]">
+<html lang="@CultureInfo.CurrentCulture.Name">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -46,19 +46,12 @@
   <div id="app"></div>
 
   @{
-    var currentCulture = CultureInfo.CurrentCulture;
-    var currentUICulture = CultureInfo.CurrentUICulture;
-    var sLang = this.HttpContext.Request.Cookies["lang"];
-    if (!string.IsNullOrEmpty(sLang)) {
-      currentCulture = CultureInfo.CurrentCulture = new CultureInfo(sLang);
-      currentUICulture = CultureInfo.CurrentUICulture = new CultureInfo(sLang);
-    }
     this.HttpContext.Response.Cookies.Append(
         CookieRequestCultureProvider.DefaultCookieName,
         CookieRequestCultureProvider.MakeCookieValue(
             new RequestCulture(
-                currentCulture,
-                currentUICulture)));
+                CultureInfo.CurrentCulture,
+                CultureInfo.CurrentUICulture)));
   }
 
   <!-- inside of body section and after the div/app tag  -->
