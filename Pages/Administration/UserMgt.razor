@@ -138,10 +138,12 @@
   private async void RequestTAN_Clicked() {
     if (validations.ValidateAll()) {
       validations.ClearAll();
-      await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserId",SD.CurrentUser.EMail?.Trim() });
-      TanRequested=DS.RequestTAN(SD.CurrentUser.EMail?.Trim(),SD.CurrentUser.FullName?.Trim());
+      var sEMail=SD.CurrentUser.EMail?.Trim().ToLowerInvariant();
+      SD.CurrentUser.EMail=sEMail;
+      await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserId",sEMail });
+      TanRequested=DS.RequestTAN(sEMail,SD.CurrentUser.FullName?.Trim());
       if (TanRequested) {
-        DS.AddLogEntry(SD.CurrentUser.EMail,"TAN requested.");
+        DS.AddLogEntry(sEMail,"TAN requested.");
       }
     }
     StateHasChanged();

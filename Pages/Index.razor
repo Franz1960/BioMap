@@ -42,8 +42,13 @@
       bool bAnyChanged = false;
       try {
         var sEMail = await JSRuntime.InvokeAsync<string>("getCookie","UserId");
+        var sUserId = sEMail.Trim().ToLowerInvariant();
+        if (string.CompareOrdinal(sEMail,sUserId)!=0) {
+          await JSRuntime.InvokeAsync<string>("setCookie","UserId",sUserId);
+          sEMail=sUserId;
+        }
         if (string.CompareOrdinal(sEMail,SD.CurrentUser.EMail)!=0) {
-          SD.CurrentUser.EMail = await JSRuntime.InvokeAsync<string>("getCookie","UserId");
+          SD.CurrentUser.EMail = sEMail;
           bAnyChanged=true;
         }
         var sUserPermTicket = await JSRuntime.InvokeAsync<string>("getCookie","UserPermTicket");
