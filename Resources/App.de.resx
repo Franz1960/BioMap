@@ -435,6 +435,9 @@
   <data name="Show places" xml:space="preserve">
     <value>Orte anzeigen</value>
   </data>
+  <data name="Show vintage boundaries" xml:space="preserve">
+    <value>Jahrgangsgrenzen anzeigen</value>
+  </data>
   <data name="Statistics" xml:space="preserve">
     <value>Statistik</value>
   </data>

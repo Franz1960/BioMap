@@ -75,6 +75,11 @@ namespace BioMap.Pages.Diagrams
       };
       RefreshData();
     }
+    private void CheckBoxShowVintageBoundaries_CheckedChanged(ChangeEventArgs e) {
+      SD.SizeTimeChartShowVintageBoundaries=bool.Parse(e.Value.ToString());
+      RefreshData();
+      base.InvokeAsync(StateHasChanged);
+    }
     private void CheckBoxShowGrowingCurves_CheckedChanged(ChangeEventArgs e) {
       SD.SizeTimeChartShowGrowingCurves=bool.Parse(e.Value.ToString());
       RefreshData();
@@ -100,34 +105,35 @@ namespace BioMap.Pages.Diagrams
       var aaIndisByIId = DS.GetIndividuals(SD.Filters);
       _config.Data.Datasets.Clear();
       // Ideale Wachstumskurven hinzufügen.
-      for (int nYoB = 2012;nYoB<2021;nYoB++) {
-        string sYobColor = Element.GetColorForYearOfBirth(nYoB);
-        var lineSet = new LineDataset<TimePoint> {
-          BackgroundColor = ColorUtil.FromDrawingColor(System.Drawing.Color.White),
-          BorderWidth = 4,
-          BorderDash= new[] { 10,5 },
-          PointHoverBorderWidth = 4,
-          BorderColor = sYobColor,
-          PointRadius = 0,
-          CubicInterpolationMode = CubicInterpolationMode.Monotone,
-          Fill=FillingMode.Disabled,
-          //ShowLine = true,
-        };
-        var fg = new GrowthFunc() {
-          DateOfBirth=new DateTime(nYoB,1,1)+TimeSpan.FromDays(GrowthFunc.SeasonStartDay-GrowthFunc.MaxAddDaysInFirstSeason),
-        };
-        for (var dt = dtProjectStart;dt<new DateTime(DateTime.Now.Year,11,1);dt+=TimeSpan.FromDays(7)) {
-          try {
-            var l = fg.GetSize(dt);
-            if (l > 10) {
-              lineSet.Add(new TimePoint(dt,l));
-            }
-          } catch { }
+      if (SD.SizeTimeChartShowVintageBoundaries) {
+        for (int nYoB = 2012;nYoB<2021;nYoB++) {
+          string sYobColor = Element.GetColorForYearOfBirth(nYoB);
+          var lineSet = new LineDataset<TimePoint> {
+            BackgroundColor = ColorUtil.FromDrawingColor(System.Drawing.Color.White),
+            BorderWidth = 4,
+            BorderDash= new[] { 10,5 },
+            PointHoverBorderWidth = 4,
+            BorderColor = sYobColor,
+            PointRadius = 0,
+            CubicInterpolationMode = CubicInterpolationMode.Monotone,
+            Fill=FillingMode.Disabled,
+            //ShowLine = true,
+          };
+          var fg = new GrowthFunc() {
+            DateOfBirth=new DateTime(nYoB,1,1)+TimeSpan.FromDays(GrowthFunc.SeasonStartDay-GrowthFunc.MaxAddDaysInFirstSeason),
+          };
+          for (var dt = dtProjectStart;dt<new DateTime(DateTime.Now.Year,11,1);dt+=TimeSpan.FromDays(7)) {
+            try {
+              var l = fg.GetSize(dt);
+              if (l > 10) {
+                lineSet.Add(new TimePoint(dt,l));
+              }
+            } catch { }
+          }
+          if (lineSet.Data.Count>=2) {
+            _config.Data.Datasets.Add(lineSet);
+          }
         }
-        if (lineSet.Data.Count>=2) {
-          _config.Data.Datasets.Add(lineSet);
-        }
-      }
 #if trueX
 // Kurvenschar hinzufügen.
 for (var dtB = new DateTime(2012,1,1);dtB.Year<2021;dtB+=TimeSpan.FromDays(7)) {
@@ -159,6 +165,7 @@ if (lineSet.Data.Count>=2) {
 }
 }
 #endif
+      }
       // Wachstumskurven der Individuen hinzufügen.
       foreach (var idx in aaIndisByIId.Keys) {
         try {
