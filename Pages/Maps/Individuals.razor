@@ -17,6 +17,9 @@
     <Button Color="Color.Primary" Clicked="async ()=>await FitBounds()">@Localize["Fit visible area"]</Button>
   </Column>
   <Column>
+    <CheckBox Checked="ShowCustomMap" CheckedChanged="@((e)=>{ ShowCustomMap=e; })" LabelText=@Localize["Show custom map"] />
+  </Column>
+  <Column>
     <CheckBox Checked="ShowPlaces" CheckedChanged="(e)=>ShowPlaces=e" LabelText=@Localize["Show places"] />
   </Column>
   <Column>

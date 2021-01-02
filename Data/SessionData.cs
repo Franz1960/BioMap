@@ -14,6 +14,7 @@ namespace BioMap
        this.Filters = new Filters(()=>CurrentUser);
     }
     public User CurrentUser { get; } = new User();
+    public bool ShowCustomMap { get; set; }
     public Filters Filters { get; }
     public bool SizeTimeChartShowGrowingCurves { get; set; } = true;
     public bool SizeTimeChartIncludeSinglePoints { get; set; } = true;

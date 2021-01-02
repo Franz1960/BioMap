@@ -31,6 +31,16 @@ namespace BioMap.Shared
     }
     private bool _ShowPlaces = true;
     private bool? PrevShowPlaces = null;
+    [Parameter]
+    public bool ShowCustomMap {
+      get {
+        return SD.ShowCustomMap;
+      }
+      set {
+        SD.ShowCustomMap=value;
+        this.DelayedStateHasChanged();
+      }
+    }
     //
     protected GoogleMap googleMap;
     protected MapOptions mapOptions;
@@ -39,6 +49,7 @@ namespace BioMap.Shared
     //
     private CircleList placeCircleList = null;
     private MarkerList placeMarkerList = null;
+    private GroundOverlay customMapOverlay = null;
     //
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
@@ -58,6 +69,7 @@ namespace BioMap.Shared
         while (googleMap.InteropObject==null) {
           await Task.Delay(100);
         }
+        #region Add area of interest.
         try {
           var sJson = System.IO.File.ReadAllText(DS.DataDir + "conf/aoi.json");
           var vertices = JsonConvert.DeserializeObject<LatLngLiteral[]>(sJson);
@@ -82,7 +94,29 @@ namespace BioMap.Shared
             await this.googleMap.InteropObject.FitBounds(this.aoiBounds,OneOf.OneOf<int,Padding>.FromT0(5));
           }
         } catch { }
+        #endregion
+        #region Add custom map.
+        try {
+          var sFilePathJson = DS.DataDir + "conf/MapImageBounds.json";
+          var sFilePathMapImage = DS.DataDir + "conf/MapImage.jpg";
+          if (System.IO.File.Exists(sFilePathJson) && System.IO.File.Exists(sFilePathMapImage)) {
+            var sJson = System.IO.File.ReadAllText(sFilePathJson);
+            var bounds = JsonConvert.DeserializeObject<LatLngLiteral[]>(sJson);
+            customMapOverlay = await GroundOverlay.CreateAsync(
+              googleMap.JsRuntime,
+              "data/conf/MapImage.jpg",
+              new LatLngBoundsLiteral(bounds[0],bounds[1]),
+              new GroundOverlayOptions {
+                Opacity = 01,
+            });
+          }
+        } catch { }
+        #endregion
       }
+      if (customMapOverlay!=null) {
+        await customMapOverlay.SetMap(ShowCustomMap ? googleMap.InteropObject : null);
+      }
+      #region Add places.
       {
         bool bShowPlaces = (this.ShowPlaces && SD.CurrentUser.Level>=400);
         if (!this.PrevShowPlaces.HasValue || bShowPlaces!=this.PrevShowPlaces) {
@@ -123,6 +157,7 @@ namespace BioMap.Shared
           this.placesBounds = bounds;
         }
       }
+      #endregion
     }
     protected virtual async Task FitBounds() {
       if (this.placesBounds==null || this.placesBounds.IsEmpty()) {
