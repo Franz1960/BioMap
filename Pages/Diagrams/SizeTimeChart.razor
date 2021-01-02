@@ -11,37 +11,44 @@
 @using ChartJs.Blazor.LineChart
 @using ChartJs.Blazor.Util
 
-<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
-
-<h1>@Localize["Length / Time Chart"]</h1>
-
-<div class="container">
-  <div class="row">
-    <div class="col">
-      <CheckBox Checked="@SD.SizeTimeChartShowVintageBoundaries" LabelText=@Localize["Show vintage boundaries"] OnAnyChangedCallback="@CheckBoxShowVintageBoundaries_CheckedChanged" />
-    </div>
-    <div class="col">
-      <Field Horizontal="true">
-        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Show growing curves"]</FieldLabel>
-        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
-          <Select TValue="string" SelectedValue="@SD.SizeTimeChartGrowingCurveMode" SelectedValueChanged="@((e)=>{ GrowingCurveMode_SelectedValueChanged(e); })">
-            <SelectItem TValue="string" Value="@("-")">-</SelectItem>
-            <SelectItem TValue="string" Value="@("Linear")">Linear</SelectItem>
-            <SelectItem TValue="string" Value="@("Spline")">Spline</SelectItem>
-            <SelectItem TValue="string" Value="@("GrowingCurve")">@Localize["Growing curve"]</SelectItem>
-          </Select>
-        </FieldBody>
-      </Field>
-    </div>
-    <div class="col">
-      @if (string.CompareOrdinal(SD.SizeTimeChartGrowingCurveMode,"GrowingCurve")==0) {
-        <Button Color="Color.Primary" Disabled="SD.CurrentUser.Level<600" @onclick="async ()=>await OnSaveYoBClick()">@Localize["Calculate and save metamorphosis time"]</Button>
-      }
-    </div>
-  </div>
-</div>
-
-<Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+<Row>
+  <Column>
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <h1>@Localize["Length / Time Chart"]</h1>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <CheckBox Checked="@SD.SizeTimeChartShowVintageBoundaries" LabelText=@Localize["Show vintage boundaries"] OnAnyChangedCallback="@CheckBoxShowVintageBoundaries_CheckedChanged" />
+  </Column>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Show growing curves"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+        <Select TValue="string" SelectedValue="@SD.SizeTimeChartGrowingCurveMode" SelectedValueChanged="@((e)=>{ GrowingCurveMode_SelectedValueChanged(e); })">
+          <SelectItem TValue="string" Value="@("-")">-</SelectItem>
+          <SelectItem TValue="string" Value="@("Linear")">Linear</SelectItem>
+          <SelectItem TValue="string" Value="@("Spline")">Spline</SelectItem>
+          <SelectItem TValue="string" Value="@("GrowingCurve")">@Localize["Growing curve"]</SelectItem>
+        </Select>
+      </FieldBody>
+    </Field>
+  </Column>
+  <Column>
+    @if (string.CompareOrdinal(SD.SizeTimeChartGrowingCurveMode,"GrowingCurve")==0) {
+      <Button Color="Color.Primary" Disabled="SD.CurrentUser.Level<600" @onclick="async ()=>await OnSaveYoBClick()">@Localize["Calculate and save metamorphosis time"]</Button>
+    }
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+  </Column>
+</Row>
 
 <Modal @ref="progressModalRef">
   <ModalContent Centered="true">
