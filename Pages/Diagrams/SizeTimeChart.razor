@@ -21,24 +21,39 @@
       <CheckBox Checked="@SD.SizeTimeChartShowVintageBoundaries" LabelText=@Localize["Show vintage boundaries"] OnAnyChangedCallback="@CheckBoxShowVintageBoundaries_CheckedChanged" />
     </div>
     <div class="col">
-      <CheckBox Checked="@SD.SizeTimeChartShowGrowingCurves" LabelText=@Localize["Show growing curves"] OnAnyChangedCallback="@CheckBoxShowGrowingCurves_CheckedChanged" />
+      <Field Horizontal="true">
+        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Show growing curves"]</FieldLabel>
+        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+          <Select TValue="string" SelectedValue="@SD.SizeTimeChartGrowingCurveMode" SelectedValueChanged="@((e)=>{ GrowingCurveMode_SelectedValueChanged(e); })">
+            <SelectItem TValue="string" Value="@("-")">-</SelectItem>
+            <SelectItem TValue="string" Value="@("Linear")">Linear</SelectItem>
+            <SelectItem TValue="string" Value="@("Spline")">Spline</SelectItem>
+            <SelectItem TValue="string" Value="@("GrowingCurve")">@Localize["Growing curve"]</SelectItem>
+          </Select>
+        </FieldBody>
+      </Field>
     </div>
     <div class="col">
-      @if (SD.SizeTimeChartShowGrowingCurves) {
-        <CheckBox Checked="@SD.SizeTimeChartIncludeSinglePoints" LabelText=@Localize["Include single catches"] OnAnyChangedCallback="@CheckBoxIncludeSinglePoints_CheckedChanged" />
-      }
-    </div>
-    <div class="col">
-      @if (SD.SizeTimeChartShowGrowingCurves) {
-        <CheckBox Checked="@SD.SizeTimeChartFit" LabelText=@Localize["Fit growing curves"] OnAnyChangedCallback="@CheckBoxFit_CheckedChanged" />
-      }
-    </div>
-    <div class="col">
-      @if (SD.SizeTimeChartFit && SD.SizeTimeChartIncludeSinglePoints) {
-        <Button Color="Color.Primary" Disabled="SD.CurrentUser.Level<600" @onclick="()=>OnSaveYoBClick()">@Localize["Save calculated year-of-birth values"]</Button>
+      @if (string.CompareOrdinal(SD.SizeTimeChartGrowingCurveMode,"GrowingCurve")==0) {
+        <Button Color="Color.Primary" Disabled="SD.CurrentUser.Level<600" @onclick="async ()=>await OnSaveYoBClick()">@Localize["Calculate and save metamorphosis time"]</Button>
       }
     </div>
   </div>
 </div>
 
 <Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+
+<Modal @ref="progressModalRef">
+  <ModalContent Centered="true">
+    <ModalHeader>
+      <ModalTitle>
+        @Localize["Operation in progress.."]
+      </ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+      <Progress Margin="Margin.Is3.FromBottom">
+        <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
+      </Progress>
+    </ModalBody>
+  </ModalContent>
+</Modal>

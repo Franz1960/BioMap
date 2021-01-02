@@ -171,6 +171,9 @@
   <data name="ByCategories" xml:space="preserve">
     <value>Nach Kategorien</value>
   </data>
+  <data name="Calculate and save metamorphosis time" xml:space="preserve">
+    <value>Metamorphosezeitpunkte berechnen und speichern</value>
+  </data>
   <data name="Cat." xml:space="preserve">
     <value>Kat.</value>
   </data>
@@ -260,6 +263,9 @@
   </data>
   <data name="Gender" xml:space="preserve">
     <value>Geschlecht</value>
+  </data>
+  <data name="Growing curve" xml:space="preserve">
+    <value>Wachstumskurve</value>
   </data>
   <data name="Hatchlings" xml:space="preserve">
     <value>Hüpferlinge</value>
@@ -372,6 +378,9 @@
   <data name="Only last image" xml:space="preserve">
     <value>Nur letztes Bild</value>
   </data>
+  <data name="Operation in progress.." xml:space="preserve">
+    <value>Vorgang läuft..</value>
+  </data>
   <data name="Other" xml:space="preserve">
     <value>Sonstige</value>
   </data>
@@ -410,9 +419,6 @@
   </data>
   <data name="Save" xml:space="preserve">
     <value>Speichern</value>
-  </data>
-  <data name="Save calculated year-of-birth values" xml:space="preserve">
-    <value>Berechnete Jahrgänge speichern</value>
   </data>
   <data name="Select" xml:space="preserve">
     <value>Auswählen</value>

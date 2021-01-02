@@ -17,8 +17,6 @@ namespace BioMap
     public bool ShowCustomMap { get; set; }
     public Filters Filters { get; }
     public bool SizeTimeChartShowVintageBoundaries { get; set; } = true;
-    public bool SizeTimeChartShowGrowingCurves { get; set; } = true;
-    public bool SizeTimeChartIncludeSinglePoints { get; set; } = true;
-    public bool SizeTimeChartFit { get; set; } = false;
+    public string SizeTimeChartGrowingCurveMode { get; set; } = "GrowingCurve";
   }
 }

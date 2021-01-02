@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Blazorise;
 using GoogleMapsComponents;
 using ChartJs.Blazor;
 using ChartJs.Blazor.Util;
@@ -30,7 +31,8 @@ namespace BioMap.Pages.Diagrams
     //
     private LineConfig _config;
     private Chart _chartJs;
-    private bool SaveYoB = false;
+    private Modal progressModalRef;
+    private int progressCompletion=0;
 
     protected override void OnInitialized() {
       base.OnInitialized();
@@ -80,25 +82,95 @@ namespace BioMap.Pages.Diagrams
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     }
-    private void CheckBoxShowGrowingCurves_CheckedChanged(ChangeEventArgs e) {
-      SD.SizeTimeChartShowGrowingCurves=bool.Parse(e.Value.ToString());
+    private void GrowingCurveMode_SelectedValueChanged(string e) {
+      SD.SizeTimeChartGrowingCurveMode=e;
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     }
-    private void CheckBoxFit_CheckedChanged(ChangeEventArgs e) {
-      SD.SizeTimeChartFit=bool.Parse(e.Value.ToString());
+    private async Task OnSaveYoBClick() {
+      progressCompletion=0;
+      progressModalRef.Show();
+      await Task.Run(()=>{
+        try {
+          var aaIndisByIId = DS.GetIndividuals(SD.Filters);
+          foreach (var idx in aaIndisByIId.Keys) {
+            try {
+              progressCompletion=((idx+1)*100)/aaIndisByIId.Count;
+              this.InvokeAsync(()=>{ StateHasChanged(); });
+              // Wachstumskurve.
+              DateTime? dtFittedYearOfBirth = null;
+              var lsf = new LeastSquareFit();
+              if (aaIndisByIId[idx].Count>=1) {
+                DateTime? dtDateOfBirth = null;
+                var ldaPoints = new List<double[]>();
+                foreach (var el in aaIndisByIId[idx]) {
+                  try {
+                    var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
+                    if (l!=0) {
+                      double t = Utilities.Years_from_DateTime(el.ElementProp.CreationTime);
+                      ldaPoints.Add(new double[] { t,l });
+                      dtDateOfBirth=el.ElementProp.IndivData?.DateOfBirth;
+                    }
+                  } catch { }
+                }
+                if (ldaPoints.Count>=1) {
+                  var dtFirstPoint = Utilities.DateTime_from_Years(ldaPoints[0][0]);
+                  double? dMinYear = null;
+                  var dFirstLength = ldaPoints[0][1];
+                  var dtEarliestHatchTimeInFirstYear = new DateTime(dtFirstPoint.Year,1,1)+TimeSpan.FromDays(GrowthFunc.SeasonStartDay-GrowthFunc.MaxAddDaysInFirstSeason);
+                  double dMaxLengthFirstYear = GrowthFunc.GetSizeForNetGrowingTime(((double)(dtFirstPoint-dtEarliestHatchTimeInFirstYear).Days)/GrowthFunc.SeasonLengthDays);
+                  if (dFirstLength<dMaxLengthFirstYear) {
+                    dMinYear = Utilities.Years_from_DateTime(new DateTime(dtFirstPoint.Year,1,1)+TimeSpan.FromDays(GrowthFunc.SeasonStartDay-GrowthFunc.MaxAddDaysInFirstSeason));
+                  }
+                  if (!dMinYear.HasValue) {
+                    dMinYear=dtFirstPoint.Year-9;
+                  }
+                  double dMaxYear = Utilities.Years_from_DateTime(dtFirstPoint);
+                  lsf.Optimize(
+                    new double[][] { new double[] { dMinYear.Value,dMaxYear } },
+                    ldaPoints.ToArray(),
+                    (daParams,daaPoints) => {
+                      double dyTimeOfBirth = daParams[0];
+                      var fg = new GrowthFunc() {
+                        DateOfBirth=Utilities.DateTime_from_Years(dyTimeOfBirth),
+                      };
+                      //System.Diagnostics.Debug.Write(fg.DateOfBirth.ToString()+": ");
+                      double dDevSum = 0;
+                        for (int i = 0;i<daaPoints.Length;i++) {
+                          double dyTime = daaPoints[i][0];
+                          double lReal = daaPoints[i][1];
+                          double lCalc = fg.GetSize(dyTime);
+                          double dDev = lReal-lCalc;
+                          dDevSum+=(dDev*dDev);
+                        //System.Diagnostics.Debug.Write(" Dev="+ConvInvar.ToDecimalString(dDev,5));
+                      }
+                      //System.Diagnostics.Debug.WriteLine(" DevSum="+ConvInvar.ToDecimalString(dDevSum,5));
+                      return dDevSum;
+                    },
+                    -0.02,
+                    0.0001,
+                    out double[] daBestParams,
+                    LeastSquareFit.Method.Directed);
+                  dtFittedYearOfBirth = Utilities.DateTime_from_Years(daBestParams[0]);
+                  {
+                    foreach (var el in aaIndisByIId[idx].ToArray()) {
+                      try {
+                        el.ElementProp.IndivData.DateOfBirth=dtFittedYearOfBirth.Value;
+                        DS.WriteElement(el);
+                      } catch { }
+                    }
+                  }
+                  dtDateOfBirth=dtFittedYearOfBirth.Value;
+                }
+              }
+            } catch { }
+          }
+        } finally {
+          this.InvokeAsync(()=>{  progressModalRef.Hide(); StateHasChanged(); });
+        }
+      });
       RefreshData();
-      base.InvokeAsync(StateHasChanged);
-    }
-    private void CheckBoxIncludeSinglePoints_CheckedChanged(ChangeEventArgs e) {
-      SD.SizeTimeChartIncludeSinglePoints=bool.Parse(e.Value.ToString());
-      RefreshData();
-      base.InvokeAsync(StateHasChanged);
-    }
-    private void OnSaveYoBClick() {
-      this.SaveYoB=true;
-      RefreshData();
-      base.InvokeAsync(StateHasChanged);
+      await base.InvokeAsync(StateHasChanged);
     }
     private void RefreshData() {
       var dtProjectStart = DS.ProjectStart;
@@ -122,7 +194,7 @@ namespace BioMap.Pages.Diagrams
           var fg = new GrowthFunc() {
             DateOfBirth=new DateTime(nYoB,1,1)+TimeSpan.FromDays(GrowthFunc.SeasonStartDay-GrowthFunc.MaxAddDaysInFirstSeason),
           };
-          for (var dt = dtProjectStart;dt<new DateTime(DateTime.Now.Year,11,1);dt+=TimeSpan.FromDays(7)) {
+          for (var dt = dtProjectStart;dt<new DateTime((DateTime.Now-TimeSpan.FromDays(100)).Year,11,1);dt+=TimeSpan.FromDays(7)) {
             try {
               var l = fg.GetSize(dt);
               if (l > 10) {
@@ -169,9 +241,9 @@ if (lineSet.Data.Count>=2) {
       // Wachstumskurven der Individuen hinzufügen.
       foreach (var idx in aaIndisByIId.Keys) {
         try {
-          if (SD.SizeTimeChartShowGrowingCurves) {
-            // Gefittete Wachstumskurve.
-            bool bIncludeSinglePoints = (SD.SizeTimeChartIncludeSinglePoints);
+          if (string.CompareOrdinal(SD.SizeTimeChartGrowingCurveMode,"GrowingCurve")==0) {
+            // Wachstumskurve.
+            bool bIncludeSinglePoints = true;
             DateTime? dtFittedYearOfBirth = null;
             var lsf = new LeastSquareFit();
             if (aaIndisByIId[idx].Count>=(bIncludeSinglePoints ? 1 : 2)) {
@@ -188,55 +260,6 @@ if (lineSet.Data.Count>=2) {
                 } catch { }
               }
               if (ldaPoints.Count>=(bIncludeSinglePoints ? 1 : 2)) {
-                if (SD.SizeTimeChartFit) {
-                  var dtFirstPoint = Utilities.DateTime_from_Years(ldaPoints[0][0]);
-                  double? dMinYear = null;
-                  var dFirstLength = ldaPoints[0][1];
-                  var dtEarliestHatchTimeInFirstYear = new DateTime(dtFirstPoint.Year,1,1)+TimeSpan.FromDays(GrowthFunc.SeasonStartDay-GrowthFunc.MaxAddDaysInFirstSeason);
-                  double dMaxLengthFirstYear = GrowthFunc.GetSizeForNetGrowingTime(((double)(dtFirstPoint-dtEarliestHatchTimeInFirstYear).Days)/GrowthFunc.SeasonLengthDays);
-                  if (dFirstLength<dMaxLengthFirstYear) {
-                    dMinYear = Utilities.Years_from_DateTime(new DateTime(dtFirstPoint.Year,1,1)+TimeSpan.FromDays(GrowthFunc.SeasonStartDay-GrowthFunc.MaxAddDaysInFirstSeason));
-                  }
-                  if (!dMinYear.HasValue) {
-                    dMinYear=dtFirstPoint.Year-9;
-                  }
-                  double dMaxYear = Utilities.Years_from_DateTime(dtFirstPoint);
-                  lsf.Optimize(
-                    new double[][] { new double[] { dMinYear.Value,dMaxYear } },
-                    ldaPoints.ToArray(),
-                    (daParams,daaPoints) => {
-                      double dyTimeOfBirth = daParams[0];
-                      var fg = new GrowthFunc() {
-                        DateOfBirth=Utilities.DateTime_from_Years(dyTimeOfBirth),
-                      };
-                    //System.Diagnostics.Debug.Write(fg.DateOfBirth.ToString()+": ");
-                    double dDevSum = 0;
-                      for (int i = 0;i<daaPoints.Length;i++) {
-                        double dyTime = daaPoints[i][0];
-                        double lReal = daaPoints[i][1];
-                        double lCalc = fg.GetSize(dyTime);
-                        double dDev = lReal-lCalc;
-                        dDevSum+=(dDev*dDev);
-                      //System.Diagnostics.Debug.Write(" Dev="+ConvInvar.ToDecimalString(dDev,5));
-                    }
-                    //System.Diagnostics.Debug.WriteLine(" DevSum="+ConvInvar.ToDecimalString(dDevSum,5));
-                    return dDevSum;
-                    },
-                    -0.02,
-                    0.0001,
-                    out double[] daBestParams,
-                    LeastSquareFit.Method.Directed);
-                  dtFittedYearOfBirth = Utilities.DateTime_from_Years(daBestParams[0]);
-                  if (this.SaveYoB) {
-                    foreach (var el in aaIndisByIId[idx].ToArray()) {
-                      try {
-                        el.ElementProp.IndivData.DateOfBirth=dtFittedYearOfBirth.Value;
-                        DS.WriteElement(el);
-                      } catch { }
-                    }
-                  }
-                  dtDateOfBirth=dtFittedYearOfBirth.Value;
-                }
                 var growthFunc = new GrowthFunc() {
                   DateOfBirth=dtDateOfBirth.Value,
                 };
@@ -301,7 +324,7 @@ if (lineSet.Data.Count>=2) {
             }
           } else {
             // Interpolation durch Datenpunkte.
-            string sYobColor = aaIndisByIId[idx][0].GetColorForYearOfBirth();
+            string sYobColor = "rgba(100,100,100,0.5)";
             var lineSet = new LineDataset<TimePoint> {
               BackgroundColor = sYobColor,
               BorderWidth = 2,
@@ -312,6 +335,11 @@ if (lineSet.Data.Count>=2) {
               CubicInterpolationMode = CubicInterpolationMode.Monotone,
               //ShowLine = true,
             };
+            if (string.CompareOrdinal(SD.SizeTimeChartGrowingCurveMode,"-")==0) {
+              lineSet.ShowLine=false;
+            } else if (string.CompareOrdinal(SD.SizeTimeChartGrowingCurveMode,"Linear")==0) {
+              lineSet.LineTension=0;
+            }
             foreach (var el in aaIndisByIId[idx]) {
               try {
                 var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
@@ -327,7 +355,6 @@ if (lineSet.Data.Count>=2) {
         } catch {
         }
       }
-      this.SaveYoB=false;
     }
   }
 }
