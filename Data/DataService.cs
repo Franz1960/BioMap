@@ -12,6 +12,8 @@ namespace BioMap
   {
     public readonly DateTime ProjectStart = new DateTime(2019,4,1);
     public readonly double ProjectArea = 3139.5;
+    public readonly double ProjectCenterLat = 49.054052;
+    public readonly double ProjectCenterLng = 12.217661;
     public DataService() {
       DataService.Instance = this;
     }
@@ -352,12 +354,26 @@ namespace BioMap
     #region Places.
     private Place[] AllPlaces;
     private string[] PrevAllPlaces = null;
+    private System.Numerics.Matrix3x2 AlienationTransformation {
+      get {
+        if (!this._AlienationTransformation.HasValue) {
+          var m1=System.Numerics.Matrix3x2.CreateTranslation((float)(-ProjectCenterLng),(float)(-ProjectCenterLat));
+          var m2=System.Numerics.Matrix3x2.CreateRotation(-0.33f);
+          var m2a=System.Numerics.Matrix3x2.CreateSkew(0f,0.25f);
+          var m2b=System.Numerics.Matrix3x2.CreateTranslation(-0.0005f,-0.0013f);
+          var m3=System.Numerics.Matrix3x2.CreateScale(0.99f,0.95f);
+          System.Numerics.Matrix3x2.Invert(m1,out var m4);
+          this._AlienationTransformation=m1*m2*m2a*m2b*m3*m4;
+        }
+        return this._AlienationTransformation.Value;
+      }
+    }
+    private System.Numerics.Matrix3x2? _AlienationTransformation=null;
     private LatLng GetAlienatedPosition(LatLng position) {
-      var lat0=Math.Round(position.lat*113)/113;
-      var lng0=Math.Round(position.lng*131)/131;
+      var vRes=System.Numerics.Vector2.Transform(new System.Numerics.Vector2((float)position.lng,(float)position.lat),this.AlienationTransformation);
       return new LatLng {
-        lat=position.lat+(position.lat-lat0),
-        lng=position.lng+(position.lng-lng0),
+        lat=vRes.Y,
+        lng=vRes.X,
       };
     }
     public Place[] GetPlaces(SessionData sd) {
