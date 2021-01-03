@@ -85,7 +85,7 @@ namespace BioMap.Pages.Diagrams
         _config.Data.Labels.Add(ConvInvar.ToString(year));
       }
       //
-      var aaIndisByIId = DS.GetIndividuals();
+      var aaIndisByIId = DS.GetIndividuals(SD);
       int nIndex = 0;
       foreach (var indiSpec in new[] {
       new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["Known individuals"],(ea,year)=>ea.Any(el=>el.ElementProp.CreationTime.Year<year) && ea[ea.Count-1].ElementProp.CreationTime.Year>=year,1),

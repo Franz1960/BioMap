@@ -17,7 +17,7 @@
               <DropdownMenu>
                 <DropdownItem Clicked="@((e)=>{SD.Filters.PlaceFilter="";dropdown.Hide();})"><Icon Name="IconName.Clear" /> @Localize["Clear"]</DropdownItem>
                 <DropdownDivider Style="min-width:400px"></DropdownDivider>
-                @foreach (var place in DS.AllPlaces) {
+                @foreach (var place in DS.GetPlaces(SD)) {
                   <Button Color="SD.Filters.PlaceFilter.Contains(place.Name)?Color.Primary:Color.Light"
                           Class="small" 
                           Clicked="(e)=>TogglePlace(place.Name)">

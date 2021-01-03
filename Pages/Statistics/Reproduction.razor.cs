@@ -114,10 +114,10 @@ namespace BioMap.Pages.Statistics
             Label=Localize["Reproduction rate"],
             BackgroundColor=this.GetColor(3),
           };
-          foreach (var place in DS.AllPlaces) {
+          foreach (var place in DS.GetPlaces(SD)) {
             string sAddFilter="";
             sAddFilter=Filters.AddToWhereClause(sAddFilter,"elements.place='"+place.Name+"'");
-            var aaIndisByIId = DS.GetIndividuals(SD.Filters,sAddFilter);
+            var aaIndisByIId = DS.GetIndividuals(SD,SD.Filters,sAddFilter);
             var funcGetIndiCnt=new Func<Func<Element,bool>,int>((cond)=>{
               int nResult=0;
               foreach (var aIndis in aaIndisByIId.Values) {

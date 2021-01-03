@@ -66,7 +66,7 @@
     //
     this.OtherData.Clear();
     foreach (var cat in Element.Category.AllCategories) {
-      var aEls = DS.GetElements(null,"elements.category="+cat.Num);
+      var aEls = DS.GetElements(SD,null,"elements.category="+cat.Num);
       int nAllYears = 0;
       var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
       foreach (var el in aEls) {

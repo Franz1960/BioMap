@@ -50,7 +50,7 @@
   private async Task LocationEdit_LocationChanged(GoogleMapsComponents.Maps.LatLngLiteral latLngLiteral) {
     var el = this.ElementEditRef.Element;
     el.ElementProp.MarkerInfo.position=new LatLng { lat=latLngLiteral.Lat,lng=latLngLiteral.Lng };
-    el.ElementProp.MarkerInfo.PlaceName=Place.GetNearestPlace(el.ElementProp.MarkerInfo.position).Name;
+    el.ElementProp.MarkerInfo.PlaceName=Place.GetNearestPlace(SD,el.ElementProp.MarkerInfo.position).Name;
     this.StateHasChanged();
   }
   private void CreateNewElement() {

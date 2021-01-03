@@ -78,7 +78,7 @@ namespace BioMap.Pages.Diagrams
     }
     private void RefreshData() {
       var dtProjectStart = DS.ProjectStart;
-      var aIndividuals = DS.GetElements(SD.Filters,"indivdata.iid>=1 AND elements.category=350","elements.creationtime ASC");
+      var aIndividuals = DS.GetElements(SD,SD.Filters,"indivdata.iid>=1 AND elements.category=350","elements.creationtime ASC");
       _config.Data.Datasets.Clear();
       var countByPlaceAndDate = new Dictionary<string,Dictionary<DateTime,int>>();
       foreach (var el in aIndividuals) {

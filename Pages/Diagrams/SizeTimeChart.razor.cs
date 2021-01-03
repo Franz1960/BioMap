@@ -92,7 +92,7 @@ namespace BioMap.Pages.Diagrams
       progressModalRef.Show();
       await Task.Run(()=>{
         try {
-          var aaIndisByIId = DS.GetIndividuals(SD.Filters);
+          var aaIndisByIId = DS.GetIndividuals(SD,SD.Filters);
           foreach (var idx in aaIndisByIId.Keys) {
             try {
               progressCompletion=((idx+1)*100)/aaIndisByIId.Count;
@@ -174,7 +174,7 @@ namespace BioMap.Pages.Diagrams
     }
     private void RefreshData() {
       var dtProjectStart = DS.ProjectStart;
-      var aaIndisByIId = DS.GetIndividuals(SD.Filters);
+      var aaIndisByIId = DS.GetIndividuals(SD,SD.Filters);
       _config.Data.Datasets.Clear();
       // Ideale Wachstumskurven hinzufügen.
       if (SD.SizeTimeChartShowVintageBoundaries) {

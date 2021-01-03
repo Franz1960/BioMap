@@ -350,11 +350,33 @@ namespace BioMap
     }
     #endregion
     #region Places.
-    public Place[] AllPlaces {
-      get;
-      private set;
-    }
+    private Place[] AllPlaces;
     private string[] PrevAllPlaces = null;
+    private LatLng GetAlienatedPosition(LatLng position) {
+      var lat0=Math.Round(position.lat*113)/113;
+      var lng0=Math.Round(position.lng*131)/131;
+      return new LatLng {
+        lat=position.lat+(position.lat-lat0),
+        lng=position.lng+(position.lng-lng0),
+      };
+    }
+    public Place[] GetPlaces(SessionData sd) {
+      if (this.IsMigrationInProcess || (sd!=null && sd.MaySeeRealLocations)) {
+        return this.AllPlaces;
+      } else {
+        var lAlienatedPlaces=new List<Place>();
+        foreach (var place in this.AllPlaces) {
+          var ap=new Place {
+            Name=place.Name,
+            Radius=place.Radius,
+            LatLng=GetAlienatedPosition(place.LatLng),
+          };
+          ap.TraitValues.AddRange(place.TraitValues);
+          lAlienatedPlaces.Add(ap);
+        }
+        return lAlienatedPlaces.ToArray();
+      }
+    }
     public Dictionary<string,Place> PlacesByNames {
       get;
       private set;
@@ -540,7 +562,7 @@ namespace BioMap
         } catch { }
       }
     }
-    public Element[] GetElements(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "elements.creationtime") {
+    public Element[] GetElements(SessionData sd,Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "elements.creationtime") {
       if (filters!=null) {
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
       }
@@ -659,13 +681,20 @@ namespace BioMap
         }
         dr.Close();
       });
-      return lElements.ToArray();
+      if (this.IsMigrationInProcess || (sd!=null && sd.MaySeeRealLocations)) {
+        return lElements.ToArray();
+      } else {
+        foreach (var el in lElements.ToArray()) {
+          el.ElementProp.MarkerInfo.position=this.GetAlienatedPosition(el.ElementProp.MarkerInfo.position);
+        }
+        return lElements.ToArray();
+      }
     }
-    public Dictionary<int,List<Element>> GetIndividuals(Filters filters = null,string sAdditionalWhereClause=null) {
+    public Dictionary<int,List<Element>> GetIndividuals(SessionData sd,Filters filters = null,string sAdditionalWhereClause=null) {
       var aaIndisByIId = new Dictionary<int,List<Element>>();
       var sWhereClause = "indivdata.iid>=1";
       sWhereClause=Filters.AddToWhereClause(sWhereClause,sAdditionalWhereClause);
-      var aNormedElements = this.GetElements(filters,sWhereClause,"indivdata.iid ASC,elements.creationtime ASC");
+      var aNormedElements = this.GetElements(sd,filters,sWhereClause,"indivdata.iid ASC,elements.creationtime ASC");
       foreach (var el in aNormedElements) {
         if (el.ElementProp.MarkerInfo.category==350 && el.ElementProp.IndivData!=null) {
           var idx = el.ElementProp.IndivData.IId;

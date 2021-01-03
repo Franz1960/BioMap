@@ -36,7 +36,7 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.Elements = DataService.Instance.GetElements(SD.Filters,"indivdata.iid>=1 AND elements.category=350","indivdata.iid ASC,elements.creationtime ASC");
+    this.Elements = DataService.Instance.GetElements(SD,SD.Filters,"indivdata.iid>=1 AND elements.category=350","indivdata.iid ASC,elements.creationtime ASC");
   }
   private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);

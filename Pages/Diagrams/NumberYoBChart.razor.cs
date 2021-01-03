@@ -75,7 +75,7 @@ namespace BioMap.Pages.Diagrams
     }
     private void RefreshData() {
       var dtProjectStart = DS.ProjectStart;
-      var aaIndisByIId = DS.GetIndividuals();
+      var aaIndisByIId = DS.GetIndividuals(SD);
       _config.Data.Datasets.Clear();
       var countByYoB = new Dictionary<int,Dictionary<int,int>>(); // [yob][year]
       foreach (var idx in aaIndisByIId.Keys) {

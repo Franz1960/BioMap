@@ -299,7 +299,7 @@ namespace BioMap
           }
           #region Jahrgang aller Wiederfänge auf den zuerst ermittelten Jahrgang setzen.
           {
-            Dictionary<int,List<Element>> Individuals = DataService.Instance.GetIndividuals();
+            Dictionary<int,List<Element>> Individuals = DataService.Instance.GetIndividuals(null);
             foreach (var iid in Individuals.Keys) {
               int? nYoB = null;
               foreach (var el in Individuals[iid]) {
@@ -317,9 +317,9 @@ namespace BioMap
           #region Orte bestimmen und schreiben.
           {
             ds.RefreshAllPlaces();
-            Element[] elements = DataService.Instance.GetElements();
+            Element[] elements = DataService.Instance.GetElements(null);
             foreach (var el in elements) {
-              el.ElementProp.MarkerInfo.PlaceName=Place.GetNearestPlace(el.ElementProp.MarkerInfo.position).Name;
+              el.ElementProp.MarkerInfo.PlaceName=Place.GetNearestPlace(null,el.ElementProp.MarkerInfo.position).Name;
               DataService.Instance.WriteElement(el);
             }
           }

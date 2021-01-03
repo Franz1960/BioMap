@@ -147,6 +147,9 @@
   <data name="Adults from 38 mm" xml:space="preserve">
     <value>Adulti ab 38 mm</value>
   </data>
+  <data name="Alienate locations" xml:space="preserve">
+    <value>Orte verfremden</value>
+  </data>
   <data name="All" xml:space="preserve">
     <value>Alle</value>
   </data>

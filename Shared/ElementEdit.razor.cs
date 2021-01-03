@@ -44,7 +44,7 @@ namespace BioMap.Shared
               this.Properties.Add(new[] { "Camera",el.ElementProp.ExifData.Make+" / "+el.ElementProp.ExifData.Model });
             }
             if (el.HasIndivData()) {
-              var els = DS.GetElements(null,"indivdata.iid='"+el.GetIId()+"' AND elements.creationtime<'"+el.GetIsoDateTime()+"'","elements.creationtime DESC");
+              var els = DS.GetElements(SD,null,"indivdata.iid='"+el.GetIId()+"' AND elements.creationtime<'"+el.GetIsoDateTime()+"'","elements.creationtime DESC");
               if (els.Length>=1) {
                 double dDistance = GeoCalculator.GetDistance(els[0].ElementProp.MarkerInfo.position,el.ElementProp.MarkerInfo.position);
                 this.Properties.Add(new[] { "Migration distance",ConvInvar.ToDecimalString(dDistance,0)+" m" });

@@ -91,7 +91,7 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.Elements = Elements = DS.GetElements(SD.Filters,"","elements.creationtime DESC");
+    this.Elements = Elements = DS.GetElements(SD,SD.Filters,"","elements.creationtime DESC");
   }
   private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);
@@ -106,7 +106,7 @@
     var sep = "\t";
     var csv = new System.Text.StringBuilder();
     csv.Append("ElementName"+sep+"TimeStamp"+sep+"Cat"+sep+"GpsLat"+sep+"GpsLng"+sep+"Place"+"\n");
-    foreach (var el in DS.GetElements(SD.Filters)) {
+    foreach (var el in DS.GetElements(SD,SD.Filters)) {
       var place = el.GetPlace();
       csv.Append('"'+el.ElementName+'"');
       csv.Append(sep+'"'+el.GetIsoDateTime()+'"');

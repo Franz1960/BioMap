@@ -43,7 +43,7 @@
     var c = Element.Category.AllCategories;
   }
   private void RefreshData() {
-    var els = DataService.Instance.GetElements(SD.Filters,"","elements.place ASC,elements.creationtime ASC");
+    var els = DataService.Instance.GetElements(SD,SD.Filters,"","elements.place ASC,elements.creationtime ASC");
     this.ElementsByPlaces.Clear();
     foreach (var el in els) {
       if (!string.IsNullOrEmpty(PhotoController.GetImageFilePath(el.ElementName))) {

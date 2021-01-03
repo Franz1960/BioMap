@@ -51,7 +51,7 @@
   private async Task RefreshElementMarkers() {
     var lElementMarkers = new List<ElementMarker>();
     if (SD.CurrentUser.Level>=400) {
-      foreach (var el in DS.GetElements(SD.Filters)) {
+      foreach (var el in DS.GetElements(SD,SD.Filters)) {
         var latLng = new LatLngLiteral(el.ElementProp.MarkerInfo.position.lng,el.ElementProp.MarkerInfo.position.lat);
         var symbolProps = el.GetSymbolProperties();
         var elm = new ElementMarker {

@@ -128,7 +128,7 @@
         };
       }
       foreach (var indiSpec in aIndiSpecs) {
-        var aaIndisByIId = DS.GetIndividuals(null,indiSpec.Item2);
+        var aaIndisByIId = DS.GetIndividuals(SD,null,indiSpec.Item2);
         int nAllYears = 0;
         var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
         foreach (var iid in aaIndisByIId.Keys) {
@@ -159,7 +159,7 @@
     }
     //
     {
-      var aaIndisByIId = DS.GetIndividuals();
+      var aaIndisByIId = DS.GetIndividuals(SD);
       Tuple<string,Func<List<Element>,int,bool>>[] aIndiSpecs;
       if (ShowDetails) {
         aIndiSpecs = new Tuple<string,Func<List<Element>,int,bool>>[] {
@@ -219,7 +219,7 @@
       new Tuple<string,string>(Localize["ID Cards"],"elements.category=350"),
       new Tuple<string,string>(Localize["Other photos and local news"],"elements.category<>350"),
     }) {
-      var aEls = DS.GetElements(null,indiSpec.Item2);
+      var aEls = DS.GetElements(SD,null,indiSpec.Item2);
       int nAllYears = 0;
       var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
       foreach (var el in aEls) {

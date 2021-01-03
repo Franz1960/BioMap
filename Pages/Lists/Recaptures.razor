@@ -70,7 +70,7 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.Individuals = DataService.Instance.GetIndividuals(SD.Filters);
+    this.Individuals = DataService.Instance.GetIndividuals(SD,SD.Filters);
     var lIIds = new List<int>(this.Individuals.Keys);
     lIIds.Sort((a,b) => {
       return -this.Individuals[a].Count.CompareTo(this.Individuals[b].Count);

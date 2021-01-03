@@ -265,7 +265,7 @@ namespace BioMap.Pages.Statistics
       RefreshData();
     }
     private void RefreshData() {
-      var aaIndisByIId = DS.GetIndividuals(SD.Filters);
+      var aaIndisByIId = DS.GetIndividuals(SD,SD.Filters);
       {
         _configOverTime.Data.Labels.Clear();
         _configOverTime.Data.Datasets.Clear();

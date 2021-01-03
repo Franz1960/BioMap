@@ -125,7 +125,7 @@ namespace BioMap.Shared
           var dictPlaceCircles = new Dictionary<string,CircleOptions>();
           var dictPlaceMarkers = new Dictionary<string,MarkerOptions>();
           if (bShowPlaces) {
-            foreach (var place in DS.AllPlaces) {
+            foreach (var place in DS.GetPlaces(SD)) {
               var circleOptions = new CircleOptions {
                 Map=googleMap.InteropObject,
                 Center=new LatLngLiteral(place.LatLng.lng,place.LatLng.lat),
