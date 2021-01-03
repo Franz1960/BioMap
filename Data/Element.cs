@@ -139,6 +139,16 @@ namespace BioMap
       el.ElementProp.CreationTime = ((el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? el.ElementProp.ExifData.DateTimeOriginal.Value : el.ElementProp.UploadInfo.Timestamp);
       return el;
     }
+    public DateTime? GetDateOfBirth() {
+      return this.ElementProp.IndivData?.DateOfBirth;
+    }
+    public string GetDateOfBirthAsString() {
+      var dob = this.GetDateOfBirth();
+      if (dob.HasValue) {
+        return ConvInvar.ToString(dob.Value,false);
+      }
+      return "";
+    }
     public int? GetYearOfBirth() {
       return this.ElementProp.IndivData?.DateOfBirth.Year;
     }

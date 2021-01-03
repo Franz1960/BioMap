@@ -17,7 +17,7 @@
   <thead>
     <tr>
       <th scope="col">IID</th>
-      <th scope="col">@Localize["Vintage"]</th>
+      <th scope="col">@Localize["Metamorphosis"]</th>
       <th scope="col">@Localize["Gender"]</th>
       <th scope="col" width="10%">@Localize["Length"]</th>
       <th scope="col">@Localize["Place"]</th>
@@ -29,14 +29,12 @@
   <tbody>
     @foreach (var iid in Individuals.Keys) {
       <tr style=@GetTrStyle(iid)>
-        <th scope="row">@(iid)</th>
+        <td scope="row">@(iid)</td>
         <td>
-          @((MarkupString)GetForElements(iid,el=>el.GetYearOfBirthAsString(),true))
-          @if (!AreYearsOfBirthConsistent(iid)) {
-            <br />
-            <div class="form-group">
-              <input class="form-control" type="number" value="0" @onchange="(e) => inputChanged(e,iid)" />
-            </div>
+          @if (AreDatesOfBirthConsistent(iid)) {
+            @(Individuals[iid][0].GetDateOfBirthAsString())
+          } else {
+            @((MarkupString)GetForElements(iid,el=>el.GetDateOfBirthAsString(),true))
           }
         </td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetGender()))</td>
@@ -106,15 +104,15 @@
     }
     return "";
   }
-  private bool AreYearsOfBirthConsistent(int iid) {
-    int nYoB = 0;
+  private bool AreDatesOfBirthConsistent(int iid) {
+    DateTime? dtob = null;
     foreach (var el in this.Individuals[iid]) {
-      if (nYoB!=0) {
-        if (nYoB!=el.GetYearOfBirth().Value) {
+      if (dtob.HasValue) {
+        if (dtob!=el.GetDateOfBirth()) {
           return false;
         }
       } else {
-        nYoB=el.GetYearOfBirth().Value;
+        dtob=el.GetDateOfBirth();
       }
     }
     return true;
@@ -136,13 +134,6 @@
       }
     }
     return true;
-  }
-  void inputChanged(ChangeEventArgs e,int iid) {
-    int nYoB = ConvInvar.ToInt(e.Value.ToString());
-    foreach (var el in this.Individuals[iid]) {
-      el.ElementProp.IndivData.DateOfBirth=new DateTime(nYoB,7,1);
-      DataService.Instance.WriteElement(el);
-    }
   }
   private int oldIid = 0;
   private string GetLineBreak(int iid) {

@@ -351,6 +351,9 @@
   <data name="Maps" xml:space="preserve">
     <value>Karten</value>
   </data>
+  <data name="Metamorphosis" xml:space="preserve">
+    <value>Metamorphose</value>
+  </data>
   <data name="Migration" xml:space="preserve">
     <value>Migration</value>
   </data>
