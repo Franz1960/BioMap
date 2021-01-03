@@ -5,45 +5,81 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
-
-<h1>@Localize["All Elements"]</h1>
-
-<p>Anzahl Elemente: @Elements.Length</p>
+<Row>
+  <Column>
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <h1>@Localize["All Elements"]</h1>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <p>Anzahl Elemente: @Elements.Length</p>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Table Class="table-striped table-sm">
+      <TableHeader>
+        <TableRow>
+          <TableHeaderCell>
+            @Localize["Cat."]
+          </TableHeaderCell>
+          <TableHeaderCell Style="width:18%;">
+            @Localize["Details"]
+          </TableHeaderCell>
+          <TableHeaderCell Style="width:15%;">
+            @Localize["Time"]
+          </TableHeaderCell>
+          <TableHeaderCell Style="width:25%;">
+            @Localize["Name"]
+          </TableHeaderCell>
+          <TableHeaderCell>
+            @Localize["User"]
+          </TableHeaderCell>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        @foreach (var el in Elements) {
+          <TableRow>
+            <TableRowCell>
+              @el.ElementProp.MarkerInfo.category
+            </TableRowCell>
+            <TableRowCell>
+              @el.GetDetails()
+            </TableRowCell>
+            <TableRowCell>
+              @el.GetIsoDateTime()
+            </TableRowCell>
+            <TableRowCell>
+              <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a>
+            </TableRowCell>
+            <TableRowCell>
+              @el.ElementProp.UploadInfo.UserId
+              <Button Float="Float.Right" Color="Color.Light" Disabled="!SD.CurrentUser.MayDeleteElement(el)" Clicked="@((e)=>{ DeleteElement(el); })">
+                <Icon Name="IconName.Delete"></Icon>
+              </Button>
+            </TableRowCell>
+          </TableRow>
+        }
+      </TableBody>
+    </Table>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    @if (SD.CurrentUser.Level>=500) {
+      <Button Color="Color.Primary" Clicked="@(async (e)=>DownloadCsv_Clicked())">Download CSV</Button>
+    }
+  </Column>
+</Row>
 
 <PhotoPopup @ref="PhotoPopup1" />
 
-<table class="table table-striped table-sm">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">@Localize["Cat."]</th>
-      <th scope="col" width="18%">@Localize["Details"]</th>
-      <th scope="col" width="15%">@Localize["Time"]</th>
-      <th scope="col" width="25%">@Localize["Name"]</th>
-      <th scope="col">@Localize["User"]</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (var el in Elements) {
-      <tr>
-        <th scope="row">@(i++)</th>
-        <td>@el.ElementProp.MarkerInfo.category</td>
-        <td>@el.GetDetails()</td>
-        <td>@el.GetIsoDateTime()</td>
-        <td><a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a></td>
-        <td>@el.ElementProp.UploadInfo.UserId</td>
-      </tr>
-    }
-  </tbody>
-</table>
-
-@if (SD.CurrentUser.Level>=500) {
-  <Button Color="Color.Primary" Clicked="@(async (e)=>DownloadCsv_Clicked())">Download CSV</Button>
-}
-
 @code {
-  private int i = 0;
   private Element[] Elements = new Element[0];
   private PhotoPopup PhotoPopup1;
   protected override void OnInitialized() {
@@ -56,10 +92,15 @@
   }
   private void RefreshData() {
     this.Elements = Elements = DS.GetElements(SD.Filters,"","elements.creationtime DESC");
-    i=0;
   }
   private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);
+  }
+  private void DeleteElement(Element el) {
+    DS.DeleteElement(el);
+    DS.AddLogEntry(SD.CurrentUser.EMail,"Deleted element "+el.ElementName);
+    RefreshData();
+    StateHasChanged();
   }
   private async void DownloadCsv_Clicked() {
     var sep = "\t";

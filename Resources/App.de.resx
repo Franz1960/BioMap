@@ -198,6 +198,9 @@
   <data name="Close without saving" xml:space="preserve">
     <value>Schließen ohne speichern</value>
   </data>
+  <data name="Comment" xml:space="preserve">
+    <value>Kommentar</value>
+  </data>
   <data name="Conditions" xml:space="preserve">
     <value>Bedingungen</value>
   </data>

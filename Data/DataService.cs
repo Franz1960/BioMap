@@ -519,6 +519,27 @@ namespace BioMap
         }
       });
     }
+    public void DeleteElement(Element el) {
+      this.OperateOnDb((command) => {
+        command.CommandText =
+          "DELETE FROM elements WHERE (name='"+el.ElementName+"')";
+        command.ExecuteNonQuery();
+        command.CommandText =
+          "DELETE FROM photos WHERE (name='"+el.ElementName+"')";
+        command.ExecuteNonQuery();
+        command.CommandText =
+          "DELETE FROM indivdata WHERE (name='"+el.ElementName+"')";
+        command.ExecuteNonQuery();
+      });
+      foreach (var sFolder in new[] { "images","images_orig" }) {
+        try {
+          string sFilePath = System.IO.Path.Combine(this.DataDir,System.IO.Path.Combine(sFolder,el.ElementName));
+          if (System.IO.File.Exists(sFilePath)) {
+            System.IO.File.Delete(sFilePath);
+          }
+        } catch { }
+      }
+    }
     public Element[] GetElements(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "elements.creationtime") {
       if (filters!=null) {
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
