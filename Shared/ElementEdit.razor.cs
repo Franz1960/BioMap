@@ -34,6 +34,14 @@ namespace BioMap.Shared
             if (el.HasIndivData() && el.HasMeasuredData()) {
               this.Properties.Add(new[] { Localize["Head-body-length"],el.GetHeadBodyLengthNice() });
             }
+            if (el.HasIndivData()) {
+              this.Properties.Add(new[] { Localize["Metamorphosis"],el.GetDateOfBirthAsString() });
+              var els = DS.GetElements(SD,null,"indivdata.iid='"+el.GetIId()+"' AND elements.creationtime<'"+el.GetIsoDateTime()+"'","elements.creationtime DESC");
+              if (els.Length>=1) {
+                double dDistance = GeoCalculator.GetDistance(els[0].ElementProp.MarkerInfo.position,el.ElementProp.MarkerInfo.position);
+                this.Properties.Add(new[] { Localize["Migration"],ConvInvar.ToDecimalString(dDistance,0)+" m" });
+              }
+            }
             this.Properties.Add(new[] { Localize["Place"],el.GetPlace().Name });
             this.Properties.Add(new[] { "File name",el.ElementName });
             if (hasPhoto) {
@@ -43,13 +51,6 @@ namespace BioMap.Shared
             this.Properties.Add(new[] { "by",el.ElementProp.UploadInfo.UserId });
             if (this.hasPhoto) {
               this.Properties.Add(new[] { "Camera",el.ElementProp.ExifData.Make+" / "+el.ElementProp.ExifData.Model });
-            }
-            if (el.HasIndivData()) {
-              var els = DS.GetElements(SD,null,"indivdata.iid='"+el.GetIId()+"' AND elements.creationtime<'"+el.GetIsoDateTime()+"'","elements.creationtime DESC");
-              if (els.Length>=1) {
-                double dDistance = GeoCalculator.GetDistance(els[0].ElementProp.MarkerInfo.position,el.ElementProp.MarkerInfo.position);
-                this.Properties.Add(new[] { "Migration distance",ConvInvar.ToDecimalString(dDistance,0)+" m" });
-              }
             }
           }
           this.StateHasChanged();
