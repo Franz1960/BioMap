@@ -1,0 +1,54 @@
+﻿@page "/Statistics/AgeStructure"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject IJSRuntime JSRuntime
+@using BioMap
+@using BioMap.Shared
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.BarChart.Axes
+
+<Row>
+  <Column>
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <h1>@Localize["Age structure"]</h1>
+  </Column>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Year"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+        <NumericEdit @bind-Value="Year" />
+      </FieldBody>
+    </Field>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <p>
+      @Localize["Frequency of age of individuals caught at least once in that year."]
+    </p>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Column>
+      <Chart @ref="_chartJsCountByAge" Config="@_configCountByAge" Width="600" Height="300" />
+    </Column>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Column>
+      <TableFromChart @ref="_tableFromChartCountByAge" RowLabel="@Localize["Age / years"]" _config="@_configCountByAge" />
+    </Column>
+  </Column>
+</Row>

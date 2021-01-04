@@ -147,6 +147,12 @@
   <data name="Adults from 38 mm" xml:space="preserve">
     <value>Adulti ab 38 mm</value>
   </data>
+  <data name="Age / years" xml:space="preserve">
+    <value>Alter / Jahre</value>
+  </data>
+  <data name="Age structure" xml:space="preserve">
+    <value>Altersstruktur</value>
+  </data>
   <data name="Alienate locations" xml:space="preserve">
     <value>Orte verfremden</value>
   </data>
@@ -260,6 +266,9 @@
   </data>
   <data name="Frequency by Place / Time Chart" xml:space="preserve">
     <value>Häufigkeit nach Ort / Zeit Diagramm</value>
+  </data>
+  <data name="Frequency of age of individuals caught at least once in that year." xml:space="preserve">
+    <value>Häufigkeit des Alters von Individuen, die im betreffenden Jahr mindestens einmal gefangen wurden.</value>
   </data>
   <data name="from" xml:space="preserve">
     <value>von</value>
@@ -488,6 +497,9 @@
   </data>
   <data name="Welcome to BioMap!" xml:space="preserve">
     <value>Willkommen bei BioMap!</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Jahr</value>
   </data>
   <data name="Yellow-bellied toad" xml:space="preserve">
     <value>Gelbbauchunke</value>
