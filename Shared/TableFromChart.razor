@@ -46,10 +46,10 @@
   private string[] ColumnHeaders;
   private DataRow[] Data = new DataRow[0];
   //
-  protected override async Task OnAfterRenderAsync(bool firstRender) {
-    await base.OnAfterRenderAsync(firstRender);
-    if (firstRender) {
-    }
+  protected override async Task OnInitializedAsync() {
+    await base.OnInitializedAsync();
+  }
+  public void RefreshData() {
     var lColumnHeaders = new List<string>();
     foreach (var idxCol in Enumerable.Range(0,_config.Data.Datasets.Count)) {
       if (_config.Data.Datasets[idxCol] is BarDataset<int>) {
@@ -89,6 +89,6 @@
     }
     ColumnHeaders=lColumnHeaders.ToArray();
     Data=laData.ToArray();
-    StateHasChanged();
+    this.InvokeAsync(()=>StateHasChanged());
   }
 }

@@ -34,7 +34,7 @@
       </Row>
       <Row>
         <Column>
-          <TableFromChart RowLabel="@Localize["Month"]" _config="@_configOverTime"/>
+          <TableFromChart @ref="_tableFromChartOverTime" RowLabel="@Localize["Month"]" _config="@_configOverTime"/>
         </Column>
       </Row>
     </TabPanel>
@@ -46,7 +46,7 @@
       </Row>
       <Row>
         <Column>
-          <TableFromChart RowLabel="@Localize["Month"]" _config="@_configPerMonth" />
+          <TableFromChart @ref="_tableFromChartPerMonth" RowLabel="@Localize["Month"]" _config="@_configPerMonth" />
         </Column>
       </Row>
     </TabPanel>
@@ -58,7 +58,7 @@
       </Row>
       <Row>
         <Column>
-          <TableFromChart RowLabel="@(Localize["Length"]+" / mm")" _config="@_configHeadBodyLength" />
+          <TableFromChart @ref="_tableFromChartHeadBodyLength" RowLabel="@(Localize["Length"]+" / mm")" _config="@_configHeadBodyLength" />
         </Column>
       </Row>
     </TabPanel>
@@ -70,7 +70,7 @@
       </Row>
       <Row>
         <Column>
-          <TableFromChart RowLabel="@(Localize["Month"])" _config="@_configGenderRatio" />
+          <TableFromChart @ref="_tableFromChartGenderRatio" RowLabel="@(Localize["Month"])" _config="@_configGenderRatio" />
         </Column>
       </Row>
     </TabPanel>
@@ -82,7 +82,7 @@
       </Row>
       <Row>
         <Column>
-          <TableFromChart RowLabel="@(Localize["Distance"]+" / m")" _config="@_configMigrationDistances" />
+          <TableFromChart @ref="_tableFromChartMigrationDistances" RowLabel="@(Localize["Distance"]+" / m")" _config="@_configMigrationDistances" />
         </Column>
       </Row>
     </TabPanel>

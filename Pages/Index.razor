@@ -38,7 +38,7 @@
     return base.OnInitializedAsync();
   }
   protected override async Task OnAfterRenderAsync(bool firstRender) {
-    if (!DS.IsMigrationInProcess) {
+    if (!DS.IsMigrationInProcess && firstRender) {
       bool bAnyChanged = false;
       try {
         var sEMail = await JSRuntime.InvokeAsync<string>("getCookie","UserId");

@@ -18,6 +18,7 @@ using ChartJs.Blazor.Common.Time;
 using ChartJs.Blazor.LineChart;
 using ChartJs.Blazor.BarChart;
 using ChartJs.Blazor.BarChart.Axes;
+using BioMap.Shared;
 
 namespace BioMap.Pages.Statistics
 {
@@ -30,6 +31,7 @@ namespace BioMap.Pages.Statistics
     //
     private BarConfig _configByPlace;
     private Chart _chartJsByPlace;
+    private TableFromChart _tableFromChartByPlace;
     //
     private string selectedTab = "ByPlace";
 
@@ -89,6 +91,12 @@ namespace BioMap.Pages.Statistics
         StateHasChanged();
       };
       RefreshData();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+      await base.OnAfterRenderAsync(firstRender);
+      if (firstRender) {
+      }
+      _tableFromChartByPlace.RefreshData();
     }
     private void RefreshData() {
       {

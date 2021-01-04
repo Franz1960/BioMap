@@ -18,6 +18,7 @@ using ChartJs.Blazor.Common.Time;
 using ChartJs.Blazor.LineChart;
 using ChartJs.Blazor.BarChart;
 using ChartJs.Blazor.BarChart.Axes;
+using BioMap.Shared;
 
 namespace BioMap.Pages.Statistics
 {
@@ -30,15 +31,20 @@ namespace BioMap.Pages.Statistics
     //
     private BarConfig _configOverTime;
     private Chart _chartJsOverTime;
+    private TableFromChart _tableFromChartOverTime;
     private BarConfig _configPerMonth;
     private Chart _chartJsPerMonth;
+    private TableFromChart _tableFromChartPerMonth;
     private BarConfig _configHeadBodyLength;
     private Chart _chartJsHeadBodyLength;
+    private TableFromChart _tableFromChartHeadBodyLength;
     private BarConfig _configGenderRatio;
     private Chart _chartJsGenderRatio;
+    private TableFromChart _tableFromChartGenderRatio;
     private BarLinearCartesianAxis _yAxisGenderRatioCnt;
     private BarConfig _configMigrationDistances;
     private Chart _chartJsMigrationDistances;
+    private TableFromChart _tableFromChartMigrationDistances;
     //
     private string selectedTab = "OverTime";
 
@@ -263,6 +269,16 @@ namespace BioMap.Pages.Statistics
         base.InvokeAsync(StateHasChanged);
       };
       RefreshData();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+      await base.OnAfterRenderAsync(firstRender);
+      if (firstRender) {
+      }
+      _tableFromChartOverTime.RefreshData();
+      _tableFromChartPerMonth.RefreshData();
+      _tableFromChartHeadBodyLength.RefreshData();
+      _tableFromChartGenderRatio.RefreshData();
+      _tableFromChartMigrationDistances.RefreshData();
     }
     private void RefreshData() {
       var aaIndisByIId = DS.GetIndividuals(SD,SD.Filters);
