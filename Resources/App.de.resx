@@ -192,6 +192,15 @@
   <data name="Catch numbers per month" xml:space="preserve">
     <value>Fangzahlen pro Monat</value>
   </data>
+  <data name="Catch numbers per month broken down by age (overwintering) of individuals caught. In addition, monthly mean values of temperature and precipitation are given." xml:space="preserve">
+    <value>Die Fangzahlen pro Monat, aufgeschlüsselt nach dem Alter (Überwinterungen) der gefangenen Individuen. Zusätzlich sind Monatsmittelwerte von Temperatur und Niederschlagsmenge angegeben.</value>
+  </data>
+  <data name="Catch numbers per month summed over all years, broken down by age (overwintering) of individuals caught. In addition, monthly mean values of temperature and precipitation are given." xml:space="preserve">
+    <value>Die Fangzahlen pro Monat summiert über alle Jahre, aufgeschlüsselt nach dem Alter (Überwinterungen) der gefangenen Individuen. Zusätzlich sind Monatsmittelwerte von Temperatur und Niederschlagsmenge angegeben.</value>
+  </data>
+  <data name="Catch numbers per month summed over all years, broken down by sex of individuals caught. Only individuals with the sex information 'fa' or 'ma' are counted. If the total is less than 10, the percentage value is set to 50% to avoid outliers." xml:space="preserve">
+    <value>Die Fangzahlen pro Monat summiert über alle Jahre, aufgeschlüsselt nach dem Geschlecht der gefangenen Individuen. Es zählen nur Individuen mit den Geschlechtsangaben 'fa' oder 'ma'. Wenn die Summe weniger als 10 beträgt, wird der Prozentwert auf 50% gesetzt, um Ausreißer zu vermeiden.</value>
+  </data>
   <data name="Catches" xml:space="preserve">
     <value>Fänge</value>
   </data>
@@ -267,6 +276,9 @@
   <data name="Frequency by Place / Time Chart" xml:space="preserve">
     <value>Häufigkeit nach Ort / Zeit Diagramm</value>
   </data>
+  <data name="Frequency distribution of migratory distances of all captures, broken down by age (overwintering) of individuals captured. The migration distance is measured from the previous catch of the same individual." xml:space="preserve">
+    <value>Die Häufigkeitsverteilung der Wanderdistanzen aller Fänge, aufgeschlüsselt nach dem Alter (Überwinterungen) der gefangenen Individuen. Die Wanderdistanz wird gemessen vom vorhergehenden Fang des selben Individuums.</value>
+  </data>
   <data name="Frequency of age of individuals caught at least once in that year." xml:space="preserve">
     <value>Häufigkeit des Alters von Individuen, die im betreffenden Jahr mindestens einmal gefangen wurden.</value>
   </data>
@@ -317,6 +329,9 @@
   </data>
   <data name="Individuals" xml:space="preserve">
     <value>Individuen</value>
+  </data>
+  <data name="Individuals are counted only once at each location. Only locations with at least one adult and one hatchling are listed. Reproduction rate is the quotient of hatchlings and adults. Adults are all from 2, hatchlings with 0 hibernations." xml:space="preserve">
+    <value>Individuen werden an jedem Ort nur einmal gezählt. Nur Orte mit mindestens einem Adulti und einem Hüpferling werden aufgelistet. Die Reproduktionsrate ist der Quotient aus Hüpferlingen und Adulti. Adulti sind alle ab 2, Hüpferlinge mit 0 Überwinterungen.</value>
   </data>
   <data name="Insert TAN" xml:space="preserve">
     <value>TAN eingeben</value>
@@ -476,6 +491,9 @@
   </data>
   <data name="Text" xml:space="preserve">
     <value>Text</value>
+  </data>
+  <data name="The frequency distribution of head-torso lengths of all catches, broken down by age (overwintering) of the individuals caught." xml:space="preserve">
+    <value>Die Häufigkeitsverteilung der Kopf-Rumpf-Längen aller Fänge, aufgeschlüsselt nach dem Alter (Überwinterungen) der gefangenen Individuen.</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>Zeit</value>

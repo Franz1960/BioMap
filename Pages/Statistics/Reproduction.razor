@@ -24,6 +24,11 @@
     <TabPanel Name="ByPlace">
       <Row>
         <Column>
+          @Localize["Individuals are counted only once at each location. Only locations with at least one adult and one hatchling are listed. Reproduction rate is the quotient of hatchlings and adults. Adults are all from 2, hatchlings with 0 hibernations."]
+        </Column>
+      </Row>
+      <Row>
+        <Column>
           <Chart @ref="_chartJsByPlace" Config="@_configByPlace" Width="600" Height="300" />
         </Column>
       </Row>
