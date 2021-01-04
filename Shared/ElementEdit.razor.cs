@@ -60,14 +60,13 @@ namespace BioMap.Shared
     private Element _Element = null;
     private List<string[]> Properties { get; set; } = new List<string[]>();
     private string OrigJson = null;
-    public bool EditingChangedContent() {
+    public string[] EditingChangedContent() {
       if (this.Element!=null && this.OrigJson!=null) {
         string sJson = JsonConvert.SerializeObject(this.Element);
-        if (string.CompareOrdinal(sJson,this.OrigJson)!=0) {
-          return true;
-        }
+        var saDiff=Utilities.FindDifferentParts(this.OrigJson,sJson);
+        return saDiff;
       }
-      return false;
+      return null;
     }
   }
 }

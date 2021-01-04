@@ -74,10 +74,11 @@
     }
   }
   private void Save() {
-    if (this.ElementEditRef.EditingChangedContent()) {
+    var saDiff = this.ElementEditRef.EditingChangedContent();
+    if (saDiff!=null) {
       DS.WriteElement(this.ElementEditRef.Element);
       string sJson = JsonConvert.SerializeObject(this.ElementEditRef.Element);
-      DS.AddLogEntry(SD.CurrentUser.EMail,"Changed element "+this.ElementEditRef.Element.ElementName+" --> "+sJson);
+      DS.AddLogEntry(SD.CurrentUser.EMail,"Changed element "+this.ElementEditRef.Element.ElementName+": "+saDiff[0]+" --> "+saDiff[1]);
     }
   }
 }

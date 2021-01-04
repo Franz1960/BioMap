@@ -66,5 +66,44 @@ namespace BioMap
         dc.Timer.Start();
       }
     }
+    /// <summary>
+    /// The differing parts of two strings, compared from left to right and right to left. The strings may have 
+    /// different lengths. Example: A='ab123xyz', B='ab19yz' --> result=['23x','9'].
+    /// </summary>
+    /// <param name="A">
+    /// The first string.
+    /// </param>
+    /// <param name="B">
+    /// The second string.
+    /// </param>
+    /// <returns>
+    /// Array of two strings: the differing part of the first and of the second string; null if the strings are equal.
+    /// </returns>
+    public static string[] FindDifferentParts(string A,string B) {
+      int lenA=A.Length;
+      int lenB=B.Length;
+      int lenMin=Math.Min(lenA,lenB);
+      int idxL=0;
+      while (idxL<lenMin) {
+        if (A[idxL]!=B[idxL]) {
+          break;
+        }
+        idxL++;
+      }
+      if (idxL>=lenA) {
+        return new[] { "",B.Substring(idxL) };
+      } else if (idxL>=lenB) {
+        return new[] { A.Substring(idxL),"" };
+      } else {
+        int idxR=0;
+        while (idxR<lenMin-idxL) {
+          if (A[lenA-idxR-1]!=B[lenB-idxR-1]) {
+            break;
+          }
+          idxR++;
+        }
+        return new[] { A.Substring(idxL,lenA-idxR-idxL),B.Substring(idxL,lenB-idxR-idxL) };
+      }
+    }
   }
 }
