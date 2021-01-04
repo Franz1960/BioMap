@@ -63,7 +63,7 @@ namespace BioMap.Shared
     public string[] EditingChangedContent() {
       if (this.Element!=null && this.OrigJson!=null) {
         string sJson = JsonConvert.SerializeObject(this.Element);
-        var saDiff=Utilities.FindDifferentParts(this.OrigJson,sJson);
+        var saDiff=Utilities.FindDifferingCoreParts(this.OrigJson,sJson);
         return saDiff;
       }
       return null;

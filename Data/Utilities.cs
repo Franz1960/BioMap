@@ -67,7 +67,7 @@ namespace BioMap
       }
     }
     /// <summary>
-    /// The differing parts of two strings, compared from left to right and right to left. The strings may have 
+    /// The differing core parts of two strings, excluding the identical parts from left and from right. The strings may have 
     /// different lengths. Example: A='ab123xyz', B='ab19yz' --> result=['23x','9'].
     /// </summary>
     /// <param name="A">
@@ -79,7 +79,16 @@ namespace BioMap
     /// <returns>
     /// Array of two strings: the differing part of the first and of the second string; null if the strings are equal.
     /// </returns>
-    public static string[] FindDifferentParts(string A,string B) {
+    public static string[] FindDifferingCoreParts(string A,string B) {
+      if (A==null) {
+        if (B==null) {
+          return null;
+        } else {
+          return new[] { "",B };
+        }
+      } else if (B==null) {
+        return new[] { A,"" };
+      }
       int lenA=A.Length;
       int lenB=B.Length;
       int lenMin=Math.Min(lenA,lenB);
