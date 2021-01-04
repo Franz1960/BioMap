@@ -20,8 +20,8 @@
     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
       <Select @bind-SelectedValue="Element.ElementProp.MarkerInfo.category" Disabled="@(!Edit)">
         @foreach (var category in Element.Category.AllCategories) {
-          <SelectItem Value="category.Num">@category.Num - @category.Name</SelectItem>
-        }
+<SelectItem Value="category.Num">@category.Num - @category.Name</SelectItem>
+}
       </Select>
     </FieldBody>
   </Field>
@@ -31,6 +31,24 @@
       <MemoEdit @bind-Text="Element.ElementProp.UploadInfo.Comment" ReadOnly="@(!Edit)" />
     </FieldBody>
   </Field>
+  @if (Element.HasIndivData()) {
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Gender"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+        <Select @bind-SelectedValue="Element.ElementProp.IndivData.Gender" Disabled="@(!Edit)">
+          @foreach (var gender in new[] { "ma","fa","j","j0","j1","j2" }) {
+    <SelectItem Value="gender">@gender</SelectItem>
+}
+        </Select>
+      </FieldBody>
+    </Field>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">IId</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+        <NumericEdit @bind-Value="Element.ElementProp.IndivData.IId" Disabled="@(!Edit)" />
+      </FieldBody>
+    </Field>
+  }
 }
 <table class="table">
   <tbody>

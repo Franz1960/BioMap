@@ -32,8 +32,9 @@ namespace BioMap.Shared
             this.hasPhoto=el.HasPhotoData();
             this.Properties.Clear();
             if (el.HasIndivData() && el.HasMeasuredData()) {
-              this.Properties.Add(new[] { "Individual","<b>"+el.GetIId()+"</b> ("+el.GetGender()+" / "+el.GetHeadBodyLengthNice()+" / "+el.GetPlace().Name+")" });
+              this.Properties.Add(new[] { Localize["Head-body-length"],el.GetHeadBodyLengthNice() });
             }
+            this.Properties.Add(new[] { Localize["Place"],el.GetPlace().Name });
             this.Properties.Add(new[] { "File name",el.ElementName });
             if (hasPhoto) {
               this.Properties.Add(new[] { "Time",ConvInvar.ToString(el.ElementProp.CreationTime) });

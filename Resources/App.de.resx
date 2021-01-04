@@ -276,6 +276,9 @@
   <data name="Hatchlings" xml:space="preserve">
     <value>Hüpferlinge</value>
   </data>
+  <data name="Head-body-length" xml:space="preserve">
+    <value>Kopf-Rumpf-Länge</value>
+  </data>
   <data name="Head-body-length of all catches" xml:space="preserve">
     <value>Kopf-Rumpf-Länge aller Fänge</value>
   </data>
