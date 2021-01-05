@@ -22,7 +22,7 @@ using BioMap.Shared;
 
 namespace BioMap.Pages.Statistics
 {
-  public partial class Reproduction : ComponentBase
+  public partial class PopulationSize : ComponentBase
   {
     [Inject]
     protected DataService DS { get; set; }
@@ -59,28 +59,16 @@ namespace BioMap.Pages.Statistics
                 },
             },
             YAxes = new List<CartesianAxis> {
-                new BarLinearCartesianAxis {
-                  ID="cnt",
-                  ScaleLabel=new ScaleLabel {
-                    Display=true,
-                  },
-                  Stacked = false,
-                  Ticks=new LinearCartesianTicks {
-                    Min=0,
-                  },
+              new BarLinearCartesianAxis {
+                ID="cnt",
+                ScaleLabel=new ScaleLabel {
+                  Display=true,
                 },
-                new BarLinearCartesianAxis {
-                  ID="reprate",
-                  ScaleLabel=new ScaleLabel {
-                    LabelString=Localize["Reproduction rate"],
-                    Display=true,
-                  },
-                  Stacked = false,
-                  Position = Position.Right,
-                  Ticks=new LinearCartesianTicks {
-                    Min=0,
-                  },
+                Stacked = false,
+                Ticks=new LinearCartesianTicks {
+                  Min=0,
                 },
+              },
             }
           },
         },
@@ -103,23 +91,12 @@ namespace BioMap.Pages.Statistics
         _configByPlace.Data.Datasets.Clear();
         //
         {
-          int nTotalAdults=0;
-          int nTotalHatchlings=0;
+          int nTotalIndis=0;
           var lPlaces=new List<string>();
-          var dsAdults = new BarDataset<int>() {
+          var dsIndis = new BarDataset<int>() {
             YAxisId="cnt",
-            Label=Localize["Adults"],
+            Label=Localize["Individuals"],
             BackgroundColor=this.GetColor(0),
-          };
-          var dsHatchlings = new BarDataset<int>() {
-            YAxisId="cnt",
-            Label=Localize["Hatchlings"],
-            BackgroundColor=this.GetColor(2),
-          };
-          var dsReproductionRate = new BarDataset<double>() {
-            YAxisId="reprate",
-            Label=Localize["Reproduction rate"],
-            BackgroundColor=this.GetColor(3),
           };
           foreach (var place in DS.GetPlaces(SD)) {
             string sAddFilter="";
@@ -136,20 +113,14 @@ namespace BioMap.Pages.Statistics
               }
               return nResult;
             });
-            int nAdults=funcGetIndiCnt((el)=>(el.GetWinters()>=2));
-            int nHatchlings=funcGetIndiCnt((el)=>(el.GetWinters()==0));
-            if (nAdults>=1 && nHatchlings>=1) {
-              nTotalAdults+=nAdults;
-              nTotalHatchlings+=nHatchlings;
-              dsAdults.Add(nAdults);
-              dsHatchlings.Add(nHatchlings);
-              dsReproductionRate.Add(((double)nHatchlings)/nAdults);
+            int nIndis=aaIndisByIId.Keys.Count;
+            if (nIndis>=1) {
+              nTotalIndis+=nIndis;
+              dsIndis.Add(nIndis);
               _configByPlace.Data.Labels.Add(place.Name);
             }
           }
-          _configByPlace.Data.Datasets.Add(dsAdults);
-          _configByPlace.Data.Datasets.Add(dsHatchlings);
-          _configByPlace.Data.Datasets.Add(dsReproductionRate);
+          _configByPlace.Data.Datasets.Add(dsIndis);
         }
       }
     }

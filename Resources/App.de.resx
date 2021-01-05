@@ -438,6 +438,9 @@
   <data name="Places" xml:space="preserve">
     <value>Orte</value>
   </data>
+  <data name="Population size" xml:space="preserve">
+    <value>Populationsgröße</value>
+  </data>
   <data name="Precipitation" xml:space="preserve">
     <value>Niederschlag</value>
   </data>
