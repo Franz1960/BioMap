@@ -32,6 +32,9 @@ namespace BioMap.Pages.Statistics
     private BarConfig _configByPlace;
     private Chart _chartJsByPlace;
     private TableFromChart _tableFromChartByPlace;
+    private BarConfig _configOverTime;
+    private Chart _chartJsOverTime;
+    private TableFromChart _tableFromChartOverTime;
     //
     private string selectedTab = "ByPlace";
     private void OnSelectedTabChanged(string name) {
@@ -41,6 +44,39 @@ namespace BioMap.Pages.Statistics
     protected override void OnInitialized() {
       base.OnInitialized();
       _configByPlace = new BarConfig {
+        Options = new BarOptions {
+          Animation=new Animation {
+            Duration=0,
+          },
+          Title = new OptionsTitle {
+            Text="XXX",
+            Display = false,
+          },
+          Legend = new Legend {
+            Display = true,
+          },
+          Scales = new BarScales {
+            XAxes = new List<CartesianAxis> {
+                new BarCategoryAxis {
+                    Stacked = false,
+                },
+            },
+            YAxes = new List<CartesianAxis> {
+              new BarLinearCartesianAxis {
+                ID="cnt",
+                ScaleLabel=new ScaleLabel {
+                  Display=true,
+                },
+                Stacked = false,
+                Ticks=new LinearCartesianTicks {
+                  Min=0,
+                },
+              },
+            }
+          },
+        },
+      };
+      _configOverTime = new BarConfig {
         Options = new BarOptions {
           Animation=new Animation {
             Duration=0,
@@ -84,6 +120,7 @@ namespace BioMap.Pages.Statistics
       if (firstRender) {
       }
       _tableFromChartByPlace.RefreshData();
+      _tableFromChartOverTime.RefreshData();
     }
     private void RefreshData() {
       {
@@ -102,17 +139,6 @@ namespace BioMap.Pages.Statistics
             string sAddFilter="";
             sAddFilter=Filters.AddToWhereClause(sAddFilter,"elements.place='"+place.Name+"'");
             var aaIndisByIId = DS.GetIndividuals(SD,SD.Filters,sAddFilter);
-            var funcGetIndiCnt=new Func<Func<Element,bool>,int>((cond)=>{
-              int nResult=0;
-              foreach (var aIndis in aaIndisByIId.Values) {
-                foreach (var el in aIndis) {
-                  if (cond(el)) {
-                    nResult++;
-                  }
-                }
-              }
-              return nResult;
-            });
             int nIndis=aaIndisByIId.Keys.Count;
             if (nIndis>=1) {
               nTotalIndis+=nIndis;
@@ -121,6 +147,49 @@ namespace BioMap.Pages.Statistics
             }
           }
           _configByPlace.Data.Datasets.Add(dsIndis);
+        }
+      }
+      {
+        _configOverTime.Data.Labels.Clear();
+        _configOverTime.Data.Datasets.Clear();
+        //
+        {
+          DateTime? dtMin=null;
+          DateTime? dtMax=null;
+          {
+            foreach (var aIndis in DS.GetIndividuals(SD,SD.Filters).Values) {
+              foreach (var el in aIndis) {
+                if (!dtMin.HasValue || el.ElementProp.CreationTime<dtMin.Value) {
+                  dtMin=el.ElementProp.CreationTime;
+                }
+                if (!dtMax.HasValue || el.ElementProp.CreationTime>dtMax.Value) {
+                  dtMax=el.ElementProp.CreationTime;
+                }
+              }
+            }
+          }
+          if (dtMin.HasValue && dtMax.HasValue) {
+            var dsIndis = new BarDataset<int>() {
+              YAxisId="cnt",
+              Label=Localize["Individuals"],
+              BackgroundColor=this.GetColor(0),
+            };
+            var dtStart=(dtMin.Value.Date+TimeSpan.FromDays(7-(int)dtMin.Value.DayOfWeek));
+            var dtEnd=(dtMax.Value.Date+TimeSpan.FromDays(7));
+            for (var dt=dtStart;dt<dtEnd;dt+=TimeSpan.FromDays(7)) {
+              if (dt.DayOfYear>=105 && dt.DayOfYear<285) {
+                string sAddFilter="";
+                sAddFilter=Filters.AddToWhereClause(sAddFilter,"elements.creationtime<'"+ConvInvar.ToString(dt)+"'");
+                var aaIndisByIId = DS.GetIndividuals(SD,SD.Filters,sAddFilter);
+                int nIndis=aaIndisByIId.Keys.Count;
+                if (nIndis>=1) {
+                  dsIndis.Add(nIndis);
+                  _configOverTime.Data.Labels.Add(dt.ToString("yyyy-MM-dd"));
+                }
+              }
+            }
+            _configOverTime.Data.Datasets.Add(dsIndis);
+          }
         }
       }
     }

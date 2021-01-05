@@ -27,6 +27,7 @@
     <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
       <Items>
         <Tab Name="ByPlace">@Localize["By place"]</Tab>
+        <Tab Name="OverTime">@Localize["Over time"]</Tab>
       </Items>
       <Content>
         <TabPanel Name="ByPlace">
@@ -43,6 +44,23 @@
           <Row>
             <Column>
               <TableFromChart @ref="_tableFromChartByPlace" RowLabel="@Localize["Place"]" _config="@_configByPlace" />
+            </Column>
+          </Row>
+        </TabPanel>
+        <TabPanel Name="OverTime">
+          <Row>
+            <Column>
+              @Localize[""]
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Chart @ref="_chartJsOverTime" Config="@_configOverTime" Width="600" Height="300" />
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <TableFromChart @ref="_tableFromChartOverTime" RowLabel="@Localize["Time"]" _config="@_configOverTime" />
             </Column>
           </Row>
         </TabPanel>
