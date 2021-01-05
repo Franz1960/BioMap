@@ -387,6 +387,7 @@ namespace BioMap
             Radius=place.Radius,
             LatLng=GetAlienatedPosition(place.LatLng),
           };
+          ap.TraitValues.Clear();
           ap.TraitValues.AddRange(place.TraitValues);
           lAlienatedPlaces.Add(ap);
         }
