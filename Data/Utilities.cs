@@ -80,14 +80,16 @@ namespace BioMap
     /// Array of two strings: the differing part of the first and of the second string; null if the strings are equal.
     /// </returns>
     public static string[] FindDifferingCoreParts(string A,string B) {
-      if (A==null) {
-        if (B==null) {
+      if (string.IsNullOrEmpty(A)) {
+        if (string.IsNullOrEmpty(B)) {
           return null;
         } else {
           return new[] { "",B };
         }
-      } else if (B==null) {
+      } else if (string.IsNullOrEmpty(B)) {
         return new[] { A,"" };
+      } else if (string.CompareOrdinal(A,B)==0) {
+        return null;
       }
       int lenA=A.Length;
       int lenB=B.Length;
