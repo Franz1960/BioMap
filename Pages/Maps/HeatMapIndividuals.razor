@@ -1,0 +1,26 @@
+﻿@page "/Maps/HeatMapIndividuals"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject IJSRuntime JSRuntime
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using GoogleMapsComponents
+@using GoogleMapsComponents.Maps
+@inherits AreaMap
+
+<Row>
+  <Column>
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Button Color="Color.Primary" Clicked="async ()=>await FitBounds()">@Localize["Fit visible area"]</Button>
+  </Column>
+  <Column>
+    <CheckBox Checked="ShowCustomMap" CheckedChanged="@((e)=>{ ShowCustomMap=e; })" LabelText=@Localize["Show custom map"] />
+  </Column>
+  <Column>
+    <CheckBox Checked="ShowPlaces" CheckedChanged="(e)=>ShowPlaces=e" LabelText=@Localize["Show places"] />
+  </Column>
+</Row>
+<GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
