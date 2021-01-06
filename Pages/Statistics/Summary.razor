@@ -170,8 +170,17 @@
           Localize["Missed individuals"]+" 0 "+Localize["Hibernations"],
           (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()<1),
           new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["Missed individuals"]+" 1 "+Localize["Hibernations"],
+          (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()==1),
+          new Tuple<string,Func<List<Element>,int,bool>>(
           Localize["Missed individuals"]+" 1+ "+Localize["Hibernations"],
           (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()>=1),
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["Missed individuals"]+" 2 "+Localize["Hibernations"],
+          (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()==2),
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["Missed individuals"]+" 2+ "+Localize["Hibernations"],
+          (ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()>=2),
           new Tuple<string,Func<List<Element>,int,bool>>(
           Localize["New individuals"],
           (ea,year)=>ea[0].ElementProp.CreationTime.Year==year),
@@ -179,8 +188,17 @@
           Localize["New individuals"]+" 0 "+Localize["Hibernations"],
           (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()<1),
           new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["New individuals"]+" 1 "+Localize["Hibernations"],
+          (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()==1),
+          new Tuple<string,Func<List<Element>,int,bool>>(
           Localize["New individuals"]+" 1+ "+Localize["Hibernations"],
           (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()>=1),
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["New individuals"]+" 2 "+Localize["Hibernations"],
+          (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()==2),
+          new Tuple<string,Func<List<Element>,int,bool>>(
+          Localize["New individuals"]+" 2+ "+Localize["Hibernations"],
+          (ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()>=2),
         };
       } else {
         aIndiSpecs = new Tuple<string,Func<List<Element>,int,bool>>[] {
