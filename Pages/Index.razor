@@ -10,10 +10,11 @@
   <Column>
     <Card Margin="Margin.Is4.OnY">
       <CardHeader>
-        <CardTitle>@Localize["Welcome to BioMap!"]</CardTitle>
+        <CardTitle Size="4">@Localize["Welcome to BioMap!"]</CardTitle>
       </CardHeader>
+      <CardImage Source="images/TitlePage.jpg"/>
       <CardBody>
-        <p>BioMap wird die neue Unken-App!</p>
+        <p>@Localize["BioMap helps monitor yellow-bellied toads."]</p>
       </CardBody>
     </Card>
   </Column>
@@ -26,7 +27,10 @@
           <CardTitle>@Localize["Register"]</CardTitle>
         </CardHeader>
         <CardBody>
-          <Button Color="Color.Primary" Clicked="@((e) => NavigationManager.NavigateTo("/Administration/UserMgt"))">Register</Button>
+          <CardText>
+            @Localize["You can look around the website without registration. However, you will only see alienated location coordinates. If you want to see unaltered data and participate in the project, you are welcome to register."]
+          </CardText>
+          <Button Color="Color.Primary" Clicked="@((e) => NavigationManager.NavigateTo("/Administration/UserMgt"))">@Localize["Register"]</Button>
         </CardBody>
       </Card>
     </Column>
