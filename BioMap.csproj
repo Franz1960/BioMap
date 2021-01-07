@@ -4,6 +4,20 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>BioMap.Program</StartupObject>
     <UserSecretsId>53345fd2-aeb4-44b6-aada-5b2af12d392e</UserSecretsId>
+    <Authors>Franz Häring</Authors>
+    <Company>private</Company>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Map based biological monitoring.
+The web app has been developed for a nature protection project in Germany. The population of yellow-bellied toads (bombina variegata) is studied in a forest area in Bavaria and observed over a longer period of time. By regularly catching and identifying toads, growth and migration movements of individuals are recorded. The results are processed numerically and graphically.</Description>
+    <Copyright>Franz Häring (fh@itools.de)</Copyright>
+    <PackageLicenseExpression>MIT License</PackageLicenseExpression>
+    <PackageProjectUrl>https://biomap.itools.de</PackageProjectUrl>
+    <PackageIcon>favicon-96x96.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Franz1960/BioMap</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageTags>biology, monitoring, map, geo, location, toad, amphibia</PackageTags>
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -26,6 +40,10 @@
     <None Remove="wwwroot\data\elements\**" />
     <None Remove="wwwroot\data\logs\**" />
     <None Remove="wwwroot\data\users\**" />
+    <None Include="wwwroot\favicon-96x96.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <TypeScriptCompile Remove="wwwroot\data\elements\**" />
     <TypeScriptCompile Remove="wwwroot\data\logs\**" />
     <TypeScriptCompile Remove="wwwroot\data\users\**" />
