@@ -42,7 +42,7 @@ namespace BioMap.Shared
                 this.Properties.Add(new[] { Localize["Migration"],ConvInvar.ToDecimalString(dDistance,0)+" m" });
               }
             }
-            this.Properties.Add(new[] { Localize["Place"],el.GetPlace().Name });
+            this.Properties.Add(new[] { Localize["Place"],el.GetPlace()?.Name });
             this.Properties.Add(new[] { "File name",el.ElementName });
             if (hasPhoto) {
               this.Properties.Add(new[] { "Time",ConvInvar.ToString(el.ElementProp.CreationTime) });

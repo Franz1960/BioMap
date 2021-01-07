@@ -244,8 +244,10 @@ namespace BioMap
     }
     public Place GetPlace() {
       var sPlaceName = this.ElementProp.MarkerInfo.PlaceName;
-      if (DataService.Instance.PlacesByNames.TryGetValue(sPlaceName,out var place)) {
-        return place;
+      if (!string.IsNullOrEmpty(sPlaceName)) {
+        if (DataService.Instance.PlacesByNames.TryGetValue(sPlaceName,out var place)) {
+          return place;
+        }
       }
       return null;
     }
