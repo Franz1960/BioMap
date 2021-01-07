@@ -168,10 +168,28 @@
                 </BarDropdownMenu>
               </BarDropdown>
             </BarItem>
+            <BarItem>
+              <BarDropdown>
+                <BarDropdownToggle>
+                  <BarIcon IconName="IconName.HandsHelping" />
+                  @Localize["Help"]
+                </BarDropdownToggle>
+                <BarDropdownMenu>
+                  <BarDropdownItem To="/Help/About">
+                    <BarIcon IconName="IconName.Info" />
+                    @Localize["About"]..
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Help/Impressum">
+                    <BarIcon IconName="IconName.Book" />
+                    @Localize["Impressum"]
+                  </BarDropdownItem>
+                </BarDropdownMenu>
+              </BarDropdown>
+            </BarItem>
           </BarStart>
           <BarEnd>
             <BarItem>
-              <BarLink To="/Impressum">
+              <BarLink To="/Help/Impressum">
                 <BarIcon IconName="IconName.Book" />
                 @Localize["Impressum"]
               </BarLink>

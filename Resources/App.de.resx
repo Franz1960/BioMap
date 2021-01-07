@@ -126,6 +126,9 @@
   <data name="A list of places, e.g. 'B2,B3,C1' or '!B1,M1' if negated." xml:space="preserve">
     <value>Eine Liste von Plätzen, z.B. 'B2,B3,C1' oder '!B1,M1' zum Negieren.</value>
   </data>
+  <data name="About" xml:space="preserve">
+    <value>Über</value>
+  </data>
   <data name="Access level" xml:space="preserve">
     <value>Zugangsstufe</value>
   </data>
@@ -302,6 +305,9 @@
   </data>
   <data name="Head-body-length of all catches" xml:space="preserve">
     <value>Kopf-Rumpf-Länge aller Fänge</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Hilfe</value>
   </data>
   <data name="Hibernations" xml:space="preserve">
     <value>Überwinterungen</value>

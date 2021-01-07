@@ -1,0 +1,149 @@
+﻿@page "/Help/About"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject NavigationManager NM
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Row>
+  <Column>
+    <Card Margin="Margin.Is4">
+      <CardBody>
+        <CardTitle Size="4">
+          BioMap - Map based biological monitoring
+        </CardTitle>
+        <CardText>
+          <p>
+            The web app has been developed for a nature protection project in Germany.
+            The population of yellow-bellied toads (bombina variegata) is studied in a forest area
+            in Bavaria and observed over a longer period of time. By regularly catching and identifying
+            toads, growth and migration movements of individuals are recorded. The results are processed
+            numerically and graphically.
+          </p>
+          <p>
+            This software is open source. Source code is hosted at
+            <a href="https://github.com/Franz1960/BioMap">https://github.com/Franz1960/BioMap</a>.
+            It may be used under the conditions of the MIT license.
+          </p>
+        </CardText>
+      </CardBody>
+    </Card>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Card Margin="Margin.Is4">
+      <CardBody>
+        <CardTitle Size="4">
+          Third party software used in this app
+        </CardTitle>
+        <CardText>
+          <Table>
+            <TableHeader>
+              <TableHeaderCell>Software</TableHeaderCell>
+              <TableHeaderCell>Source</TableHeaderCell>
+              <TableHeaderCell>License</TableHeaderCell>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableRowCell>
+                  Blazorise
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://github.com/stsrki/Blazorise">https://github.com/stsrki/Blazorise</a>
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://github.com/stsrki/Blazorise/blob/master/LICENSE.md">MIT</a>
+                </TableRowCell>
+              </TableRow>
+              <TableRow>
+                <TableRowCell>
+                  BlazorGoogleMaps
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://github.com/rungwiroon/BlazorGoogleMaps">https://github.com/rungwiroon/BlazorGoogleMaps</a>
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://github.com/rungwiroon/BlazorGoogleMaps/blob/master/LICENSE">MIT</a>
+                </TableRowCell>
+              </TableRow>
+              <TableRow>
+                <TableRowCell>
+                  ChartJs.Blazor
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://github.com/mariusmuntean/ChartJs.Blazor">https://github.com/mariusmuntean/ChartJs.Blazor</a>
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://github.com/mariusmuntean/ChartJs.Blazor/blob/master/LICENSE">MIT</a>
+                </TableRowCell>
+              </TableRow>
+              <TableRow>
+                <TableRowCell>
+                  MetadataExtractor
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://github.com/drewnoakes/metadata-extractor-dotnet">https://github.com/drewnoakes/metadata-extractor-dotnet</a>
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://github.com/drewnoakes/metadata-extractor-dotnet/blob/master/LICENSE">Apache 2.0</a>
+                </TableRowCell>
+              </TableRow>
+              <TableRow>
+                <TableRowCell>
+                  Microsoft.Extensions.Localization
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://dotnet.microsoft.com/apps/aspnet">https://dotnet.microsoft.com/apps/aspnet</a>
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://licenses.nuget.org/Apache-2.0">Apache 2.0</a>
+                </TableRowCell>
+              </TableRow>
+              <TableRow>
+                <TableRowCell>
+                  NewtonSoft Json.NET
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://www.newtonsoft.com/json">https://www.newtonsoft.com/json</a>
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://licenses.nuget.org/MIT">MIT</a>
+                </TableRowCell>
+              </TableRow>
+              <TableRow>
+                <TableRowCell>
+                  SixLabors ImageSharp
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://github.com/SixLabors/ImageSharp">https://github.com/SixLabors/ImageSharp</a>
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="https://licenses.nuget.org/Apache-2.0">MIT</a>
+                </TableRowCell>
+              </TableRow>
+              <TableRow>
+                <TableRowCell>
+                  SQLite
+                </TableRowCell>
+                <TableRowCell>
+                  <a href=""></a>
+                </TableRowCell>
+                <TableRowCell>
+                  <a href="">Public domain</a>
+                </TableRowCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </CardText>
+      </CardBody>
+      <CardFooter>
+        Thanks to all contributors!
+      </CardFooter>
+    </Card>
+  </Column>
+</Row>
+
+@code {
+}
