@@ -104,11 +104,11 @@ namespace BioMap.Pages.Statistics
           foreach (var iid in aaIndisByIId.Keys) {
             foreach (var el in aaIndisByIId[iid]) {
               if (el.ElementProp.CreationTime.Year==Year) {
-                int nAge=(int)el.GetAgeYears();
-                if (!dictCountsByAge.ContainsKey(nAge)) {
-                  dictCountsByAge[nAge]=0;
+                int nWinters=(int)el.GetWinters();
+                if (!dictCountsByAge.ContainsKey(nWinters)) {
+                  dictCountsByAge[nWinters]=0;
                 }
-                dictCountsByAge[nAge]++;
+                dictCountsByAge[nWinters]++;
                 break;
               }
             }
