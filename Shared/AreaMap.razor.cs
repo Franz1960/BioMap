@@ -118,7 +118,7 @@ namespace BioMap.Shared
       }
       #region Add places.
       {
-        bool bShowPlaces = (this.ShowPlaces && SD.CurrentUser.Level>=400);
+        bool bShowPlaces = (this.ShowPlaces && SD.CurrentUser.Level>=0);
         if (!this.PrevShowPlaces.HasValue || bShowPlaces!=this.PrevShowPlaces) {
           LatLngBoundsLiteral bounds=null;
           this.PrevShowPlaces=bShowPlaces;

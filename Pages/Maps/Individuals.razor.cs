@@ -39,7 +39,7 @@ namespace BioMap.Pages.Maps
     }
     private async Task RefreshElementMarkers() {
       var lElementMarkers = new List<ElementMarker>();
-      if (SD.CurrentUser.Level>=400) {
+      if (SD.CurrentUser.Level>=0) {
         var dictIndividuals = DataService.Instance.GetIndividuals(SD,SD.Filters);
         var dictCircleList = new Dictionary<string, CircleOptions>();
         foreach (var iid in dictIndividuals.Keys) {
