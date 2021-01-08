@@ -1,0 +1,66 @@
+﻿@page "/Charts/SizeTimeChart"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject IJSRuntime JSRuntime
+@using BioMap
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.Util
+
+<Row>
+  <Column>
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <h1>@Localize["Length / Time Chart"]</h1>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <CheckBox Checked="@SD.SizeTimeChartShowVintageBoundaries" LabelText=@Localize["Show vintage boundaries"] OnAnyChangedCallback="@CheckBoxShowVintageBoundaries_CheckedChanged" />
+  </Column>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Show growing curves"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+        <Select TValue="string" SelectedValue="@SD.SizeTimeChartGrowingCurveMode" SelectedValueChanged="@((e)=>{ GrowingCurveMode_SelectedValueChanged(e); })">
+          <SelectItem TValue="string" Value="@("-")">-</SelectItem>
+          <SelectItem TValue="string" Value="@("Linear")">Linear</SelectItem>
+          <SelectItem TValue="string" Value="@("Spline")">Spline</SelectItem>
+          <SelectItem TValue="string" Value="@("GrowingCurve")">@Localize["Growing curve"]</SelectItem>
+        </Select>
+      </FieldBody>
+    </Field>
+  </Column>
+  <Column>
+    @if (string.CompareOrdinal(SD.SizeTimeChartGrowingCurveMode,"GrowingCurve")==0) {
+      <Button Color="Color.Primary" Disabled="SD.CurrentUser.Level<600" @onclick="async ()=>await OnSaveYoBClick()">@Localize["Calculate and save metamorphosis time"]</Button>
+    }
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+  </Column>
+</Row>
+
+<Modal @ref="progressModalRef">
+  <ModalContent Centered="true">
+    <ModalHeader>
+      <ModalTitle>
+        @Localize["Operation in progress.."]
+      </ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+      <Progress Margin="Margin.Is3.FromBottom">
+        <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
+      </Progress>
+    </ModalBody>
+  </ModalContent>
+</Modal>

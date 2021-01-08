@@ -1,0 +1,28 @@
+﻿@page "/Add/Image"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<h1>@Localize["Add Image"]</h1>
+
+<Button Color="Color.Primary" Disabled="SD.CurrentUser.Level<100" @onclick="()=>OnSelectClick()">@Localize["Select"]</Button>
+
+<div id="uploadUI">
+</div>
+<form method="post" enctype="multipart/form-data">
+  <input type="file" id="inputImageFiles" name="files[]" accept="image/*" multiple style="visibility:hidden;" />
+</form>
+
+@code {
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
+    await base.OnAfterRenderAsync(firstRender);
+    if (firstRender) {
+      await JSRuntime.InvokeAsync<string>("UploadImageFiles_Init","inputImageFiles","uploadUI");
+    }
+  }
+  private async void OnSelectClick() {
+    var sResult = await JSRuntime.InvokeAsync<string>("UploadImageFiles_Click","inputImageFiles");
+  }
+}

@@ -1,0 +1,79 @@
+﻿@inject DataService DS
+@inject SessionData SD
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
+
+<Modal @ref="modalRef" Closed="OnClosed">
+  <ModalBackdrop />
+  <ModalContent Size="@modalSize" Centered="@centered">
+    <ModalHeader>
+      <ModalTitle>
+        @Title
+      </ModalTitle>
+      <Buttons Role="ButtonsRole.Toolbar">
+        <Buttons Margin="Margin.Is2.FromRight">
+          <Button Clicked="@((e)=>sizeButtonClicked())"><Icon Name="@sizeButtonIconName" /></Button>
+        </Buttons>
+        <CloseButton Clicked="@((e)=>Hide())" />
+      </Buttons>
+    </ModalHeader>
+    <ModalBody MaxHeight="@maxHeight">
+      <ElementEdit @ref="ElementEditRef" Edit="@(SD.CurrentUser.Level>=500)" />
+    </ModalBody>
+    <ModalFooter>
+      @*<Buttons Role="ButtonsRole.Toolbar">
+          <Buttons Margin="Margin.Is2.FromRight">
+            <Button Color="Color.Warning" Clicked="@((e)=>{ Hide(); })">
+              @Localize["Close without saving"]
+            </Button>
+          </Buttons>
+          <Buttons Margin="Margin.Is2.FromRight">
+            <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save();Hide(); })">
+              <Icon Name="IconName.Save" />
+              @Localize["Save"]
+            </Button>
+          </Buttons>
+        </Buttons>*@
+    </ModalFooter>
+  </ModalContent>
+</Modal>
+
+@code{
+  //
+  private Modal modalRef;
+  private ElementEdit ElementEditRef;
+  private IconName sizeButtonIconName = IconName.Expand;
+  private bool centered = false;
+  private ModalSize modalSize = ModalSize.Default;
+  private int? maxHeight = 80;
+  public string Title { get; set; }
+  public string ElementName { get; set; }
+  public void Show(Element el) {
+    this.ElementEditRef.Element=el;
+    this.ElementName=el.ElementName;
+    this.Title=el.ElementName;
+    this.StateHasChanged();
+    this.modalRef.Show();
+  }
+  public void Hide() {
+    this.modalRef.Hide();
+  }
+  private void sizeButtonClicked() {
+    if (this.modalSize==ModalSize.Default) {
+      this.modalSize=ModalSize.Large;
+      this.sizeButtonIconName=IconName.Compress;
+    } else {
+      this.modalSize=ModalSize.Default;
+      this.sizeButtonIconName=IconName.Expand;
+    }
+  }
+  private void OnClosed() {
+    var saDiff=this.ElementEditRef.EditingChangedContent();
+    if (saDiff!=null) {
+      DS.WriteElement(this.ElementEditRef.Element);
+      string sJson = JsonConvert.SerializeObject(this.ElementEditRef.Element);
+      DS.AddLogEntry(SD.CurrentUser.EMail,"Changed element "+this.ElementEditRef.Element.ElementName+": "+saDiff[0]+" --> "+saDiff[1]);
+    }
+  }
+}

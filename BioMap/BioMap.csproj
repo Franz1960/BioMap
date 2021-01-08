@@ -1,0 +1,90 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <StartupObject>BioMap.Program</StartupObject>
+    <UserSecretsId>53345fd2-aeb4-44b6-aada-5b2af12d392e</UserSecretsId>
+    <Authors>Franz Häring</Authors>
+    <Company>private</Company>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Map based biological monitoring.
+The web app has been developed for a nature protection project in Germany. The population of yellow-bellied toads (bombina variegata) is studied in a forest area in Bavaria and observed over a longer period of time. By regularly catching and identifying toads, growth and migration movements of individuals are recorded. The results are processed numerically and graphically.</Description>
+    <Copyright>Franz Häring (fh@itools.de)</Copyright>
+    <PackageLicenseExpression>MIT License</PackageLicenseExpression>
+    <PackageProjectUrl>https://biomap.itools.de</PackageProjectUrl>
+    <PackageIcon>favicon-96x96.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Franz1960/BioMap</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageTags>biology, monitoring, map, geo, location, toad, amphibia</PackageTags>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>../../bin.debug/BioMap</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\data\elements\**" />
+    <Compile Remove="wwwroot\data\logs\**" />
+    <Compile Remove="wwwroot\data\users\**" />
+    <Content Remove="wwwroot\data\elements\**" />
+    <Content Remove="wwwroot\data\logs\**" />
+    <Content Remove="wwwroot\data\users\**" />
+    <EmbeddedResource Remove="wwwroot\data\elements\**" />
+    <EmbeddedResource Remove="wwwroot\data\logs\**" />
+    <EmbeddedResource Remove="wwwroot\data\users\**" />
+    <EntityDeploy Remove="wwwroot\data\elements\**" />
+    <EntityDeploy Remove="wwwroot\data\logs\**" />
+    <EntityDeploy Remove="wwwroot\data\users\**" />
+    <None Remove="wwwroot\data\elements\**" />
+    <None Remove="wwwroot\data\logs\**" />
+    <None Remove="wwwroot\data\users\**" />
+    <None Include="wwwroot\favicon-96x96.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <TypeScriptCompile Remove="wwwroot\data\elements\**" />
+    <TypeScriptCompile Remove="wwwroot\data\logs\**" />
+    <TypeScriptCompile Remove="wwwroot\data\users\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlazorGoogleMaps" Version="1.0.2" />
+    <PackageReference Include="Blazorise" Version="0.9.2.4" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.2.4" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.2.4" />
+    <PackageReference Include="Blazorise.Sidebar" Version="0.9.2.4" />
+    <PackageReference Include="ChartJs.Blazor.Fork" Version="2.0.1" />
+    <PackageReference Include="Geo" Version="1.0.0" />
+    <PackageReference Include="MetadataExtractor" Version="2.4.3" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="5.0.1" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.1.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.2" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.113.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\App.en.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\App.de.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\data\conf\MapImageBounds.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

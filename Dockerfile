@@ -14,6 +14,6 @@ RUN dotnet publish -c release -o /app --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
-WORKDIR /app
+WORKDIR /var/www/dotnet/biomap
 COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "BioMap.dll"]

@@ -1,0 +1,16 @@
+﻿@page "/Charts/NumberYoBChart"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject IJSRuntime JSRuntime
+@using BioMap
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.Util
+
+<h1>@Localize["Numbers / Year of Birth Chart"]</h1>
+
+<Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />

@@ -1,0 +1,90 @@
+﻿@page "/Administration/Places"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject NavigationManager NM
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Row>
+  <Column>
+    <CheckBox @bind-Checked="SD.AlienateLocations" LabelText=@Localize["Alienate locations"] />
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Card Margin="Margin.Is4.OnY">
+      <CardHeader>
+        <CardTitle>@Localize["Places"]</CardTitle>
+      </CardHeader>
+      <CardBody>
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col">@Localize["Place"]</th>
+              @if (SD.CurrentUser.MaySeeLocations) {
+                <th scope="col">@Localize["Latitude"]</th>
+                <th scope="col">@Localize["Longitude"]</th>
+              }
+              <th scope="col">@Localize["Radius"]</th>
+              @foreach (var trait in Places.Traits) {
+                <th scope="col">@trait.Name</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var place in AllPlaces) {
+              <tr>
+                <th scope="row">@place.Name</th>
+                @if (SD.CurrentUser.MaySeeLocations) {
+                  <td>
+                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" @onfocusout="(e)=>ChangeByUser()" />
+                  </td>
+                  <td>
+                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lng" @onfocusout="(e)=>ChangeByUser()" />
+                  </td>
+                }
+                <td>
+                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" @onfocusout="(e)=>ChangeByUser()" />
+                </td>
+                @foreach (var idx in Enumerable.Range(0,Places.Traits.Length)) {
+                  <td>
+                    <Select TValue="int" Disabled="!SD.CurrentUser.MayChangeElements" SelectedValue="place.TraitValues[idx]" SelectedValueChanged="(value)=>TraitValueChanged(place,idx,value)">
+                      @foreach (var idx1 in Enumerable.Range(0,Places.Traits[idx].ValueNames.Length)) {
+                        <SelectItem Value="idx1">@Places.Traits[idx].ValueNames[idx1]</SelectItem>
+                      }
+                    </Select>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </CardBody>
+    </Card>
+  </Column>
+</Row>
+
+@code {
+  private Place[] AllPlaces = new Place[0];
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    NM.LocationChanged+=NM_LocationChanged;
+    RefreshData();
+  }
+  private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
+    NM.LocationChanged-=NM_LocationChanged;
+    this.ChangeByUser();
+  }
+  private void RefreshData() {
+    this.AllPlaces = DS.GetPlaces(SD);
+    StateHasChanged();
+  }
+  private void TraitValueChanged(Place place,int idx,int value) {
+    place.TraitValues[idx]=value;
+    this.ChangeByUser();
+  }
+  private void ChangeByUser() {
+    DS.WriteAllPlaces(SD.CurrentUser);
+  }
+}

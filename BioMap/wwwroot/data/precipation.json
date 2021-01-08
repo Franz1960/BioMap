@@ -1,0 +1,16 @@
+{
+  "Description":"Niederschläge im Monatsmittel in mm",
+  "Source":"Wetterstation ???",
+  "LatLng":
+  {
+    "lat": 49.051634861111,
+    "lng": 12.183284388889
+  },
+  "Values":
+  [
+    { "TS":"2019-01", "P":63.5 },
+    { "TS":"2019-02", "P":87 },
+    { "TS":"2019-03", "P":75.3 },
+    { "TS":"2019-04", "P":92.6 }
+  ]
+}
