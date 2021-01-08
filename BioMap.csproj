@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <StartupObject>BioMap.Program</StartupObject>
     <UserSecretsId>53345fd2-aeb4-44b6-aada-5b2af12d392e</UserSecretsId>
     <Authors>Franz Häring</Authors>
@@ -50,6 +50,13 @@ The web app has been developed for a nature protection project in Germany. The p
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BlazorGoogleMaps" Version="1.0.2" />
+    <PackageReference Include="Blazorise" Version="0.9.2.4" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.2.4" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.2.4" />
+    <PackageReference Include="Blazorise.Sidebar" Version="0.9.2.4" />
+    <PackageReference Include="ChartJs.Blazor.Fork" Version="2.0.1" />
+    <PackageReference Include="Geo" Version="1.0.0" />
     <PackageReference Include="MetadataExtractor" Version="2.4.3" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="5.0.1" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.1.2">
@@ -58,16 +65,7 @@ The web app has been developed for a nature protection project in Germany. The p
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.2" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.113.6" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BlazorGoogleMaps\GoogleMapsComponents\GoogleMapsComponents.csproj" />
-    <ProjectReference Include="..\Blazorise\Source\Blazorise.Bootstrap\Blazorise.Bootstrap.csproj" />
-    <ProjectReference Include="..\Blazorise\Source\Extensions\Blazorise.DataGrid\Blazorise.DataGrid.csproj" />
-    <ProjectReference Include="..\Blazorise\Source\Extensions\Blazorise.Icons.FontAwesome\Blazorise.Icons.FontAwesome.csproj" />
-    <ProjectReference Include="..\ChartJs.Blazor\src\ChartJs.Blazor\ChartJs.Blazor.csproj" />
-    <ProjectReference Include="..\Geo\Geo\Geo.csproj" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.113.7" />
   </ItemGroup>
 
   <ItemGroup>
