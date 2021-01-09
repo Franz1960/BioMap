@@ -2,5 +2,6 @@
 #
 # Build a Docker image to build and run the BioMap app.
 #
+docker container stop biomap_run
 docker build -t biomap .
 docker run -d --rm -p 5010:80 --mount type=bind,source="/var/www/data",target=/var/www/data --name biomap_run biomap
