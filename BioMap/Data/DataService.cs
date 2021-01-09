@@ -69,6 +69,10 @@ namespace BioMap
     }
     private void OperateOnDb(string sProject,Action<IDbCommand> dbAction) {
       try {
+        var sDataDir = this.GetDataDir(sProject);
+        if (!System.IO.Directory.Exists(sDataDir)) {
+          System.IO.Directory.CreateDirectory(sDataDir);
+        }
         var sDbFilePath = System.IO.Path.Combine(this.GetDataDir(sProject),"biomap.sqlite");
         var dbConnection = new SQLiteConnection();
         dbConnection.ConnectionString = "Data Source="+sDbFilePath;
