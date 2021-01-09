@@ -331,7 +331,7 @@ namespace BioMap.Pages.Statistics
           }
         }
         {
-          var csvContent = (new CsvHelper()).ReadCsv("MeteoStat Donaustauf.csv");
+          var csvContent = (new CsvHelper()).ReadCsv(SD,"MeteoStat Donaustauf.csv");
           if (csvContent.Rows.Length>=1) {
             var dsTemperature = new LineDataset<double>() {
               Label=Localize["Temperature"],
@@ -408,7 +408,7 @@ namespace BioMap.Pages.Statistics
           }
         }
         {
-          var csvContent = (new CsvHelper()).ReadCsv("MeteoStat Donaustauf.csv");
+          var csvContent = (new CsvHelper()).ReadCsv(SD,"MeteoStat Donaustauf.csv");
           if (csvContent.Rows.Length>=1) {
             var dsTemperature = new LineDataset<double>() {
               Label=Localize["Temperature"],

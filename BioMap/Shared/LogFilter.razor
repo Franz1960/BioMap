@@ -12,7 +12,7 @@
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
         <Select TValue="string" @bind-SelectedValue="SD.Filters.LogUserFilter">
           <SelectItem TValue="string" Value="@("")"></SelectItem>
-          @foreach (var userEMail in DS.GetLogUsers(SD.Filters)) {
+          @foreach (var userEMail in DS.GetLogUsers(SD,SD.Filters)) {
             <SelectItem TValue="string" Value="userEMail">@userEMail</SelectItem>
           }
         </Select>

@@ -14,7 +14,7 @@ namespace BioMap
   {
     public class Category
     {
-      public Category(int nCatNum,string sCatName,string bgColor) {
+      public Category(int nCatNum,string bgColor,string sCatName) {
         this.Num=nCatNum;
         this.NumString=ConvInvar.ToString(nCatNum);
         this.Name=sCatName;
@@ -28,23 +28,46 @@ namespace BioMap
       public static readonly Dictionary<int,Category> CategoriesByNum = new Dictionary<int,Category>();
       static Category() {
         var l = new List<Category>();
-        CategoriesByNum.Clear();
-        try {
-          var sr = new System.IO.StreamReader(System.IO.Path.Combine(DataService.Instance.DataDir + "conf/ElementCategories.json"));
-          var sJson = sr.ReadToEnd();
-          sr.Close();
-          var jel = JObject.Parse(sJson);
-          foreach (var jCat in jel) {
-            int nCatNum = ConvInvar.ToInt(jCat.Key);
-            var category = new Category(
-              nCatNum,
-              jCat.Value["name"].ToString(),
-              (string)jCat.Value["bgColor"]);
-            l.Add(category);
-            CategoriesByNum[nCatNum]=category;
-          }
-        } catch { }
+        l.Add(new Category(100,"#FFFFFF","Neu hochgeladen"));
+        l.Add(new Category(120,"#9132D1","Andere Tierart"));
+        l.Add(new Category(130,"#9132D1","Sonstiges"));
+        l.Add(new Category(140,"#846A00","Sonstige Kröte"));
+        l.Add(new Category(141,"#846A00","Erdkröte"));
+        l.Add(new Category(150,"#C96A00","Sonstiger Frosch"));
+        l.Add(new Category(151,"#C96A00","Grasfrosch"));
+        l.Add(new Category(152,"#CD6A00","Springfrosch"));
+        l.Add(new Category(153,"#00A321","Grünfrosch"));
+        l.Add(new Category(160,"#C96A00","Sonstiger Schwanzlurch"));
+        l.Add(new Category(161,"#B200FF","Teichmolch"));
+        l.Add(new Category(162,"#A17FFF","Bergmolch"));
+        l.Add(new Category(163,"#FF7F7F","Kammmolch"));
+        l.Add(new Category(164,"#FF7F7F","Feuersalamander"));
+        l.Add(new Category(170,"#D730D0","Sonstiges Insekt"));
+        l.Add(new Category(171,"#D730D0","Rückenschwimmer"));
+        l.Add(new Category(172,"#D730D0","Wasserläufer"));
+        l.Add(new Category(173,"#D730D0","Wasserskorpion"));
+        l.Add(new Category(174,"#D730D0","Libellenlarve"));
+        l.Add(new Category(175,"#D730D0","Gelbrandkäfer"));
+        l.Add(new Category(210,"#D30000","Kein Habitat"));
+        l.Add(new Category(220,"#AAC643","Potentielles Habitat ohne Unken"));
+        l.Add(new Category(230,"#AAC643","Potentielles Habitat Ortsmeldung"));
+        l.Add(new Category(240,"#AAC643","Potentielles Habitat Foto"));
+        l.Add(new Category(242,"#B7B171","Foto mit vermutlichem Unkenlaich"));
+        l.Add(new Category(244,"#B7B171","Foto mit vermutlichen Unkenquappen"));
+        l.Add(new Category(320,"#A0FF70","Geprüftes Foto ohne Unken"));
+        l.Add(new Category(322,"#A0FF70","Monitoring-Besuch ohne Unken"));
+        l.Add(new Category(330,"#FFFF20","Geprüfte Ortsmeldung mit Unken"));
+        l.Add(new Category(340,"#B7B171","Geprüftes Foto mit Unken"));
+        l.Add(new Category(342,"#B7B171","Foto mit überprüftem Unkenlaich"));
+        l.Add(new Category(344,"#B7B171","Foto mit überprüften Unkenquappen"));
+        l.Add(new Category(346,"#000000","Foto mit überprüften Unkenkadavern"));
+        l.Add(new Category(350,"#FFD800","Passbild"));
+        l.Add(new Category(351,"#7F6420","Normbild Oberseite"));
         AllCategories=l.ToArray();
+        CategoriesByNum.Clear();
+        foreach (var category in AllCategories) {
+          CategoriesByNum[category.Num]=category;
+        }
       }
     }
     public class SymbolProperties
@@ -101,18 +124,20 @@ namespace BioMap
       public ExifData_t ExifData;
       public IndivData_t IndivData;
     }
+    public readonly string Project;
     public string ElementName;
     public ElementProp_t ElementProp;
-    public int? SpeciesId;
-    public int? ProjectId;
     //
-    public static Element CreateFromImageFile(string sImageFilePath,string sUserId) {
+    public Element(string sProject) {
+      this.Project=sProject;
+    }
+    public static Element CreateFromImageFile(string sProject,string sImageFilePath,string sUserId) {
       var metaData = ImageMetadataReader.ReadMetadata(sImageFilePath);
       var ifd0Directory = metaData.OfType<ExifIfd0Directory>().FirstOrDefault();
       var subIfdDirectory = metaData.OfType<ExifSubIfdDirectory>().FirstOrDefault();
       var gpsDirectory = metaData.OfType<GpsDirectory>().FirstOrDefault();
       var geoLocation = gpsDirectory?.GetGeoLocation();
-      var el = new Element();
+      var el = new Element(sProject);
       el.ElementName = System.IO.Path.GetFileName(sImageFilePath);
       el.ElementProp=new ElementProp_t();
       el.ElementProp.UploadInfo=new Element.UploadInfo_t {
@@ -181,7 +206,7 @@ namespace BioMap
     }
     public string GetDetails() {
       var sb = new System.Text.StringBuilder();
-      sb.Append(this.GetPlace()?.Name);
+      sb.Append(this.GetPlaceName());
       if (this.ElementProp.IndivData!=null) {
         sb.Append(", #");
         sb.Append(this.GetIId());
@@ -242,14 +267,9 @@ namespace BioMap
     public string GetIsoDateTime() {
       return this.ElementProp.CreationTime.ToString("yyyy-MM-dd HH:mm:ss");
     }
-    public Place GetPlace() {
+    public string GetPlaceName() {
       var sPlaceName = this.ElementProp.MarkerInfo.PlaceName;
-      if (!string.IsNullOrEmpty(sPlaceName)) {
-        if (DataService.Instance.PlacesByNames.TryGetValue(sPlaceName,out var place)) {
-          return place;
-        }
-      }
-      return null;
+      return sPlaceName;
     }
     public string GetGender() {
       if (this.ElementProp.IndivData!=null) {

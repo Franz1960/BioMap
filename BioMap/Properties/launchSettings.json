@@ -10,7 +10,7 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "workingDirectory": "C:\\Projekte\\P6086 - BioMap\\bin.debug\\BioMap\\net5.0",
+      "workingDirectory": "C:\\Projekte\\P6086 - BioMap\\bin.debug\\BioMap",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

@@ -71,7 +71,7 @@ namespace BioMap.Shared
         }
         #region Add area of interest.
         try {
-          var sJson = System.IO.File.ReadAllText(DS.DataDir + "conf/aoi.json");
+          var sJson = System.IO.File.ReadAllText(DS.GetDataDir(SD) + "conf/aoi.json");
           var vertices = JsonConvert.DeserializeObject<LatLngLiteral[]>(sJson);
           var path = new List<LatLngLiteral>(vertices);
           var polygon = Polygon.CreateAsync(googleMap.JsRuntime,new PolygonOptions {
@@ -97,8 +97,8 @@ namespace BioMap.Shared
         #endregion
         #region Add custom map.
         try {
-          var sFilePathJson = DS.DataDir + "conf/MapImageBounds.json";
-          var sFilePathMapImage = DS.DataDir + "conf/MapImage.jpg";
+          var sFilePathJson = DS.GetDataDir(SD) + "conf/MapImageBounds.json";
+          var sFilePathMapImage = DS.GetDataDir(SD) + "conf/MapImage.jpg";
           if (System.IO.File.Exists(sFilePathJson) && System.IO.File.Exists(sFilePathMapImage)) {
             var sJson = System.IO.File.ReadAllText(sFilePathJson);
             var bounds = JsonConvert.DeserializeObject<LatLngLiteral[]>(sJson);

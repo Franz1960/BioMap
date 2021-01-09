@@ -39,7 +39,7 @@
         </td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetGender()))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetHeadBodyLengthNice()))</td>
-        <td>@((MarkupString)GetForElements(iid,el=>el.GetPlace()?.Name))</td>
+        <td>@((MarkupString)GetForElements(iid,el=>el.GetPlaceName()))</td>
         <td>
           @foreach (var el in this.Individuals[iid]) {
             @((MarkupString)this.GetLineBreak(iid))
@@ -153,7 +153,7 @@
     foreach (var aIndis in DS.GetIndividuals(SD,SD.Filters)) {
       for (int idxEl=0;idxEl<aIndis.Value.Count;idxEl++) {
         var el = aIndis.Value[idxEl];
-        var place = el.GetPlace();
+        var placeName = el.GetPlaceName();
         var sbTraits = new System.Text.StringBuilder();
         foreach (var trait in el.ElementProp.IndivData.TraitValues) {
           if (sbTraits.Length>0) {
@@ -174,7 +174,7 @@
         csv.Append(sep+ConvInvar.ToDecimalString(el.GetHeadBodyLengthMm(),1));
         csv.Append(sep+'"'+sbTraits.ToString()+'"');
         csv.Append(sep+sDistance);
-        csv.Append(sep+(place==null ? "" : place.Name));
+        csv.Append(sep+placeName);
         csv.Append(sep+'"'+el.ElementName+'"');
         csv.Append('\n');
       }

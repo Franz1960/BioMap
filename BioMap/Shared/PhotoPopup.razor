@@ -71,9 +71,9 @@
   private void OnClosed() {
     var saDiff=this.ElementEditRef.EditingChangedContent();
     if (saDiff!=null) {
-      DS.WriteElement(this.ElementEditRef.Element);
+      DS.WriteElement(SD,this.ElementEditRef.Element);
       string sJson = JsonConvert.SerializeObject(this.ElementEditRef.Element);
-      DS.AddLogEntry(SD.CurrentUser.EMail,"Changed element "+this.ElementEditRef.Element.ElementName+": "+saDiff[0]+" --> "+saDiff[1]);
+      DS.AddLogEntry(SD,"Changed element "+this.ElementEditRef.Element.ElementName+": "+saDiff[0]+" --> "+saDiff[1]);
     }
   }
 }

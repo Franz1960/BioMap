@@ -131,7 +131,7 @@
     function UploadImageFiles_Click(idInput) {
       document.getElementById(idInput).click();
     }
-    function UploadImageFiles(evt) {
+    function UploadImageFiles(evt,sProject) {
       //alert("UploadImageFiles() called.");
       const files = evt.target.files; // FileList object
       for (var iFile = 0; iFile < files.length; iFile++) {

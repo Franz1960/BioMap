@@ -20,11 +20,11 @@ namespace BioMap
       public Row[] Rows;
     }
     //
-    public CsvContent ReadCsv(string sFileName) {
+    public CsvContent ReadCsv(SessionData sd,string sFileName) {
       var ds = DataService.Instance;
       var lHeaders=new List<string>();
       var laRows=new List<CsvContent.Row>();
-      var sFilePath=ds.DataDir + "conf/"+sFileName;
+      var sFilePath=ds.GetDataDir(sd) + "conf/"+sFileName;
       if (System.IO.File.Exists(sFilePath)) {
         var sr = new System.IO.StreamReader(sFilePath);
         try {

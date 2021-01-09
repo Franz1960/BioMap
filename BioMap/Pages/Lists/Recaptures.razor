@@ -42,7 +42,7 @@
           </td>
           <td>@((MarkupString)GetForElements(iid,el => el.GetGender()))</td>
           <td>@((MarkupString)GetForElements(iid,el => el.GetHeadBodyLengthNice()))</td>
-          <td>@((MarkupString)GetForElements(iid,el => el.GetPlace()?.Name))</td>
+          <td>@((MarkupString)GetForElements(iid,el => el.GetPlaceName()))</td>
           <td>
             @foreach (var el in this.Individuals[iid]) {
               @((MarkupString)this.GetLineBreak(iid))
@@ -144,7 +144,7 @@
   private bool ArePlacesConsistent(int iid) {
     string sPlace = null;
     foreach (var el in this.Individuals[iid]) {
-      string p = el.GetPlace()?.Name;
+      string p = el.GetPlaceName();
       if (sPlace==null) {
         sPlace=p;
       } else if (string.CompareOrdinal(p,sPlace)!=0) {
@@ -157,7 +157,7 @@
     int nYoB = ConvInvar.ToInt(e.Value.ToString());
     foreach (var el in this.Individuals[iid]) {
       el.ElementProp.IndivData.DateOfBirth=new DateTime(nYoB,7,1);
-      DataService.Instance.WriteElement(el);
+      DataService.Instance.WriteElement(SD,el);
     }
   }
   private int oldIid = 0;

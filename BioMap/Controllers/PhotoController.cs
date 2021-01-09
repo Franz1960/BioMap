@@ -11,11 +11,12 @@ namespace BioMap
   [ApiController]
   public class PhotoController : ControllerBase
   {
-    public static string GetImageFilePath(string id) {
+    public static string GetImageFilePath(string sProject,string id) {
       var ds = DataService.Instance;
-      string sFilePath = System.IO.Path.Combine(ds.DataDir,System.IO.Path.Combine("images",id));
+      var sDataDir = ds.GetDataDir(sProject);
+      string sFilePath = System.IO.Path.Combine(sDataDir,System.IO.Path.Combine("images",id));
       if (!System.IO.File.Exists(sFilePath)) {
-        sFilePath = System.IO.Path.Combine(ds.DataDir,System.IO.Path.Combine("images_orig",id));
+        sFilePath = System.IO.Path.Combine(sDataDir,System.IO.Path.Combine("images_orig",id));
       }
       if (System.IO.File.Exists(sFilePath)) {
         return sFilePath;
@@ -26,7 +27,11 @@ namespace BioMap
     public IActionResult GetPhoto(string id) {
       try {
         bool bReqThumbnail = Request.Query.ContainsKey("width");
-        string sFilePath = GetImageFilePath(id);
+        string sProject="";
+        if (Request.Query.ContainsKey("Project")) {
+          sProject=Request.Query["Project"];
+        }
+        string sFilePath = GetImageFilePath(sProject,id);
         if (!string.IsNullOrEmpty(sFilePath)) {
           try {
             if (Request.Query.ContainsKey("width")) {
@@ -79,9 +84,10 @@ namespace BioMap
     }
     [HttpPost]
     public IActionResult Upload() {
+      string sProject = this.HttpContext.Request.Cookies["Project"];
       string EMailAddr = this.HttpContext.Request.Cookies["UserId"];
       var ds = DataService.Instance;
-      var sImagesOrigDir = System.IO.Path.Combine(ds.DataDir,"images_orig");
+      var sImagesOrigDir = System.IO.Path.Combine(ds.GetDataDir(sProject),"images_orig");
       try {
         if (Request.Form.Files.Count>=1) {
           var file = Request.Form.Files[0];
@@ -92,8 +98,8 @@ namespace BioMap
             using (var stream = new System.IO.FileStream(fullPath,System.IO.FileMode.Create)) {
               file.CopyTo(stream);
             }
-            var el = Element.CreateFromImageFile(fullPath,EMailAddr);
-            ds.WriteElement(el);
+            var el = Element.CreateFromImageFile(sProject,fullPath,EMailAddr);
+            ds.WriteElement(sProject,el);
             return Ok(fileName);
           }
         }

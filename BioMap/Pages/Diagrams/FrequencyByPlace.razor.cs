@@ -82,7 +82,7 @@ namespace BioMap.Pages.Diagrams
       _config.Data.Datasets.Clear();
       var countByPlaceAndDate = new Dictionary<string,Dictionary<DateTime,int>>();
       foreach (var el in aIndividuals) {
-        string sPlace = el.GetPlace()?.Name;
+        string sPlace = el.GetPlaceName();
         var date = el.ElementProp.CreationTime.Date;
         if (!countByPlaceAndDate.TryGetValue(sPlace,out var countByDate)) {
           countByDate=new Dictionary<DateTime,int>();

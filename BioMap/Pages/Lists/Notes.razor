@@ -67,7 +67,7 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.ProtocolEntries = DataService.Instance.GetProtocolEntries(SD.Filters,"","notes.dt DESC");
+    this.ProtocolEntries = DataService.Instance.GetProtocolEntries(SD,SD.Filters,"","notes.dt DESC");
   }
   private void AddProtocolEntry() {
     var pe = new ProtocolEntry {

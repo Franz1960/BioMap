@@ -18,8 +18,35 @@ namespace BioMap
       DataService.Instance = this;
     }
     public static DataService Instance { get; private set; }
-    public string DataDir = "../../data/biomap/";
-    public System.Data.IDbConnection DbConnection = null;
+    private string DataBaseDir = "../../../data/";
+    public readonly string BaseProject = "biomap";
+    public string[] GetAllProjects() {
+      var lProjects=new List<string>();
+      try {
+        foreach (var sDirPath in System.IO.Directory.GetDirectories(DataBaseDir)) {
+          string sDirName = new System.IO.DirectoryInfo(sDirPath).Name;
+          if (sDirName.StartsWith(BaseProject)) {
+            if (sDirName.Length<=BaseProject.Length+1) {
+              lProjects.Add("");
+            } else {
+              lProjects.Add(sDirName.Substring(BaseProject.Length+1));
+            }
+          }
+        }
+      } catch { }
+      lProjects.Sort();
+      return lProjects.ToArray();
+    }
+    public string GetDataDir(string sProject) {
+      string sProjectDir="biomap";
+      if (!string.IsNullOrEmpty(sProject)) {
+        sProjectDir+="."+sProject;
+      }
+      return DataBaseDir+sProjectDir+"/";
+    }
+    public string GetDataDir(SessionData sd) {
+      return this.GetDataDir(sd.CurrentUser.Project);
+    }
     public event EventHandler Initialized {
       add {
         lock (this.lockInitialized) {
@@ -37,140 +64,134 @@ namespace BioMap
     private event EventHandler _Initialized;
     private bool isInitialized = false;
     private readonly object lockInitialized = new object();
-    public void OperateOnDb(Action<IDbCommand> dbAction) {
+    public void OperateOnDb(SessionData sd,Action<IDbCommand> dbAction) {
+      this.OperateOnDb(sd.CurrentUser.Project,dbAction);
+    }
+    private void OperateOnDb(string sProject,Action<IDbCommand> dbAction) {
       try {
-        this.DbConnection.Open();
+        var sDbFilePath = System.IO.Path.Combine(this.GetDataDir(sProject),"biomap.sqlite");
+        var dbConnection = new SQLiteConnection();
+        dbConnection.ConnectionString = "Data Source="+sDbFilePath;
+        bool bDbFileExisted = System.IO.File.Exists(sDbFilePath);
+        dbConnection.Open();
+        if (!bDbFileExisted) {
+          using (IDbCommand command = dbConnection.CreateCommand()) {
+            #region Ggf. Tabellenstruktur erzeugen.
+            command.CommandText = "CREATE TABLE IF NOT EXISTS places (" +
+            "name TEXT PRIMARY KEY NOT NULL," +
+            "traitvalues TEXT," +
+            "radius REAL," +
+            "lat REAL," +
+            "lng REAL)";
+            command.ExecuteNonQuery();
+            command.CommandText = "CREATE TABLE IF NOT EXISTS monitoringevents (" +
+            "place TEXT," +
+            "kw INT," +
+            "user TEXT," +
+            "value TEXT)";
+            command.ExecuteNonQuery();
+            command.CommandText = "CREATE TABLE IF NOT EXISTS notes (" +
+            "dt DATETIME NOT NULL," +
+            "author TEXT," +
+            "text TEXT,UNIQUE(dt,author))";
+            command.ExecuteNonQuery();
+            command.CommandText = "CREATE TABLE IF NOT EXISTS log (" +
+            "dt DATETIME NOT NULL," +
+            "user TEXT," +
+            "action TEXT)";
+            command.ExecuteNonQuery();
+            command.CommandText = "CREATE TABLE IF NOT EXISTS users (" +
+            "emailaddr TEXT PRIMARY KEY NOT NULL COLLATE NOCASE," +
+            "fullname TEXT," +
+            "level INT," +
+            "tan TEXT," +
+            "permticket TEXT)";
+            command.ExecuteNonQuery();
+            command.ExecuteNonQuery();
+            command.CommandText = "CREATE TABLE IF NOT EXISTS elements (" +
+            "name TEXT PRIMARY KEY NOT NULL," +
+            "category INT NOT NULL," +
+            "markerposlat REAL," +
+            "markerposlng REAL," +
+            "place TEXT," +
+            "comment TEXT," +
+            "uploadtime DATETIME NOT NULL," +
+            "uploader TEXT NOT NULL," +
+            "creationtime DATETIME NOT NULL)";
+            command.ExecuteNonQuery();
+            command.CommandText = "CREATE TABLE IF NOT EXISTS photos (" +
+            "name TEXT PRIMARY KEY NOT NULL," +
+            "filename TEXT NOT NULL," +
+            "exifmake TEXT," +
+            "exifmodel TEXT," +
+            "exifdatetimeoriginal DATETIME)";
+            command.ExecuteNonQuery();
+            command.CommandText = "CREATE TABLE IF NOT EXISTS indivdata (" +
+            "name TEXT PRIMARY KEY NOT NULL," +
+            "normcirclepos0x REAL," +
+            "normcirclepos0y REAL," +
+            "normcirclepos1x REAL," +
+            "normcirclepos1y REAL," +
+            "normcirclepos2x REAL," +
+            "normcirclepos2y REAL," +
+            "headposx REAL," +
+            "headposy REAL," +
+            "backposx REAL," +
+            "backposy REAL," +
+            "origheadposx REAL," +
+            "origheadposy REAL," +
+            "origbackposx REAL," +
+            "origbackposy REAL," +
+            "headbodylength REAL," +
+            "traitYellowDominance INT," +
+            "traitBlackDominance INT," +
+            "traitVertBlackBreastCenterStrip INT," +
+            "traitHorizBlackBreastBellyStrip INT," +
+            "traitManyIsolatedBlackBellyDots INT," +
+            "dateofbirth DATETIME," +
+            "ageyears REAL," +
+            "winters INT," +
+            "gender TEXT," +
+            "iid INT)";
+            command.ExecuteNonQuery();
+            #endregion
+          }
+        }
         try {
-          using (IDbCommand command = this.DbConnection.CreateCommand()) {
+          using (IDbCommand command = dbConnection.CreateCommand()) {
             dbAction(command);
           }
         } finally {
-          this.DbConnection.Close();
+          dbConnection.Close();
+          dbConnection.Dispose();
         }
       } catch { }
     }
     public Task Init() {
       return Task.Run(() => {
-        bool bMigrate = true;
-        this.DbConnection = new SQLiteConnection();
-        this.DbConnection.ConnectionString = "Data Source="+System.IO.Path.Combine(this.DataDir,"biomap.sqlite");
-        this.OperateOnDb((command) => {
-          #region Ggf. Tabellenstruktur erzeugen.
-          command.CommandText = "CREATE TABLE IF NOT EXISTS places (" +
-          "name TEXT PRIMARY KEY NOT NULL," +
-          "radius REAL," +
-          "lat REAL," +
-          "lng REAL)";
-          command.ExecuteNonQuery();
-          try {
-            command.CommandText = "ALTER TABLE places ADD COLUMN traitvalues TEXT";
-            command.ExecuteNonQuery();
-          } catch { }
-          command.CommandText = "CREATE TABLE IF NOT EXISTS monitoringevents (" +
-          "place TEXT," +
-          "kw INT," +
-          "user TEXT," +
-          "value TEXT)";
-          command.ExecuteNonQuery();
-          command.CommandText = "CREATE TABLE IF NOT EXISTS notes (" +
-          "dt DATETIME NOT NULL," +
-          "author TEXT," +
-          "text TEXT,UNIQUE(dt,author))";
-          command.ExecuteNonQuery();
-          command.CommandText = "CREATE TABLE IF NOT EXISTS log (" +
-          "dt DATETIME NOT NULL," +
-          "user TEXT," +
-          "action TEXT)";
-          command.ExecuteNonQuery();
-          command.CommandText = "CREATE TABLE IF NOT EXISTS users (" +
-          "emailaddr TEXT PRIMARY KEY NOT NULL COLLATE NOCASE," +
-          "fullname TEXT," +
-          "level INT," +
-          "tan TEXT," +
-          "permticket TEXT)";
-          command.ExecuteNonQuery();
-          command.CommandText = "CREATE TABLE IF NOT EXISTS species (" +
-          "spec_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-          "genus TEXT NOT NULL," +
-          "species TEXT NOT NULL," +
-          "commonname_en TEXT," +
-          "UNIQUE(species,genus))";
-          command.ExecuteNonQuery();
-          command.CommandText = "CREATE TABLE IF NOT EXISTS projects (" +
-          "prj_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-          "name TEXT NOT NULL," +
-          "description TEXT," +
-          "target_species_id INT," +
-          "UNIQUE(name))";
-          command.ExecuteNonQuery();
-          command.CommandText = "CREATE TABLE IF NOT EXISTS elements (" +
-          "name TEXT PRIMARY KEY NOT NULL," +
-          "species_id INT," +
-          "project_id INT," +
-          "category INT NOT NULL," +
-          "markerposlat REAL," +
-          "markerposlng REAL," +
-          "place TEXT," +
-          "comment TEXT," +
-          "uploadtime DATETIME NOT NULL," +
-          "uploader TEXT NOT NULL," +
-          "creationtime DATETIME NOT NULL)";
-          command.ExecuteNonQuery();
-          command.CommandText = "CREATE TABLE IF NOT EXISTS photos (" +
-          "name TEXT PRIMARY KEY NOT NULL," +
-          "filename TEXT NOT NULL," +
-          "exifmake TEXT," +
-          "exifmodel TEXT," +
-          "exifdatetimeoriginal DATETIME)";
-          command.ExecuteNonQuery();
-          command.CommandText = "CREATE TABLE IF NOT EXISTS indivdata (" +
-          "name TEXT PRIMARY KEY NOT NULL," +
-          "normcirclepos0x REAL," +
-          "normcirclepos0y REAL," +
-          "normcirclepos1x REAL," +
-          "normcirclepos1y REAL," +
-          "normcirclepos2x REAL," +
-          "normcirclepos2y REAL," +
-          "headposx REAL," +
-          "headposy REAL," +
-          "backposx REAL," +
-          "backposy REAL," +
-          "origheadposx REAL," +
-          "origheadposy REAL," +
-          "origbackposx REAL," +
-          "origbackposy REAL," +
-          "headbodylength REAL," +
-          "traitYellowDominance INT," +
-          "traitBlackDominance INT," +
-          "traitVertBlackBreastCenterStrip INT," +
-          "traitHorizBlackBreastBellyStrip INT," +
-          "traitManyIsolatedBlackBellyDots INT," +
-          "dateofbirth DATETIME," +
-          "ageyears REAL," +
-          "winters INT," +
-          "gender TEXT," +
-          "iid INT)";
-          command.ExecuteNonQuery();
-          #endregion
-          #region Prüfen, ob leer, also Migration notwendig.
-          {
-            command.CommandText = "SELECT name FROM elements";
-            var dr = command.ExecuteReader();
-            bMigrate=!dr.Read();
-            dr.Close();
-          }
-          #endregion
-        });
-        //
-        this.AddLogEntry("System","Web service started");
-        //
-        if (bMigrate) {
-          this.IsMigrationInProcess=true;
-          Migration.MigrateData();
-          this.IsMigrationInProcess=false;
-        }
-        this.RefreshAllUsers();
-        this.RefreshAllPlaces();
+        //bool bMigrate = true;
+        //this.DbConnection = new SQLiteConnection();
+        //this.DbConnection.ConnectionString = "Data Source="+System.IO.Path.Combine(this.DataDir,"biomap.sqlite");
+        //this.OperateOnDb((command) => {
+        //  #region Prüfen, ob leer, also Migration notwendig.
+        //  {
+        //    command.CommandText = "SELECT name FROM elements";
+        //    var dr = command.ExecuteReader();
+        //    bMigrate=!dr.Read();
+        //    dr.Close();
+        //  }
+        //  #endregion
+        //});
+        ////
+        //this.AddLogEntry("System","Web service started");
+        ////
+        //if (bMigrate) {
+        //  this.IsMigrationInProcess=true;
+        //  Migration.MigrateData();
+        //  this.IsMigrationInProcess=false;
+        //}
+        //this.RefreshAllUsers();
+        //this.RefreshAllPlaces();
         //
         lock (this.lockInitialized) {
           this._Initialized?.Invoke(this,EventArgs.Empty);
@@ -179,7 +200,7 @@ namespace BioMap
       });
     }
     public bool IsMigrationInProcess = false;
-    public bool SendMail(string sTo,string sSubject,string sTextBody) {
+    public bool SendMail(SessionData sd,string sTo,string sSubject,string sTextBody) {
       // EMail per REST-API auf Server itools.de versenden.
       try {
         var client = new System.Net.Http.HttpClient();
@@ -189,20 +210,20 @@ namespace BioMap
         bool bSuccess=client.PostAsync("https://itools.de/rfapi/rfapi.php",requestContent).Wait(4000);
         return bSuccess;
       } catch (Exception ex) {
-        this.AddLogEntry("SendMail","Exception: "+ex.ToString());
+        this.AddLogEntry(sd,"SendMail Exception: "+ex.ToString());
       }
       return false;
     }
-    public bool RequestTAN(string sUser,string sFullName) {
+    public bool RequestTAN(SessionData sd,string sFullName) {
       bool bSuccess = false;
       var rng = new Random();
       string sNewTAN = rng.Next(0,999999999).ToString("000000000");
       string sPermTicket = "";
       int nLevel = 100;
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT emailaddr,permticket,level,fullname" +
           " FROM users" +
-          " WHERE emailaddr='"+sUser+"'" +
+          " WHERE emailaddr='"+sd.CurrentUser.EMail+"'" +
           "";
         var dr = command.ExecuteReader();
         while (dr.Read()) {
@@ -219,22 +240,23 @@ namespace BioMap
         }
         command.CommandText =
           "REPLACE INTO users (emailaddr,tan,permticket,level,fullname) " +
-          "VALUES ('" + sUser + "','" + sNewTAN + "','" + sPermTicket + "'," + ConvInvar.ToString(nLevel) + ",'" + sFullName + "')" +
+          "VALUES ('" + sd.CurrentUser.EMail + "','" + sNewTAN + "','" + sPermTicket + "'," + ConvInvar.ToString(nLevel) + ",'" + sFullName + "')" +
           "";
         command.ExecuteNonQuery();
         bSuccess = this.SendMail(
-          sUser,
+          sd,
+          sd.CurrentUser.EMail,
           "Gelbbauchunken-Projekt TAN: "+sNewTAN,
           "Geben Sie die TAN "+sNewTAN+" in das TAN-Feld auf der Web-Seite ein und bestätigen Sie es.");
       });
       return bSuccess;
     }
-    public string ConfirmTAN(string sUser,string sTAN) {
+    public string ConfirmTAN(SessionData sd,string sTAN) {
       string sPermTicket = "";
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT tan,permticket" +
           " FROM users" +
-          " WHERE emailaddr='"+sUser+"'" +
+          " WHERE emailaddr='"+sd.CurrentUser.EMail+"'" +
           "";
         var dr = command.ExecuteReader();
         while (dr.Read()) {
@@ -246,18 +268,18 @@ namespace BioMap
         }
         dr.Close();
         command.CommandText =
-          "UPDATE users SET tan='' WHERE emailaddr='" + sUser + "'" +
+          "UPDATE users SET tan='' WHERE emailaddr='" + sd.CurrentUser.EMail + "'" +
           "";
         command.ExecuteNonQuery();
       });
       return sPermTicket;
     }
-    public int GetUserLevel(string sUserId,string sPermTicket) {
+    public int GetUserLevel(SessionData sd,string sPermTicket) {
       int nLevel = 0;
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT level" +
           " FROM users" +
-          " WHERE emailaddr='"+sUserId+"' AND permticket='"+sPermTicket+"'" +
+          " WHERE emailaddr='"+sd.CurrentUser.EMail+"' AND permticket='"+sPermTicket+"'" +
           "";
         var dr = command.ExecuteReader();
         while (dr.Read()) {
@@ -268,12 +290,12 @@ namespace BioMap
       });
       return nLevel;
     }
-    public void LoadUser(string sUserId,string sPermTicket,User user) {
+    public void LoadUser(SessionData sd,string sPermTicket,User user) {
       int nLevel = 0;
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT permticket,level,fullname" +
           " FROM users" +
-          " WHERE emailaddr='"+sUserId+"'" +
+          " WHERE emailaddr='"+sd.CurrentUser.EMail+"'" +
           "";
         var dr = command.ExecuteReader();
         while (dr.Read()) {
@@ -287,22 +309,13 @@ namespace BioMap
         dr.Close();
       });
       user.Level=nLevel;
-      user.EMail=sUserId;
+      user.EMail=sd.CurrentUser.EMail;
     }
     #region Users.
-    public User[] AllUsers {
-      get;
-      private set;
-    }
     private string[] PrevAllUsers = null;
-    public Dictionary<string,User> UsersByNames {
-      get;
-      private set;
-    } = new Dictionary<string,User>();
-    public void RefreshAllUsers() {
+    public User[] GetAllUsers(SessionData sd) {
       var lUsers = new List<User>();
-      this.UsersByNames.Clear();
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT emailaddr,level,fullname" +
           " FROM users" +
           " ORDER BY emailaddr" +
@@ -316,44 +329,25 @@ namespace BioMap
               FullName=dr.GetString(2),
             };
             lUsers.Add(user);
-            this.UsersByNames.Add(user.EMail,user);
           }
         } finally {
           dr.Close();
         }
       });
-      this.AllUsers=lUsers.ToArray();
-      this.PrevAllUsers=this.AllUsers.Select(a => JsonConvert.SerializeObject(a)).ToArray();
+      this.PrevAllUsers=lUsers.Select(a => JsonConvert.SerializeObject(a)).ToArray();
+      return lUsers.ToArray();
     }
-    public void WriteAllUsers(User user) {
-      var lChangedUsers = new List<User>();
-      for (int idx = 0;idx<this.AllUsers.Length;idx++) {
-        var s1 = this.PrevAllUsers[idx];
-        var s2 = JsonConvert.SerializeObject(this.AllUsers[idx]);
-        if (string.CompareOrdinal(s1,s2)!=0) {
-          this.AddLogEntry(user.EMail,"User changed: "+s1+" --> "+s2);
-          lChangedUsers.Add(this.AllUsers[idx]);
-        }
-      }
-      if (lChangedUsers.Count>=1) {
-        this.OperateOnDb((command) => {
-          foreach (var user in lChangedUsers) {
-            command.CommandText =
-              "REPLACE INTO users (emailaddr,level,fullname) " +
-              "VALUES ('" + user.EMail +
-              "','" + ConvInvar.ToString(user.Level) +
-              "','" + user.FullName +
-              "')";
-            command.ExecuteNonQuery();
-          }
-        });
-        this.PrevAllUsers=this.AllUsers.Select(a => JsonConvert.SerializeObject(a)).ToArray();
-      }
+    public void WriteUser(SessionData sd,User user) {
+      this.OperateOnDb(sd,(command) => {
+        command.CommandText =
+          "UPDATE users SET " +
+          "level='"+ConvInvar.ToString(user.Level)+"'," +
+          "fullname='"+user.FullName+"' WHERE emailaddr='"+user.EMail+"'";
+        command.ExecuteNonQuery();
+      });
     }
     #endregion
     #region Places.
-    private Place[] AllPlaces;
-    private string[] PrevAllPlaces = null;
     private System.Numerics.Matrix3x2 AlienationTransformation {
       get {
         if (!this._AlienationTransformation.HasValue) {
@@ -376,12 +370,12 @@ namespace BioMap
         lng=vRes.X,
       };
     }
-    public Place[] GetPlaces(SessionData sd) {
+    public Place[] GetPlaces(SessionData sd,string sWhereClause=null) {
       if (this.IsMigrationInProcess || (sd!=null && sd.MaySeeRealLocations)) {
-        return this.AllPlaces;
+        return this.GetRealPlaces(sd,sWhereClause);
       } else {
         var lAlienatedPlaces=new List<Place>();
-        foreach (var place in this.AllPlaces) {
+        foreach (var place in this.GetRealPlaces(sd,sWhereClause)) {
           var ap=new Place {
             Name=place.Name,
             Radius=place.Radius,
@@ -394,16 +388,20 @@ namespace BioMap
         return lAlienatedPlaces.ToArray();
       }
     }
-    public Dictionary<string,Place> PlacesByNames {
-      get;
-      private set;
-    } = new Dictionary<string,Place>();
-    public void RefreshAllPlaces() {
+    public Place GetPlaceByName(SessionData sd,string sPlaceName) {
+      var aPlaces=this.GetPlaces(sd,"name='"+sPlaceName+"'");
+      if (aPlaces.Length<1) {
+        return null;
+      } else {
+        return aPlaces[0];
+      }
+    }
+    private Place[] GetRealPlaces(SessionData sd,string sWhereClause=null) {
       var lPlaces = new List<Place>();
-      this.PlacesByNames.Clear();
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT name,radius,lat,lng,traitvalues" +
           " FROM places" +
+          ((sWhereClause==null)?"":sWhereClause) +
           " ORDER BY name" +
           "";
         var dr = command.ExecuteReader();
@@ -424,79 +422,41 @@ namespace BioMap
             }
           }
           lPlaces.Add(place);
-          this.PlacesByNames.Add(place.Name,place);
         }
         dr.Close();
       });
-      this.AllPlaces=lPlaces.ToArray();
-      this.PrevAllPlaces=this.AllPlaces.Select(a => JsonConvert.SerializeObject(a)).ToArray();
+      return lPlaces.ToArray();
     }
-    public void WriteAllPlaces(User user) {
-      var lChangedPlaces = new List<Place>();
-      for (int idx = 0;idx<this.AllPlaces.Length;idx++) {
-        var s1 = this.PrevAllPlaces[idx];
-        var s2 = JsonConvert.SerializeObject(this.AllPlaces[idx]);
-        if (string.CompareOrdinal(s1,s2)!=0) {
-          this.AddLogEntry(user.EMail,"Place changed: "+s1+" --> "+s2);
-          lChangedPlaces.Add(this.AllPlaces[idx]);
+    public void WritePlace(SessionData sd,Place place) {
+      bool bChanged=true;
+      {
+        var prevPlace=this.GetPlaceByName(sd,place.Name);
+        if (prevPlace!=null) {
+          var prevJson=JsonConvert.SerializeObject(prevPlace);
+          var actJson=JsonConvert.SerializeObject(place);
+          bChanged=(string.CompareOrdinal(actJson,prevJson)!=0);
         }
       }
-      if (lChangedPlaces.Count>=1) {
-        this.OperateOnDb((command) => {
-          foreach (var place in lChangedPlaces) {
-            var sTraitJson = JsonConvert.SerializeObject(place.TraitValues);
-            command.CommandText =
-              "REPLACE INTO places (name,radius,lat,lng,traitvalues) " +
-              "VALUES ('" + place.Name +
-              "','" + ConvInvar.ToString(place.Radius) +
-              "','" + ConvInvar.ToString(place.LatLng.lat) +
-              "','" + ConvInvar.ToString(place.LatLng.lng) +
-              "','" + sTraitJson +
-              "')";
-            command.ExecuteNonQuery();
-          }
+      if (bChanged) {
+        this.OperateOnDb(sd,(command) => {
+          var sTraitJson = JsonConvert.SerializeObject(place.TraitValues);
+          command.CommandText =
+            "UPDATE places SET "+
+            "radius='"+ConvInvar.ToString(place.Radius)+"',"+
+            "traitvalues='"+sTraitJson+"' WHERE name='"+place.Name+"'";
+          command.ExecuteNonQuery();
         });
-        this.PrevAllPlaces=this.AllPlaces.Select(a => JsonConvert.SerializeObject(a)).ToArray();
       }
     }
     #endregion
-    public int? GetSpeciesId(string sGenus,string sSpecies) {
-      int? nSpeciesId = null;
-      this.OperateOnDb((command) => {
-        command.CommandText = "SELECT spec_id" +
-          " FROM species" +
-          " WHERE (genus='"+sGenus+"' AND species='"+sSpecies+"')" +
-          "";
-        var dr = command.ExecuteReader();
-        if (dr.Read()) {
-          nSpeciesId = dr.GetInt32(0);
-        }
-        dr.Close();
-      });
-      return nSpeciesId;
+    public void WriteElement(SessionData sd,Element el) {
+      this.WriteElement(sd.CurrentUser.Project,el);
     }
-    public int? GetProjectId(string sProjectName) {
-      int? nSpeciesId = null;
-      this.OperateOnDb((command) => {
-        command.CommandText = "SELECT prj_id" +
-          " FROM projects" +
-          " WHERE (name='"+sProjectName+"')" +
-          "";
-        var dr = command.ExecuteReader();
-        if (dr.Read()) {
-          nSpeciesId = dr.GetInt32(0);
-        }
-        dr.Close();
-      });
-      return nSpeciesId;
-    }
-    public void WriteElement(Element el) {
-      this.OperateOnDb((command) => {
+    public void WriteElement(string sProject,Element el) {
+      this.OperateOnDb(sProject,(command) => {
         command.CommandText =
-          "REPLACE INTO elements (name,species_id,project_id,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
+          "REPLACE INTO elements (name,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
           "VALUES ('" + el.ElementName + "'," +
-          (el.SpeciesId.HasValue ? ("'" + ConvInvar.ToString(el.SpeciesId.Value) + "'") : ("NULL")) + "," +
-          (el.ProjectId.HasValue ? ("'" + ConvInvar.ToString(el.ProjectId.Value) + "'") : ("NULL")) + "," +
           "'" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lat) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lng) +
@@ -558,8 +518,8 @@ namespace BioMap
         }
       });
     }
-    public void DeleteElement(Element el) {
-      this.OperateOnDb((command) => {
+    public void DeleteElement(SessionData sd,Element el) {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText =
           "DELETE FROM elements WHERE (name='"+el.ElementName+"')";
         command.ExecuteNonQuery();
@@ -572,7 +532,7 @@ namespace BioMap
       });
       foreach (var sFolder in new[] { "images","images_orig" }) {
         try {
-          string sFilePath = System.IO.Path.Combine(this.DataDir,System.IO.Path.Combine(sFolder,el.ElementName));
+          string sFilePath = System.IO.Path.Combine(this.GetDataDir(sd),System.IO.Path.Combine(sFolder,el.ElementName));
           if (System.IO.File.Exists(sFilePath)) {
             System.IO.File.Delete(sFilePath);
           }
@@ -584,7 +544,7 @@ namespace BioMap
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
       }
       var lElements = new List<Element>();
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT elements.name" +
           ",elements.category" +
           ",elements.markerposlat" +
@@ -635,7 +595,7 @@ namespace BioMap
             if (oDateTimeOriginal is string sDateTimeOriginal) {
               DateTime.TryParse(sDateTimeOriginal,out dtDateTimeOriginal);
             }
-            var el = new Element {
+            var el = new Element(sd.CurrentUser.Project) {
               ElementName = sElementName,
               ElementProp = new Element.ElementProp_t {
                 MarkerInfo = new Element.MarkerInfo_t {
@@ -723,8 +683,8 @@ namespace BioMap
       }
       return aaIndisByIId;
     }
-    public void AddOrUpdateProtocolEntry(ProtocolEntry pe) {
-      this.OperateOnDb((command) => {
+    public void AddOrUpdateProtocolEntry(SessionData sd,ProtocolEntry pe) {
+      this.OperateOnDb(sd,(command) => {
         if (string.IsNullOrEmpty(pe.Text)) {
           command.CommandText = "DELETE FROM notes WHERE (dt='" + ConvInvar.ToString(pe.CreationTime) + "' AND author='"+pe.Author+"')";
         } else {
@@ -733,12 +693,12 @@ namespace BioMap
         command.ExecuteNonQuery();
       });
     }
-    public ProtocolEntry[] GetProtocolEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "notes.dt",uint nLimit = 0) {
+    public ProtocolEntry[] GetProtocolEntries(SessionData sd,Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "notes.dt",uint nLimit = 0) {
       if (filters!=null) {
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
       }
       var lProtocolEntries = new List<ProtocolEntry>();
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT notes.dt" +
           ",notes.author" +
           ",notes.text" +
@@ -762,10 +722,10 @@ namespace BioMap
       });
       return lProtocolEntries.ToArray();
     }
-    public string[] GetProtocolAuthors(Filters filters = null) {
+    public string[] GetProtocolAuthors(SessionData sd,Filters filters = null) {
       string sSqlCondition = filters.AddAllFiltersToWhereClause("");
       var lProtocolAuthors = new List<string>();
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT DISTINCT author FROM notes" +
           (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
           "";
@@ -777,18 +737,18 @@ namespace BioMap
       });
       return lProtocolAuthors.ToArray();
     }
-    public void AddLogEntry(string sUser,string sAction) {
-      this.OperateOnDb((command) => {
-        command.CommandText = "INSERT INTO log (dt,user,action) VALUES ('"+ConvInvar.ToString(DateTime.Now)+"','" + sUser + "','" + sAction + "')";
+    public void AddLogEntry(SessionData sd,string sAction) {
+      this.OperateOnDb(sd,(command) => {
+        command.CommandText = "INSERT INTO log (dt,user,action) VALUES ('"+ConvInvar.ToString(DateTime.Now)+"','" + sd.CurrentUser.EMail + "','" + sAction + "')";
         command.ExecuteNonQuery();
       });
     }
-    public LogEntry[] GetLogEntries(Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "log.dt",uint nLimit = 0) {
+    public LogEntry[] GetLogEntries(SessionData sd,Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "log.dt",uint nLimit = 0) {
       if (filters!=null) {
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
       }
       var lLogEntries = new List<LogEntry>();
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT dt,user,action FROM log" +
           (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
           (string.IsNullOrEmpty(sSqlOrderBy) ? "" : (" ORDER BY "+sSqlOrderBy+"")) +
@@ -809,10 +769,10 @@ namespace BioMap
       });
       return lLogEntries.ToArray();
     }
-    public string[] GetLogUsers(Filters filters = null) {
+    public string[] GetLogUsers(SessionData sd,Filters filters = null) {
       string sSqlCondition = filters.AddAllFiltersToWhereClause("");
       var lLogUsers = new List<string>();
-      this.OperateOnDb((command) => {
+      this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT DISTINCT user FROM log" +
           (string.IsNullOrEmpty(sSqlCondition) ? "" : (" WHERE ("+sSqlCondition+")")) +
           "";

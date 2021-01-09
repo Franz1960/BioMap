@@ -156,7 +156,7 @@ namespace BioMap.Pages.Diagrams
                     foreach (var el in aaIndisByIId[idx].ToArray()) {
                       try {
                         el.ElementProp.IndivData.DateOfBirth=dtFittedYearOfBirth.Value;
-                        DS.WriteElement(el);
+                        DS.WriteElement(SD,el);
                       } catch { }
                     }
                   }

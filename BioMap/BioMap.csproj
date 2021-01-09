@@ -21,7 +21,7 @@ The web app has been developed for a nature protection project in Germany. The p
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>../../bin.debug/BioMap</OutputPath>
+    <OutputPath>../../../bin.debug/BioMap</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

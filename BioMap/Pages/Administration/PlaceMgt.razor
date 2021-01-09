@@ -38,14 +38,14 @@
                 <th scope="row">@place.Name</th>
                 @if (SD.CurrentUser.MaySeeLocations) {
                   <td>
-                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" @onfocusout="(e)=>ChangeByUser()" />
+                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" @onfocusout="(e)=>ChangeByUser(place)" />
                   </td>
                   <td>
-                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lng" @onfocusout="(e)=>ChangeByUser()" />
+                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lng" @onfocusout="(e)=>ChangeByUser(place)" />
                   </td>
                 }
                 <td>
-                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" @onfocusout="(e)=>ChangeByUser()" />
+                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" @onfocusout="(e)=>ChangeByUser(place)" />
                 </td>
                 @foreach (var idx in Enumerable.Range(0,Places.Traits.Length)) {
                   <td>
@@ -74,7 +74,7 @@
   }
   private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
     NM.LocationChanged-=NM_LocationChanged;
-    this.ChangeByUser();
+    this.ChangeByUser(null);
   }
   private void RefreshData() {
     this.AllPlaces = DS.GetPlaces(SD);
@@ -82,9 +82,17 @@
   }
   private void TraitValueChanged(Place place,int idx,int value) {
     place.TraitValues[idx]=value;
-    this.ChangeByUser();
+    this.ChangeByUser(place);
   }
-  private void ChangeByUser() {
-    DS.WriteAllPlaces(SD.CurrentUser);
+  private void ChangeByUser(Place place) {
+    if (SD.MaySeeRealLocations) {
+      if (place==null) {
+        foreach (var p in this.AllPlaces) {
+          DS.WritePlace(SD,p);
+        }
+      } else {
+        DS.WritePlace(SD,place);
+      }
+    }
   }
 }

@@ -41,9 +41,9 @@ namespace BioMap.Shared
       this.modalRef.Hide();
     }
     public void Save() {
-      DS.AddOrUpdateProtocolEntry(ProtocolEntry);
+      DS.AddOrUpdateProtocolEntry(SD,ProtocolEntry);
       if (!string.IsNullOrEmpty(OrigProtocolEntry.Text) && string.CompareOrdinal(OrigProtocolEntry.Text,ProtocolEntry.Text)!=0) {
-        DS.AddLogEntry(SD.CurrentUser.EMail,"Note changed. "+ConvInvar.ToString(ProtocolEntry.CreationTime)+" / "+ProtocolEntry.Author+": "+OrigProtocolEntry.Text+" --> "+ProtocolEntry.Text);
+        DS.AddLogEntry(SD,"Note changed. "+ConvInvar.ToString(ProtocolEntry.CreationTime)+" / "+ProtocolEntry.Author+": "+OrigProtocolEntry.Text+" --> "+ProtocolEntry.Text);
         Changed.InvokeAsync(ProtocolEntry);
       } else if (string.IsNullOrEmpty(OrigProtocolEntry.Text) && !string.IsNullOrEmpty(ProtocolEntry.Text)) {
         Changed.InvokeAsync(ProtocolEntry);

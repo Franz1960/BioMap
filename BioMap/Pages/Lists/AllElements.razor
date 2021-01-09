@@ -97,8 +97,8 @@
     this.PhotoPopup1.Show(el);
   }
   private void DeleteElement(Element el) {
-    DS.DeleteElement(el);
-    DS.AddLogEntry(SD.CurrentUser.EMail,"Deleted element "+el.ElementName);
+    DS.DeleteElement(SD,el);
+    DS.AddLogEntry(SD,"Deleted element "+el.ElementName);
     RefreshData();
     StateHasChanged();
   }
@@ -107,13 +107,13 @@
     var csv = new System.Text.StringBuilder();
     csv.Append("ElementName"+sep+"TimeStamp"+sep+"Cat"+sep+"GpsLat"+sep+"GpsLng"+sep+"Place"+"\n");
     foreach (var el in DS.GetElements(SD,SD.Filters)) {
-      var place = el.GetPlace();
+      var placeName = el.GetPlaceName();
       csv.Append('"'+el.ElementName+'"');
       csv.Append(sep+'"'+el.GetIsoDateTime()+'"');
       csv.Append(sep+'"'+el.GetCategoryNum()+'"');
       csv.Append(sep+ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat,12));
       csv.Append(sep+ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng,12));
-      csv.Append(sep+(place==null ? "" : place.Name));
+      csv.Append(sep+placeName);
       csv.Append('\n');
     }
     await JSRuntime.InvokeVoidAsync("DownloadTextFile","AllElements.csv",csv.ToString());

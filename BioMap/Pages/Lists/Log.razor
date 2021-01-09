@@ -53,7 +53,7 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.LogEntries = DataService.Instance.GetLogEntries(SD.Filters,"","log.dt DESC",(uint)(this.LoadAll ? 0 : 200));
+    this.LogEntries = DataService.Instance.GetLogEntries(SD,SD.Filters,"","log.dt DESC",(uint)(this.LoadAll ? 0 : 200));
     StateHasChanged();
   }
 }
