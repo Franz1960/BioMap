@@ -169,29 +169,9 @@ namespace BioMap
     }
     public Task Init() {
       return Task.Run(() => {
-        //bool bMigrate = true;
-        //this.DbConnection = new SQLiteConnection();
-        //this.DbConnection.ConnectionString = "Data Source="+System.IO.Path.Combine(this.DataDir,"biomap.sqlite");
-        //this.OperateOnDb((command) => {
-        //  #region Prüfen, ob leer, also Migration notwendig.
-        //  {
-        //    command.CommandText = "SELECT name FROM elements";
-        //    var dr = command.ExecuteReader();
-        //    bMigrate=!dr.Read();
-        //    dr.Close();
-        //  }
-        //  #endregion
-        //});
-        ////
-        //this.AddLogEntry("System","Web service started");
-        ////
-        //if (bMigrate) {
-        //  this.IsMigrationInProcess=true;
-        //  Migration.MigrateData();
-        //  this.IsMigrationInProcess=false;
-        //}
-        //this.RefreshAllUsers();
-        //this.RefreshAllPlaces();
+        // Create base project if it does not exist.
+        this.OperateOnDb("",(command) => {
+        });
         //
         lock (this.lockInitialized) {
           this._Initialized?.Invoke(this,EventArgs.Empty);
