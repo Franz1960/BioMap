@@ -1,0 +1,57 @@
+﻿@page "/Administration/ProjectMgt"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject NavigationManager NM
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Row>
+  <Column>
+    <Card Margin="Margin.Is4.OnY">
+      <CardHeader>
+        <CardTitle>@Localize["Data"]</CardTitle>
+      </CardHeader>
+      <CardBody>
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Import data from old web site"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<700)" Clicked="@(async (e)=>{ await Import_Clicked(); })">@Localize["Import"]</Button>
+          </FieldBody>
+        </Field>
+      </CardBody>
+    </Card>
+  </Column>
+</Row>
+<Modal @ref="progressModalRef">
+  <ModalContent Centered="true">
+    <ModalHeader>
+      <ModalTitle>
+        @Localize["Operation in progress.."]
+      </ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+      <Progress Margin="Margin.Is3.FromBottom">
+        <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
+      </Progress>
+    </ModalBody>
+  </ModalContent>
+</Modal>
+
+@code {
+  private Modal progressModalRef;
+  private int progressCompletion = 0;
+  //
+  private async Task Import_Clicked() {
+    progressCompletion=0;
+    progressModalRef.Show();
+    try {
+      await Migration.MigrateData(SD,(completion)=>{
+        progressCompletion=completion;
+        this.InvokeAsync(() => { StateHasChanged(); });
+      });
+    } finally {
+      await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+    }
+  }
+}

@@ -456,6 +456,9 @@
   <data name="Precipitation" xml:space="preserve">
     <value>Niederschlag</value>
   </data>
+  <data name="Project" xml:space="preserve">
+    <value>Projekt</value>
+  </data>
   <data name="Recaptures" xml:space="preserve">
     <value>Wiederfänge</value>
   </data>
@@ -476,6 +479,9 @@
   </data>
   <data name="Select one or more. Negate by switch." xml:space="preserve">
     <value>Einen oder mehrere auswählen. Mit Schalter Auswahl umkehren.</value>
+  </data>
+  <data name="Select project" xml:space="preserve">
+    <value>Projekt auswählen</value>
   </data>
   <data name="Show custom map" xml:space="preserve">
     <value>Eigene Karte anzeigen</value>
