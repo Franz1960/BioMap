@@ -28,7 +28,7 @@
             </Dropdown>
           </Addon>
           <Addon AddonType="AddonType.Body">
-            <TextEdit @bind-Text="SD.Filters.PlaceFilter" />
+            <TextEdit Text="@SD.Filters.PlaceFilter" TextChanged="@((e)=>{ SD.Filters.PlaceFilter=(e==null)?"":e; })" />
           </Addon>
         </Addons>
       </FieldBody>

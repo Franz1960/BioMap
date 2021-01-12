@@ -29,7 +29,7 @@
             </Dropdown>
           </Addon>
           <Addon AddonType="AddonType.Body">
-            <TextEdit @bind-Text="SD.Filters.CatFilter" />
+            <TextEdit Text="@SD.Filters.CatFilter" TextChanged="@((e)=>{ SD.Filters.CatFilter=(e==null)?"":e; })" />
           </Addon>
         </Addons>
       </FieldBody>
