@@ -20,6 +20,12 @@
           </FieldBody>
         </Field>
         <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Edit area of interest"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<500)" Clicked="@(async (e)=>{ await EditAoi_Clicked(); })">@Localize["Start"]</Button>
+          </FieldBody>
+        </Field>
+        <Field Horizontal="true">
           <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Recalculate all"]</FieldLabel>
           <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
             <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<500)" Clicked="@(async (e)=>{ await RecalculateAll_Clicked(); })">@Localize["Start"]</Button>
@@ -59,6 +65,9 @@
     } finally {
       await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
     }
+  }
+  private async Task EditAoi_Clicked() {
+    NM.NavigateTo("/Maps/AoiEdit");
   }
   private async Task RecalculateAll_Clicked() {
     progressCompletion=0;

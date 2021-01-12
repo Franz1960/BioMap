@@ -1,0 +1,1 @@
+ssh itools.de -l fh "cd \"/var/www/docker/BioMap\" && sudo git pull && sudo ./build-and-run.sh"

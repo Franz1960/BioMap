@@ -42,6 +42,30 @@ namespace BioMap.Shared
       }
     }
     //
+    [Parameter]
+    public bool AoiEditable {
+      get {
+        return this._AoiEditable;
+      }
+      set {
+        this._AoiEditable=value;
+        try {
+          if (this.AoiPolygon!=null) {
+            this.AoiPolygonOptions.Editable=this.AoiEditable;
+            this.AoiPolygon.SetOptions(this.AoiPolygonOptions);
+          }
+        } catch { }
+        this.DelayedStateHasChanged();
+      }
+    }
+    private bool _AoiEditable = false;
+    public async Task<IEnumerable<LatLngLiteral>> GetAoiPath() {
+      var latLngLiterals=await this.AoiPolygon.GetPath();
+      return latLngLiterals;
+    }
+    private Polygon AoiPolygon = null;
+    private PolygonOptions AoiPolygonOptions = null;
+    //
     protected GoogleMap googleMap;
     protected MapOptions mapOptions;
     protected LatLngBoundsLiteral aoiBounds;
@@ -71,12 +95,11 @@ namespace BioMap.Shared
         }
         #region Add area of interest.
         try {
-          var sJson = System.IO.File.ReadAllText(DS.GetDataDir(SD) + "conf/aoi.json");
-          var vertices = JsonConvert.DeserializeObject<LatLngLiteral[]>(sJson);
+          var vertices = DS.GetAoi(SD);
           var path = new List<LatLngLiteral>(vertices);
-          var polygon = Polygon.CreateAsync(googleMap.JsRuntime,new PolygonOptions {
+          this.AoiPolygonOptions=new PolygonOptions {
             Map=googleMap.InteropObject,
-            Editable=false,
+            Editable=this.AoiEditable,
             StrokeColor="#FF0000",
             StrokeOpacity=0.8f,
             StrokeWeight=3,
@@ -84,7 +107,8 @@ namespace BioMap.Shared
             FillOpacity=0.02f,
             ZIndex=-1000000,
             Paths = new List<List<LatLngLiteral>>(new[] { path }),
-          });
+          };
+          this.AoiPolygon = await Polygon.CreateAsync(googleMap.JsRuntime,this.AoiPolygonOptions);
           LatLngBoundsLiteral bounds=null;
           foreach (var latLng in path) {
             LatLngBoundsLiteral.CreateOrExtend(ref bounds,latLng);

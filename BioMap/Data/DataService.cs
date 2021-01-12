@@ -167,11 +167,8 @@ namespace BioMap
           #region Ggf. neuere Tabellen erzeugen.
           using (IDbCommand command = dbConnection.CreateCommand()) {
             command.CommandText = "CREATE TABLE IF NOT EXISTS project (" +
-            "aoi TEXT," +
-            "startdate TEXT," +
-            "speciessciname TEXT," +
-            "speciesvulgarname TEXT," +
-            "jsonproperties TEXT)";
+            "name TEXT PRIMARY KEY NOT NULL," +
+            "value TEXT)";
             command.ExecuteNonQuery();
           }
           #endregion
@@ -345,6 +342,46 @@ namespace BioMap
           "fullname='"+user.FullName+"' WHERE emailaddr='"+user.EMail+"'";
         command.ExecuteNonQuery();
       });
+    }
+    #endregion
+    #region Project
+    public string GetProjectProperty(SessionData sd,string sPropertyName,string sDefaultValue="") {
+      string sValue=sDefaultValue;
+      this.OperateOnDb(sd,(command) => {
+        command.CommandText = "SELECT value FROM project WHERE name='"+sPropertyName+"'";
+        var r = command.ExecuteScalar();
+        sValue = command.ExecuteScalar() as string;
+      });
+      return sValue;
+    }
+    public void SetProjectProperty(SessionData sd,string sPropertyName,string sValue) {
+      this.OperateOnDb(sd,(command) => {
+        command.CommandText = "REPLACE INTO project (name,value) VALUES ('"+sPropertyName+"','"+sValue+"')";
+        command.ExecuteNonQuery();
+      });
+    }
+    public IEnumerable<GoogleMapsComponents.Maps.LatLngLiteral> GetAoi(SessionData sd) {
+      string sJson=this.GetProjectProperty(sd,"aoi");
+      if (string.IsNullOrEmpty(sJson)) {
+        try {
+          sJson = System.IO.File.ReadAllText(this.GetDataDir(sd) + "conf/aoi.json");
+        } catch { }
+      }
+      if (!string.IsNullOrEmpty(sJson)) {
+        try {
+          var vertices = JsonConvert.DeserializeObject<GoogleMapsComponents.Maps.LatLngLiteral[]>(sJson);
+          var path = new List<GoogleMapsComponents.Maps.LatLngLiteral>(vertices);
+          return path;
+        } catch { }
+      }
+      return null;
+    }
+    public void WriteAoi(SessionData sd,IEnumerable<GoogleMapsComponents.Maps.LatLngLiteral> path) {
+      string sJson="";
+      if (path!=null) {
+        sJson=JsonConvert.SerializeObject(path);
+      }
+      this.SetProjectProperty(sd,"aoi",sJson);
     }
     #endregion
     #region Places.
