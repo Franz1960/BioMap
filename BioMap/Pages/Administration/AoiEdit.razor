@@ -17,6 +17,9 @@
     <CheckBox Checked="ShowPlaces" CheckedChanged="@((e)=>{ ShowPlaces=e; })" LabelText=@Localize["Show places"] />
   </Column>
   <Column>
+    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Clear_Clicked(); })"><Icon Name="IconName.Clear"/> @Localize["Clear"]</Button>
+  </Column>
+  <Column>
     <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save_Clicked(); })">@Localize["Save"]</Button>
   </Column>
 </Row>
@@ -33,8 +36,11 @@
       base.DynaZoomed=false;
     }
   }
+  private async Task Clear_Clicked() {
+    await base.ClearAoiPath();
+  }
   private async Task Save_Clicked() {
-    var latLngLiterals=await base.GetAoiPath();
+    var latLngLiterals = await base.GetAoiPath();
     DS.WriteAoi(SD,latLngLiterals);
   }
 }

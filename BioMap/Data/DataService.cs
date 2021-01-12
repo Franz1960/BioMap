@@ -355,13 +355,19 @@ namespace BioMap
       return sValue;
     }
     public void SetProjectProperty(SessionData sd,string sPropertyName,string sValue) {
-      this.OperateOnDb(sd,(command) => {
-        command.CommandText = "REPLACE INTO project (name,value) VALUES ('"+sPropertyName+"','"+sValue+"')";
-        command.ExecuteNonQuery();
-      });
+      var sOldValue=this.GetProjectProperty(sd,sPropertyName);
+      var saDiff=Utilities.FindDifferingCoreParts(sOldValue,sValue);
+      if (saDiff!=null) {
+        this.OperateOnDb(sd,(command) => {
+          command.CommandText = "REPLACE INTO project (name,value) VALUES ('"+sPropertyName+"','"+sValue+"')";
+          command.ExecuteNonQuery();
+        });
+        this.AddLogEntry(sd,"Project property \""+sPropertyName+"\" changed: "+saDiff[0]+" --> "+saDiff[1]);
+      }
     }
     public IEnumerable<GoogleMapsComponents.Maps.LatLngLiteral> GetAoi(SessionData sd) {
       string sJson=this.GetProjectProperty(sd,"aoi");
+      // If DB has no value, try to read it from conf/aoi.json.
       if (string.IsNullOrEmpty(sJson)) {
         try {
           sJson = System.IO.File.ReadAllText(this.GetDataDir(sd) + "conf/aoi.json");

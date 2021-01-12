@@ -63,6 +63,16 @@ namespace BioMap.Shared
       var latLngLiterals=await this.AoiPolygon.GetPath();
       return latLngLiterals;
     }
+    public async Task ClearAoiPath() {
+      var b=await this.googleMap.InteropObject.GetBounds();
+      var path=new List<LatLngLiteral>(new [] {
+        new LatLngLiteral((b.West+b.East)/2,b.North),
+        new LatLngLiteral(b.East,b.South),
+        new LatLngLiteral(b.West,b.South),
+      });
+      this.AoiPolygonOptions.Paths=new List<List<LatLngLiteral>>(new[] { path });
+      await this.AoiPolygon.SetOptions(this.AoiPolygonOptions);
+    }
     private Polygon AoiPolygon = null;
     private PolygonOptions AoiPolygonOptions = null;
     //
