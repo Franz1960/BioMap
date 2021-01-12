@@ -255,6 +255,9 @@
   <data name="Edit AOI" xml:space="preserve">
     <value>AOI bearbeiten</value>
   </data>
+  <data name="Edit area of interest" xml:space="preserve">
+    <value>Projektgebiet editieren</value>
+  </data>
   <data name="EMail address" xml:space="preserve">
     <value>EMail-Adresse</value>
   </data>

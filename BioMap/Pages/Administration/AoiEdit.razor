@@ -9,7 +9,7 @@
 @using GoogleMapsComponents.Maps
 @inherits ElementMap
 
-<Row>
+<Row Margin="Margin.Is1.OnY">
   <Column>
     <CheckBox Checked="ShowCustomMap" CheckedChanged="@((e)=>{ ShowCustomMap=e; })" LabelText=@Localize["Show custom map"] />
   </Column>
