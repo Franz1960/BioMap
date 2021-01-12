@@ -64,6 +64,8 @@ namespace BioMap
     private event EventHandler _Initialized;
     private bool isInitialized = false;
     private readonly object lockInitialized = new object();
+    //
+    private readonly List<string> AccessedDbs = new List<string>();
     public void OperateOnDb(SessionData sd,Action<IDbCommand> dbAction) {
       this.OperateOnDb(sd.CurrentUser.Project,dbAction);
     }
@@ -78,88 +80,102 @@ namespace BioMap
         dbConnection.ConnectionString = "Data Source="+sDbFilePath;
         bool bDbFileExisted = System.IO.File.Exists(sDbFilePath);
         dbConnection.Open();
-        if (!bDbFileExisted) {
-          using (IDbCommand command = dbConnection.CreateCommand()) {
-            #region Ggf. Tabellenstruktur erzeugen.
-            command.CommandText = "CREATE TABLE IF NOT EXISTS places (" +
-            "name TEXT PRIMARY KEY NOT NULL," +
-            "traitvalues TEXT," +
-            "radius REAL," +
-            "lat REAL," +
-            "lng REAL)";
-            command.ExecuteNonQuery();
-            command.CommandText = "CREATE TABLE IF NOT EXISTS monitoringevents (" +
-            "place TEXT," +
-            "kw INT," +
-            "user TEXT," +
-            "value TEXT)";
-            command.ExecuteNonQuery();
-            command.CommandText = "CREATE TABLE IF NOT EXISTS notes (" +
-            "dt DATETIME NOT NULL," +
-            "author TEXT," +
-            "text TEXT,UNIQUE(dt,author))";
-            command.ExecuteNonQuery();
-            command.CommandText = "CREATE TABLE IF NOT EXISTS log (" +
-            "dt DATETIME NOT NULL," +
-            "user TEXT," +
-            "action TEXT)";
-            command.ExecuteNonQuery();
-            command.CommandText = "CREATE TABLE IF NOT EXISTS users (" +
-            "emailaddr TEXT PRIMARY KEY NOT NULL COLLATE NOCASE," +
-            "fullname TEXT," +
-            "level INT," +
-            "tan TEXT," +
-            "permticket TEXT)";
-            command.ExecuteNonQuery();
-            command.ExecuteNonQuery();
-            command.CommandText = "CREATE TABLE IF NOT EXISTS elements (" +
-            "name TEXT PRIMARY KEY NOT NULL," +
-            "category INT NOT NULL," +
-            "markerposlat REAL," +
-            "markerposlng REAL," +
-            "place TEXT," +
-            "comment TEXT," +
-            "uploadtime DATETIME NOT NULL," +
-            "uploader TEXT NOT NULL," +
-            "creationtime DATETIME NOT NULL)";
-            command.ExecuteNonQuery();
-            command.CommandText = "CREATE TABLE IF NOT EXISTS photos (" +
-            "name TEXT PRIMARY KEY NOT NULL," +
-            "filename TEXT NOT NULL," +
-            "exifmake TEXT," +
-            "exifmodel TEXT," +
-            "exifdatetimeoriginal DATETIME)";
-            command.ExecuteNonQuery();
-            command.CommandText = "CREATE TABLE IF NOT EXISTS indivdata (" +
-            "name TEXT PRIMARY KEY NOT NULL," +
-            "normcirclepos0x REAL," +
-            "normcirclepos0y REAL," +
-            "normcirclepos1x REAL," +
-            "normcirclepos1y REAL," +
-            "normcirclepos2x REAL," +
-            "normcirclepos2y REAL," +
-            "headposx REAL," +
-            "headposy REAL," +
-            "backposx REAL," +
-            "backposy REAL," +
-            "origheadposx REAL," +
-            "origheadposy REAL," +
-            "origbackposx REAL," +
-            "origbackposy REAL," +
-            "headbodylength REAL," +
-            "traitYellowDominance INT," +
-            "traitBlackDominance INT," +
-            "traitVertBlackBreastCenterStrip INT," +
-            "traitHorizBlackBreastBellyStrip INT," +
-            "traitManyIsolatedBlackBellyDots INT," +
-            "dateofbirth DATETIME," +
-            "ageyears REAL," +
-            "winters INT," +
-            "gender TEXT," +
-            "iid INT)";
-            command.ExecuteNonQuery();
-            #endregion
+        if (!this.AccessedDbs.Contains(sProject)) {
+          if (!bDbFileExisted) {
+            using (IDbCommand command = dbConnection.CreateCommand()) {
+              #region Ggf. Tabellenstruktur erzeugen.
+              command.CommandText = "CREATE TABLE IF NOT EXISTS places (" +
+              "name TEXT PRIMARY KEY NOT NULL," +
+              "traitvalues TEXT," +
+              "radius REAL," +
+              "lat REAL," +
+              "lng REAL)";
+              command.ExecuteNonQuery();
+              command.CommandText = "CREATE TABLE IF NOT EXISTS monitoringevents (" +
+              "place TEXT," +
+              "kw INT," +
+              "user TEXT," +
+              "value TEXT)";
+              command.ExecuteNonQuery();
+              command.CommandText = "CREATE TABLE IF NOT EXISTS notes (" +
+              "dt DATETIME NOT NULL," +
+              "author TEXT," +
+              "text TEXT,UNIQUE(dt,author))";
+              command.ExecuteNonQuery();
+              command.CommandText = "CREATE TABLE IF NOT EXISTS log (" +
+              "dt DATETIME NOT NULL," +
+              "user TEXT," +
+              "action TEXT)";
+              command.ExecuteNonQuery();
+              command.CommandText = "CREATE TABLE IF NOT EXISTS users (" +
+              "emailaddr TEXT PRIMARY KEY NOT NULL COLLATE NOCASE," +
+              "fullname TEXT," +
+              "level INT," +
+              "tan TEXT," +
+              "permticket TEXT)";
+              command.ExecuteNonQuery();
+              command.ExecuteNonQuery();
+              command.CommandText = "CREATE TABLE IF NOT EXISTS elements (" +
+              "name TEXT PRIMARY KEY NOT NULL," +
+              "category INT NOT NULL," +
+              "markerposlat REAL," +
+              "markerposlng REAL," +
+              "place TEXT," +
+              "comment TEXT," +
+              "uploadtime DATETIME NOT NULL," +
+              "uploader TEXT NOT NULL," +
+              "creationtime DATETIME NOT NULL)";
+              command.ExecuteNonQuery();
+              command.CommandText = "CREATE TABLE IF NOT EXISTS photos (" +
+              "name TEXT PRIMARY KEY NOT NULL," +
+              "filename TEXT NOT NULL," +
+              "exifmake TEXT," +
+              "exifmodel TEXT," +
+              "exifdatetimeoriginal DATETIME)";
+              command.ExecuteNonQuery();
+              command.CommandText = "CREATE TABLE IF NOT EXISTS indivdata (" +
+              "name TEXT PRIMARY KEY NOT NULL," +
+              "normcirclepos0x REAL," +
+              "normcirclepos0y REAL," +
+              "normcirclepos1x REAL," +
+              "normcirclepos1y REAL," +
+              "normcirclepos2x REAL," +
+              "normcirclepos2y REAL," +
+              "headposx REAL," +
+              "headposy REAL," +
+              "backposx REAL," +
+              "backposy REAL," +
+              "origheadposx REAL," +
+              "origheadposy REAL," +
+              "origbackposx REAL," +
+              "origbackposy REAL," +
+              "headbodylength REAL," +
+              "traitYellowDominance INT," +
+              "traitBlackDominance INT," +
+              "traitVertBlackBreastCenterStrip INT," +
+              "traitHorizBlackBreastBellyStrip INT," +
+              "traitManyIsolatedBlackBellyDots INT," +
+              "dateofbirth DATETIME," +
+              "ageyears REAL," +
+              "winters INT," +
+              "gender TEXT," +
+              "iid INT)";
+              command.ExecuteNonQuery();
+              #endregion
+            }
           }
+          #region Ggf. neuere Tabellen erzeugen.
+          using (IDbCommand command = dbConnection.CreateCommand()) {
+            command.CommandText = "CREATE TABLE IF NOT EXISTS project (" +
+            "aoi TEXT," +
+            "startdate TEXT," +
+            "speciessciname TEXT," +
+            "speciesvulgarname TEXT," +
+            "jsonproperties TEXT)";
+            command.ExecuteNonQuery();
+          }
+          #endregion
+          this.AccessedDbs.Add(sProject);
         }
         try {
           using (IDbCommand command = dbConnection.CreateCommand()) {

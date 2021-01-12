@@ -19,6 +19,12 @@
             <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<700)" Clicked="@(async (e)=>{ await Import_Clicked(); })">@Localize["Import"]</Button>
           </FieldBody>
         </Field>
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Recalculate all"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<500)" Clicked="@(async (e)=>{ await RecalculateAll_Clicked(); })">@Localize["Start"]</Button>
+          </FieldBody>
+        </Field>
       </CardBody>
     </Card>
   </Column>
@@ -49,6 +55,20 @@
       await Migration.MigrateData(SD,(completion)=>{
         progressCompletion=completion;
         this.InvokeAsync(() => { StateHasChanged(); });
+      });
+    } finally {
+      await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+    }
+  }
+  private async Task RecalculateAll_Clicked() {
+    progressCompletion=0;
+    progressModalRef.Show();
+    try {
+      await DataCalculator.CalculatePlacesOfElements(SD,(completion) => {
+        if (progressCompletion!=completion) {
+          progressCompletion=completion;
+          this.InvokeAsync(() => { StateHasChanged(); });
+        }
       });
     } finally {
       await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });

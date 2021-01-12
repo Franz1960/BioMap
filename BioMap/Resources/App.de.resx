@@ -459,6 +459,9 @@
   <data name="Project" xml:space="preserve">
     <value>Projekt</value>
   </data>
+  <data name="Recalculate all" xml:space="preserve">
+    <value>Alles neu berechnen</value>
+  </data>
   <data name="Recaptures" xml:space="preserve">
     <value>Wiederfänge</value>
   </data>
@@ -500,6 +503,9 @@
   </data>
   <data name="Show vintage boundaries" xml:space="preserve">
     <value>Jahrgangsgrenzen anzeigen</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
   </data>
   <data name="Statistics" xml:space="preserve">
     <value>Statistik</value>
