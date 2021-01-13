@@ -358,7 +358,13 @@
     <value>Die Daten werden größtenteils mit Hilfe von Fotos mit Standortdaten erfasst. Gelbbauchunken werden dazu vor Ort so in einer Petrischale fotografiert, dass ihr Bauchmuster sichtbar ist. Die Bilder werden dann in der Web-App so gedreht und mit Hilfe des bekannten Durchmessers der Petrischale normiert, dass ihre Kopf-Rumpf-Länge im Bild vermessen wird. Anschließend wird ihre Identität ermittelt.</value>
   </data>
   <data name="Intro3" xml:space="preserve">
-    <value>In der Web-App können mehrere unabhängige Projekte verwaltet werden. Jedes Projekt hat ihre eigene Benutzerverwaltung, ihr Projektgebiet usw..</value>
+    <value>In der Web-App können mehrere unabhängige Projekte verwaltet werden. Jedes Projekt hat ihre eigene Benutzerverwaltung, ihr Projektgebiet, ihren Datenbereich für hochgeladene Bilder und alle anderen Daten. Alle Daten und Bilder sind für jedermann sichtbar mit Ausnahme der genauen Standortdaten; diese werden beim Hochladen aus den Bildern entfernt und in einer Datenbank gespeichert. Nur Benutzer mit Zugangsstufe 400 oder höher sehen die genauen Standortdaten, für alle anderen werden sie verfremdet.</value>
+  </data>
+  <data name="IntroCreateNewProject" xml:space="preserve">
+    <value>Sie können hier ein neues Projekt anlegen. Wählen Sie einen Namen, der Ihr Projekt eindeutig beschreibt, am besten in der Form "art-gebiet", also z.B. "gbu-oberhinkofen" für ein Projekt, in dem Gelbbauchunken in Oberhinkofen monitoriert werden sollen.</value>
+  </data>
+  <data name="IntroProjectSelection" xml:space="preserve">
+    <value>Sie können hier ein Projekt auswählen, für das sie sich interessieren. Sie können auch ein neues Projekt anlegen.</value>
   </data>
   <data name="Juveniles" xml:space="preserve">
     <value>Juvenile</value>

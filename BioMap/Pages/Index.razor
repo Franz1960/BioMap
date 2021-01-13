@@ -52,6 +52,9 @@
         <CardTitle>@Localize["Project"]</CardTitle>
       </CardHeader>
       <CardBody>
+        <p>
+          @Localize["IntroProjectSelection"]
+        </p>
         <Accordion>
           <Collapse Visible="@(collapseVisible=="SelectProject")">
             <CollapseHeader>
@@ -74,6 +77,9 @@
               </Heading>
             </CollapseHeader>
             <CollapseBody>
+              <p>
+                @Localize["IntroCreateNewProject"]
+              </p>
               <Validation Validator="@ValidateNewProjectName">
                 <Row>
                   <Column>

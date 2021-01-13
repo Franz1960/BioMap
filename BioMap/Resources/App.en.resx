@@ -124,6 +124,12 @@
     <value>The data is largely collected using photographs with location data. For this purpose, yellow-bellied toads are photographed on site in a Petri dish in such a way that their abdominal pattern is visible. The images are then rotated in the web app and normalized using the known diameter of the petri dish to measure their head-torso length in the image. Their identity is then determined.</value>
   </data>
   <data name="Intro3" xml:space="preserve">
-    <value>Multiple independent projects can be managed in the web app. Each project has its own user management, project area and so on.</value>
+    <value>Multiple independent projects can be managed in the web app. Each project has its own user management, project area, data area for uploaded images and all other data. All data and images are visible to everyone except for the exact location data; this is removed from the images during upload and stored in a database. Only users with access level 400 or higher will see the exact location data, for all others it will be alienated.</value>
+  </data>
+  <data name="IntroCreateNewProject" xml:space="preserve">
+    <value>You can create a new project here. Choose a name that clearly describes your project, preferably in the form "species-area", e.g. "gbu-oberhinkofen" for a project in which yellow-bellied toads are to be monitored in Oberhinkofen.</value>
+  </data>
+  <data name="IntroProjectSelection" xml:space="preserve">
+    <value>You can select a project you are interested in here. You can also create a new project.</value>
   </data>
 </root>
