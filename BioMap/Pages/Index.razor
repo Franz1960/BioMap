@@ -163,7 +163,7 @@
     this.NewProjectNameValid=(e.Status==ValidationStatus.Success);
   }
   private async Task CreateNewProject_Clicked() {
-    DS.CreateNewProject(this.NewProjectName);
+    DS.CreateNewProject(SD,this.NewProjectName);
     SD.CurrentUser.Project=this.NewProjectName;
     await JSRuntime.InvokeAsync<string>("setCookie","Project",this.NewProjectName);
     NavigationManager.NavigateTo("/Administration/UserMgt",true);

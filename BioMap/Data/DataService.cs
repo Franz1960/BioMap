@@ -65,11 +65,16 @@ namespace BioMap
     private bool isInitialized = false;
     private readonly object lockInitialized = new object();
     //
-    public void CreateNewProject(string sProjectName) {
+    public void CreateNewProject(SessionData sd,string sProjectName) {
       try {
         var sDataDir = this.GetDataDir(sProjectName);
         if (!System.IO.Directory.Exists(sDataDir)) {
           System.IO.Directory.CreateDirectory(sDataDir);
+          this.SendMail(
+            sd,
+            "webmaster@itools.de",
+            "Neues BioMap Projekt erzeugt: "+sProjectName,
+            "Der Benutzer '"+sd.CurrentUser?.EMail+"' erzeugte das neue Projekt '"+sProjectName+"'.");
         }
       } catch { }
     }
@@ -226,7 +231,7 @@ namespace BioMap
         bool bSuccess=client.PostAsync("https://itools.de/rfapi/rfapi.php",requestContent).Wait(4000);
         return bSuccess;
       } catch (Exception ex) {
-        this.AddLogEntry(sd,"SendMail Exception: "+ex.ToString());
+        this.AddLogEntry("",sd.CurrentUser?.EMail,"SendMail Exception: "+ex.ToString());
       }
       return false;
     }
@@ -807,8 +812,11 @@ namespace BioMap
       return lProtocolAuthors.ToArray();
     }
     public void AddLogEntry(SessionData sd,string sAction) {
-      this.OperateOnDb(sd,(command) => {
-        command.CommandText = "INSERT INTO log (dt,user,action) VALUES ('"+ConvInvar.ToString(DateTime.Now)+"','" + sd.CurrentUser.EMail + "','" + sAction + "')";
+      this.AddLogEntry(sd.CurrentUser.Project,sd.CurrentUser.EMail,sAction);
+    }
+    public void AddLogEntry(string sProject,string sUserId,string sAction) {
+      this.OperateOnDb(sProject,(command) => {
+        command.CommandText = "INSERT INTO log (dt,user,action) VALUES ('"+ConvInvar.ToString(DateTime.Now)+"','" + sUserId + "','" + sAction + "')";
         command.ExecuteNonQuery();
       });
     }
