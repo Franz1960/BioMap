@@ -76,10 +76,13 @@ namespace BioMap
     /// <param name="B">
     /// The second string.
     /// </param>
+    /// <param name="nNeigboringChars">
+    /// The number of characters left and right of the differing core parts to be included in the result.
+    /// </param>
     /// <returns>
     /// Array of two strings: the differing part of the first and of the second string; null if the strings are equal.
     /// </returns>
-    public static string[] FindDifferingCoreParts(string A,string B) {
+    public static string[] FindDifferingCoreParts(string A,string B,int nNeigboringChars=10) {
       if (string.IsNullOrEmpty(A)) {
         if (string.IsNullOrEmpty(B)) {
           return null;
@@ -102,9 +105,9 @@ namespace BioMap
         idxL++;
       }
       if (idxL>=lenA) {
-        return new[] { "",B.Substring(idxL) };
+        return new[] { "",B.Substring(Math.Max(0,idxL-nNeigboringChars)) };
       } else if (idxL>=lenB) {
-        return new[] { A.Substring(idxL),"" };
+        return new[] { A.Substring(Math.Max(0,idxL-nNeigboringChars)),"" };
       } else {
         int idxR=0;
         while (idxR<lenMin-idxL) {
@@ -113,6 +116,8 @@ namespace BioMap
           }
           idxR++;
         }
+        idxL=Math.Max(0,idxL-nNeigboringChars);
+        idxR=Math.Max(0,idxR-nNeigboringChars);
         return new[] { A.Substring(idxL,lenA-idxR-idxL),B.Substring(idxL,lenB-idxR-idxL) };
       }
     }
