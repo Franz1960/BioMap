@@ -6,17 +6,28 @@
 @inject SessionData SD
 @using BioMap
 
-<Row>
-  <Column>
-    <Card Margin="Margin.Is4.OnY">
+<Row Margin="Margin.Is4">
+  <Column  ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+    <Card>
       <CardHeader>
         <CardTitle Size="4">@Localize["Welcome to BioMap!"]</CardTitle>
       </CardHeader>
-      <CardImage Source="images/TitlePage.jpg"/>
+      <CardImage Source="images/TitlePage.jpg" />
       <CardBody>
         <p>@Localize["BioMap helps monitor yellow-bellied toads."]</p>
       </CardBody>
     </Card>
+  </Column>
+  <Column ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+    <p>
+      @Localize["Intro1"]
+    </p>
+    <p>
+      @Localize["Intro2"]
+    </p>
+    <p>
+      @Localize["Intro3"]
+    </p>
   </Column>
 </Row>
 <Row Margin="Margin.Is4.OnY">

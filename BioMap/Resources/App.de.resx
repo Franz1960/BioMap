@@ -351,6 +351,15 @@
   <data name="Insert TAN" xml:space="preserve">
     <value>TAN eingeben</value>
   </data>
+  <data name="Intro1" xml:space="preserve">
+    <value>BioMap ist ein Web-App, die für ein Projekt zum Monitoring von Gelbbauchunken entwickelt wurde (und weiterhin wird). Durch die individuelle Erkennung, Längenvermessung und Standorterfassung können Populationsgröße, Altersstruktur, Geschlechterverhältnis, Wandertätigkeit, örtliche Verteilung und Fortpflanzungsaktivität ermittelt werden.</value>
+  </data>
+  <data name="Intro2" xml:space="preserve">
+    <value>Die Daten werden größtenteils mit Hilfe von Fotos mit Standortdaten erfasst. Gelbbauchunken werden dazu vor Ort so in einer Petrischale fotografiert, dass ihr Bauchmuster sichtbar ist. Die Bilder werden dann in der Web-App so gedreht und mit Hilfe des bekannten Durchmessers der Petrischale normiert, dass ihre Kopf-Rumpf-Länge im Bild vermessen wird. Anschließend wird ihre Identität ermittelt.</value>
+  </data>
+  <data name="Intro3" xml:space="preserve">
+    <value>In der Web-App können mehrere unabhängige Projekte verwaltet werden. Jedes Projekt hat ihre eigene Benutzerverwaltung, ihr Projektgebiet usw..</value>
+  </data>
   <data name="Juveniles" xml:space="preserve">
     <value>Juvenile</value>
   </data>
