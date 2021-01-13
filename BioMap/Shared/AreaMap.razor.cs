@@ -105,8 +105,11 @@ namespace BioMap.Shared
         }
         #region Add area of interest.
         try {
+          var path = new List<LatLngLiteral>();
           var vertices = DS.GetAoi(SD);
-          var path = new List<LatLngLiteral>(vertices);
+          if (vertices!=null) {
+            path.AddRange(vertices);
+          }
           this.AoiPolygonOptions=new PolygonOptions {
             Map=googleMap.InteropObject,
             Editable=this.AoiEditable,
@@ -124,7 +127,7 @@ namespace BioMap.Shared
             LatLngBoundsLiteral.CreateOrExtend(ref bounds,latLng);
           }
           this.aoiBounds = bounds;
-          if (!this.aoiBounds.IsEmpty()) {
+          if (this.aoiBounds!=null && !this.aoiBounds.IsEmpty()) {
             await this.googleMap.InteropObject.FitBounds(this.aoiBounds,OneOf.OneOf<int,Padding>.FromT0(5));
           }
         } catch { }

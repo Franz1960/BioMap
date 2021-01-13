@@ -138,8 +138,9 @@
   private async void RequestTAN_Clicked() {
     if (validations.ValidateAll()) {
       validations.ClearAll();
-      var sEMail=SD.CurrentUser.EMail?.Trim().ToLowerInvariant();
+      var sEMail = SD.CurrentUser.EMail?.Trim().ToLowerInvariant();
       SD.CurrentUser.EMail=sEMail;
+      SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie","Project");
       await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserId",sEMail });
       TanRequested=DS.RequestTAN(SD,SD.CurrentUser.FullName?.Trim());
       if (TanRequested) {
@@ -152,6 +153,7 @@
     if (validations.ValidateAll()) {
       validations.ClearAll();
       string sPermTicket = DS.ConfirmTAN(SD,TAN?.Trim());
+      SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie","Project");
       await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserPermTicket."+SD.CurrentUser.Project,sPermTicket });
       SD.CurrentUser.Level=DS.GetUserLevel(SD,sPermTicket);
       if (SD.CurrentUser.Level>=100) {
@@ -170,6 +172,9 @@
   protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
     if (firstRender) {
+    }
+    if (SD.CurrentUser.Level>=700 && DS.GetAoi(SD)==null) {
+      NM.NavigateTo("/Maps/AoiEdit");
     }
   }
   private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {

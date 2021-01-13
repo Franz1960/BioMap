@@ -234,6 +234,9 @@
   <data name="Counted are all the different individuals who fulfill the conditions at least once in the respective period." xml:space="preserve">
     <value>Gezählt werden alle verschiedenen Individuen,die im jeweiligen Zeitraum mindestens einmal die Bedingungen erfüllen.</value>
   </data>
+  <data name="Create new project" xml:space="preserve">
+    <value>Neues Projekt anlegen</value>
+  </data>
   <data name="Date" xml:space="preserve">
     <value>Datum</value>
   </data>
@@ -461,6 +464,9 @@
   </data>
   <data name="Project" xml:space="preserve">
     <value>Projekt</value>
+  </data>
+  <data name="Project name" xml:space="preserve">
+    <value>Projektname</value>
   </data>
   <data name="Recalculate all" xml:space="preserve">
     <value>Alles neu berechnen</value>

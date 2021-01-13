@@ -41,22 +41,65 @@
         <CardTitle>@Localize["Project"]</CardTitle>
       </CardHeader>
       <CardBody>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Select project"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <Select TValue="string" SelectedValue="@SD.CurrentUser.Project" SelectedValueChanged="@(async (e)=>{ await Project_SelectedValueChanged(e); })">
-              @foreach (var sProject in DS.GetAllProjects()) {
-                <SelectItem TValue="string" Value="@(sProject)">@sProject</SelectItem>
-              }
-            </Select>
-          </FieldBody>
-        </Field>
+        <Accordion>
+          <Collapse Visible="@(collapseVisible=="SelectProject")">
+            <CollapseHeader>
+              <Heading Size="HeadingSize.Is5">
+                <Button Clicked="@(()=>collapseVisible="SelectProject")">@Localize["Select project"]</Button>
+              </Heading>
+            </CollapseHeader>
+            <CollapseBody>
+              <Select TValue="string" SelectedValue="@SD.CurrentUser.Project" SelectedValueChanged="@(async (e)=>{ await Project_SelectedValueChanged(e); })">
+                @foreach (var sProject in DS.GetAllProjects()) {
+                  <SelectItem TValue="string" Value="@(sProject)">@sProject</SelectItem>
+                }
+              </Select>
+            </CollapseBody>
+          </Collapse>
+          <Collapse Visible="@(collapseVisible=="CreateNewProject")">
+            <CollapseHeader>
+              <Heading Size="HeadingSize.Is5">
+                <Button Clicked="@(()=>collapseVisible="CreateNewProject")">@Localize["Create new project"]</Button>
+              </Heading>
+            </CollapseHeader>
+            <CollapseBody>
+              <Validation Validator="@ValidateNewProjectName">
+                <Row>
+                  <Column>
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop" Float="Float.Right">@Localize["Project name"]: </FieldLabel>
+                      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+                        <TextEdit Placeholder="gbu-project-area-name" @bind-Text="NewProjectName">
+                          <Feedback>
+                            <ValidationError></ValidationError>
+                          </Feedback>
+                        </TextEdit>
+                      </FieldBody>
+                    </Field>
+                  </Column>
+                </Row>
+                <Row>
+                  <Column>
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop"></FieldLabel>
+                      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+                        <Button Color="Color.Primary" Disabled="@(!NewProjectNameValid)" Clicked="@(async (e)=>{ await CreateNewProject_Clicked(); })">@Localize["Create new project"]</Button>
+                      </FieldBody>
+                    </Field>
+                  </Column>
+                </Row>
+              </Validation>
+            </CollapseBody>
+          </Collapse>
+        </Accordion>
       </CardBody>
     </Card>
   </Column>
 </Row>
 
 @code {
+  private string collapseVisible = "SelectProject";
+  //
   protected override Task OnInitializedAsync() {
     return base.OnInitializedAsync();
   }
@@ -95,5 +138,23 @@
     SD.CurrentUser.Project=sNewValue;
     await JSRuntime.InvokeAsync<string>("setCookie","Project",sNewValue);
     NavigationManager.NavigateTo("/",true);
+  }
+  private string NewProjectName { get; set; } = "";
+  private bool NewProjectNameValid=false;
+  private void ValidateNewProjectName(ValidatorEventArgs e) {
+    var sNewValue = e.Value as string;
+    var lExistingProjects=new List<string>(DS.GetAllProjects());
+    if (lExistingProjects.Contains(sNewValue)) {
+      e.Status=ValidationStatus.Error;
+    } else if (!string.IsNullOrEmpty(sNewValue)) {
+      e.Status=ValidationStatus.Success;
+    }
+    this.NewProjectNameValid=(e.Status==ValidationStatus.Success);
+  }
+  private async Task CreateNewProject_Clicked() {
+    DS.CreateNewProject(this.NewProjectName);
+    SD.CurrentUser.Project=this.NewProjectName;
+    await JSRuntime.InvokeAsync<string>("setCookie","Project",this.NewProjectName);
+    NavigationManager.NavigateTo("/Administration/UserMgt",true);
   }
 }

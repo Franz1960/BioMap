@@ -65,6 +65,15 @@ namespace BioMap
     private bool isInitialized = false;
     private readonly object lockInitialized = new object();
     //
+    public void CreateNewProject(string sProjectName) {
+      try {
+        var sDataDir = this.GetDataDir(sProjectName);
+        if (!System.IO.Directory.Exists(sDataDir)) {
+          System.IO.Directory.CreateDirectory(sDataDir);
+        }
+      } catch { }
+    }
+    //
     private readonly List<string> AccessedDbs = new List<string>();
     public void OperateOnDb(SessionData sd,Action<IDbCommand> dbAction) {
       this.OperateOnDb(sd.CurrentUser.Project,dbAction);
@@ -82,6 +91,16 @@ namespace BioMap
         dbConnection.Open();
         if (!this.AccessedDbs.Contains(sProject)) {
           if (!bDbFileExisted) {
+            #region Ordner erzeugen.
+            foreach (var sFolder in new[] { "conf","images","images_orig" }) {
+              try {
+                string sPath=System.IO.Path.Combine(this.GetDataDir(sProject),sFolder);
+                if (!System.IO.Directory.Exists(sPath)) {
+                  System.IO.Directory.CreateDirectory(sPath);
+                }
+              } catch { }
+            }
+            #endregion
             using (IDbCommand command = dbConnection.CreateCommand()) {
               #region Ggf. Tabellenstruktur erzeugen.
               command.CommandText = "CREATE TABLE IF NOT EXISTS places (" +
@@ -220,18 +239,25 @@ namespace BioMap
       this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT emailaddr,permticket,level,fullname" +
           " FROM users" +
-          " WHERE emailaddr='"+sd.CurrentUser.EMail+"'" +
           "";
         var dr = command.ExecuteReader();
+        int nUserCnt=0;
         while (dr.Read()) {
-          sPermTicket=dr.GetValue(1) as string;
-          nLevel=dr.GetInt32(2);
-          if (string.IsNullOrEmpty(sFullName)) {
-            sFullName=dr.GetString(3);
+          nUserCnt++;
+          var sEmailAddr=dr.GetString(0);
+          if (string.CompareOrdinal(sEmailAddr,sd.CurrentUser.EMail)==0) {
+            sPermTicket=dr.GetValue(1) as string;
+            nLevel=dr.GetInt32(2);
+            if (string.IsNullOrEmpty(sFullName)) {
+              sFullName=dr.GetString(3);
+            }
           }
-          break;
         }
         dr.Close();
+        if (nUserCnt<=1) {
+          // First user in new project gets admin level.
+          nLevel=700;
+        }
         if (string.IsNullOrEmpty(sPermTicket)) {
           sPermTicket = rng.Next(0,999999999).ToString("000000000");
         }
