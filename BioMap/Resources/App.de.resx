@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="0: no tolerance, 1: double extension" xml:space="preserve">
+    <value>0: keine Toleranz, 1: doppelte Ausdehnung</value>
+  </data>
   <data name="A list of categories, e.g. '100,140-169,320,330' or '!350,351' if negated." xml:space="preserve">
     <value>Eine Liste von Kategorien, z.B. '100,140-169,320,330' oder '!350,351' wenn negiert.</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="All Years" xml:space="preserve">
     <value>Alle Jahre</value>
+  </data>
+  <data name="Area extension tolerance" xml:space="preserve">
+    <value>Toleranz der Ausdehnung des Projektgebiets</value>
   </data>
   <data name="Author" xml:space="preserve">
     <value>Autor</value>

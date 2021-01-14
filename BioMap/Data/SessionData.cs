@@ -14,6 +14,7 @@ namespace BioMap
        this.Filters = new Filters(()=>CurrentUser);
     }
     public User CurrentUser { get; } = new User();
+    public Project CurrentProject { get; } = new Project();
     public bool ShowCustomMap { get; set; }
     public Filters Filters { get; }
     public bool SizeTimeChartShowVintageBoundaries { get; set; } = true;

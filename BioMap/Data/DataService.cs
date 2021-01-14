@@ -351,6 +351,7 @@ namespace BioMap
       });
       user.Level=nLevel;
       user.EMail=sd.CurrentUser.EMail;
+      this.LoadProject(sd,sd.CurrentProject);
     }
     #region Users.
     private string[] PrevAllUsers = null;
@@ -409,6 +410,24 @@ namespace BioMap
         this.AddLogEntry(sd,"Project property \""+sPropertyName+"\" changed: "+saDiff[0]+" --> "+saDiff[1]);
       }
     }
+    public void LoadProject(SessionData sd,Project project) {
+      project.AoiCenterLat=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiCenterLat"));
+      project.AoiCenterLng=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiCenterLng"));
+      project.AoiMinLat=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiMinLat"));
+      project.AoiMinLng=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiMinLng"));
+      project.AoiMaxLat=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiMaxLat"));
+      project.AoiMaxLng=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiMaxLng"));
+      project.AoiTolerance=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiTolerance"));
+    }
+    public void WriteProject(SessionData sd,Project project) {
+      this.SetProjectProperty(sd,"AoiCenterLat",ConvInvar.ToString(project.AoiCenterLat));
+      this.SetProjectProperty(sd,"AoiCenterLng",ConvInvar.ToString(project.AoiCenterLng));
+      this.SetProjectProperty(sd,"AoiMinLat",ConvInvar.ToString(project.AoiMinLat));
+      this.SetProjectProperty(sd,"AoiMinLng",ConvInvar.ToString(project.AoiMinLng));
+      this.SetProjectProperty(sd,"AoiMaxLat",ConvInvar.ToString(project.AoiMaxLat));
+      this.SetProjectProperty(sd,"AoiMaxLng",ConvInvar.ToString(project.AoiMaxLng));
+      this.SetProjectProperty(sd,"AoiTolerance",ConvInvar.ToString(project.AoiTolerance));
+    }
     public IEnumerable<GoogleMapsComponents.Maps.LatLngLiteral> GetAoi(SessionData sd) {
       string sJson=this.GetProjectProperty(sd,"aoi");
       // If DB has no value, try to read it from conf/aoi.json.
@@ -432,6 +451,30 @@ namespace BioMap
         sJson=JsonConvert.SerializeObject(path);
       }
       this.SetProjectProperty(sd,"aoi",sJson);
+      //
+      if (path!=null && path.Count()>=1) {
+        double? AoiCenterLat=null;
+        double? AoiCenterLng=null;
+        double? AoiMinLat=null;
+        double? AoiMinLng=null;
+        double? AoiMaxLat=null;
+        double? AoiMaxLng=null;
+        foreach (var latLng in path) {
+          if (AoiCenterLat.HasValue) AoiCenterLat+=latLng.Lat; else AoiCenterLat=latLng.Lat;
+          if (AoiCenterLng.HasValue) AoiCenterLng+=latLng.Lng; else AoiCenterLng=latLng.Lng;
+          if (!AoiMinLat.HasValue || latLng.Lat<AoiMinLat.Value) AoiMinLat=latLng.Lat;
+          if (!AoiMinLng.HasValue || latLng.Lng<AoiMinLng.Value) AoiMinLng=latLng.Lng;
+          if (!AoiMaxLat.HasValue || latLng.Lat>AoiMaxLat.Value) AoiMaxLat=latLng.Lat;
+          if (!AoiMaxLng.HasValue || latLng.Lng>AoiMaxLng.Value) AoiMaxLng=latLng.Lng;
+        }
+        sd.CurrentProject.AoiCenterLat=AoiCenterLat.Value/path.Count();
+        sd.CurrentProject.AoiCenterLng=AoiCenterLng.Value/path.Count();
+        sd.CurrentProject.AoiMinLat=AoiMinLat.Value;
+        sd.CurrentProject.AoiMinLng=AoiMinLng.Value;
+        sd.CurrentProject.AoiMaxLat=AoiMaxLat.Value;
+        sd.CurrentProject.AoiMaxLng=AoiMaxLng.Value;
+        this.WriteProject(sd,sd.CurrentProject);
+      }
     }
     #endregion
     #region Places.

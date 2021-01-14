@@ -26,6 +26,13 @@
           </FieldBody>
         </Field>
         <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Area extension tolerance"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <NumericEdit TValue="double" @bind-Value="SD.CurrentProject.AoiTolerance" Min="0" Max="2"/>
+            <FieldHelp>@Localize["0: no tolerance, 1: double extension"]</FieldHelp>
+          </FieldBody>
+        </Field>
+        <Field Horizontal="true">
           <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Recalculate all"]</FieldLabel>
           <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
             <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<500)" Clicked="@(async (e)=>{ await RecalculateAll_Clicked(); })">@Localize["Start"]</Button>
@@ -54,6 +61,14 @@
   private Modal progressModalRef;
   private int progressCompletion = 0;
   //
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    NM.LocationChanged+=NM_LocationChanged;
+  }
+  private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
+    NM.LocationChanged-=NM_LocationChanged;
+    DS.WriteProject(SD,SD.CurrentProject);
+  }
   private async Task Import_Clicked() {
     progressCompletion=0;
     progressModalRef.Show();
