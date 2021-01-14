@@ -6,7 +6,7 @@
 @inject SessionData SD
 @using BioMap
 
-<Row Margin="Margin.Is4">
+<Row Margin="Margin.Is1.OnY">
   <Column  ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
     <Card>
       <CardHeader>
@@ -30,7 +30,7 @@
     </p>
   </Column>
 </Row>
-<Row Margin="Margin.Is4.OnY">
+<Row Margin="Margin.Is2.OnY">
   @if (SD.CurrentUser.Level<200) {
     <Column>
       <Card>

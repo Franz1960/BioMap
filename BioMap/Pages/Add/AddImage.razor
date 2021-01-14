@@ -43,8 +43,8 @@
       <Progress Margin="Margin.Is3.FromBottom">
         <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
       </Progress>
-      @if (errorMessages.Count>=1) {
-        foreach (var msg in errorMessages) {
+      @if (messages.Count>=1) {
+        foreach (var msg in messages) {
         <Row Margin="Margin.Is1.OnY">
           <Column>
             @msg
@@ -70,7 +70,7 @@
 @code {
   private Modal progressModalRef;
   private int progressCompletion = 0;
-  private List<string> errorMessages=new List<string>();
+  private List<string> messages=new List<string>();
   //
   protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
@@ -86,14 +86,15 @@
   //
   private async Task OnInputFileChange(InputFileChangeEventArgs e) {
     var maxAllowedFiles = 30;
-    errorMessages.Clear();
+    int nUploadedFiles=0;
+    messages.Clear();
     progressCompletion=0;
     progressModalRef.Show();
     try {
       var files= e.GetMultipleFiles(maxAllowedFiles);
       for (int idxFile=0;idxFile<files.Count;idxFile++) {
         var imageFile=files[idxFile];
-        progressCompletion=((idxFile+1)*100)/files.Count;
+        progressCompletion=(int)Math.Round(((idxFile+0.5)*100)/files.Count);
         await this.InvokeAsync(() => { StateHasChanged(); });
         try {
           var imageStream = imageFile.OpenReadStream(20000000);
@@ -104,22 +105,28 @@
           }
           var el = Element.CreateFromImageFile(SD.CurrentUser.Project,sDestTempFilePath,SD.CurrentUser.EMail);
           if (el.ElementProp.MarkerInfo.position==null) {
-            errorMessages.Add("No GPS location in \""+el.ElementName+"\"");
+            messages.Add("No GPS location in \""+el.ElementName+"\"");
           } else if (!SD.CurrentProject.IsLocationInsideAoi(el.ElementProp.MarkerInfo.position)) {
-            errorMessages.Add("GPS location is outside project area \""+el.ElementName+"\"");
+            messages.Add("GPS location is outside project area \""+el.ElementName+"\"");
           } else {
             DS.WriteElement(SD,el);
             var sDestFilePath = DS.GetFilePathForImage(SD.CurrentUser.Project,imageFile.Name,true);
             Migration.CopyImageCompressed(sDestTempFilePath,sDestFilePath,2000);
+            DS.AddLogEntry(SD,"Uploaded file "+el.ElementName);
+            nUploadedFiles++;
           }
           System.IO.File.Delete(sDestTempFilePath);
         } catch (Exception ex) {
-          errorMessages.Add(ex.ToString());
+          messages.Add(ex.ToString());
           await this.InvokeAsync(() => { StateHasChanged(); });
         }
+        progressCompletion=(int)Math.Round(((idxFile+1.0)*100)/files.Count);
+        await this.InvokeAsync(() => { StateHasChanged(); });
       }
+      messages.Add(string.Format(Localize["{0} files uploaded."],nUploadedFiles.ToString()));
+      await this.InvokeAsync(() => { StateHasChanged(); });
     } finally {
-      if (errorMessages.Count<1) {
+      if (messages.Count<1) {
         await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
       }
     }

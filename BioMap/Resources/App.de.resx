@@ -585,4 +585,7 @@
   <data name="You can look around the website without registration. However, you will only see alienated location coordinates. If you want to see unaltered data and participate in the project, you are welcome to register." xml:space="preserve">
     <value>Sie können sich ohne Registrierung auf der Webseite umsehen. Sie bekommen allerdings nur verfremdete Ortskoordinaten zu sehen. Wenn Sie unverfälschte Daten sehen wollen und sich am Projekt beteiligen wollen, können Sie sich gerne registrieren.</value>
   </data>
+  <data name="{0} files uploaded." xml:space="preserve">
+    <value>{0} Dateien hochgeladen.</value>
+  </data>
 </root>
