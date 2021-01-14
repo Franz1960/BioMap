@@ -132,13 +132,19 @@ namespace BioMap
       this.Project=sProject;
     }
     public static Element CreateFromImageFile(string sProject,string sImageFilePath,string sUserId) {
-      var metaData = ImageMetadataReader.ReadMetadata(sImageFilePath);
+      using (var sImageStream = new System.IO.FileStream(sImageFilePath,System.IO.FileMode.Open)) {
+        var sElementName = System.IO.Path.GetFileName(sImageFilePath);
+        return CreateFromImageFile(sProject,sImageStream,sElementName,sUserId);
+      }
+    }
+    public static Element CreateFromImageFile(string sProject,System.IO.Stream sImageStream,string sElementName,string sUserId) {
+      var metaData = ImageMetadataReader.ReadMetadata(sImageStream);
       var ifd0Directory = metaData.OfType<ExifIfd0Directory>().FirstOrDefault();
       var subIfdDirectory = metaData.OfType<ExifSubIfdDirectory>().FirstOrDefault();
       var gpsDirectory = metaData.OfType<GpsDirectory>().FirstOrDefault();
       var geoLocation = gpsDirectory?.GetGeoLocation();
       var el = new Element(sProject);
-      el.ElementName = System.IO.Path.GetFileName(sImageFilePath);
+      el.ElementName = sElementName;
       el.ElementProp=new ElementProp_t();
       el.ElementProp.UploadInfo=new Element.UploadInfo_t {
         Timestamp = DateTime.Now,
@@ -154,7 +160,7 @@ namespace BioMap
         };
       }
       el.ElementProp.ExifData=new ExifData_t();
-      if (subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal,out var dateTime)) {
+      if (subIfdDirectory!=null && subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal,out var dateTime)) {
         el.ElementProp.ExifData.DateTimeOriginal=dateTime;
       }
       if (ifd0Directory!=null) {

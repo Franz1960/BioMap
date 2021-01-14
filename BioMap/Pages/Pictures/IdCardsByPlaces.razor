@@ -46,7 +46,7 @@
     var els = DataService.Instance.GetElements(SD,SD.Filters,"indivdata.iid>=1 AND elements.category=350","elements.place ASC,elements.creationtime ASC");
     this.ElementsByPlaces.Clear();
     foreach (var el in els) {
-      if (!string.IsNullOrEmpty(PhotoController.GetImageFilePath(SD.CurrentUser.Project,el.ElementName))) {
+      if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project,el.ElementName))) {
         var sPlace = el.GetPlaceName();
         if (sPlace==null) {
           sPlace="";

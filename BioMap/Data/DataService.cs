@@ -47,6 +47,19 @@ namespace BioMap
     public string GetDataDir(SessionData sd) {
       return this.GetDataDir(sd.CurrentUser.Project);
     }
+    public string GetTempDir(string sProject) {
+      var ds = DataService.Instance;
+      var sDataDir = ds.GetDataDir(sProject);
+      string sFilePath = System.IO.Path.Combine(sDataDir,"temp");
+      return sFilePath;
+    }
+    public string GetFilePathForImage(string sProject,string id,bool bOrig) {
+      var ds = DataService.Instance;
+      var sDataDir = ds.GetDataDir(sProject);
+      string sFilePath = System.IO.Path.Combine(sDataDir,bOrig?"images_orig":"images");
+      sFilePath=System.IO.Path.Combine(sFilePath,id);
+      return sFilePath;
+    }
     public event EventHandler Initialized {
       add {
         lock (this.lockInitialized) {
@@ -97,7 +110,7 @@ namespace BioMap
         if (!this.AccessedDbs.Contains(sProject)) {
           if (!bDbFileExisted) {
             #region Ordner erzeugen.
-            foreach (var sFolder in new[] { "conf","images","images_orig" }) {
+            foreach (var sFolder in new[] { "conf","images","images_orig","temp" }) {
               try {
                 string sPath=System.IO.Path.Combine(this.GetDataDir(sProject),sFolder);
                 if (!System.IO.Directory.Exists(sPath)) {
