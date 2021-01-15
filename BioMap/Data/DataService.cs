@@ -453,6 +453,7 @@ namespace BioMap
       project.AoiMaxLat=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiMaxLat"));
       project.AoiMaxLng=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiMaxLng"));
       project.AoiTolerance=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiTolerance"));
+      project.SpeciesSciName=this.GetProjectProperty(sd,"SpeciesSciName");
     }
     public void WriteProject(SessionData sd,Project project) {
       this.SetProjectProperty(sd,"AoiCenterLat",ConvInvar.ToString(project.AoiCenterLat));
@@ -462,6 +463,7 @@ namespace BioMap
       this.SetProjectProperty(sd,"AoiMaxLat",ConvInvar.ToString(project.AoiMaxLat));
       this.SetProjectProperty(sd,"AoiMaxLng",ConvInvar.ToString(project.AoiMaxLng));
       this.SetProjectProperty(sd,"AoiTolerance",ConvInvar.ToString(project.AoiTolerance));
+      this.SetProjectProperty(sd,"SpeciesSciName",project.SpeciesSciName);
     }
     public IEnumerable<GoogleMapsComponents.Maps.LatLngLiteral> GetAoi(SessionData sd) {
       string sJson=this.GetProjectProperty(sd,"aoi");

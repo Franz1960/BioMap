@@ -186,6 +186,9 @@
   <data name="Author" xml:space="preserve">
     <value>Autor</value>
   </data>
+  <data name="Biology" xml:space="preserve">
+    <value>Biologie</value>
+  </data>
   <data name="BioMap helps monitor yellow-bellied toads." xml:space="preserve">
     <value>BioMap hilft beim Monitoring von Gelbbauchunken.</value>
   </data>
@@ -434,6 +437,9 @@
   </data>
   <data name="Missed individuals" xml:space="preserve">
     <value>Vermisste Individuen</value>
+  </data>
+  <data name="Monitored species (scientific name)" xml:space="preserve">
+    <value>Zu monitorierende Art (wissenschaftlicher Name)</value>
   </data>
   <data name="Month" xml:space="preserve">
     <value>Monat</value>

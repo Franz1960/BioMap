@@ -8,7 +8,7 @@
 
 <Row>
   <Column>
-    <Card Margin="Margin.Is4.OnY">
+    <Card Margin="Margin.Is2.OnY">
       <CardHeader>
         <CardTitle>@Localize["Data"]</CardTitle>
       </CardHeader>
@@ -28,7 +28,7 @@
         <Field Horizontal="true">
           <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Area extension tolerance"]</FieldLabel>
           <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <NumericEdit TValue="double" @bind-Value="SD.CurrentProject.AoiTolerance" Min="0" Max="2"/>
+            <NumericEdit TValue="double" Disabled="@(SD.CurrentUser.Level<500)" @bind-Value="SD.CurrentProject.AoiTolerance" Min="-0.0001" Max="2" />
             <FieldHelp>@Localize["0: no tolerance, 1: double extension"]</FieldHelp>
           </FieldBody>
         </Field>
@@ -36,6 +36,23 @@
           <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Recalculate all"]</FieldLabel>
           <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
             <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<500)" Clicked="@(async (e)=>{ await RecalculateAll_Clicked(); })">@Localize["Start"]</Button>
+          </FieldBody>
+        </Field>
+      </CardBody>
+    </Card>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Card Margin="Margin.Is2.OnY">
+      <CardHeader>
+        <CardTitle>@Localize["Biology"]</CardTitle>
+      </CardHeader>
+      <CardBody>
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Monitored species (scientific name)"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <TextEdit TValue="string" Disabled="@(SD.CurrentUser.Level<700)" @bind-Text="SD.CurrentProject.SpeciesSciName" />
           </FieldBody>
         </Field>
       </CardBody>
@@ -73,7 +90,7 @@
     progressCompletion=0;
     progressModalRef.Show();
     try {
-      await Migration.MigrateData(SD,(completion)=>{
+      await Migration.MigrateData(SD,(completion) => {
         progressCompletion=completion;
         this.InvokeAsync(() => { StateHasChanged(); });
       });
