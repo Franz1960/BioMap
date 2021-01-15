@@ -478,23 +478,21 @@ namespace BioMap
     }
     #endregion
     #region Places.
-    private System.Numerics.Matrix3x2 AlienationTransformation {
-      get {
-        if (!this._AlienationTransformation.HasValue) {
-          var m1=System.Numerics.Matrix3x2.CreateTranslation((float)(-ProjectCenterLng),(float)(-ProjectCenterLat));
-          var m2=System.Numerics.Matrix3x2.CreateRotation(-0.33f);
-          var m2a=System.Numerics.Matrix3x2.CreateSkew(0f,0.25f);
-          var m2b=System.Numerics.Matrix3x2.CreateTranslation(-0.0005f,-0.0013f);
-          var m3=System.Numerics.Matrix3x2.CreateScale(0.99f,0.95f);
-          System.Numerics.Matrix3x2.Invert(m1,out var m4);
-          this._AlienationTransformation=m1*m2*m2a*m2b*m3*m4;
-        }
-        return this._AlienationTransformation.Value;
+    private System.Numerics.Matrix3x2 GetAlienationTransformation(SessionData sd) {
+      if (!_AlienationTransformation.ContainsKey(sd.CurrentUser.Project)) {
+        var m1=System.Numerics.Matrix3x2.CreateTranslation((float)(-sd.CurrentProject.AoiCenterLng),(float)(-sd.CurrentProject.AoiCenterLat));
+        var m2=System.Numerics.Matrix3x2.CreateRotation(-0.33f);
+        var m2a=System.Numerics.Matrix3x2.CreateSkew(0f,0.25f);
+        var m2b=System.Numerics.Matrix3x2.CreateTranslation(-0.0005f,-0.0013f);
+        var m3=System.Numerics.Matrix3x2.CreateScale(0.99f,0.95f);
+        System.Numerics.Matrix3x2.Invert(m1,out var m4);
+        _AlienationTransformation.Add(sd.CurrentUser.Project,m1*m2*m2a*m2b*m3*m4);
       }
+      return _AlienationTransformation[sd.CurrentUser.Project];
     }
-    private System.Numerics.Matrix3x2? _AlienationTransformation=null;
-    private LatLng GetAlienatedPosition(LatLng position) {
-      var vRes=System.Numerics.Vector2.Transform(new System.Numerics.Vector2((float)position.lng,(float)position.lat),this.AlienationTransformation);
+    private static readonly Dictionary<string,System.Numerics.Matrix3x2> _AlienationTransformation=new Dictionary<string, System.Numerics.Matrix3x2>();
+    private LatLng GetAlienatedPosition(SessionData sd,LatLng position) {
+      var vRes=System.Numerics.Vector2.Transform(new System.Numerics.Vector2((float)position.lng,(float)position.lat),this.GetAlienationTransformation(sd));
       return new LatLng {
         lat=vRes.Y,
         lng=vRes.X,
@@ -509,7 +507,7 @@ namespace BioMap
           var ap=new Place {
             Name=place.Name,
             Radius=place.Radius,
-            LatLng=GetAlienatedPosition(place.LatLng),
+            LatLng=GetAlienatedPosition(sd,place.LatLng),
           };
           ap.TraitValues.Clear();
           ap.TraitValues.AddRange(place.TraitValues);
@@ -813,7 +811,7 @@ namespace BioMap
         return lElements.ToArray();
       } else {
         foreach (var el in lElements.ToArray()) {
-          el.ElementProp.MarkerInfo.position=this.GetAlienatedPosition(el.ElementProp.MarkerInfo.position);
+          el.ElementProp.MarkerInfo.position=this.GetAlienatedPosition(sd,el.ElementProp.MarkerInfo.position);
         }
         return lElements.ToArray();
       }
