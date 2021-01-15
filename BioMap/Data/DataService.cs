@@ -358,7 +358,7 @@ namespace BioMap
       this.LoadProject(sd,sd.CurrentProject);
       user.Prefs.MaptypeId=this.GetUserProperty(sd,"MaptypeId","");
       user.Prefs.ShowCustomMap=(ConvInvar.ToInt(this.GetUserProperty(sd,"ShowCustomMap","0"))!=0);
-      user.Prefs.ShowPlaces=(ConvInvar.ToInt(this.GetUserProperty(sd,"ShowPlaces","0"))!=0);
+      user.Prefs.ShowPlaces=(ConvInvar.ToInt(this.GetUserProperty(sd,"ShowPlaces","1"))!=0);
       user.Prefs.DynaZoomed=(ConvInvar.ToInt(this.GetUserProperty(sd,"DynaZoomed","0"))!=0);
       user.Prefs.DisplayConnectors=(ConvInvar.ToInt(this.GetUserProperty(sd,"DisplayConnectors","0"))!=0);
     }
