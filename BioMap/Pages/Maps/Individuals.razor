@@ -26,7 +26,7 @@
     <CheckBox Checked="DynaZoomed" CheckedChanged="(e)=>DynaZoomed=e" LabelText=@Localize["Dyn. zoom"] />
   </Column>
   <Column>
-    <CheckBox Checked="DisplayConnectors" CheckedChanged="(e)=>DisplayConnectors=e" LabelText=@Localize["Show movements"] />
+    <CheckBox Checked="SD.CurrentUser.Prefs.DisplayConnectors" CheckedChanged="(e)=>{ SD.CurrentUser.Prefs.DisplayConnectors=e; DS.WriteUser(SD,SD.CurrentUser); }" LabelText=@Localize["Show movements"] />
   </Column>
 </Row>
 <PhotoPopup @ref="PhotoPopup1" />

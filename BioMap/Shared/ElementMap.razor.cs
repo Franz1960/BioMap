@@ -42,25 +42,25 @@ namespace BioMap.Shared
     [Parameter]
     public bool DynaZoomed {
       get {
-        return this._DynaZoomed;
+        return SD.CurrentUser.Prefs.DynaZoomed;
       }
       set {
-        this._DynaZoomed=value;
-        this.RefreshRadii();
+        SD.CurrentUser.Prefs.DynaZoomed=value;
+        DS.WriteUser(SD,SD.CurrentUser);
+        Task.Run(async ()=>{ await this.RefreshRadii(); });
       }
     }
-    private bool _DynaZoomed = false;
     [Parameter]
     public bool DisplayConnectors {
       get {
-        return this._DisplayConnectors;
+        return SD.CurrentUser.Prefs.DisplayConnectors;
       }
       set {
-        this._DisplayConnectors=value;
+        SD.CurrentUser.Prefs.DisplayConnectors=value;
+        DS.WriteUser(SD,SD.CurrentUser);
         this.DelayedStateHasChanged();
       }
     }
-    private bool _DisplayConnectors = false;
     //
     private CircleList circleList=null;
     private PolylineList connectorList=null;
@@ -77,8 +77,9 @@ namespace BioMap.Shared
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
-        await this.googleMap.InteropObject.AddListener("zoom_changed",() => {
-          this.RefreshRadii();
+        await this.RefreshRadii();
+        await this.googleMap.InteropObject.AddListener("zoom_changed",async () => {
+          await this.RefreshRadii();
         });
       }
       if (this.ElementMarkers!=null) {
@@ -162,13 +163,14 @@ namespace BioMap.Shared
       }
     }
     private double? PrevRadiusFactor = null;
-    private void RefreshRadii() {
+    private async Task RefreshRadii() {
       //System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff")+": CallDelayed");
-      Utilities.CallDelayed(800,()=>{
+      await Task.Delay(200);
+      {
         //System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff")+": Elapsed");
         if (this.DynaZoomed) {
           try {
-            var bounds = this.googleMap.InteropObject.GetBounds().Result;
+            var bounds = await this.googleMap.InteropObject.GetBounds();
             var fHeight = Math.Abs(bounds.North-bounds.South)*111000;
             this.RadiusFactor=fHeight*0.004;
           } catch { }
@@ -185,13 +187,13 @@ namespace BioMap.Shared
                   var elm = this.ElementMarkers[i];
                   dictRadii[elm.Element.ElementName]=this.RadiusFactor*elm.Radius;
                 }
-                this.circleList.SetRadiuses(dictRadii).Wait();
               }
+              await this.circleList.SetRadiuses(dictRadii);
             } catch { }
             this.PrevRadiusFactor=this.RadiusFactor;
           }
         }
-      });
+      }
     }
     public override async Task FitBounds(bool bConsiderPlaces=true) {
       if (this.elementBounds==null || this.elementBounds.East==this.elementBounds.West || this.elementBounds.South==this.elementBounds.North) {

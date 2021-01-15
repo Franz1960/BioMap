@@ -22,14 +22,14 @@ namespace BioMap.Shared
     [Parameter]
     public bool ShowPlaces {
       get {
-        return this._ShowPlaces;
+        return SD.CurrentUser.Prefs.ShowPlaces;
       }
       set {
-        this._ShowPlaces=value;
+        SD.CurrentUser.Prefs.ShowPlaces=value;
+        DS.WriteUser(SD,SD.CurrentUser);
         this.DelayedStateHasChanged();
       }
     }
-    private bool _ShowPlaces = true;
     private bool? PrevShowPlaces = null;
     [Parameter]
     public bool ShowCustomMap {
@@ -90,10 +90,10 @@ namespace BioMap.Shared
       mapOptions = new MapOptions() {
         Zoom = 12,
         Center = new LatLngLiteral() {
-          Lat = 48.994249,
-          Lng = 12.190451
+          Lat = SD.CurrentProject.AoiCenterLat,
+          Lng = SD.CurrentProject.AoiCenterLng
         },
-        MapTypeId = MapTypeId.Roadmap,
+        MapTypeId = (string.IsNullOrEmpty(SD.CurrentUser.Prefs.MaptypeId)?MapTypeId.Roadmap:Enum.Parse<MapTypeId>(SD.CurrentUser.Prefs.MaptypeId)),
         StreetViewControl=false,
       };
     }
@@ -103,6 +103,11 @@ namespace BioMap.Shared
         while (googleMap.InteropObject==null) {
           await Task.Delay(100);
         }
+        await this.googleMap.InteropObject.AddListener("maptypeid_changed",async () => {
+          var mt=await this.googleMap.InteropObject.GetMapTypeId();
+          SD.CurrentUser.Prefs.MaptypeId=mt.ToString();
+          DS.WriteUser(SD,SD.CurrentUser);
+        });
         #region Add area of interest.
         try {
           var path = new List<LatLngLiteral>();

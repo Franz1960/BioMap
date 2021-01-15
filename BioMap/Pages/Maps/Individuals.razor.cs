@@ -33,7 +33,6 @@ namespace BioMap.Pages.Maps
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
         base.PhotoPopup=this.PhotoPopup1;
-        base.DynaZoomed=false;
         await this.RefreshElementMarkers();
       }
     }

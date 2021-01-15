@@ -15,6 +15,15 @@ namespace BioMap
     public string FullName;
     public int Level;
     public string Project;
+    //
+    public class Preferences {
+      public string MaptypeId;
+      public bool ShowCustomMap;
+      public bool ShowPlaces;
+      public bool DynaZoomed;
+      public bool DisplayConnectors;
+    }
+    public readonly Preferences Prefs=new Preferences();
     public bool MaySeeLocations { get => Level>=400; }
     public bool MayChangeLocations { get => Level>=500; }
     public bool MaySeeOtherUsers { get => Level>=500; }

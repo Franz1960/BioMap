@@ -207,6 +207,10 @@ namespace BioMap
             "name TEXT PRIMARY KEY NOT NULL," +
             "value TEXT)";
             command.ExecuteNonQuery();
+            command.CommandText = "CREATE TABLE IF NOT EXISTS userprefs (" +
+            "name TEXT PRIMARY KEY NOT NULL," +
+            "value TEXT)";
+            command.ExecuteNonQuery();
           }
           #endregion
           this.AccessedDbs.Add(sProject);
@@ -352,6 +356,11 @@ namespace BioMap
       user.Level=nLevel;
       user.EMail=sd.CurrentUser.EMail;
       this.LoadProject(sd,sd.CurrentProject);
+      user.Prefs.MaptypeId=this.GetUserProperty(sd,"MaptypeId","");
+      user.Prefs.ShowCustomMap=(ConvInvar.ToInt(this.GetUserProperty(sd,"ShowCustomMap","0"))!=0);
+      user.Prefs.ShowPlaces=(ConvInvar.ToInt(this.GetUserProperty(sd,"ShowPlaces","0"))!=0);
+      user.Prefs.DynaZoomed=(ConvInvar.ToInt(this.GetUserProperty(sd,"DynaZoomed","0"))!=0);
+      user.Prefs.DisplayConnectors=(ConvInvar.ToInt(this.GetUserProperty(sd,"DisplayConnectors","0"))!=0);
     }
     #region Users.
     private string[] PrevAllUsers = null;
@@ -384,9 +393,35 @@ namespace BioMap
         command.CommandText =
           "UPDATE users SET " +
           "level='"+ConvInvar.ToString(user.Level)+"'," +
+          "level='"+ConvInvar.ToString(user.Level)+"'," +
           "fullname='"+user.FullName+"' WHERE emailaddr='"+user.EMail+"'";
         command.ExecuteNonQuery();
       });
+      this.SetUserProperty(sd,"MaptypeId",user.Prefs.MaptypeId);
+      this.SetUserProperty(sd,"ShowCustomMap",user.Prefs.ShowCustomMap?"1":"0");
+      this.SetUserProperty(sd,"ShowPlaces",user.Prefs.ShowPlaces?"1":"0");
+      this.SetUserProperty(sd,"DynaZoomed",user.Prefs.DynaZoomed?"1":"0");
+      this.SetUserProperty(sd,"DisplayConnectors",user.Prefs.DisplayConnectors?"1":"0");
+    }
+    public string GetUserProperty(SessionData sd,string sPropertyName,string sDefaultValue="") {
+      string sValue=sDefaultValue;
+      this.OperateOnDb(sd,(command) => {
+        command.CommandText = "SELECT value FROM userprefs WHERE name='"+sPropertyName+"'";
+        var r = command.ExecuteScalar();
+        sValue = command.ExecuteScalar() as string;
+      });
+      return sValue;
+    }
+    public void SetUserProperty(SessionData sd,string sPropertyName,string sValue) {
+      var sOldValue=this.GetProjectProperty(sd,sPropertyName);
+      var saDiff=Utilities.FindDifferingCoreParts(sOldValue,sValue);
+      if (saDiff!=null) {
+        this.OperateOnDb(sd,(command) => {
+          command.CommandText = "REPLACE INTO userprefs (name,value) VALUES ('"+sPropertyName+"','"+sValue+"')";
+          command.ExecuteNonQuery();
+        });
+        this.AddLogEntry(sd,"User preference \""+sPropertyName+"\" changed: "+saDiff[0]+" --> "+saDiff[1]);
+      }
     }
     #endregion
     #region Project
