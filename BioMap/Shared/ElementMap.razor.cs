@@ -193,9 +193,9 @@ namespace BioMap.Shared
         }
       });
     }
-    protected override async Task FitBounds() {
+    public override async Task FitBounds(bool bConsiderPlaces=true) {
       if (this.elementBounds==null || this.elementBounds.East==this.elementBounds.West || this.elementBounds.South==this.elementBounds.North) {
-        await base.FitBounds();
+        await base.FitBounds(bConsiderPlaces);
       } else {
         await this.googleMap.InteropObject.FitBounds(this.elementBounds,OneOf.OneOf<int,Padding>.FromT0(5));
       }

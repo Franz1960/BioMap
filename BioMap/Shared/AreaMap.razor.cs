@@ -128,7 +128,7 @@ namespace BioMap.Shared
           }
           this.aoiBounds = bounds;
           if (this.aoiBounds!=null && !this.aoiBounds.IsEmpty()) {
-            await this.googleMap.InteropObject.FitBounds(this.aoiBounds,OneOf.OneOf<int,Padding>.FromT0(5));
+            await this.googleMap.InteropObject.FitBounds(this.aoiBounds,OneOf.OneOf<int,Padding>.FromT0(3));
           }
         } catch { }
         #endregion
@@ -156,7 +156,8 @@ namespace BioMap.Shared
       #region Add places.
       {
         bool bShowPlaces = (this.ShowPlaces && SD.CurrentUser.Level>=0);
-        if (!this.PrevShowPlaces.HasValue || bShowPlaces!=this.PrevShowPlaces) {
+        if (!this.PrevShowPlaces.HasValue || bShowPlaces!=this.PrevShowPlaces || this.refreshPlacesReq) {
+          this.refreshPlacesReq=false;
           LatLngBoundsLiteral bounds=null;
           this.PrevShowPlaces=bShowPlaces;
           var dictPlaceCircles = new Dictionary<string,CircleOptions>();
@@ -196,15 +197,20 @@ namespace BioMap.Shared
       }
       #endregion
     }
-    protected virtual async Task FitBounds() {
-      if (this.placesBounds==null || this.placesBounds.IsEmpty()) {
+    public async Task RefreshPlaces() {
+      this.refreshPlacesReq=true;
+      await this.InvokeAsync(()=>StateHasChanged());
+    }
+    private bool refreshPlacesReq=true;
+    public virtual async Task FitBounds(bool bConsiderPlaces=true) {
+      if (!bConsiderPlaces || this.placesBounds==null || this.placesBounds.IsEmpty()) {
         if (this.aoiBounds==null || this.aoiBounds.IsEmpty()) {
           return;
         } else {
-          await this.googleMap.InteropObject.FitBounds(this.aoiBounds,OneOf.OneOf<int,Padding>.FromT0(5));
+          await this.googleMap.InteropObject.FitBounds(this.aoiBounds,OneOf.OneOf<int,Padding>.FromT0(3));
         }
       } else {
-        await this.googleMap.InteropObject.FitBounds(this.placesBounds,OneOf.OneOf<int,Padding>.FromT0(5));
+        await this.googleMap.InteropObject.FitBounds(this.placesBounds,OneOf.OneOf<int,Padding>.FromT0(3));
       }
     }
     public void DelayedStateHasChanged() {

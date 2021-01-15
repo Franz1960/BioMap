@@ -144,6 +144,9 @@
   <data name="Add Image" xml:space="preserve">
     <value>Foto hinzufügen</value>
   </data>
+  <data name="Add place" xml:space="preserve">
+    <value>Ort hinzufügen</value>
+  </data>
   <data name="Administration" xml:space="preserve">
     <value>Verwaltung</value>
   </data>
@@ -399,6 +402,9 @@
   <data name="Located element" xml:space="preserve">
     <value>Ortselement</value>
   </data>
+  <data name="Location must be in project area." xml:space="preserve">
+    <value>Ort muss im Projektgebiet liegen.</value>
+  </data>
   <data name="Log" xml:space="preserve">
     <value>Protokoll</value>
   </data>
@@ -477,6 +483,9 @@
   <data name="Place filter" xml:space="preserve">
     <value>Platzfilter</value>
   </data>
+  <data name="Place name" xml:space="preserve">
+    <value>Name des Ortes</value>
+  </data>
   <data name="Places" xml:space="preserve">
     <value>Orte</value>
   </data>
@@ -491,6 +500,9 @@
   </data>
   <data name="Project name" xml:space="preserve">
     <value>Projektname</value>
+  </data>
+  <data name="Provide a new name." xml:space="preserve">
+    <value>Geben Sie einen neuen Namen ein.</value>
   </data>
   <data name="Recalculate all" xml:space="preserve">
     <value>Alles neu berechnen</value>

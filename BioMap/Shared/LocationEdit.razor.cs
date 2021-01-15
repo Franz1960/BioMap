@@ -49,7 +49,10 @@ namespace BioMap.Shared
     }
     private async Task OnAfterInitAsync()
     {
-        await this.googleMap.InteropObject.AddListener("center_changed", async () => await OnCenterChanged());
+      await this.googleMap.InteropObject.AddListener("center_changed", async () => await OnCenterChanged());
+      //if (this.Location==null) {
+      //  this.Location=new LatLngLiteral(SD.CurrentProject.AoiCenterLng,SD.CurrentProject.AoiCenterLat);
+      //}
     }
     private async Task OnCenterChanged()
     {
@@ -61,7 +64,7 @@ namespace BioMap.Shared
           await this.LocationCircle.SetCenter(this.Location);
           await this.LocationCircle.SetRadius(fHeight*0.05);
         }
-        await this.LocationChanged.InvokeAsync(this.Location);
+        await this. LocationChanged.InvokeAsync(this.Location);
       } catch { }
     }
   }

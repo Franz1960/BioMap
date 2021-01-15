@@ -6,21 +6,66 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<Row>
+<Row Margin="Margin.Is1.OnY">
   <Column>
     <CheckBox @bind-Checked="SD.AlienateLocations" LabelText=@Localize["Alienate locations"] />
   </Column>
 </Row>
-<Row>
+<Row Margin="Margin.Is1.OnY">
   <Column>
-    <Card Margin="Margin.Is4.OnY">
+    <Card Margin="Margin.Is2.OnY">
       <CardHeader>
         <CardTitle>@Localize["Places"]</CardTitle>
       </CardHeader>
       <CardBody>
+        <Accordion>
+          <Collapse Visible="@(addPlaceVisible)">
+            <CollapseHeader>
+              <Heading Size="HeadingSize.Is2">
+                <Button Color="Color.Light" Clicked="@(async ()=>{ await AddPlace_Opened(); })"><Icon Name="IconName.Add" /> @Localize["Add place"]</Button>
+              </Heading>
+            </CollapseHeader>
+            <CollapseBody>
+              <Row Margin="Margin.Is1.OnY">
+                <Column>
+                  <Row Margin="Margin.Is1.OnY">
+                    <Column>
+                      <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop" Float="Float.Right">@Localize["Place name"]: </FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+                          <TextEdit @bind-Text="newPlaceName" />
+                        </FieldBody>
+                      </Field>
+                    </Column>
+                  </Row>
+                  <Row Margin="Margin.Is1.OnY">
+                    <Column>
+                      <Button Color="Color.Primary" Clicked="@(async ()=>{ await AddPlace_Clicked(); })">@Localize["Add place"]</Button>
+                    </Column>
+                  </Row>
+                  @if (!string.IsNullOrEmpty(newPlaceErrorMessage)) {
+                  <Row Margin="Margin.Is1.OnY">
+                    <Column>
+                      <Alert Color="Color.Danger" Visible="true">
+                        <AlertMessage>
+                          @newPlaceErrorMessage
+                        </AlertMessage>
+                      </Alert>
+                    </Column>
+                  </Row>
+                  }
+                </Column>
+                <Column>
+                  <LocationEdit @ref="LocationEditRef" LocationChanged="@((e)=>{ newPlaceLocation=e; })" />
+                </Column>
+              </Row>
+            </CollapseBody>
+          </Collapse>
+        </Accordion>
         <table class="table table-sm">
           <thead>
             <tr>
+              <th scope="col"></th>
               <th scope="col">@Localize["Place"]</th>
               @if (SD.CurrentUser.MaySeeLocations) {
                 <th scope="col">@Localize["Latitude"]</th>
@@ -34,29 +79,34 @@
           </thead>
           <tbody>
             @foreach (var place in AllPlaces) {
-              <tr>
-                <th scope="row">@place.Name</th>
-                @if (SD.CurrentUser.MaySeeLocations) {
-                  <td>
-                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" @onfocusout="(e)=>ChangeByUser(place)" />
-                  </td>
-                  <td>
-                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lng" @onfocusout="(e)=>ChangeByUser(place)" />
-                  </td>
-                }
+            <tr>
+              <td scope="row">
+                <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<500" Clicked="@(async (e)=>{ DS.DeletePlace(SD,place.Name);RefreshData();await this.LocationEditRef.RefreshPlaces(); })">
+                  <Icon Name="IconName.Delete"></Icon>
+                </Button>
+              </td>
+              <th scope="row">@place.Name</th>
+              @if (SD.CurrentUser.MaySeeLocations) {
                 <td>
-                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" @onfocusout="(e)=>ChangeByUser(place)" />
+                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" @onfocusout="(e)=>ChangeByUser(place)" />
                 </td>
-                @foreach (var idx in Enumerable.Range(0,Places.Traits.Length)) {
-                  <td>
-                    <Select TValue="int" Disabled="!SD.CurrentUser.MayChangeElements" SelectedValue="place.TraitValues[idx]" SelectedValueChanged="(value)=>TraitValueChanged(place,idx,value)">
-                      @foreach (var idx1 in Enumerable.Range(0,Places.Traits[idx].ValueNames.Length)) {
-                        <SelectItem Value="idx1">@Places.Traits[idx].ValueNames[idx1]</SelectItem>
-                      }
-                    </Select>
-                  </td>
-                }
-              </tr>
+                <td>
+                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lng" @onfocusout="(e)=>ChangeByUser(place)" />
+                </td>
+              }
+              <td>
+                <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" @onfocusout="(e)=>ChangeByUser(place)" />
+              </td>
+              @foreach (var idx in Enumerable.Range(0,Places.Traits.Length)) {
+                <td>
+                  <Select TValue="int" Disabled="!SD.CurrentUser.MayChangeElements" SelectedValue="place.TraitValues[idx]" SelectedValueChanged="(value)=>TraitValueChanged(place,idx,value)">
+                    @foreach (var idx1 in Enumerable.Range(0,Places.Traits[idx].ValueNames.Length)) {
+                      <SelectItem Value="idx1">@Places.Traits[idx].ValueNames[idx1]</SelectItem>
+                    }
+                  </Select>
+                </td>
+              }
+            </tr>
             }
           </tbody>
         </table>
@@ -66,6 +116,13 @@
 </Row>
 
 @code {
+  private bool addPlaceVisible = false;
+  private bool addPlaceFirstTimeVisible = true;
+  private LocationEdit LocationEditRef;
+  private string newPlaceName="";
+  private GoogleMapsComponents.Maps.LatLngLiteral newPlaceLocation;
+  private string newPlaceErrorMessage="";
+  //
   private Place[] AllPlaces = new Place[0];
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -76,9 +133,47 @@
     NM.LocationChanged-=NM_LocationChanged;
     this.ChangeByUser(null);
   }
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
+    await base.OnAfterRenderAsync(firstRender);
+    if (firstRender) {
+    }
+    if (addPlaceVisible && addPlaceFirstTimeVisible) {
+      await this.LocationEditRef.FitBounds(false);
+      addPlaceFirstTimeVisible=false;
+    }
+  }
   private void RefreshData() {
     this.AllPlaces = DS.GetPlaces(SD);
     StateHasChanged();
+  }
+  private async Task AddPlace_Opened() {
+    if (this.addPlaceVisible) {
+      addPlaceVisible=false;
+    } else {
+      this.newPlaceName="";
+      this.newPlaceErrorMessage="";
+      addPlaceVisible=true;
+    }
+    await this.InvokeAsync(() => { StateHasChanged(); });
+  }
+  private async Task AddPlace_Clicked() {
+    var latLng= new LatLng { lat=this.newPlaceLocation.Lat,lng=this.newPlaceLocation.Lng };
+    if (string.IsNullOrEmpty(this.newPlaceName) || DS.GetPlaceByName(SD,this.newPlaceName)!=null) {
+      this.newPlaceErrorMessage=Localize["Provide a new name."];
+    } else if (!SD.CurrentProject.IsLocationInsideAoi(latLng)) {
+      this.newPlaceErrorMessage=Localize["Location must be in project area."];
+    } else {
+      DS.CreatePlace(SD,new Place {
+        Name=this.newPlaceName,
+        Radius=150,
+        LatLng=latLng,
+      });
+      this.newPlaceErrorMessage="";
+      this.addPlaceVisible=false;
+      this.RefreshData();
+      await this.LocationEditRef.RefreshPlaces();
+    }
+    await this.InvokeAsync(()=>{ StateHasChanged(); });
   }
   private void TraitValueChanged(Place place,int idx,int value) {
     place.TraitValues[idx]=value;

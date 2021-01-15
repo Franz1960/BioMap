@@ -531,7 +531,7 @@ namespace BioMap
       this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT name,radius,lat,lng,traitvalues" +
           " FROM places" +
-          ((sWhereClause==null)?"":sWhereClause) +
+          ((sWhereClause==null)?"":(" WHERE ("+sWhereClause+")")) +
           " ORDER BY name" +
           "";
         var dr = command.ExecuteReader();
@@ -556,6 +556,27 @@ namespace BioMap
         dr.Close();
       });
       return lPlaces.ToArray();
+    }
+    public void CreatePlace(SessionData sd,Place place) {
+      this.OperateOnDb(sd,(command) => {
+        var sTraitJson = JsonConvert.SerializeObject(place.TraitValues);
+        command.CommandText =
+          "REPLACE INTO places (name,radius,lat,lng,traitvalues)"+
+          "VALUES ('" + place.Name + "'," +
+          "'" + ConvInvar.ToString(place.Radius) +
+          "','" + ConvInvar.ToString(place.LatLng.lat) +
+          "','" + ConvInvar.ToString(place.LatLng.lng) +
+          "','" + sTraitJson +
+          "')";
+        command.ExecuteNonQuery();
+      });
+    }
+    public void DeletePlace(SessionData sd,string sPlaceName) {
+      this.OperateOnDb(sd,(command) => {
+        command.CommandText =
+          "DELETE FROM places WHERE name='"+sPlaceName+"'";
+        command.ExecuteNonQuery();
+      });
     }
     public void WritePlace(SessionData sd,Place place) {
       bool bChanged=true;
