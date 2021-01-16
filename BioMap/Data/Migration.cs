@@ -29,7 +29,183 @@ namespace BioMap
     static string ToString(double d) {
       return d.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
-    public static async Task MigrateData(SessionData sd,Action<int> callbackCompletion) {
+    public static async Task MigrateCategories(SessionData sd,Action<int> callbackCompletion) {
+      await Task.Run(()=>{
+        var ds = DataService.Instance;
+        var aElements=ds.GetElements(sd);
+        int nLoopCnt=0;
+        foreach (var el in aElements) {
+          callbackCompletion(((nLoopCnt++)*100)/aElements.Length);
+          switch (el.GetCategoryNum()) {
+            case 120: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t(),
+              };
+              break;
+            case 130: 
+              el.Classification=new ElementClassification {
+                ClassName="Other",
+              };
+              break;
+            case 140: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Anura") },
+              };
+              break;
+            case 141: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bufo bufo") },
+              };
+              break;
+            case 150: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Anura") },
+              };
+              break;
+            case 151: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Rana temporaria") },
+              };
+              break;
+            case 152: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Anura") },
+              };
+              break;
+            case 153: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Pelophylax") },
+              };
+              break;
+            case 160: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Caudata") },
+              };
+              break;
+            case 161: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Lissotriton vulgaris") },
+              };
+              break;
+            case 162: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Ichthyosaura alpestris") },
+              };
+              break;
+            case 163: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Caudata") },
+              };
+              break;
+            case 164: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Salamandra salamandra") },
+              };
+              break;
+            case 170: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Insecta") },
+              };
+              break;
+            case 173: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Nepa cinerea") },
+              };
+              break;
+            case 174: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Odonata"), Stadium=ElementClassification.Stadium.Larvae },
+              };
+              break;
+            case 210: 
+              el.Classification=new ElementClassification {
+                ClassName="Habitat",
+                Habitat=new ElementClassification.Habitat_t { Quality=0 },
+              };
+              break;
+            case 220: 
+            case 230: 
+            case 240: 
+              el.Classification=new ElementClassification {
+                ClassName="Habitat",
+                Habitat=new ElementClassification.Habitat_t { Quality=4 },
+              };
+              break;
+            case 242: 
+            case 342: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium=ElementClassification.Stadium.Eggs },
+              };
+              break;
+            case 244: 
+            case 344: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium=ElementClassification.Stadium.Larvae },
+              };
+              break;
+            case 320: 
+              el.Classification=new ElementClassification {
+                ClassName="Habitat",
+                Habitat=new ElementClassification.Habitat_t { Quality=3 },
+              };
+              break;
+            case 322: 
+              el.Classification=new ElementClassification {
+                ClassName="Habitat",
+                Habitat=new ElementClassification.Habitat_t { Quality=3,Monitoring=true },
+              };
+              break;
+            case 330: 
+            case 340: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium=ElementClassification.Stadium.Adults },
+              };
+              break;
+            case 346: 
+              el.Classification=new ElementClassification {
+                ClassName="Living being",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium=ElementClassification.Stadium.Deads },
+              };
+              break;
+            case 350: 
+              el.Classification=new ElementClassification {
+                ClassName="ID photo",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium=ElementClassification.Stadium.Adults },
+              };
+              break;
+            case 35!: 
+              el.Classification=new ElementClassification {
+                ClassName="Normalized non-ID photo",
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium=ElementClassification.Stadium.Adults },
+              };
+              break;
+            default:
+              el.Classification=new ElementClassification();
+              break;
+          }
+          ds.WriteElement(sd,el);
+        }
+      });
+    }
+   public static async Task MigrateData(SessionData sd,Action<int> callbackCompletion) {
       await Task.Run(()=>{
         var ds = DataService.Instance;
         var sDataDir = ds.GetDataDir(sd);

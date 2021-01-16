@@ -127,6 +127,7 @@ namespace BioMap
     public readonly string Project;
     public string ElementName;
     public ElementProp_t ElementProp;
+    public ElementClassification Classification = new ElementClassification();
     //
     public Element(string sProject) {
       this.Project=sProject;

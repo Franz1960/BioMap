@@ -211,6 +211,14 @@ namespace BioMap
             "name TEXT PRIMARY KEY NOT NULL," +
             "value TEXT)";
             command.ExecuteNonQuery();
+            command.CommandText = "CREATE TABLE IF NOT EXISTS userprefs (" +
+            "name TEXT PRIMARY KEY NOT NULL," +
+            "value TEXT)";
+            command.ExecuteNonQuery();
+            try {
+              command.CommandText = "ALTER TABLE elements ADD COLUMN classification TEXT";
+              command.ExecuteNonQuery();
+            } catch { }
           }
           #endregion
           this.AccessedDbs.Add(sProject);
@@ -454,6 +462,18 @@ namespace BioMap
       project.AoiMaxLng=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiMaxLng"));
       project.AoiTolerance=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiTolerance"));
       project.SpeciesSciName=this.GetProjectProperty(sd,"SpeciesSciName");
+      //
+      project.Species.Clear();
+      {
+        var sJson=this.GetProjectProperty(sd,"Species","");
+        if (!string.IsNullOrEmpty(sJson)) {
+          var species=JsonConvert.DeserializeObject<List<Species>>(sJson);
+          project.Species.AddRange(species);
+        } else {
+          project.InitSpeciesByGroupForYellowBelliedToad();
+          this.WriteProject(sd,project);
+        }
+      }
     }
     public void WriteProject(SessionData sd,Project project) {
       this.SetProjectProperty(sd,"AoiCenterLat",ConvInvar.ToString(project.AoiCenterLat));
@@ -464,6 +484,11 @@ namespace BioMap
       this.SetProjectProperty(sd,"AoiMaxLng",ConvInvar.ToString(project.AoiMaxLng));
       this.SetProjectProperty(sd,"AoiTolerance",ConvInvar.ToString(project.AoiTolerance));
       this.SetProjectProperty(sd,"SpeciesSciName",project.SpeciesSciName);
+      //
+      {
+        var sJson=JsonConvert.SerializeObject(project.Species);
+        this.SetProjectProperty(sd,"Species",sJson);
+      }
     }
     public IEnumerable<GoogleMapsComponents.Maps.LatLngLiteral> GetAoi(SessionData sd) {
       string sJson=this.GetProjectProperty(sd,"aoi");
@@ -640,10 +665,12 @@ namespace BioMap
     }
     public void WriteElement(string sProject,Element el) {
       this.OperateOnDb(sProject,(command) => {
+        string sJsonClassification=JsonConvert.SerializeObject(el.Classification);
         command.CommandText =
-          "REPLACE INTO elements (name,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
+          "REPLACE INTO elements (name,classification,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
           "VALUES ('" + el.ElementName + "'," +
-          "'" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
+          "'" + sJsonClassification +
+          "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lat) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lng) +
           "','" + el.ElementProp.MarkerInfo.PlaceName +
@@ -766,6 +793,7 @@ namespace BioMap
           ",indivdata.normcirclepos2y" +
           ",elements.place" +
           ",elements.comment" +
+          ",elements.classification" +
           " FROM elements" +
           " LEFT JOIN indivdata ON (indivdata.name=elements.name)" +
           " LEFT JOIN photos ON (photos.name=elements.name)" +
@@ -781,8 +809,14 @@ namespace BioMap
             if (oDateTimeOriginal is string sDateTimeOriginal) {
               DateTime.TryParse(sDateTimeOriginal,out dtDateTimeOriginal);
             }
+            var sJsonClassification = dr.GetValue(35) as string;
+            var ec = new ElementClassification();
+            if (!string.IsNullOrEmpty(sJsonClassification)) {
+              ec=JsonConvert.DeserializeObject<ElementClassification>(sJsonClassification);
+            }
             var el = new Element(sd.CurrentUser.Project) {
               ElementName = sElementName,
+              Classification = ec,
               ElementProp = new Element.ElementProp_t {
                 MarkerInfo = new Element.MarkerInfo_t {
                   category = dr.GetInt32(1),

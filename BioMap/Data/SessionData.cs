@@ -13,6 +13,7 @@ namespace BioMap
     public SessionData() {
        this.Filters = new Filters(()=>CurrentUser);
     }
+    public string CurrentCultureName=>System.Globalization.CultureInfo.CurrentCulture.Name;
     public User CurrentUser { get; } = new User();
     public Project CurrentProject { get; } = new Project();
     public bool ShowCustomMap { get; set; }
