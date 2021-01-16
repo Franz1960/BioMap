@@ -191,7 +191,7 @@ namespace BioMap
                 LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium=ElementClassification.Stadium.Adults },
               };
               break;
-            case 35!: 
+            case 351: 
               el.Classification=new ElementClassification {
                 ClassName="Normalized non-ID photo",
                 LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium=ElementClassification.Stadium.Adults },
