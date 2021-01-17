@@ -40,7 +40,7 @@ namespace BioMap.Pages.Diagrams
     private readonly List<DataByYears_t> OtherData = new List<DataByYears_t>();
     protected override void OnInitialized() {
       base.OnInitialized();
-      ProjectYearBegin=DS.ProjectStart.Year;
+      ProjectYearBegin=SD.CurrentProject.StartDate.Value.Year;
       ProjectYearEnd=Math.Max(2024,DateTime.Now.Year);
       _config = new BarConfig {
         Options = new BarOptions {

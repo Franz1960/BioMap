@@ -10,10 +10,6 @@ namespace BioMap
 {
   public class DataService
   {
-    public readonly DateTime ProjectStart = new DateTime(2019,4,1);
-    public readonly double ProjectArea = 3139.5;
-    public readonly double ProjectCenterLat = 49.054052;
-    public readonly double ProjectCenterLng = 12.217661;
     public DataService() {
       DataService.Instance = this;
     }
@@ -301,6 +297,8 @@ namespace BioMap
           nLevel=700;
           sd.CurrentProject.Owner=sd.CurrentUser.EMail;
           this.SetProjectProperty(sd,"Owner",sd.CurrentProject.Owner);
+          sd.CurrentProject.StartDate=DateTime.Now.Date;
+          this.SetProjectProperty(sd,"StartDate",sd.CurrentProject.StartDate.HasValue?ConvInvar.ToString(sd.CurrentProject.StartDate.Value):"");
         }
         if (string.IsNullOrEmpty(sPermTicket)) {
           sPermTicket = rng.Next(0,999999999).ToString("000000000");
@@ -472,6 +470,12 @@ namespace BioMap
     }
     public void LoadProject(SessionData sd,Project project) {
       project.Owner=this.GetProjectProperty(sd,"Owner");
+      {
+        if (!DateTime.TryParse(this.GetProjectProperty(sd,"StartDate",""),out var dt)) {
+          dt=new DateTime(2019,4,1);
+        }
+        project.StartDate=dt;
+      }
       project.MaxAllowedElements=ConvInvar.ToInt(this.GetProjectProperty(sd,"MaxAllowedElements","20"));
       project.AoiCenterLat=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiCenterLat"));
       project.AoiCenterLng=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiCenterLng"));
@@ -495,6 +499,7 @@ namespace BioMap
       }
     }
     public void WriteProject(SessionData sd,Project project) {
+      this.SetProjectProperty(sd,"StartDate",sd.CurrentProject.StartDate.HasValue?ConvInvar.ToString(sd.CurrentProject.StartDate.Value):"");
       this.SetProjectProperty(sd,"MaxAllowedElements",ConvInvar.ToString(project.MaxAllowedElements));
       this.SetProjectProperty(sd,"AoiCenterLat",ConvInvar.ToString(project.AoiCenterLat));
       this.SetProjectProperty(sd,"AoiCenterLng",ConvInvar.ToString(project.AoiCenterLng));

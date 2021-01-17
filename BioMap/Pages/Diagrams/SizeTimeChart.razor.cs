@@ -173,7 +173,7 @@ namespace BioMap.Pages.Diagrams
       await base.InvokeAsync(StateHasChanged);
     }
     private void RefreshData() {
-      var dtProjectStart = DS.ProjectStart;
+      var dtProjectStart = SD.CurrentProject.StartDate.Value;
       var aaIndisByIId = DS.GetIndividuals(SD,SD.Filters);
       _config.Data.Datasets.Clear();
       // Ideale Wachstumskurven hinzufügen.

@@ -19,6 +19,8 @@ namespace BioMap.Shared
     protected DataService DS { get; set; }
     [Inject]
     protected SessionData SD { get; set; }
+    [Inject]
+    protected IJSRuntime JSRuntime { get; set; }
     [Parameter]
     public bool ShowPlaces {
       get {

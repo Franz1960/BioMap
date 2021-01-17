@@ -54,7 +54,7 @@
   private readonly List<DataByYears_t> OtherData = new List<DataByYears_t>();
   protected override void OnInitialized() {
     base.OnInitialized();
-    ProjectYearBegin=DS.ProjectStart.Year;
+    ProjectYearBegin=SD.CurrentProject.StartDate.Value.Year;
     ProjectYearEnd=DateTime.Now.Year;
     SD.Filters.FilterChanged+=(sender,ev) => {
       RefreshData();

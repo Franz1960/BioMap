@@ -20,6 +20,12 @@
           </FieldBody>
         </Field>
         <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Start date"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <DateEdit TValue="DateTime?" Disabled="!SD.CurrentUser.IsOwner" @bind-Date="SD.CurrentProject.StartDate"></DateEdit>
+          </FieldBody>
+        </Field>
+        <Field Horizontal="true">
           <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Max. allowed elements"]</FieldLabel>
           <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
             <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsSuperAdmin" @bind-Value="SD.CurrentProject.MaxAllowedElements" />

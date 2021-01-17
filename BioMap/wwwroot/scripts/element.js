@@ -119,3 +119,4 @@ function ToggleEditAoiBounds() {
 function SetElements(aElements) {
     Elements = aElements;
 }
+
