@@ -436,8 +436,11 @@ namespace BioMap
     #endregion
     #region Project
     public string GetProjectProperty(SessionData sd,string sPropertyName,string sDefaultValue="") {
+      return GetProjectProperty(sd.CurrentUser.Project,sPropertyName,sDefaultValue);
+    }
+    public string GetProjectProperty(string sProject,string sPropertyName,string sDefaultValue="") {
       string sValue=sDefaultValue;
-      this.OperateOnDb(sd,(command) => {
+      this.OperateOnDb(sProject,(command) => {
         command.CommandText = "SELECT value FROM project WHERE name='"+sPropertyName+"'";
         var r = command.ExecuteScalar();
         sValue = command.ExecuteScalar() as string;
@@ -457,6 +460,7 @@ namespace BioMap
     }
     public void LoadProject(SessionData sd,Project project) {
       project.Owner=this.GetProjectProperty(sd,"Owner");
+      project.MaxAllowedElements=ConvInvar.ToInt(this.GetProjectProperty(sd,"MaxAllowedElements","20"));
       project.AoiCenterLat=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiCenterLat"));
       project.AoiCenterLng=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiCenterLng"));
       project.AoiMinLat=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiMinLat"));
@@ -479,6 +483,7 @@ namespace BioMap
       }
     }
     public void WriteProject(SessionData sd,Project project) {
+      this.SetProjectProperty(sd,"MaxAllowedElements",ConvInvar.ToString(project.MaxAllowedElements));
       this.SetProjectProperty(sd,"AoiCenterLat",ConvInvar.ToString(project.AoiCenterLat));
       this.SetProjectProperty(sd,"AoiCenterLng",ConvInvar.ToString(project.AoiCenterLng));
       this.SetProjectProperty(sd,"AoiMinLat",ConvInvar.ToString(project.AoiMinLat));
@@ -755,7 +760,18 @@ namespace BioMap
         } catch { }
       }
     }
+    public int GetElementCount(SessionData sd) {
+      int nElementCount=0;
+      this.OperateOnDb(sd,(command) => {
+        command.CommandText = "SELECT COUNT(*) FROM elements";
+        nElementCount = Convert.ToInt32(command.ExecuteScalar());
+      });
+      return nElementCount;
+    }
     public Element[] GetElements(SessionData sd,Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "elements.creationtime") {
+      if (!sd.CurrentUser.MaySeeElements) {
+        return new Element[0];
+      }
       if (filters!=null) {
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
       }

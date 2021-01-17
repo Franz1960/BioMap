@@ -104,7 +104,11 @@
             destStream.Close();
           }
           var el = Element.CreateFromImageFile(SD.CurrentUser.Project,sDestTempFilePath,SD.CurrentUser.EMail);
-          if (el.ElementProp.MarkerInfo.position==null) {
+          if (!SD.CurrentUser.MayUploadElements) {
+            messages.Add("User access level ("+SD.CurrentUser.Level+") is too low.");
+          } else if (DS.GetElementCount(SD)>=SD.CurrentProject.MaxAllowedElements) {
+            messages.Add("Maximum element count ("+SD.CurrentProject.MaxAllowedElements+") is exceeded. Contact the website administrator.");
+          } else if (el.ElementProp.MarkerInfo.position==null) {
             messages.Add("No GPS location in \""+el.ElementName+"\"");
           } else if (!SD.CurrentProject.IsLocationInsideAoi(el.ElementProp.MarkerInfo.position)) {
             messages.Add("GPS location is outside project area \""+el.ElementName+"\"");

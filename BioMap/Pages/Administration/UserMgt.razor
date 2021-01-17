@@ -101,7 +101,7 @@
                 <tr>
                   <th scope="row">@user.EMail</th>
                   <td>
-                    <NumericEdit TValue="int" Disabled="!SD.CurrentUser.MayChangeOtherUsers" @bind-Value="user.Level" />
+                    <NumericEdit TValue="int" Disabled="!SD.CurrentUser.MayChangeOtherUsers" @bind-Value="user.Level" Min="100" Max="700" />
                   </td>
                   <td>
                     <TextEdit Disabled="!SD.CurrentUser.MayChangeOtherUsers" @bind-Value="user.FullName" />

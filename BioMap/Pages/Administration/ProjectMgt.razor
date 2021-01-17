@@ -19,6 +19,18 @@
             <TextEdit Disabled="true" Text="@SD.CurrentProject.Owner" />
           </FieldBody>
         </Field>
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Max. allowed elements"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsSuperAdmin" @bind-Value="SD.CurrentProject.MaxAllowedElements" />
+          </FieldBody>
+        </Field>
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Current elements"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <NumericEdit TValue="int" Disabled="true" Value="DS.GetElementCount(SD)" />
+          </FieldBody>
+        </Field>
       </CardBody>
     </Card>
   </Column>

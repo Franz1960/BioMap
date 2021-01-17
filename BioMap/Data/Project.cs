@@ -9,6 +9,7 @@ namespace BioMap
   public class Project
   {
     public string Owner;
+    public int MaxAllowedElements=20;
     public double AoiCenterLat;
     public double AoiCenterLng;
     public double AoiMinLat;
