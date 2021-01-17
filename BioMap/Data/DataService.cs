@@ -233,6 +233,18 @@ namespace BioMap
         }
       } catch { }
     }
+    public string[] GetSuperAdmins() {
+      var lAdmins=new List<string>();
+      try {
+        var sFilePathJson = this.GetDataDir("") + "conf/superadmins.json";
+        if (System.IO.File.Exists(sFilePathJson)) {
+          var sJson = System.IO.File.ReadAllText(sFilePathJson);
+          var aAdmins = JsonConvert.DeserializeObject<string[]>(sJson);
+          lAdmins.AddRange(aAdmins);
+        }
+      } catch { }
+      return lAdmins.ToArray();
+    }
     public Task Init() {
       return Task.Run(() => {
         // Create base project if it does not exist.
@@ -699,7 +711,7 @@ namespace BioMap
             "')";
           command.ExecuteNonQuery();
         }
-        if (el.ElementProp.MarkerInfo.category==350 || el.ElementProp.MarkerInfo.category==351) {
+        if (el.ElementProp?.IndivData?.MeasuredData?.PtsOnCircle!=null && el.ElementProp.IndivData.MeasuredData.PtsOnCircle.Length==3) {
           command.CommandText =
             "REPLACE INTO indivdata (name,normcirclepos0x,normcirclepos0y,normcirclepos1x,normcirclepos1y,normcirclepos2x,normcirclepos2y" +
             ",headposx,headposy,backposx,backposy,origheadposx,origheadposy,origbackposx,origbackposy,headbodylength,dateofbirth,ageyears,winters,gender,iid" +
