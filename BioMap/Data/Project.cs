@@ -8,6 +8,7 @@ namespace BioMap
   [JsonObject(MemberSerialization.Fields)]
   public class Project
   {
+    public string Owner;
     public double AoiCenterLat;
     public double AoiCenterLng;
     public double AoiMinLat;

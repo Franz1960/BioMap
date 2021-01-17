@@ -10,6 +10,23 @@
   <Column>
     <Card Margin="Margin.Is2.OnY">
       <CardHeader>
+        <CardTitle>@Localize["Administration"]</CardTitle>
+      </CardHeader>
+      <CardBody>
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Owner"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <TextEdit Disabled="true" Text="@SD.CurrentProject.Owner" />
+          </FieldBody>
+        </Field>
+      </CardBody>
+    </Card>
+  </Column>
+</Row>
+<Row>
+  <Column>
+    <Card Margin="Margin.Is2.OnY">
+      <CardHeader>
         <CardTitle>@Localize["Data"]</CardTitle>
       </CardHeader>
       <CardBody>

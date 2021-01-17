@@ -287,6 +287,8 @@ namespace BioMap
         if (nUserCnt<=1) {
           // First user in new project gets admin level.
           nLevel=700;
+          sd.CurrentProject.Owner=sd.CurrentUser.EMail;
+          this.SetProjectProperty(sd,"Owner",sd.CurrentProject.Owner);
         }
         if (string.IsNullOrEmpty(sPermTicket)) {
           sPermTicket = rng.Next(0,999999999).ToString("000000000");
@@ -454,6 +456,7 @@ namespace BioMap
       }
     }
     public void LoadProject(SessionData sd,Project project) {
+      project.Owner=this.GetProjectProperty(sd,"Owner");
       project.AoiCenterLat=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiCenterLat"));
       project.AoiCenterLng=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiCenterLng"));
       project.AoiMinLat=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiMinLat"));
