@@ -284,7 +284,7 @@ namespace BioMap
           }
         }
         dr.Close();
-        if (nUserCnt<=1) {
+        if (nUserCnt<1) {
           // First user in new project gets admin level.
           nLevel=700;
           sd.CurrentProject.Owner=sd.CurrentUser.EMail;
