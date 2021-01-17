@@ -49,6 +49,12 @@ namespace BioMap
       string sFilePath = System.IO.Path.Combine(sDataDir,"temp");
       return sFilePath;
     }
+    public string GetDocsDir(string sProject) {
+      var ds = DataService.Instance;
+      var sDataDir = ds.GetDataDir(sProject);
+      string sFilePath = System.IO.Path.Combine(sDataDir,"docs");
+      return sFilePath;
+    }
     public string GetFilePathForImage(string sProject,string id,bool bOrig) {
       var ds = DataService.Instance;
       var sDataDir = ds.GetDataDir(sProject);

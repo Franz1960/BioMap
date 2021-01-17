@@ -86,7 +86,7 @@
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                       <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop" Float="Float.Right">@Localize["Project name"]: </FieldLabel>
                       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-                        <TextEdit Placeholder="gbu-project-area-name" @bind-Text="NewProjectName">
+                        <TextEdit Placeholder="gbu-project-name" @bind-Text="NewProjectName">
                           <Feedback>
                             <ValidationError></ValidationError>
                           </Feedback>
@@ -155,6 +155,7 @@
     SD.CurrentUser.Project=sNewValue;
     await JSRuntime.InvokeAsync<string>("setCookie","Project",sNewValue);
     NavigationManager.NavigateTo("/",true);
+    SD.OnCurrentProjectChanged();
   }
   private string NewProjectName { get; set; } = "";
   private bool NewProjectNameValid=false;

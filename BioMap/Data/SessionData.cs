@@ -16,6 +16,10 @@ namespace BioMap
     public string CurrentCultureName=>System.Globalization.CultureInfo.CurrentCulture.Name;
     public User CurrentUser { get; } = new User();
     public Project CurrentProject { get; } = new Project();
+    public event EventHandler CurrentProjectChanged;
+    public void OnCurrentProjectChanged() {
+      Utilities.FireEvent(this.CurrentProjectChanged,this,EventArgs.Empty);
+    }
     public bool ShowCustomMap { get; set; }
     public Filters Filters { get; }
     public bool SizeTimeChartShowVintageBoundaries { get; set; } = true;

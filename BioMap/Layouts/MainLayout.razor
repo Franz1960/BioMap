@@ -1,5 +1,6 @@
 ﻿@layout RootLayout
 @inherits LayoutComponentBase
+@inject DataService DS
 @inject SessionData SD
 
 <Layout Sider="true">
@@ -183,9 +184,13 @@
                     <BarIcon IconName="IconName.Info" />
                     @Localize["About"]..
                   </BarDropdownItem>
+                  <BarDropdownItem To="/doc/2020-12 Unken-Projekt Bericht.pdf">
+                    <BarIcon IconName="IconName.FilePdf" />
+                    Bericht 2020
+                  </BarDropdownItem>
                   <BarDropdownItem To="/doc/2019-10 Unken-Projekt Zwischenbericht verfremdete Orte.pdf">
                     <BarIcon IconName="IconName.FilePdf" />
-                    Zwischenbericht 2019
+                    Bericht 2019
                   </BarDropdownItem>
                   <BarDropdownItem To="/Help/Impressum">
                     <BarIcon IconName="IconName.Book" />
@@ -220,4 +225,11 @@
   [CascadingParameter] protected Theme Theme { get; set; }
 
   RenderFragment customIcon =@<img src="/favicon-96x96.png" style="width:32px; height: 32px" />;
+
+  protected override async Task OnInitializedAsync() {
+    await base.OnInitializedAsync();
+    SD.CurrentProjectChanged+=(sender,e) => {
+      StateHasChanged();
+    };
+  }
 }
