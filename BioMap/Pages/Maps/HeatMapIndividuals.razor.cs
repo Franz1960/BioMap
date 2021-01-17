@@ -47,9 +47,11 @@ namespace BioMap.Pages.Maps
       if (heatmapLayer!=null) {
         var lPoints=new List<LatLngLiteral>();
         if (SD.CurrentUser.Level>=0) {
-          foreach (var el in DS.GetElements(SD,SD.Filters)) {
-            var latLng = new LatLngLiteral(el.ElementProp.MarkerInfo.position.lng,el.ElementProp.MarkerInfo.position.lat);
-            lPoints.Add(latLng);
+          foreach (var indi in DS.GetIndividuals(SD,SD.Filters).Values) {
+            foreach (var el in indi) {
+              var latLng = new LatLngLiteral(el.ElementProp.MarkerInfo.position.lng,el.ElementProp.MarkerInfo.position.lat);
+              lPoints.Add(latLng);
+            }
           }
         }
         await heatmapLayer.SetData(lPoints.ToArray());
