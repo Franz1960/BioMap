@@ -189,7 +189,7 @@ namespace BioMap
             case 350: 
               el.Classification=new ElementClassification {
                 ClassName="ID photo",
-                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium=ElementClassification.Stadium.Adults },
+                LivingBeing=new ElementClassification.LivingBeing_t { Species=sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium=el.GetWinters()<2?ElementClassification.Stadium.Juveniles:ElementClassification.Stadium.Adults },
               };
               break;
             case 351: 
