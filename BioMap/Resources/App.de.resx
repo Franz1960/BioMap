@@ -270,6 +270,9 @@
   <data name="Data usage" xml:space="preserve">
     <value>Datenverwendung</value>
   </data>
+  <data name="Data visibility" xml:space="preserve">
+    <value>Sichtbarkeit der Daten</value>
+  </data>
   <data name="DataUsage.DataStorage.Notice01" xml:space="preserve">
     <value>Projektbezogene Daten werden unbegrenzt gespeichert. Der Benutzer stimmt dem ausdrücklich zu, wenn er sich für die Teilnahme an einem Projekt anmeldet. Grund: Die Integrität der Projektdaten kann nur gewährleistet werden, wenn alle Daten unbegrenzt oder zumindest bis zum Ende des Projekts erhalten bleiben.</value>
   </data>
@@ -277,10 +280,19 @@
     <value>Das Löschen von Daten ist nur möglich, indem das gesamte Projekt gelöscht wird. Das kann nur aus triftigen Gründen verlangt werden und muss vom Datenschutzbeauftragten veranlasst werden.</value>
   </data>
   <data name="DataUsage.DataTypes.Notice01" xml:space="preserve">
-    <value>Die verschiedenen Arten von Daten, die auf dem Server gespeichert und verarbeitet werden, sind: Bilddateien, Dokumente, Eingabewerte, automatisch erzeugte Protokolle über Änderungs- und Verwaltungsvorgänge, Daten zur Authentifizierung und Autorisierung von Benutzern. Auf dem Endgerät des Benutzers werden technisch notwendige Cookies gespeichert, die die Authenzität und die Berechtigungen des Benutzers enthalten. Es werden keine Trackingdaten gespeichert.</value>
+    <value>Die verschiedenen Arten von Daten, die auf dem Server gespeichert und verarbeitet werden, sind: Bilddateien, Standortdaten, Dokumente, Eingabewerte, automatisch erzeugte Protokolle über Änderungs- und Verwaltungsvorgänge, Daten zur Authentifizierung und Autorisierung von Benutzern. Auf dem Endgerät des Benutzers werden technisch notwendige Cookies gespeichert, die die Authenzität und die Berechtigungen des Benutzers enthalten. Es werden keine Trackingdaten gespeichert.</value>
+  </data>
+  <data name="DataUsage.DataVisibility.Notice01" xml:space="preserve">
+    <value>Die projektbezogenen Daten sind für alle Teilnehmer des Projekts sichtbar. Die Standortdaten werden für Benutzer mit niedriger Zugangsberechtigung verfremdet, also an versetzten Orten oder gar nicht angezgeigt.</value>
   </data>
   <data name="DataUsage.Notice01" xml:space="preserve">
     <value>BioMap ist ein Web-Portal, in dem mehrere unabhängige Projekte verwaltet werden können. In jedem Projekt werden Daten der Benutzer verarbeitet und gespeichert.</value>
+  </data>
+  <data name="DataUsage.Project.Notice01" xml:space="preserve">
+    <value>Ein Projekt umfasst die Beobachtung eines bestimmten Gebiets über einen Zeitraum. Ein Projekt kann durch jedermann angelegt werden. Er wird nach Verifikation seiner EMail-Adresse zum ersten Projektteilnehmer und bekommt die hohe Zugangsstufe 700. Mit dieser kann er anderen Benutzern Zugangsstufen erteilen, die Projektinformationen anlegen (Gebiet, Orte, beobachtete Art usw.). In dem neu angelegten Projekt können vorerst nur maximal 20 Elemente, typischerweise Bilder, hochgeladen werden. Dieses Kontingent kann nur durch den Administrator des Portals geändert werden.</value>
+  </data>
+  <data name="DataUsage.ProjectMembers.Notice01" xml:space="preserve">
+    <value>Projektteilnehmer kann jeder werden, der sich anmeldet und dabei verifiziert, dass er eine EMail über die angegebene Adresse empfangen kann. Mit der Anmeldung erhält er die niedrigste Zugangsstufe 100, mit der nur allgemeine Informationen abgerufen werden können. Projektteilnehmer mit entsprechender Berechtigung können die Zugangsstufe des neuen Teilnehmers ändern.</value>
   </data>
   <data name="Date" xml:space="preserve">
     <value>Datum</value>
@@ -563,6 +575,9 @@
   </data>
   <data name="Project" xml:space="preserve">
     <value>Projekt</value>
+  </data>
+  <data name="Project members" xml:space="preserve">
+    <value>Projektteilnehmer</value>
   </data>
   <data name="Project name" xml:space="preserve">
     <value>Projektname</value>

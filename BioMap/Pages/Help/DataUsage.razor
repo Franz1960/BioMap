@@ -19,13 +19,19 @@
     <Paragraph>
       @((MarkupString)DS.GetLocalizedConfFile("","ResponsiblePerson.html",SD.CurrentCultureName))
     </Paragraph>
-    <Heading Size="HeadingSize.Is2">
+    <Heading Size="HeadingSize.Is5">
+      @Localize["Project"] @SD.CurrentUser.Project:
+    </Heading>
+    <Paragraph>
+      @((MarkupString)DS.GetLocalizedConfFile(SD.CurrentUser.Project,"ResponsiblePerson.html",SD.CurrentCultureName))
+    </Paragraph>
+    <Heading Size="HeadingSize.Is4">
       @Localize["Data types"]
     </Heading>
     <Paragraph>
       @Localize["DataUsage.DataTypes.Notice01"]
     </Paragraph>
-    <Heading Size="HeadingSize.Is2">
+    <Heading Size="HeadingSize.Is4">
       @Localize["Retention time"]
     </Heading>
     <Paragraph>
@@ -33,6 +39,24 @@
     </Paragraph>
     <Paragraph>
       @Localize["DataUsage.DataStorage.Notice02"]
+    </Paragraph>
+    <Heading Size="HeadingSize.Is4">
+      @Localize["Data visibility"]
+    </Heading>
+    <Paragraph>
+      @Localize["DataUsage.DataVisibility.Notice01"]
+    </Paragraph>
+    <Heading Size="HeadingSize.Is4">
+      @Localize["Project"]
+    </Heading>
+    <Paragraph>
+      @Localize["DataUsage.Project.Notice01"]
+    </Paragraph>
+    <Heading Size="HeadingSize.Is4">
+      @Localize["Project members"]
+    </Heading>
+    <Paragraph>
+      @Localize["DataUsage.ProjectMembers.Notice01"]
     </Paragraph>
   </Column>
 </Row>

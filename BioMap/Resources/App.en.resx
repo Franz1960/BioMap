@@ -124,10 +124,19 @@
     <value>Deleting data is only possible by deleting the entire project. This can only be requested for valid reasons and must be initiated by the data protection officer.</value>
   </data>
   <data name="DataUsage.DataTypes.Notice01" xml:space="preserve">
-    <value>The different types of data stored and processed on the server are: Image files, documents, input values, automatically generated logs of modification and management operations, data for authentication and authorization of users. Technically necessary cookies are stored on the user's terminal device, which contain the user's authenticity and authorizations. No tracking data is stored.</value>
+    <value>The different types of data stored and processed on the server are: Image files, location data, documents, input values, automatically generated logs of modification and management operations, data for authentication and authorization of users. Technically necessary cookies are stored on the user's terminal device, which contain the user's authenticity and authorizations. No tracking data is stored.</value>
+  </data>
+  <data name="DataUsage.DataVisibility.Notice01" xml:space="preserve">
+    <value>The project-related data is visible to all participants in the project. The location data is alienated for users with low access authorization, i.e. displayed at offset locations or not at all.</value>
   </data>
   <data name="DataUsage.Notice01" xml:space="preserve">
     <value>BioMap is a web portal in which several independent projects can be managed. In each project data of the users are processed and stored.</value>
+  </data>
+  <data name="DataUsage.Project.Notice01" xml:space="preserve">
+    <value>A project involves the observation of a specific area over a period of time. A project can be created by anyone. He becomes the first project participant after verification of his email address and gets the high access level 700. With this he can give access levels to other users who create project information (area, locations, observed species, etc.). In the newly created project, only a maximum of 20 elements, typically images, can be uploaded for the time being. This quota can be changed only by the administrator of the portal.</value>
+  </data>
+  <data name="DataUsage.ProjectMembers.Notice01" xml:space="preserve">
+    <value>Anyone can become a project participant who registers and verifies that they can receive an email at the specified address. With the registration he receives the lowest access level 100, with which only general information can be retrieved. Project participants with appropriate authorization can change the access level of the new participant.</value>
   </data>
   <data name="ImpressumNotice01" xml:space="preserve">
     <value>This website is not commercial. It exclusively serves the workflows in nature conservation projects such as "Yellow-bellied toads in the Donaustaufer and Kreuther Forst".</value>
