@@ -15,32 +15,25 @@ namespace BioMap.Pages.Maps
 {
   public partial class Individuals : ElementMap
   {
-    [Inject]
-    protected DataService DS { get; set; }
-    [Inject]
-    protected SessionData SD { get; set; }
-    //
     private PhotoPopup PhotoPopup1;
     //
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
-      SD.Filters.FilterChanged+=async (sender,ev) => {
-        await this.RefreshElementMarkers();
-        //this.DelayedStateHasChanged();
+      SD.Filters.FilterChanged+=(sender,ev) => {
+        this.RefreshElementMarkers();
       };
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
         base.PhotoPopup=this.PhotoPopup1;
-        await this.RefreshElementMarkers();
+        this.RefreshElementMarkers();
       }
     }
-    private async Task RefreshElementMarkers() {
+    private void RefreshElementMarkers() {
       var lElementMarkers = new List<ElementMarker>();
       if (SD.CurrentUser.Level>=0) {
         var dictIndividuals = DataService.Instance.GetIndividuals(SD,SD.Filters);
-        var dictCircleList = new Dictionary<string, CircleOptions>();
         foreach (var iid in dictIndividuals.Keys) {
           ElementMarker prevMarker = null;
           foreach (var el in dictIndividuals[iid]) {

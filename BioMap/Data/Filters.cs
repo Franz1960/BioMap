@@ -13,7 +13,7 @@ namespace BioMap
     public Filters(Func<User> getUserFunc) {
       this.GetUserFunc=getUserFunc;
     }
-    private Func<User> GetUserFunc;
+    private readonly Func<User> GetUserFunc;
 
     public enum FilteringTargetEnum
     {
@@ -206,7 +206,7 @@ namespace BioMap
     private string _NotesTextFilter = "";
     public static char[] NegateChars { get; } = new char[] { '-','!','^' };
     public static char[] SeparateChars { get; } = new char[] { ' ',',',';','|','+' };
-    private string GetFilterTermForWhereInClause(string sFilter) {
+    private static string GetFilterTermForWhereInClause(string sFilter) {
       string sFilterTerm = null;
       if (!string.IsNullOrEmpty(sFilter)) {
         string sList = sFilter;
@@ -227,29 +227,15 @@ namespace BioMap
       }
       return sFilterTerm;
     }
-    private string AddToWhereInClause(string sBasicWhereClause,string sTableRow,string sFilter) {
+    private static string AddToWhereInClause(string sBasicWhereClause,string sTableRow,string sFilter) {
       string sWhereClause = sBasicWhereClause;
-      var sFilterTerm = this.GetFilterTermForWhereInClause(sFilter);
+      var sFilterTerm = GetFilterTermForWhereInClause(sFilter);
       if (!string.IsNullOrEmpty(sFilterTerm)) {
-        string sList = this.IndiFilter;
-        string[] saIndis;
-        bool bNegate = (sList.IndexOfAny(Filters.NegateChars)==0);
-        if (bNegate) {
-          sList=sList.Substring(1);
-        }
-        saIndis=sList.Split(Filters.SeparateChars);
-        string sSqlIndis = "";
-        string sDelim = "(";
-        foreach (var sPlace in saIndis) {
-          sSqlIndis+=sDelim+"'"+sPlace.ToUpperInvariant()+"'";
-          sDelim=",";
-        }
-        sSqlIndis+=")";
         sWhereClause = Filters.AddToWhereClause(sBasicWhereClause,sTableRow+sFilterTerm);
       }
       return sWhereClause;
     }
-    private string AddToWhereCompareClause(string sBasicWhereClause,string sTableRow,string sFilter) {
+    private static string AddToWhereCompareClause(string sBasicWhereClause,string sTableRow,string sFilter) {
       string sWhereClause = sBasicWhereClause;
       var sFilterTerm = sFilter?.Replace("{0}",sTableRow)?.Trim();
       if (!string.IsNullOrEmpty(sFilterTerm)) {
@@ -263,9 +249,9 @@ namespace BioMap
         if (!string.IsNullOrEmpty(sBasicWhereClause)) {
           sb.Append(" AND ");
         }
-        sb.Append("(");
+        sb.Append('(');
         sb.Append(sWhereClause);
-        sb.Append(")");
+        sb.Append(')');
       }
       return sb.ToString();
     }
@@ -286,10 +272,10 @@ namespace BioMap
       string sResult = sBasicWhereClause;
       if (this.FilteringTarget==FilteringTargetEnum.Individuals) {
         sResult = Filters.AddToWhereClause(sResult,this.GetDateFilterWhereClause());
-        sResult = this.AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
-        sResult = this.AddToWhereInClause(sResult,"indivdata.iid",ExpandIndiFilter(this.IndiFilter));
-        sResult = this.AddToWhereInClause(sResult,"indivdata.gender",ExpandGenderFilter(this.GenderFilter));
-        sResult = this.AddToWhereCompareClause(sResult,"indivdata.winters",ExpandHibernationsFilter(this.HibernationsFilter));
+        sResult = AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
+        sResult = AddToWhereInClause(sResult,"indivdata.iid",ExpandIndiFilter(this.IndiFilter));
+        sResult = AddToWhereInClause(sResult,"indivdata.gender",ExpandGenderFilter(this.GenderFilter));
+        sResult = AddToWhereCompareClause(sResult,"indivdata.winters",ExpandHibernationsFilter(this.HibernationsFilter));
         if (this.OnlyFirstIndiFilter) {
           sResult = Filters.AddToWhereClause(sResult,this.OnlyFirstIndiFilterExp);
         }
@@ -299,8 +285,8 @@ namespace BioMap
       }
       if (this.FilteringTarget==FilteringTargetEnum.Elements) {
         sResult = Filters.AddToWhereClause(sResult,this.GetDateFilterWhereClause());
-        sResult = this.AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
-        sResult = this.AddToWhereInClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
+        sResult = AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
+        sResult = AddToWhereInClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
       }
       if (this.FilteringTarget==FilteringTargetEnum.Log) {
         var user = this.GetUserFunc();
@@ -328,19 +314,19 @@ namespace BioMap
       }
       return sResult;
     }
-    private string ExpandIndiFilter(string sFilter) {
+    private static string ExpandIndiFilter(string sFilter) {
       return ExpandFilter(sFilter,(sIndiA,sIndiB) => {
         var sbExp = new System.Text.StringBuilder();
         int nIndiA = int.Parse(sIndiA);
         int nIndiB = int.Parse(sIndiB);
         for (int nIndi = nIndiA;nIndi<=nIndiB;nIndi++) {
           sbExp.Append(ConvInvar.ToString(nIndi));
-          sbExp.Append(" ");
+          sbExp.Append(' ');
         }
         return sbExp.ToString();
       });
     }
-    private string ExpandGenderFilter(string sFilter) {
+    private static string ExpandGenderFilter(string sFilter) {
       if (sFilter=="-" || sFilter=="*") {
         return "";
       } else {
@@ -357,32 +343,32 @@ namespace BioMap
         return sResult.Trim();
       }
     }
-    private string ExpandHibernationsFilter(string sFilter) {
+    private static string ExpandHibernationsFilter(string sFilter) {
       string sResult = sFilter.Trim();
       if (sResult=="-" || sResult=="*") {
         return "";
       }
       return sResult;
     }
-    private string ExpandCatFilter(string sFilter) {
+    private static string ExpandCatFilter(string sFilter) {
       return ExpandFilter(sFilter,(sCatA,sCatB) => {
         var sbExp = new System.Text.StringBuilder();
         int nCatA = int.Parse(sCatA);
         int nCatB = int.Parse(sCatB);
         for (int nCat = nCatA;nCat<=nCatB;nCat++) {
           sbExp.Append(ConvInvar.ToString(nCat));
-          sbExp.Append(" ");
+          sbExp.Append(' ');
         }
         return sbExp.ToString();
       });
     }
-    private string ExpandPlaceFilter(string sFilter) {
+    private static string ExpandPlaceFilter(string sFilter) {
       return sFilter.ToUpperInvariant();
     }
-    private string ExpandFilter(string sFilter,Func<string,string,string> funcExpand) {
+    private static string ExpandFilter(string sFilter,Func<string,string,string> funcExpand) {
       var sbExp = new System.Text.StringBuilder();
       if (sFilter.StartsWith("!") || sFilter.StartsWith("^") || sFilter.StartsWith("-")) {
-        sbExp.Append("!");
+        sbExp.Append('!');
         sFilter=sFilter.Substring(1);
       }
       var saParts = sFilter.Split(Filters.SeparateChars);
@@ -391,7 +377,7 @@ namespace BioMap
         var sa1=System.Text.RegularExpressions.Regex.Split(sPart,@"(\d+)(-|\.\.)(\d+)");
         if (sa1.Length==1) {
           sbExp.Append(sa1[0]);
-          sbExp.Append(" ");
+          sbExp.Append(' ');
         } else if (sa1.Length==5) {
           sbExp.Append(funcExpand(sa1[1],sa1[3]));
         }

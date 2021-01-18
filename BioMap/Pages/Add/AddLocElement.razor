@@ -51,7 +51,7 @@
     var el = this.ElementEditRef.Element;
     el.ElementProp.MarkerInfo.position=new LatLng { lat=latLngLiteral.Lat,lng=latLngLiteral.Lng };
     el.ElementProp.MarkerInfo.PlaceName=Place.GetNearestPlace(SD,el.ElementProp.MarkerInfo.position)?.Name;
-    this.StateHasChanged();
+    await this.InvokeAsync(()=>this.StateHasChanged());
   }
   private void CreateNewElement() {
     var el = new Element(SD.CurrentUser.Project) {

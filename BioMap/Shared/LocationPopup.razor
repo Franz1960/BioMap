@@ -1,8 +1,4 @@
-﻿@inject DataService DS
-@inject SessionData SD
-@using Newtonsoft.Json
-@using Newtonsoft.Json.Linq
-@inherits AreaMap
+﻿@inherits AreaMap
 
 <Modal @ref="modalRef" Closed="@((e)=>{ Closed.InvokeAsync(Location); })">
   <ModalContent Size="@modalSize" Centered="@centered">

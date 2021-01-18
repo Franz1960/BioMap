@@ -16,11 +16,6 @@ namespace BioMap.Pages.Maps
 {
   public partial class HeatMapAllElements : AreaMap
   {
-    [Inject]
-    protected DataService DS { get; set; }
-    [Inject]
-    protected SessionData SD { get; set; }
-    //
     private HeatmapLayer heatmapLayer=null;
     //
     protected override async Task OnInitializedAsync() {

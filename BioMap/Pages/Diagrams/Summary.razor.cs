@@ -28,16 +28,8 @@ namespace BioMap.Pages.Diagrams
     //
     private int ProjectYearBegin;
     private int ProjectYearEnd;
-    private class DataByYears_t
-    {
-      public string Name;
-      public string AllYears;
-      public string[] ByYear;
-    }
     private BarConfig _config;
     private Chart _chartJs;
-    private readonly List<DataByYears_t> IndividualData = new List<DataByYears_t>();
-    private readonly List<DataByYears_t> OtherData = new List<DataByYears_t>();
     protected override void OnInitialized() {
       base.OnInitialized();
       ProjectYearBegin=SD.CurrentProject.StartDate.Value.Year;
@@ -88,11 +80,11 @@ namespace BioMap.Pages.Diagrams
       var aaIndisByIId = DS.GetIndividuals(SD);
       int nIndex = 0;
       foreach (var indiSpec in new[] {
-      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["Known individuals"],(ea,year)=>ea.Any(el=>el.ElementProp.CreationTime.Year<year) && ea[ea.Count-1].ElementProp.CreationTime.Year>=year,1),
+      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["Known individuals"],(ea,year)=>ea.Any(el=>el.ElementProp.CreationTime.Year<year) && ea[^1].ElementProp.CreationTime.Year>=year,1),
       new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["New individuals"]+" 1+ "+Localize["Hibernations"],(ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()>=1,1),
       new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["New individuals"]+" 0 "+Localize["Hibernations"],(ea,year)=>ea[0].ElementProp.CreationTime.Year==year && ea[0].GetWinters()<1,1),
-      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["Missed individuals"]+" 1+ "+Localize["Hibernations"],(ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()>=1,-1),
-      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["Missed individuals"]+" 0 "+Localize["Hibernations"],(ea,year)=>ea[ea.Count-1].ElementProp.CreationTime.Year==year-1 && ea[ea.Count-1].GetWinters()<1,-1),
+      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["Missed individuals"]+" 1+ "+Localize["Hibernations"],(ea,year)=>ea[^1].ElementProp.CreationTime.Year==year-1 && ea[^1].GetWinters()>=1,-1),
+      new Tuple<string,Func<List<Element>,int,bool>,int>(Localize["Missed individuals"]+" 0 "+Localize["Hibernations"],(ea,year)=>ea[^1].ElementProp.CreationTime.Year==year-1 && ea[^1].GetWinters()<1,-1),
     }) {
         var ds = new BarDataset<int>() { Label=indiSpec.Item1,BackgroundColor=this.GetColor(nIndex) };
         for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
@@ -111,7 +103,7 @@ namespace BioMap.Pages.Diagrams
     public string GetColor(int nIndex) {
       return _Colors[nIndex % _Colors.Length];
     }
-    private string[] _Colors = new string[] {
+    private readonly string[] _Colors = new string[] {
     ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.Green),
     ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.Blue),
     ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.Cyan),

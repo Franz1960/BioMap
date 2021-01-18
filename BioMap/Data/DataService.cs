@@ -14,18 +14,18 @@ namespace BioMap
       DataService.Instance = this;
     }
     public static DataService Instance { get; private set; }
-    private string DataBaseDir = "../../../data/";
+    private readonly string DataBaseDir = "../../../data/";
     public readonly string BaseProject = "biomap";
     public string[] GetAllProjects() {
       var lProjects=new List<string>();
       try {
         foreach (var sDirPath in System.IO.Directory.GetDirectories(DataBaseDir)) {
           string sDirName = new System.IO.DirectoryInfo(sDirPath).Name;
-          if (sDirName.StartsWith(BaseProject)) {
-            if (sDirName.Length<=BaseProject.Length+1) {
+          if (sDirName.StartsWith(this.BaseProject)) {
+            if (sDirName.Length<=this.BaseProject.Length+1) {
               lProjects.Add("");
             } else {
-              lProjects.Add(sDirName.Substring(BaseProject.Length+1));
+              lProjects.Add(sDirName.Substring(this.BaseProject.Length+1));
             }
           }
         }
@@ -389,7 +389,6 @@ namespace BioMap
       user.Prefs.DisplayConnectors=(ConvInvar.ToInt(this.GetUserProperty(sd,"DisplayConnectors","0"))!=0);
     }
     #region Users.
-    private string[] PrevAllUsers = null;
     public User[] GetAllUsers(SessionData sd) {
       var lUsers = new List<User>();
       this.OperateOnDb(sd,(command) => {
@@ -411,7 +410,6 @@ namespace BioMap
           dr.Close();
         }
       });
-      this.PrevAllUsers=lUsers.Select(a => JsonConvert.SerializeObject(a)).ToArray();
       return lUsers.ToArray();
     }
     public void WriteUser(SessionData sd,User user) {
@@ -545,7 +543,7 @@ namespace BioMap
       }
       this.SetProjectProperty(sd,"aoi",sJson);
       //
-      if (path!=null && path.Count()>=1) {
+      if (path!=null && path.Any()) {
         double? AoiCenterLat=null;
         double? AoiCenterLng=null;
         double? AoiMinLat=null;
@@ -571,7 +569,7 @@ namespace BioMap
     }
     #endregion
     #region Places.
-    private System.Numerics.Matrix3x2 GetAlienationTransformation(SessionData sd) {
+    private static System.Numerics.Matrix3x2 GetAlienationTransformation(SessionData sd) {
       if (!_AlienationTransformation.ContainsKey(sd.CurrentUser.Project)) {
         var m1=System.Numerics.Matrix3x2.CreateTranslation((float)(-sd.CurrentProject.AoiCenterLng),(float)(-sd.CurrentProject.AoiCenterLat));
         var m2=System.Numerics.Matrix3x2.CreateRotation(-0.33f);
@@ -584,8 +582,8 @@ namespace BioMap
       return _AlienationTransformation[sd.CurrentUser.Project];
     }
     private static readonly Dictionary<string,System.Numerics.Matrix3x2> _AlienationTransformation=new Dictionary<string, System.Numerics.Matrix3x2>();
-    private LatLng GetAlienatedPosition(SessionData sd,LatLng position) {
-      var vRes=System.Numerics.Vector2.Transform(new System.Numerics.Vector2((float)position.lng,(float)position.lat),this.GetAlienationTransformation(sd));
+    private static LatLng GetAlienatedPosition(SessionData sd,LatLng position) {
+      var vRes=System.Numerics.Vector2.Transform(new System.Numerics.Vector2((float)position.lng,(float)position.lat),GetAlienationTransformation(sd));
       return new LatLng {
         lat=vRes.Y,
         lng=vRes.X,
@@ -793,7 +791,7 @@ namespace BioMap
     }
     public Element[] GetElements(SessionData sd,Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "elements.creationtime") {
       if (!sd.CurrentUser.MaySeeElements) {
-        return new Element[0];
+        return Array.Empty<Element>();
       }
       if (filters!=null) {
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
@@ -924,7 +922,7 @@ namespace BioMap
         return lElements.ToArray();
       } else {
         foreach (var el in lElements.ToArray()) {
-          el.ElementProp.MarkerInfo.position=this.GetAlienatedPosition(sd,el.ElementProp.MarkerInfo.position);
+          el.ElementProp.MarkerInfo.position=GetAlienatedPosition(sd,el.ElementProp.MarkerInfo.position);
         }
         return lElements.ToArray();
       }

@@ -15,6 +15,7 @@ namespace BioMap
 {
   public class Migration
   {
+    #pragma warning disable CS0649
     internal class ProtocolContent_t
     {
       public string Timestamp;
@@ -319,8 +320,7 @@ namespace BioMap
                   };
                   if (jel["ElementProp"]["ExifData"]!=null) {
                     var sDateTimeOriginal = jel["ElementProp"]["ExifData"]["DateTimeOriginal"]?.Value<string>();
-                    DateTime dtOriginal;
-                    if (!DateTime.TryParse(sDateTimeOriginal,out dtOriginal)) {
+                    if (!DateTime.TryParse(sDateTimeOriginal,out var dtOriginal)) {
                       if (sDateTimeOriginal!=null && sDateTimeOriginal.Length>=18 && sDateTimeOriginal[4]==':') {
                         // Fehlerhaftes Datumsformat in Exif-Daten ('2020:06:21 16:27:00') korrigieren.
                         sDateTimeOriginal = sDateTimeOriginal.Substring(0,4) + "-" + sDateTimeOriginal.Substring(5,2) + "-" + sDateTimeOriginal.Substring(8,2) + sDateTimeOriginal.Substring(10);
