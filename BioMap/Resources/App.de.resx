@@ -144,6 +144,9 @@
   <data name="Add" xml:space="preserve">
     <value>Hinzufügen</value>
   </data>
+  <data name="Add document" xml:space="preserve">
+    <value>Dokument hinzufügen</value>
+  </data>
   <data name="Add Image" xml:space="preserve">
     <value>Foto hinzufügen</value>
   </data>
@@ -275,6 +278,9 @@
   </data>
   <data name="Distance" xml:space="preserve">
     <value>Distanz</value>
+  </data>
+  <data name="Documents" xml:space="preserve">
+    <value>Dokumente</value>
   </data>
   <data name="Dyn. zoom" xml:space="preserve">
     <value>Dyn. Zoom</value>
