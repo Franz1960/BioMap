@@ -77,6 +77,25 @@ namespace BioMap
         }
       } catch { }
     }
+    public string GetLocalizedConfFile(string sProject,string sFilename,string sCultureName) {
+      try {
+        var sDir = this.GetDataDir(sProject);
+        var sFilenameWithoutExt=System.IO.Path.GetFileNameWithoutExtension(sFilename);
+        var sExt=System.IO.Path.GetExtension(sFilename);
+        string sLocalizedFilename=sFilename;
+        foreach (var sLocale in new[] { sCultureName,"en" }) {
+          string s=System.IO.Path.Combine(sDir,System.IO.Path.Combine("conf",sFilenameWithoutExt+"_"+sLocale+sExt));
+          if (System.IO.File.Exists(s)) {
+            sLocalizedFilename=System.IO.Path.GetFileName(s);
+          }
+        }
+        string sFilePath = System.IO.Path.Combine(sDir,System.IO.Path.Combine("conf",sLocalizedFilename));
+        if (System.IO.File.Exists(sFilePath)) {
+          return System.IO.File.ReadAllText(sFilePath);
+        }
+      } catch { }
+      return "";
+    }
     public string GetFilePathForImage(string sProject,string id,bool bOrig) {
       var ds = DataService.Instance;
       var sDataDir = ds.GetDataDir(sProject);

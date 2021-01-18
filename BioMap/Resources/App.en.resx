@@ -117,8 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ImpressumHeadResponsiblePerson" xml:space="preserve">
-    <value>Responsible in terms of press law</value>
+  <data name="DataUsage.DataStorage.Notice01" xml:space="preserve">
+    <value>Project-related data is stored indefinitely. The user explicitly agrees to this when signing up to participate in a project. Reason: The integrity of the project data can only be guaranteed if all data is retained indefinitely or at least until the end of the project.</value>
+  </data>
+  <data name="DataUsage.DataStorage.Notice02" xml:space="preserve">
+    <value>Deleting data is only possible by deleting the entire project. This can only be requested for valid reasons and must be initiated by the data protection officer.</value>
+  </data>
+  <data name="DataUsage.DataTypes.Notice01" xml:space="preserve">
+    <value>The different types of data stored and processed on the server are: Image files, documents, input values, automatically generated logs of modification and management operations, data for authentication and authorization of users. Technically necessary cookies are stored on the user's terminal device, which contain the user's authenticity and authorizations. No tracking data is stored.</value>
+  </data>
+  <data name="DataUsage.Notice01" xml:space="preserve">
+    <value>BioMap is a web portal in which several independent projects can be managed. In each project data of the users are processed and stored.</value>
   </data>
   <data name="ImpressumNotice01" xml:space="preserve">
     <value>This website is not commercial. It exclusively serves the workflows in nature conservation projects such as "Yellow-bellied toads in the Donaustaufer and Kreuther Forst".</value>

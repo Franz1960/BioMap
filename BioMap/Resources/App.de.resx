@@ -261,6 +261,27 @@
   <data name="Create new project" xml:space="preserve">
     <value>Neues Projekt anlegen</value>
   </data>
+  <data name="Data Protection Officer" xml:space="preserve">
+    <value>Datenschutzbeauftragter</value>
+  </data>
+  <data name="Data types" xml:space="preserve">
+    <value>Arten von Daten</value>
+  </data>
+  <data name="Data usage" xml:space="preserve">
+    <value>Datenverwendung</value>
+  </data>
+  <data name="DataUsage.DataStorage.Notice01" xml:space="preserve">
+    <value>Projektbezogene Daten werden unbegrenzt gespeichert. Der Benutzer stimmt dem ausdrücklich zu, wenn er sich für die Teilnahme an einem Projekt anmeldet. Grund: Die Integrität der Projektdaten kann nur gewährleistet werden, wenn alle Daten unbegrenzt oder zumindest bis zum Ende des Projekts erhalten bleiben.</value>
+  </data>
+  <data name="DataUsage.DataStorage.Notice02" xml:space="preserve">
+    <value>Das Löschen von Daten ist nur möglich, indem das gesamte Projekt gelöscht wird. Das kann nur aus triftigen Gründen verlangt werden und muss vom Datenschutzbeauftragten veranlasst werden.</value>
+  </data>
+  <data name="DataUsage.DataTypes.Notice01" xml:space="preserve">
+    <value>Die verschiedenen Arten von Daten, die auf dem Server gespeichert und verarbeitet werden, sind: Bilddateien, Dokumente, Eingabewerte, automatisch erzeugte Protokolle über Änderungs- und Verwaltungsvorgänge, Daten zur Authentifizierung und Autorisierung von Benutzern. Auf dem Endgerät des Benutzers werden technisch notwendige Cookies gespeichert, die die Authenzität und die Berechtigungen des Benutzers enthalten. Es werden keine Trackingdaten gespeichert.</value>
+  </data>
+  <data name="DataUsage.Notice01" xml:space="preserve">
+    <value>BioMap ist ein Web-Portal, in dem mehrere unabhängige Projekte verwaltet werden können. In jedem Projekt werden Daten der Benutzer verarbeitet und gespeichert.</value>
+  </data>
   <data name="Date" xml:space="preserve">
     <value>Datum</value>
   </data>
@@ -377,9 +398,6 @@
   </data>
   <data name="Impressum" xml:space="preserve">
     <value>Impressum</value>
-  </data>
-  <data name="ImpressumHeadResponsiblePerson" xml:space="preserve">
-    <value>Verantwortlich im Sinne des Presserechts</value>
   </data>
   <data name="ImpressumNotice01" xml:space="preserve">
     <value>Diese Webseite ist nicht kommerziell. Sie dient ausschließlich den Arbeitsabläufen in Naturschutzprojekten wie "Gelbbauchunken im Donaustaufer und Kreuther Forst".</value>
@@ -566,6 +584,12 @@
   </data>
   <data name="Reproduction rate" xml:space="preserve">
     <value>Reproduktionsrate</value>
+  </data>
+  <data name="Responsible in terms of press law" xml:space="preserve">
+    <value>Verantwortlich im Sinne des Presserechts</value>
+  </data>
+  <data name="Retention time" xml:space="preserve">
+    <value>Aufbewahrungszeit</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Speichern</value>
