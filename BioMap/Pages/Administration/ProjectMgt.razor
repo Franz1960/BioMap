@@ -100,6 +100,50 @@
     </Card>
   </Column>
 </Row>
+<Row>
+  <Column>
+    <Card Margin="Margin.Is2.OnY">
+      <CardHeader>
+        <CardTitle>@Localize["Documents"]</CardTitle>
+      </CardHeader>
+      <CardBody>
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Add document"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            @{
+              var addAttr = new Dictionary<string,object>(new KeyValuePair<string,object>[] {
+                new KeyValuePair<string,object>("multiple","multiple"),
+              });
+              <InputFile AdditionalAttributes="addAttr" OnChange="@OnInputFileChange" />
+            }
+          </FieldBody>
+        </Field>
+        <Table Class="table-striped table-sm">
+          <TableHeader>
+            <TableRow>
+              <TableHeaderCell>@Localize["Name"]</TableHeaderCell>
+              <TableHeaderCell>@Localize["Type"]</TableHeaderCell>
+              <TableHeaderCell></TableHeaderCell>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
+              <TableRow>
+                <TableRowCell>@doc.DisplayName</TableRowCell>
+                <TableRowCell>@doc.DocType.ToString()</TableRowCell>
+                <TableRowCell>
+                  <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<700" Clicked="@((e)=>{ DS.DeleteDoc(SD.CurrentUser.Project,doc.Filename); })">
+                    <Icon Name="IconName.Delete"></Icon>
+                  </Button>
+                </TableRowCell>
+              </TableRow>
+            }
+          </TableBody>
+        </Table>
+      </CardBody>
+    </Card>
+  </Column>
+</Row>
 <Modal @ref="progressModalRef">
   <ModalContent Centered="true">
     <ModalHeader>
@@ -111,6 +155,20 @@
       <Progress Margin="Margin.Is3.FromBottom">
         <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
       </Progress>
+      @if (messages.Count>=1) {
+        foreach (var msg in messages) {
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              @msg
+            </Column>
+          </Row>
+        }
+        <Row Margin="Margin.Is2.OnY">
+          <Column>
+            <Button Color="Color.Primary" Float="Float.Right" @onclick="()=>progressModalRef.Hide()">@Localize["Close"]</Button>
+          </Column>
+        </Row>
+      }
     </ModalBody>
   </ModalContent>
 </Modal>
@@ -118,6 +176,7 @@
 @code {
   private Modal progressModalRef;
   private int progressCompletion = 0;
+  private List<string> messages = new List<string>();
   //
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -166,6 +225,41 @@
       });
     } finally {
       await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+    }
+  }
+  private async Task OnInputFileChange(InputFileChangeEventArgs e) {
+    var maxAllowedFiles = 30;
+    int nUploadedFiles = 0;
+    messages.Clear();
+    progressCompletion=0;
+    progressModalRef.Show();
+    try {
+      var files = e.GetMultipleFiles(maxAllowedFiles);
+      for (int idxFile = 0;idxFile<files.Count;idxFile++) {
+        var docFile = files[idxFile];
+        progressCompletion=(int)Math.Round(((idxFile+0.5)*100)/files.Count);
+        await this.InvokeAsync(() => { StateHasChanged(); });
+        try {
+          var docStream = docFile.OpenReadStream(20000000);
+          var sDestFilePath = System.IO.Path.Combine(DS.GetDocsDir(SD.CurrentUser.Project),docFile.Name);
+          using (var destStream = new System.IO.FileStream(sDestFilePath,System.IO.FileMode.Create)) {
+            await docStream.CopyToAsync(destStream);
+            destStream.Close();
+          }
+          nUploadedFiles++;
+        } catch (Exception ex) {
+          messages.Add(ex.ToString());
+          await this.InvokeAsync(() => { StateHasChanged(); });
+        }
+        progressCompletion=(int)Math.Round(((idxFile+1.0)*100)/files.Count);
+        await this.InvokeAsync(() => { StateHasChanged(); });
+      }
+      messages.Add(string.Format(Localize["{0} files uploaded."],nUploadedFiles.ToString()));
+      await this.InvokeAsync(() => { StateHasChanged(); });
+    } finally {
+      if (messages.Count<1) {
+        await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+      }
     }
   }
 }

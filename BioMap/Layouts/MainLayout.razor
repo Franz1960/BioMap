@@ -184,14 +184,12 @@
                     <BarIcon IconName="IconName.Info" />
                     @Localize["About"]..
                   </BarDropdownItem>
-                  <BarDropdownItem To="/doc/2020-12 Unken-Projekt Bericht.pdf">
-                    <BarIcon IconName="IconName.FilePdf" />
-                    Bericht 2020
-                  </BarDropdownItem>
-                  <BarDropdownItem To="/doc/2019-10 Unken-Projekt Zwischenbericht verfremdete Orte.pdf">
-                    <BarIcon IconName="IconName.FilePdf" />
-                    Bericht 2019
-                  </BarDropdownItem>
+                  @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
+                    <BarDropdownItem To=@("/api/docs/"+doc.Filename+"?Project="+SD.CurrentUser.Project)>
+                      <BarIcon IconName=@((doc.DocType==Document.DocType_en.Pdf?IconName.FilePdf:IconName.Book)) />
+                      @doc.DisplayName
+                    </BarDropdownItem>
+                  }
                   <BarDropdownItem To="/Help/Impressum">
                     <BarIcon IconName="IconName.Book" />
                     @Localize["Impressum"]

@@ -44,16 +44,38 @@ namespace BioMap
       return this.GetDataDir(sd.CurrentUser.Project);
     }
     public string GetTempDir(string sProject) {
-      var ds = DataService.Instance;
-      var sDataDir = ds.GetDataDir(sProject);
-      string sFilePath = System.IO.Path.Combine(sDataDir,"temp");
+      var sDir = this.GetDataDir(sProject);
+      string sFilePath = System.IO.Path.Combine(sDir,"temp");
       return sFilePath;
     }
     public string GetDocsDir(string sProject) {
-      var ds = DataService.Instance;
-      var sDataDir = ds.GetDataDir(sProject);
-      string sFilePath = System.IO.Path.Combine(sDataDir,"docs");
+      var sDir = this.GetDataDir(sProject);
+      string sFilePath = System.IO.Path.Combine(sDir,"docs");
+      if (!System.IO.Directory.Exists(sFilePath)) {
+        System.IO.Directory.CreateDirectory(sFilePath);
+      }
       return sFilePath;
+    }
+    public Document[] GetDocs(string sProject,string sSearchPattern="*.*") {
+      var sDir = this.GetDocsDir(sProject);
+      if (System.IO.Directory.Exists(sDir)) {
+        var aFiles=System.IO.Directory.GetFiles(sDir,sSearchPattern);
+        var aDocuments=aFiles.Select(sFile=>new Document {
+          DisplayName=System.IO.Path.GetFileNameWithoutExtension(sFile),
+          DocType=(sFile.EndsWith(".pdf",StringComparison.OrdinalIgnoreCase)?Document.DocType_en.Pdf:Document.DocType_en.Unknown),
+          Filename=System.IO.Path.GetFileName(sFile),
+        });
+        return aDocuments.ToArray();
+      }
+      return Array.Empty<Document>();
+    }
+    public void DeleteDoc(string sProject,string sFilename) {
+      try {
+        var sFilepath=DocumentController.GetFilePathForExistingDocument(sProject,sFilename);
+        if (System.IO.File.Exists(sFilepath)) {
+          System.IO.File.Delete(sFilepath);
+        }
+      } catch { }
     }
     public string GetFilePathForImage(string sProject,string id,bool bOrig) {
       var ds = DataService.Instance;
