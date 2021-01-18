@@ -378,6 +378,12 @@
   <data name="Impressum" xml:space="preserve">
     <value>Impressum</value>
   </data>
+  <data name="ImpressumHeadResponsiblePerson" xml:space="preserve">
+    <value>Verantwortlich im Sinne des Presserechts</value>
+  </data>
+  <data name="ImpressumNotice01" xml:space="preserve">
+    <value>Diese Webseite ist nicht kommerziell. Sie dient ausschließlich den Arbeitsabläufen in Naturschutzprojekten wie "Gelbbauchunken im Donaustaufer und Kreuther Forst".</value>
+  </data>
   <data name="Include single catches" xml:space="preserve">
     <value>Einzelfänge einschließen</value>
   </data>

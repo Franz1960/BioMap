@@ -1,20 +1,33 @@
 ﻿@page "/Help/Impressum"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject NavigationManager NM
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
 
-<div>
-  <h1>Impressum</h1>
-  <div>
-    <p>Diese Webseite ist nicht kommerziell. Sie dient ausschließlich den Arbeitsabläufen im Naturschutzprojekt "Gelbbauchunken im Donaustaufer und Kreuther Forst".</p>
-    <p>Verantwortlich im Sinne des Presserechts:</p>
-    <p>
-      Hr. Franz Häring<br />
-      Kreuzhofstr. 59<br />
-      93073 Neutraubling<br />
-      Deutschland<br />
-      Telefon: +49 (0)9401-911031<br />
-      E-Mail: <a href="mailto:f.x.haering@gmail.com">f.x.haering@gmail.com</a>
-    </p>
-  </div>
-</div>
+<Row Margin="Margin.Is1.OnY">
+  <Column>
+    <Heading Size="HeadingSize.Is1">
+      @Localize["Impressum"]
+    </Heading>
+    <Paragraph>
+      @Localize["ImpressumNotice01"]
+    </Paragraph>
+    <Paragraph>
+      @Localize["ImpressumHeadResponsiblePerson"]:
+    </Paragraph>
+    <Paragraph>
+      <Text> Hr. Franz Häring</Text>
+      <Text>Kreuzhofstr. 59</Text>
+      <Text>93073 Neutraubling</Text>
+      <Text>Deutschland</Text>
+      <Text>Telefon: +49 (0)9401-911031</Text>
+      <Text>E-Mail: <a href="mailto:f.x.haering@gmail.com">f.x.haering@gmail.com</a></Text>
+    </Paragraph>
+    <Paragraph>
+    </Paragraph>
+  </Column>
+</Row>
 
 @code {
 }

@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ImpressumHeadResponsiblePerson" xml:space="preserve">
+    <value>Responsible in terms of press law</value>
+  </data>
+  <data name="ImpressumNotice01" xml:space="preserve">
+    <value>This website is not commercial. It exclusively serves the workflows in nature conservation projects such as "Yellow-bellied toads in the Donaustaufer and Kreuther Forst".</value>
+  </data>
   <data name="Intro1" xml:space="preserve">
     <value>BioMap is a web app that was (and continues to be) developed for a yellow-bellied toad monitoring project. Through individual detection, length measurement, and location recording, population size, age structure, sex ratio, migration activity, local distribution, and reproductive activity can be determined.</value>
   </data>
