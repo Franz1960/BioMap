@@ -57,7 +57,7 @@
         <Field Horizontal="true">
           <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Migrate categories"]</FieldLabel>
           <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<700)" Clicked="@(async (e)=>{ await MigrateCategories_Clicked(); })">@Localize["Start"]</Button>
+            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<7000)" Clicked="@(async (e)=>{ await MigrateCategories_Clicked(); })">@Localize["Start"]</Button>
           </FieldBody>
         </Field>
         <Field Horizontal="true">
