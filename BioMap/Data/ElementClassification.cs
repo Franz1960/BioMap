@@ -21,6 +21,7 @@ namespace BioMap
       "Other",
     };
     public enum Stadium {
+      None,
       Eggs=1,
       Larvae,
       Juveniles,

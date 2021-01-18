@@ -1,0 +1,118 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using BioMap
+
+<Row>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Classification"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+        <Buttons>
+          <Dropdown>
+            <DropdownToggle Color="Color.Primary">
+              @Localize[string.IsNullOrEmpty(Classification.ClassName) ? "(select)" : Classification.ClassName]
+            </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem Clicked="@((e)=>{ Classification.ClassName="";Update(); })">
+                @Localize["(select)"]
+              </DropdownItem>
+              @foreach (var sClassName in ElementClassification.ClassNames) {
+                <DropdownItem Clicked="@((e)=>{ Classification.ClassName=sClassName;Update(); })">
+                  @Localize[sClassName]
+                </DropdownItem>
+              }
+            </DropdownMenu>
+          </Dropdown>
+          @if (string.CompareOrdinal(Classification.ClassName,"Living being")==0) {
+            <Dropdown>
+              <DropdownToggle Color="Color.Primary">
+                @if (string.IsNullOrEmpty(Classification.LivingBeing?.Species?.SciName)) {
+                  @Localize["(select)"]
+                } else {
+                  @Classification.LivingBeing?.Species?.GetLocalizedName(SD.CurrentCultureName)
+                }
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem Active="(string.IsNullOrEmpty(Classification.LivingBeing?.Species?.SciName))"
+                              Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Species=new Species() };Update(); })">
+                  @Localize["(select)"]
+                </DropdownItem>
+                @foreach (var species in SD.CurrentProject.Species) {
+                  <DropdownItem Active="(string.CompareOrdinal(Classification.LivingBeing?.Species?.SciName,species.SciName)==0)"
+                                Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Species=SD.CurrentProject.GetSpecies(species.SciName),Stadium=ElementClassification.Stadium.None };Update(); })">
+                    @species.GetLocalizedName(SD.CurrentCultureName)
+                  </DropdownItem>
+                }
+              </DropdownMenu>
+            </Dropdown>
+            @if (!string.IsNullOrEmpty(Classification?.LivingBeing?.Species?.SciName)) {
+              <Dropdown>
+                <DropdownToggle Color="Color.Primary">
+                  @if (Classification.LivingBeing.Stadium==ElementClassification.Stadium.None) {
+                    @Localize["(select)"]
+                  } else {
+                    @Localize[Classification.LivingBeing.Stadium.ToString()]
+                  }
+                </DropdownToggle>
+                <DropdownMenu>
+                  @foreach (var enStadium in Enum.GetValues<ElementClassification.Stadium>()) {
+                    <DropdownItem Active="(Classification.LivingBeing.Stadium==enStadium)"
+                                  Clicked="@((e)=>{ Classification.LivingBeing.Stadium=enStadium;Update(); })">
+                      @Localize[enStadium==ElementClassification.Stadium.None ? "(select)" : enStadium.ToString()]
+                    </DropdownItem>
+                  }
+                </DropdownMenu>
+              </Dropdown>
+            }
+          }
+          @if (string.CompareOrdinal(Classification.ClassName,"Habitat")==0) {
+            @if (Classification.Habitat==null) {
+              Classification.Habitat=new ElementClassification.Habitat_t();
+            }
+            <Dropdown>
+              <DropdownToggle Color="Color.Primary">
+                @if (Classification.Habitat.Quality==0) {
+                  @Localize["(select)"]
+                } else {
+                  @Classification.Habitat.GetQualityAsSymbols()
+                }
+              </DropdownToggle>
+              <DropdownMenu>
+                @foreach (var nQuality in new int[] { 0,1,2,3,4,5 }) {
+                <DropdownItem Active="(Classification.Habitat.Quality==nQuality)"
+                              Clicked="@((e)=>{ Classification.Habitat.Quality=nQuality;Update(); })">
+                  @if (nQuality==0) {
+                    @Localize["(select)"]
+                  } else {
+                    @ElementClassification.Habitat_t.GetQualityAsSymbols(nQuality)
+                  }
+                </DropdownItem>
+                }
+              </DropdownMenu>
+            </Dropdown>
+            <CheckBox Checked="Classification.Habitat.Monitoring" CheckedChanged="@((e)=>{ Classification.Habitat.Monitoring=e;Update(); })" LabelText=@Localize["Monitoring"] />
+          }
+        </Buttons>
+      </FieldBody>
+    </Field>
+  </Column>
+</Row>
+
+@code {
+  private ElementClassification Classification = new ElementClassification();
+  protected override void OnInitialized() {
+    if (!string.IsNullOrEmpty(SD.Filters.ClassFilter)) {
+      this.Classification=JsonConvert.DeserializeObject<ElementClassification>(SD.Filters.ClassFilter);
+    } else {
+      this.Classification=new ElementClassification { ClassName="" };
+    }
+  }
+  private void Update() {
+    SD.Filters.ClassFilter=JsonConvert.SerializeObject(this.Classification);
+  }
+}

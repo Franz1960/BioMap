@@ -156,6 +156,18 @@ namespace BioMap
       }
     }
     private string _CatFilter = "";
+    public string ClassFilter {
+      get {
+        return this._ClassFilter;
+      }
+      set {
+        if (value!=this._ClassFilter) {
+          this._ClassFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private string _ClassFilter = "";
     public string LogUserFilter {
       get {
         return this._LogUserFilter;
@@ -287,6 +299,28 @@ namespace BioMap
         sResult = Filters.AddToWhereClause(sResult,this.GetDateFilterWhereClause());
         sResult = AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
         sResult = AddToWhereInClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
+        if (!string.IsNullOrEmpty(this.ClassFilter)) {
+          var classification=JsonConvert.DeserializeObject<ElementClassification>(this.ClassFilter);
+          if (!string.IsNullOrEmpty(classification.ClassName)) {
+            sResult = AddToWhereClause(sResult,"elements.classification LIKE '%\"ClassName\":\""+classification.ClassName+"\"%'");
+            if (string.CompareOrdinal(classification.ClassName,"Living being")==0) {
+              if (!string.IsNullOrEmpty(classification.LivingBeing?.Species?.SciName)) {
+                sResult = AddToWhereClause(sResult,"elements.classification LIKE '%\"SciName\":\""+classification.LivingBeing.Species.SciName+"\"%'");
+              }
+              if (classification.LivingBeing!=null && classification.LivingBeing.Stadium!=ElementClassification.Stadium.None) {
+                sResult = AddToWhereClause(sResult,"elements.classification LIKE '%\"Stadium\":"+((int)classification.LivingBeing.Stadium)+",%'");
+              }
+            }
+            if (string.CompareOrdinal(classification.ClassName,"Habitat")==0) {
+              if (classification.Habitat!=null && classification.Habitat.Quality!=0) {
+                sResult = AddToWhereClause(sResult,"elements.classification LIKE '%\"Quality\":"+classification.Habitat.Quality+"%'");
+              }
+              if (classification.Habitat!=null && classification.Habitat.Monitoring) {
+                sResult = AddToWhereClause(sResult,"elements.classification LIKE '%\"Monitoring\":true%'");
+              }
+            }
+          }
+        }
       }
       if (this.FilteringTarget==FilteringTargetEnum.Log) {
         var user = this.GetUserFunc();
