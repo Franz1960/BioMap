@@ -144,18 +144,6 @@ namespace BioMap
       }
     }
     private string _PlaceFilter = "";
-    public string CatFilter {
-      get {
-        return this._CatFilter;
-      }
-      set {
-        if (value!=this._CatFilter) {
-          this._CatFilter=value;
-          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
-        }
-      }
-    }
-    private string _CatFilter = "";
     public string ClassFilter {
       get {
         return this._ClassFilter;
@@ -298,7 +286,6 @@ namespace BioMap
       if (this.FilteringTarget==FilteringTargetEnum.Elements) {
         sResult = Filters.AddToWhereClause(sResult,this.GetDateFilterWhereClause());
         sResult = AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
-        sResult = AddToWhereInClause(sResult,"elements.category",ExpandCatFilter(this.CatFilter));
         if (!string.IsNullOrEmpty(this.ClassFilter)) {
           var classification=JsonConvert.DeserializeObject<ElementClassification>(this.ClassFilter);
           if (!string.IsNullOrEmpty(classification.ClassName)) {
@@ -383,18 +370,6 @@ namespace BioMap
         return "";
       }
       return sResult;
-    }
-    private static string ExpandCatFilter(string sFilter) {
-      return ExpandFilter(sFilter,(sCatA,sCatB) => {
-        var sbExp = new System.Text.StringBuilder();
-        int nCatA = int.Parse(sCatA);
-        int nCatB = int.Parse(sCatB);
-        for (int nCat = nCatA;nCat<=nCatB;nCat++) {
-          sbExp.Append(ConvInvar.ToString(nCat));
-          sbExp.Append(' ');
-        }
-        return sbExp.ToString();
-      });
     }
     private static string ExpandPlaceFilter(string sFilter) {
       return sFilter.ToUpperInvariant();

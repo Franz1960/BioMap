@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using MetadataExtractor;
+//using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.Jpeg;
@@ -20,6 +20,14 @@ namespace BioMap
       "Habitat",
       "Other",
     };
+    public static readonly Dictionary<string,string> ClassColors=new Dictionary<string, string>(new KeyValuePair<string,string>[] {
+      new KeyValuePair<string,string>("New","#FFFFFF"),
+      new KeyValuePair<string,string>("ID photo","#FFD800"),
+      new KeyValuePair<string,string>("Normalized non-ID photo","#7F6420"),
+      new KeyValuePair<string,string>("Living being","#C96A00"),
+      new KeyValuePair<string,string>("Habitat","#AAC643"),
+      new KeyValuePair<string,string>("Other","#9132D1"),
+    });
     public enum Stadium {
       None,
       Eggs=1,

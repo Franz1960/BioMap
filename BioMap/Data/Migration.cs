@@ -37,7 +37,8 @@ namespace BioMap
         int nLoopCnt=0;
         foreach (var el in aElements) {
           callbackCompletion(((nLoopCnt++)*100)/aElements.Length);
-          switch (el.GetCategoryNum()) {
+          int? nCat=el.ElementProp?.MarkerInfo?.category;
+          switch (nCat.HasValue?nCat.Value:0) {
             case 120: 
               el.Classification=new ElementClassification {
                 ClassName="Living being",

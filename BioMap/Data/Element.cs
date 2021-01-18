@@ -12,64 +12,6 @@ namespace BioMap
 {
   public class Element
   {
-    public class Category
-    {
-      public Category(int nCatNum,string bgColor,string sCatName) {
-        this.Num=nCatNum;
-        this.NumString=ConvInvar.ToString(nCatNum);
-        this.Name=sCatName;
-        this.BgColor=bgColor;
-      }
-      public int Num { get; private set; }
-      public string NumString { get; }
-      public string Name { get; private set; }
-      public string BgColor { get; private set; }
-      public static Category[] AllCategories { get; private set; }
-      public static readonly Dictionary<int,Category> CategoriesByNum = new Dictionary<int,Category>();
-      static Category() {
-        var l = new List<Category>();
-        l.Add(new Category(100,"#FFFFFF","Neu hochgeladen"));
-        l.Add(new Category(120,"#9132D1","Andere Tierart"));
-        l.Add(new Category(130,"#9132D1","Sonstiges"));
-        l.Add(new Category(140,"#846A00","Sonstige Kröte"));
-        l.Add(new Category(141,"#846A00","Erdkröte"));
-        l.Add(new Category(150,"#C96A00","Sonstiger Frosch"));
-        l.Add(new Category(151,"#C96A00","Grasfrosch"));
-        l.Add(new Category(152,"#CD6A00","Springfrosch"));
-        l.Add(new Category(153,"#00A321","Grünfrosch"));
-        l.Add(new Category(160,"#C96A00","Sonstiger Schwanzlurch"));
-        l.Add(new Category(161,"#B200FF","Teichmolch"));
-        l.Add(new Category(162,"#A17FFF","Bergmolch"));
-        l.Add(new Category(163,"#FF7F7F","Kammmolch"));
-        l.Add(new Category(164,"#FF7F7F","Feuersalamander"));
-        l.Add(new Category(170,"#D730D0","Sonstiges Insekt"));
-        l.Add(new Category(171,"#D730D0","Rückenschwimmer"));
-        l.Add(new Category(172,"#D730D0","Wasserläufer"));
-        l.Add(new Category(173,"#D730D0","Wasserskorpion"));
-        l.Add(new Category(174,"#D730D0","Libellenlarve"));
-        l.Add(new Category(175,"#D730D0","Gelbrandkäfer"));
-        l.Add(new Category(210,"#D30000","Kein Habitat"));
-        l.Add(new Category(220,"#AAC643","Potentielles Habitat ohne Unken"));
-        l.Add(new Category(230,"#AAC643","Potentielles Habitat Ortsmeldung"));
-        l.Add(new Category(240,"#AAC643","Potentielles Habitat Foto"));
-        l.Add(new Category(242,"#B7B171","Foto mit vermutlichem Unkenlaich"));
-        l.Add(new Category(244,"#B7B171","Foto mit vermutlichen Unkenquappen"));
-        l.Add(new Category(320,"#A0FF70","Geprüftes Foto ohne Unken"));
-        l.Add(new Category(322,"#A0FF70","Monitoring-Besuch ohne Unken"));
-        l.Add(new Category(330,"#FFFF20","Geprüfte Ortsmeldung mit Unken"));
-        l.Add(new Category(340,"#B7B171","Geprüftes Foto mit Unken"));
-        l.Add(new Category(342,"#B7B171","Foto mit überprüftem Unkenlaich"));
-        l.Add(new Category(344,"#B7B171","Foto mit überprüften Unkenquappen"));
-        l.Add(new Category(346,"#000000","Foto mit überprüften Unkenkadavern"));
-        l.Add(new Category(350,"#FFD800","Passbild"));
-        l.Add(new Category(351,"#7F6420","Normbild Oberseite"));
-        AllCategories=l.ToArray();
-        CategoriesByNum.Clear();
-        foreach (var category in AllCategories) {
-          CategoriesByNum[category.Num]=category;
-        }
-      }
-    }
     public class SymbolProperties
     {
       public double Radius;
@@ -224,31 +166,23 @@ namespace BioMap
       }
       return sb.ToString();
     }
-    public int GetCategoryNum() {
-      return this.ElementProp.MarkerInfo.category;
+    public string GetClassName() {
+      return this.Classification.ClassName;
     }
-    public string GetCategoryNice() {
-      if (Category.CategoriesByNum.TryGetValue(this.ElementProp.MarkerInfo.category,out Category category)) {
-        return ConvInvar.ToString(this.ElementProp.MarkerInfo.category)+" ("+category.Name+")";
-      } else {
-        return ConvInvar.ToString(this.ElementProp.MarkerInfo.category)+" (???)";
-      }
-    }
-    public string GetCategoryOrIId() {
+    public string GetClassOrIId() {
       var sIId = this.GetIId();
       if (string.IsNullOrEmpty(sIId)) {
-        return ConvInvar.ToString(this.GetCategoryNum());
+        return this.GetClassName();
       } else {
         return "#"+sIId;
       }
     }
-    public string GetCategoryColor() {
-      int nCat = this.GetCategoryNum();
-      if (Category.CategoriesByNum.TryGetValue(nCat,out var category)) {
-        return category.BgColor;
-      } else {
-        return "#777777";
+    public string GetClassColor() {
+      var sClass=this.GetClassName();
+      if (!ElementClassification.ClassColors.TryGetValue(sClass,out string sColor)) {
+        sColor="#DD00DD";
       }
+      return sColor;
     }
     public string GetIId() {
       if (this.ElementProp.IndivData!=null) {
@@ -307,7 +241,7 @@ namespace BioMap
     }
     public SymbolProperties GetSymbolProperties() {
       var dHBL = this.GetHeadBodyLengthMm();
-      var bgColor = this.GetCategoryColor();
+      var bgColor = this.GetClassColor();
       var sb = new SymbolProperties {
         Radius=(dHBL==0) ? 3 : (dHBL*0.10),
         BgColor=bgColor,

@@ -65,8 +65,8 @@
   private void RefreshData() {
     //
     this.OtherData.Clear();
-    foreach (var cat in Element.Category.AllCategories) {
-      var aEls = DS.GetElements(SD,null,"elements.category="+cat.Num);
+    foreach (var sClassName in ElementClassification.ClassNames) {
+      var aEls = DS.GetElements(SD,null,"elements.classification LIKE '%\"ClassName\":\""+sClassName+"\"%'");
       int nAllYears = 0;
       var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
       foreach (var el in aEls) {
@@ -84,8 +84,8 @@
       }
       this.OtherData.Add(
         new DataByYears_t {
-          Id=ConvInvar.ToString(cat.Num),
-          Name=cat.Name,
+          Id=sClassName,
+          Name=Localize[sClassName],
           AllYears=nAllYears.ToString(),
           ByYear=Array.ConvertAll<int,string>(aByYears,(n) => n.ToString()),
         }

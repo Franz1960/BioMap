@@ -22,7 +22,7 @@
           <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
         </a>
         <div class="card-footer">
-          <small>(@el.GetIsoDate()/@el.GetCategoryOrIId()/@el.GetPlaceName())</small>
+          <small>(@el.GetIsoDate()/@el.GetClassOrIId()/@el.GetPlaceName())</small>
         </div>
       </div>
     }
@@ -39,8 +39,6 @@
       base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
-
-    var c = Element.Category.AllCategories;
   }
   private void RefreshData() {
     var els = DataService.Instance.GetElements(SD,SD.Filters,"indivdata.iid>=1 AND elements.category=350","elements.place ASC,elements.creationtime ASC");
