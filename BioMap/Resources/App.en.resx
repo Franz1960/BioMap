@@ -156,4 +156,7 @@
   <data name="IntroProjectSelection" xml:space="preserve">
     <value>You can select a project you are interested in here. You can also create a new project.</value>
   </data>
+  <data name="Measure#To_measure_length" xml:space="preserve">
+    <value>Measure</value>
+  </data>
 </root>

@@ -264,6 +264,9 @@
   <data name="Create new project" xml:space="preserve">
     <value>Neues Projekt anlegen</value>
   </data>
+  <data name="Crop" xml:space="preserve">
+    <value>Zuschneiden</value>
+  </data>
   <data name="Data Protection Officer" xml:space="preserve">
     <value>Datenschutzbeauftragter</value>
   </data>
@@ -408,6 +411,9 @@
   <data name="ID photo" xml:space="preserve">
     <value>Passbild</value>
   </data>
+  <data name="Identify" xml:space="preserve">
+    <value>Identifizieren</value>
+  </data>
   <data name="Image" xml:space="preserve">
     <value>Bild</value>
   </data>
@@ -495,6 +501,9 @@
   <data name="Maps" xml:space="preserve">
     <value>Karten</value>
   </data>
+  <data name="Measure#To_measure_length" xml:space="preserve">
+    <value>Vermessen</value>
+  </data>
   <data name="Metamorphosis" xml:space="preserve">
     <value>Metamorphose</value>
   </data>
@@ -518,6 +527,9 @@
   </data>
   <data name="New" xml:space="preserve">
     <value>Neu</value>
+  </data>
+  <data name="New Elements" xml:space="preserve">
+    <value>Neue Elemente</value>
   </data>
   <data name="New individuals" xml:space="preserve">
     <value>Neue Individuen</value>

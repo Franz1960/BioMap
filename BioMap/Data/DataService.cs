@@ -830,6 +830,9 @@ namespace BioMap
       });
       return nElementCount;
     }
+    public async Task<Element[]> GetElementsAsync(SessionData sd,Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "elements.creationtime") {
+      return await Task<Element[]>.Run(()=>{return this.GetElements(sd,filters,sSqlCondition,sSqlOrderBy); });
+    }
     public Element[] GetElements(SessionData sd,Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "elements.creationtime") {
       if (!sd.CurrentUser.MaySeeElements) {
         return Array.Empty<Element>();
