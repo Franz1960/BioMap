@@ -138,6 +138,9 @@
   <data name="Access level" xml:space="preserve">
     <value>Zugangsstufe</value>
   </data>
+  <data name="Access level {0} not sufficient to see this page." xml:space="preserve">
+    <value>Zugangsstufe {0} reicht nicht, um diese Seite zu sehen.</value>
+  </data>
   <data name="Action" xml:space="preserve">
     <value>Aktion</value>
   </data>

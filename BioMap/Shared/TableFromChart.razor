@@ -61,7 +61,7 @@
       }
     }
     int nRowCnt = 0;
-    {
+    if (_config.Data.Datasets.Count>=1) {
       if (_config.Data.Datasets[0] is LineDataset<double> lds) {
         nRowCnt=lds.Count;
       } else if (_config.Data.Datasets[0] is BarDataset<int> bds) {

@@ -27,6 +27,7 @@ namespace BioMap
     public readonly Preferences Prefs=new Preferences();
     public bool IsOwner { get => string.CompareOrdinal(DataService.Instance.GetProjectProperty(this.Project,"Owner",""),this.EMail)==0; }
     public bool IsSuperAdmin { get => DataService.Instance.GetSuperAdmins().Contains(this.EMail); }
+    public bool MaySeeProject { get => Level>=200; }
     public bool MaySeeElements { get => Level>=200; }
     public bool MaySeeLocations { get => Level>=400; }
     public bool MayChangeLocations { get => Level>=500; }

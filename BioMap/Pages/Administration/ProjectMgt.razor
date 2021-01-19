@@ -6,144 +6,154 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<Row>
-  <Column>
-    <Card Margin="Margin.Is2.OnY">
-      <CardHeader>
-        <CardTitle>@Localize["Administration"]</CardTitle>
-      </CardHeader>
-      <CardBody>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Owner"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <TextEdit Disabled="true" Text="@SD.CurrentProject.Owner" />
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Start date"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <DateEdit TValue="DateTime?" Disabled="!SD.CurrentUser.IsOwner" @bind-Date="SD.CurrentProject.StartDate"></DateEdit>
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Max. allowed elements"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsSuperAdmin" @bind-Value="SD.CurrentProject.MaxAllowedElements" />
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Current elements"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <NumericEdit TValue="int" Disabled="true" Value="DS.GetElementCount(SD)" />
-          </FieldBody>
-        </Field>
-      </CardBody>
-    </Card>
-  </Column>
-</Row>
-<Row>
-  <Column>
-    <Card Margin="Margin.Is2.OnY">
-      <CardHeader>
-        <CardTitle>@Localize["Data"]</CardTitle>
-      </CardHeader>
-      <CardBody>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Import data from old web site"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<7000)" Clicked="@(async (e)=>{ await Import_Clicked(); })">@Localize["Import"]</Button>
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Migrate categories"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<7000)" Clicked="@(async (e)=>{ await MigrateCategories_Clicked(); })">@Localize["Start"]</Button>
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Edit area of interest"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<700)" Clicked="@((e)=>{ EditAoi_Clicked(); })">@Localize["Start"]</Button>
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Area extension tolerance"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <NumericEdit TValue="double" Disabled="@(SD.CurrentUser.Level<500)" @bind-Value="SD.CurrentProject.AoiTolerance" Min="-0.0001" Max="2" />
-            <FieldHelp>@Localize["0: no tolerance, 1: double extension"]</FieldHelp>
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Recalculate all"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<500)" Clicked="@(async (e)=>{ await RecalculateAll_Clicked(); })">@Localize["Start"]</Button>
-          </FieldBody>
-        </Field>
-      </CardBody>
-    </Card>
-  </Column>
-</Row>
-<Row>
-  <Column>
-    <Card Margin="Margin.Is2.OnY">
-      <CardHeader>
-        <CardTitle>@Localize["Biology"]</CardTitle>
-      </CardHeader>
-      <CardBody>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Monitored species (scientific name)"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            <TextEdit TValue="string" Disabled="@(SD.CurrentUser.Level<700)" @bind-Text="SD.CurrentProject.SpeciesSciName" />
-          </FieldBody>
-        </Field>
-      </CardBody>
-    </Card>
-  </Column>
-</Row>
-<Row>
-  <Column>
-    <Card Margin="Margin.Is2.OnY">
-      <CardHeader>
-        <CardTitle>@Localize["Documents"]</CardTitle>
-      </CardHeader>
-      <CardBody>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Add document"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-            @{
-              var addAttr = new Dictionary<string,object>(new KeyValuePair<string,object>[] {
-                new KeyValuePair<string,object>("multiple","multiple"),
-              });
-              <InputFile AdditionalAttributes="addAttr" OnChange="@OnInputFileChange" />
-            }
-          </FieldBody>
-        </Field>
-        <Table Class="table-striped table-sm">
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell>@Localize["Name"]</TableHeaderCell>
-              <TableHeaderCell>@Localize["Type"]</TableHeaderCell>
-              <TableHeaderCell></TableHeaderCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
+@if (!SD.CurrentUser.MaySeeProject) {
+  <Row>
+    <Column>
+      <Heading Size="HeadingSize.Is4">
+        @string.Format(Localize["Access level {0} not sufficient to see this page."],SD.CurrentUser.Level.ToString())
+      </Heading>
+    </Column>
+  </Row>
+} else {
+  <Row>
+    <Column>
+      <Card Margin="Margin.Is2.OnY">
+        <CardHeader>
+          <CardTitle>@Localize["Administration"]</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Owner"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <TextEdit Disabled="true" Text="@SD.CurrentProject.Owner" />
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Start date"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <DateEdit TValue="DateTime?" Disabled="!SD.CurrentUser.IsOwner" @bind-Date="SD.CurrentProject.StartDate"></DateEdit>
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Max. allowed elements"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsSuperAdmin" @bind-Value="SD.CurrentProject.MaxAllowedElements" />
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Current elements"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <NumericEdit TValue="int" Disabled="true" Value="DS.GetElementCount(SD)" />
+            </FieldBody>
+          </Field>
+        </CardBody>
+      </Card>
+    </Column>
+  </Row>
+  <Row>
+    <Column>
+      <Card Margin="Margin.Is2.OnY">
+        <CardHeader>
+          <CardTitle>@Localize["Data"]</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Import data from old web site"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<7000)" Clicked="@(async (e)=>{ await Import_Clicked(); })">@Localize["Import"]</Button>
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Migrate categories"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<7000)" Clicked="@(async (e)=>{ await MigrateCategories_Clicked(); })">@Localize["Start"]</Button>
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Edit area of interest"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<700)" Clicked="@((e)=>{ EditAoi_Clicked(); })">@Localize["Start"]</Button>
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Area extension tolerance"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <NumericEdit TValue="double" Disabled="@(SD.CurrentUser.Level<500)" @bind-Value="SD.CurrentProject.AoiTolerance" Min="-0.0001" Max="2" />
+              <FieldHelp>@Localize["0: no tolerance, 1: double extension"]</FieldHelp>
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Recalculate all"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<500)" Clicked="@(async (e)=>{ await RecalculateAll_Clicked(); })">@Localize["Start"]</Button>
+            </FieldBody>
+          </Field>
+        </CardBody>
+      </Card>
+    </Column>
+  </Row>
+  <Row>
+    <Column>
+      <Card Margin="Margin.Is2.OnY">
+        <CardHeader>
+          <CardTitle>@Localize["Biology"]</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Monitored species (scientific name)"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <TextEdit TValue="string" Disabled="@(SD.CurrentUser.Level<700)" @bind-Text="SD.CurrentProject.SpeciesSciName" />
+            </FieldBody>
+          </Field>
+        </CardBody>
+      </Card>
+    </Column>
+  </Row>
+  <Row>
+    <Column>
+      <Card Margin="Margin.Is2.OnY">
+        <CardHeader>
+          <CardTitle>@Localize["Documents"]</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Add document"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              @{
+                var addAttr = new Dictionary<string,object>(new KeyValuePair<string,object>[] {
+                  new KeyValuePair<string,object>("multiple","multiple"),
+                });
+            <InputFile AdditionalAttributes="addAttr" OnChange="@OnInputFileChange" />
+              }
+            </FieldBody>
+          </Field>
+          <Table Class="table-striped table-sm">
+            <TableHeader>
               <TableRow>
-                <TableRowCell>@doc.DisplayName</TableRowCell>
-                <TableRowCell>@doc.DocType.ToString()</TableRowCell>
-                <TableRowCell>
-                  <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<700" Clicked="@((e)=>{ DS.DeleteDoc(SD.CurrentUser.Project,doc.Filename); })">
-                    <Icon Name="IconName.Delete"></Icon>
-                  </Button>
-                </TableRowCell>
+                <TableHeaderCell>@Localize["Name"]</TableHeaderCell>
+                <TableHeaderCell>@Localize["Type"]</TableHeaderCell>
+                <TableHeaderCell></TableHeaderCell>
               </TableRow>
-            }
-          </TableBody>
-        </Table>
-      </CardBody>
-    </Card>
-  </Column>
-</Row>
+            </TableHeader>
+            <TableBody>
+              @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
+                <TableRow>
+                  <TableRowCell>@doc.DisplayName</TableRowCell>
+                  <TableRowCell>@doc.DocType.ToString()</TableRowCell>
+                  <TableRowCell>
+                    <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<700" Clicked="@((e)=>{ DS.DeleteDoc(SD.CurrentUser.Project,doc.Filename); })">
+                      <Icon Name="IconName.Delete"></Icon>
+                    </Button>
+                  </TableRowCell>
+                </TableRow>
+              }
+            </TableBody>
+          </Table>
+        </CardBody>
+      </Card>
+    </Column>
+  </Row>
+}
 <Modal @ref="progressModalRef">
   <ModalContent Centered="true">
     <ModalHeader>
