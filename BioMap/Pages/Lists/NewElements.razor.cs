@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Blazor.ImageSurveyor;
 using BioMap.Shared;
 
 namespace BioMap.Pages.Lists
@@ -15,7 +14,6 @@ namespace BioMap.Pages.Lists
     private PhotoPopup PhotoPopup1;
     private Element elementToMeasure=null;
     private Element elementToIdentify=null;
-    private Component1 component1;
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
       await RefreshData();
