@@ -5,10 +5,12 @@ WORKDIR /source
 # copy csproj and restore as distinct layers
 COPY *.sln .
 COPY BioMap/*.csproj ./BioMap/
+COPY ImageSurveyor/*.csproj ./ImageSurveyor/
 RUN dotnet restore
 
 # copy everything else and build app
 COPY BioMap/. ./BioMap/
+COPY ImageSurveyor/. ./ImageSurveyor/
 WORKDIR /source/BioMap
 RUN dotnet publish -c release -o /app --no-restore
 
