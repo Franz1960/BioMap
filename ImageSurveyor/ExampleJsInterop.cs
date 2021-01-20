@@ -17,7 +17,7 @@ namespace Blazor.ImageSurveyor
 
     public ExampleJsInterop(IJSRuntime jsRuntime) {
       moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-         "import","./_content/ImageSurveyor/jsInterop.js").AsTask());
+         "import","./_content/ImageSurveyor/exampleJsInterop.js").AsTask());
     }
 
     public async ValueTask<string> Prompt(string message) {

@@ -14,6 +14,7 @@ namespace BioMap.Pages.Lists
     private PhotoPopup PhotoPopup1;
     private Element elementToMeasure=null;
     private Element elementToIdentify=null;
+    protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
       await RefreshData();
@@ -23,6 +24,7 @@ namespace BioMap.Pages.Lists
       if (firstRender) {
       }
       if (this.elementToMeasure!=null) {
+        //await imageSurveyor.SetImageUrlAsync("api/photos/"+elementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project);
       }
     }
     private async Task RefreshData() {

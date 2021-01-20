@@ -11,7 +11,11 @@
       <Column ColumnSize="ColumnSize.Is2">
       </Column>
       <Column>
-        <Image Style="max-width:100%;height:60vh;" Source="@("api/photos/"+elementToMeasure.ElementName+"?Project="+@SD.CurrentUser.Project)" />
+        <Blazor.ImageSurveyor.ImageSurveyor
+          @ref="imageSurveyor"
+          Height="60vh"
+          AfterRenderEvent=@(async ()=>await imageSurveyor.SetImageUrlAsync("api/photos/"+elementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project))
+        />
       </Column>
     </Row>
   } else if (elementToMeasure!=null) {
