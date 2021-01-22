@@ -246,24 +246,22 @@ class PrepPic_t {
     setImage(urlImage,measuredData) {
         if (!this.Image) {
             this.Image = document.createElement('img');
-            this.Image.addEventListener('load', () => {
-                let img = PrepPic.Image;
-                if (!this.PtsOnCircle) {
-                    this.PtsOnCircle = [
-                        { x: img.width * 0.30, y: img.height * 0.30 },
-                        { x: img.width * 0.50, y: img.height * 0.70 },
-                        { x: img.width * 0.70, y: img.height * 0.30 },
-                    ];
-                }
-                this.Raw=true;
-                this.invalidate();
-            });
         }
+        this.Raw = true;
+        this.PtsOnCircle = [
+            { x: measuredData.normalizePoints[0].x, y: measuredData.normalizePoints[0].y },
+            { x: measuredData.normalizePoints[1].x, y: measuredData.normalizePoints[1].y },
+            { x: measuredData.normalizePoints[2].x, y: measuredData.normalizePoints[2].y },
+        ];
+        this.Head = { x: measuredData.measurePoints[0].x, y: measuredData.measurePoints[0].y };
+        this.Back = { x: measuredData.measurePoints[1].x, y: measuredData.measurePoints[1].y };
         let imgSrc = urlImage;
         if (imgSrc != this.Image.src) {
             this.Image.src = imgSrc;
+            if (this.Image) {
+                this.Image.addEventListener("load", (ev) => { this.invalidate(); });
+            }
         }
-        this.invalidate();
     }
     setElement(element, bRefreshMode) {
         element.InitIndivData();

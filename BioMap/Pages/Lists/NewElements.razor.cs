@@ -24,7 +24,6 @@ namespace BioMap.Pages.Lists
       if (firstRender) {
       }
       if (this.elementToMeasure!=null) {
-        //await imageSurveyor.SetImageUrlAsync("api/photos/"+elementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project);
       }
     }
     private async Task RefreshData() {

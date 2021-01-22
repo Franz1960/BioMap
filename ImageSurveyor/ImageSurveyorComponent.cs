@@ -51,10 +51,10 @@ namespace Blazor.ImageSurveyor
       await this.JsRuntime.InvokeVoidAsync("PrepPic.PrepareDisplay",this.divMain);
     }
     public string ImageUrl { get; private set; }="";
-    public async Task SetImageUrlAsync(string sImageUrl) {
+    public async Task SetImageUrlAsync(string sImageUrl,ImageSurveyorMeasureData measureData) {
       if (string.CompareOrdinal(this.ImageUrl,sImageUrl)!=0) {
         this.ImageUrl=sImageUrl;
-        await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl);
+        await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl,measureData);
       }
     }
 

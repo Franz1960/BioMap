@@ -485,7 +485,7 @@ namespace BioMap
           command.CommandText = "REPLACE INTO userprefs (name,value) VALUES ('"+sPropertyName+"','"+sValue+"')";
           command.ExecuteNonQuery();
         });
-        this.AddLogEntry(sd,"User preference \""+sPropertyName+"\" changed: "+saDiff[0]+" --> "+saDiff[1]);
+        //this.AddLogEntry(sd,"User preference \""+sPropertyName+"\" changed: "+saDiff[0]+" --> "+saDiff[1]);
       }
     }
     #endregion

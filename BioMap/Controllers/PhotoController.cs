@@ -11,11 +11,11 @@ namespace BioMap
   [ApiController]
   public class PhotoController : ControllerBase
   {
-    public static string GetFilePathForExistingImage(string sProject,string id) {
+    public static string GetFilePathForExistingImage(string sProject,string id,bool bForceOrig=false) {
       var ds = DataService.Instance;
       var sDataDir = ds.GetDataDir(sProject);
       string sFilePath = ds.GetFilePathForImage(sProject,id,false);
-      if (!System.IO.File.Exists(sFilePath)) {
+      if (bForceOrig || !System.IO.File.Exists(sFilePath)) {
         sFilePath = ds.GetFilePathForImage(sProject,id,true);
       }
       if (System.IO.File.Exists(sFilePath)) {
@@ -26,12 +26,13 @@ namespace BioMap
     [HttpGet("{id}")]
     public IActionResult GetPhoto(string id) {
       try {
+        bool bForceOrig = (Request.Query.ContainsKey("ForceOrig") && ConvInvar.ToInt(Request.Query["ForceOrig"],0)==1);
         bool bReqThumbnail = Request.Query.ContainsKey("width");
         string sProject="";
         if (Request.Query.ContainsKey("Project")) {
           sProject=Request.Query["Project"];
         }
-        string sFilePath = GetFilePathForExistingImage(sProject,id);
+        string sFilePath = GetFilePathForExistingImage(sProject,id,bForceOrig);
         if (!string.IsNullOrEmpty(sFilePath)) {
           try {
             if (Request.Query.ContainsKey("width")) {

@@ -14,7 +14,19 @@
         <Blazor.ImageSurveyor.ImageSurveyor
           @ref="imageSurveyor"
           Height="60vh"
-          AfterRenderEvent=@(async ()=>await imageSurveyor.SetImageUrlAsync("api/photos/"+elementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project))
+          AfterRenderEvent=@(async ()=>await imageSurveyor.SetImageUrlAsync(
+            "api/photos/"+elementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=1",new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
+              method="HeadToCloakInPetriDish",
+              normalizePoints=new[] {
+              new { x=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].Y },
+              new { x=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].Y },
+              new { x=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].Y },
+              },
+              measurePoints=new[] {
+                new {x=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigHeadPosition.X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigHeadPosition.Y},
+                new {x=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigBackPosition.X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigBackPosition.Y},
+              },
+            }))
         />
       </Column>
     </Row>
@@ -67,7 +79,7 @@
                 @if (el.HasPhotoData()) {
                   <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">
                     <Figure Size="FigureSize.Is96x96">
-                      <FigureImage Source="@("api/photos/"+@el.ElementName+"?maxdim=96&Project="+@SD.CurrentUser.Project)" AlternateText="@el.ElementName" />
+                      <FigureImage Source="@("api/photos/"+@el.ElementName+"?maxdim=96&Project="+@SD.CurrentUser.Project+"&ForceOrig=1")" AlternateText="@el.ElementName" />
                     </Figure>
                   </a>
                 }
