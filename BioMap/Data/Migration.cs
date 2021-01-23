@@ -213,9 +213,6 @@ namespace BioMap
         var sDataDir = ds.GetDataDir(sd);
         ds.AddLogEntry(sd,"Migrating data");
         var sMigSrcDir = System.IO.Path.Combine(sDataDir,"migration_source");
-        var sConfDir = System.IO.Path.Combine(sDataDir,"conf");
-        var sImagesDir = System.IO.Path.Combine(sDataDir,"images");
-        var sImagesOrigDir = System.IO.Path.Combine(sDataDir,"images_orig");
         var aElements=ds.GetElements(sd);
         int nLoopCnt=0;
         foreach (var el in aElements) {

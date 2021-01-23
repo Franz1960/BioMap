@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
 
 #nullable enable
 
@@ -51,9 +52,12 @@ namespace Blazor.ImageSurveyor
       await this.JsRuntime.InvokeVoidAsync("PrepPic.PrepareDisplay",this.divMain);
     }
     public string ImageUrl { get; private set; }="";
+    public string MeasureDataJson { get; private set; }="";
     public async Task SetImageUrlAsync(string sImageUrl,ImageSurveyorMeasureData measureData) {
-      if (string.CompareOrdinal(this.ImageUrl,sImageUrl)!=0) {
+      var sMeasureDataJson=JsonConvert.SerializeObject(measureData);
+      if (string.CompareOrdinal(sImageUrl,this.ImageUrl)!=0 || string.CompareOrdinal(sMeasureDataJson,this.MeasureDataJson)!=0) {
         this.ImageUrl=sImageUrl;
+        this.MeasureDataJson=sMeasureDataJson;
         await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl,measureData);
       }
     }

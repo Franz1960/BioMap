@@ -7,30 +7,22 @@
 
 <div style="height:60vh;overflow: hidden;">
   @if (elementToMeasure!=null) {
-    <Row Margin="Margin.Is1.OnY">
-      <Column ColumnSize="ColumnSize.Is2">
-      </Column>
-      <Column>
-        <Blazor.ImageSurveyor.ImageSurveyor
-          @ref="imageSurveyor"
-          Height="60vh"
-          AfterRenderEvent=@(async ()=>await imageSurveyor.SetImageUrlAsync(
-            "api/photos/"+elementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=1",new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
-              method="HeadToCloakInPetriDish",
-              normalizePoints=new[] {
-              new { x=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].Y },
-              new { x=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].Y },
-              new { x=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].Y },
-              },
-              measurePoints=new[] {
-                new {x=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigHeadPosition.X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigHeadPosition.Y},
-                new {x=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigBackPosition.X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigBackPosition.Y},
-              },
-            }))
-        />
-      </Column>
-    </Row>
-  } else if (elementToMeasure!=null) {
+  <Row Margin="Margin.Is1.OnY">
+    <Column>
+      <Blazor.ImageSurveyor.ImageSurveyor @ref="imageSurveyor" Height="60vh" AfterRenderEvent=@(async ()=>await LoadElementToMeasure(elementToMeasure)) />
+    </Column>
+    <Column ColumnSize="ColumnSize.Is2">
+      <Row Margin="Margin.Is1.OnY">
+        <Column>
+          <Button Color="Color.Light" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await ResetPositions_Clicked(elementToMeasure); })">
+            <Icon Name="IconName.Clear"></Icon>
+            @Localize["Reset positions"]
+          </Button>
+        </Column>
+      </Row>
+    </Column>
+  </Row>
+  } else if (elementToIdentify!=null) {
     <Row Margin="Margin.Is1.OnY">
       <Column>
       </Column>

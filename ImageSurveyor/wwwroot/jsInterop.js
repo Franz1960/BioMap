@@ -261,6 +261,8 @@ class PrepPic_t {
             if (this.Image) {
                 this.Image.addEventListener("load", (ev) => { this.invalidate(); });
             }
+        } else {
+            this.invalidate();
         }
     }
     setElement(element, bRefreshMode) {
