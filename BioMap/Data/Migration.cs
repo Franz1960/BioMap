@@ -220,10 +220,7 @@ namespace BioMap
         int nLoopCnt=0;
         foreach (var el in aElements) {
           callbackCompletion(((nLoopCnt++)*100)/aElements.Length);
-          if (el.ElementName.StartsWith("IMG_20200630")) {
-            int iii=0;
-          }
-          if (el.Classification.ClassName=="ID photo" || el.Classification.ClassName=="Normalized non-ID photo") {
+          if (el.ElementProp?.IndivData?.MeasuredData!=null) {
             try {
               var sMigSrcFilePath = System.IO.Path.Combine(sMigSrcDir,"elements",el.ElementName+".orig.jpg");
               if (System.IO.File.Exists(sMigSrcFilePath)) {
