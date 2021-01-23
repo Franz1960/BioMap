@@ -1,20 +1,22 @@
 
 class PrepPic_t {
     constructor() {
+        this.dotNetObject = null;
         this.DivMain = null;
         this.Canvas = null;
         this.CanvasValid = false;
+        this.MeasureData = {};
         this.MeasureResult = null;
         this.Image = null;
         this.Raw = false;
         this.Zoom = 1;
-        this.Head = { x: 300, y: 100 };
-        this.Back = { x: 300, y: 500 };
-        this.PtsOnCircle = [{ x: 300, y: 300 }, { x: 400, y: 400 }, { x: 500, y: 300 }];
         this.DragPos = null;
         this.DraggedPos = null;
         this.M2D = glMatrix.mat2d.create();
         this.AnythingChanged = false;
+    }
+    init(dotNetImageSurvey) {
+        this.dotNetObject = dotNetImageSurvey;
     }
     drawMarker(ctx, position, radius, color = "magenta", text = "") {
         let r = radius;
@@ -53,38 +55,6 @@ class PrepPic_t {
         this.DivMain.addEventListener('resize', (event) => { this.invalidate(); });
     }
     cropAndSave(urlSaveNormedImage) {
-        let data = {
-            ElementName: PrepPic.Element.ElementName,
-            ImageData: PrepPic.ClippedCanvas.toDataURL("image/jpeg", 0.95),
-        };
-        PrepPic.Element.ElementProp.FileName = data.ImageData;
-        PrepPic.Element.ElementProp.MarkerInfo.category = 350;
-        let vHead = glMatrix.vec2.create();
-        glMatrix.vec2.transformMat2d(vHead, [PrepPic.Head.x, PrepPic.Head.y], PrepPic.M2D);
-        let vBack = glMatrix.vec2.create();
-        glMatrix.vec2.transformMat2d(vBack, [PrepPic.Back.x, PrepPic.Back.y], PrepPic.M2D);
-        let md = PrepPic.Element.ElementProp.IndivData.MeasuredData;
-        md.HeadPosition = { x: vHead[0], y: vHead[1] };
-        md.BackPosition = { x: vBack[0], y: vBack[1] };
-        md.PtsOnCircle = PrepPic.PtsOnCircle;
-        uploadElement(PrepPic.Element);
-        PicMapElementMgr.UpdateElementMarker(PrepPic.Element);
-        PrepPic.Element.refreshAccessibility();
-        PrepPic.setRaw(false, false);
-        PrepPic.setElement(PrepPic.Element, false);
-        CurrentUser.ApiCall('/api/saveclippedimage.php', {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data)
-        }, [
-        ])
-            .then((response) => {
-                response.text().then(function (text) {
-                    console.log(text);
-                });
-            });
     }
     draw() {
         if (!this.Image || this.Image.width < 1 || this.Image.height < 1 || !this.DivMain || this.DivMain.width < 1 || this.DivMain.height < 1) {
@@ -101,20 +71,23 @@ class PrepPic_t {
         ctx.resetTransform();
         ctx.scale(this.Zoom, this.Zoom);
         ctx.drawImage(this.Image, 0, 0);
-        PrepPic.drawMarker(ctx, this.Head, MH, 'magenta', 'Kopfspitze');
-        PrepPic.drawMarker(ctx, this.Back, MH, 'brown', 'Kloake');
+        let ptHead = PrepPic.MeasureData.measurePoints[0];
+        let ptBack = PrepPic.MeasureData.measurePoints[1];
+        let ptsOnCircle = PrepPic.MeasureData.normalizePoints;
+        PrepPic.drawMarker(ctx, ptHead, MH, 'magenta', 'Kopfspitze');
+        PrepPic.drawMarker(ctx, ptBack, MH, 'brown', 'Kloake');
         if (this.Raw) {
             // Draw circle around Petri dish.
-            for (let i = 0; i < this.PtsOnCircle.length; i++) {
-                PrepPic.drawMarker(ctx, this.PtsOnCircle[i], MH, 'lightcyan', '');
+            for (let i = 0; i < ptsOnCircle.length; i++) {
+                PrepPic.drawMarker(ctx, ptsOnCircle[i], MH, 'lightcyan', '');
             }
             let circle = PrepPic_t.GetCircleFrom3Points(
-                this.PtsOnCircle[0].x,
-                this.PtsOnCircle[0].y,
-                this.PtsOnCircle[1].x,
-                this.PtsOnCircle[1].y,
-                this.PtsOnCircle[2].x,
-                this.PtsOnCircle[2].y);
+                ptsOnCircle[0].x,
+                ptsOnCircle[0].y,
+                ptsOnCircle[1].x,
+                ptsOnCircle[1].y,
+                ptsOnCircle[2].x,
+                ptsOnCircle[2].y);
             ctx.beginPath();
             ctx.arc(circle.xCenter, circle.yCenter, circle.radius, 0, 2 * Math.PI);
             ctx.lineWidth = 4 / this.Zoom;
@@ -122,12 +95,12 @@ class PrepPic_t {
             //
             let fScale = circle.radius / 500;
             let fBoxSide = fScale * 600;
-            let fLength = PrepPic_t.calcDistance(PrepPic.Head, PrepPic.Back);
+            let fLength = PrepPic_t.calcDistance(ptHead, ptBack);
             let ptBoxCenter = {
-                x: (PrepPic.Head.x + PrepPic.Back.x) / 2,
-                y: (PrepPic.Head.y + PrepPic.Back.y) / 2,
+                x: (ptHead.x + ptBack.x) / 2,
+                y: (ptHead.y + ptBack.y) / 2,
             };
-            let phi = Math.atan2(this.Head.y - this.Back.y, this.Head.x - this.Back.x);
+            let phi = Math.atan2(ptHead.y - ptBack.y, ptHead.x - ptBack.x);
             ctx.translate(ptBoxCenter.x, ptBoxCenter.y);
             ctx.rotate(phi);
             ctx.strokeRect(-fBoxSide / 2, -fBoxSide / 2, fBoxSide, fBoxSide);
@@ -156,14 +129,14 @@ class PrepPic_t {
             let p = { x: (event.clientX - rCanvas.left) / PrepPic.Zoom, y: (event.clientY - rCanvas.top) / PrepPic.Zoom };
             if (!PrepPic.DragPos) {
                 PrepPic.DraggedPos = null;
-                if (PrepPic.Head && PrepPic_t.calcDistance(p, PrepPic.Head) <= MH) {
-                    PrepPic.DraggedPos = PrepPic.Head;
-                } else if (PrepPic.Back && PrepPic_t.calcDistance(p, PrepPic.Back) <= MH) {
-                    PrepPic.DraggedPos = PrepPic.Back;
+                if (PrepPic.MeasureData.measurePoints[0] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.measurePoints[0]) <= MH) {
+                    PrepPic.DraggedPos = PrepPic.MeasureData.measurePoints[0];
+                } else if (PrepPic.MeasureData.measurePoints[1] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.measurePoints[1]) <= MH) {
+                    PrepPic.DraggedPos = PrepPic.MeasureData.measurePoints[1];
                 } else {
-                    for (let i = 0; i < PrepPic.PtsOnCircle.length; i++) {
-                        if (PrepPic.PtsOnCircle[i] && PrepPic_t.calcDistance(p, PrepPic.PtsOnCircle[i]) <= MH) {
-                            PrepPic.DraggedPos = PrepPic.PtsOnCircle[i];
+                    for (let i = 0; i < PrepPic.MeasureData.normalizePoints.length; i++) {
+                        if (PrepPic.MeasureData.normalizePoints[i] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.normalizePoints[i]) <= MH) {
+                            PrepPic.DraggedPos = PrepPic.MeasureData.normalizePoints[i];
                         }
                     }
                 }
@@ -176,6 +149,7 @@ class PrepPic_t {
                 }
             }
             PrepPic.DragPos = p;
+            PrepPic.dotNetObject.invokeMethodAsync('MeasureData_Changed', PrepPic.MeasureData);
         } else {
             PrepPic.DragPos = null;
         }
@@ -216,7 +190,7 @@ class PrepPic_t {
     refreshMeasurement() {
         if (this.Head && this.Back && this.Element) {
             this.Element.InitIndivData();
-            let md = this.Element.ElementProp.IndivData.MeasuredData;
+            let md = this.Element.ElementProp.IndivData.MeasureData;
             md.HeadPosition = PrepPic.Head;
             md.BackPosition = PrepPic.Back;
             let fLength = 0;
@@ -243,18 +217,19 @@ class PrepPic_t {
             this.MeasureResult.innerHTML = 'Kopf-Rumpf-Länge: ' + fLength.toFixed(1) + ' mm';
         }
     }
-    setImage(urlImage,measuredData) {
+    setImage(urlImage,measureData) {
         if (!this.Image) {
             this.Image = document.createElement('img');
         }
+        this.MeasureData = measureData;
         this.Raw = true;
-        this.PtsOnCircle = [
-            { x: measuredData.normalizePoints[0].x, y: measuredData.normalizePoints[0].y },
-            { x: measuredData.normalizePoints[1].x, y: measuredData.normalizePoints[1].y },
-            { x: measuredData.normalizePoints[2].x, y: measuredData.normalizePoints[2].y },
-        ];
-        this.Head = { x: measuredData.measurePoints[0].x, y: measuredData.measurePoints[0].y };
-        this.Back = { x: measuredData.measurePoints[1].x, y: measuredData.measurePoints[1].y };
+        //this.PtsOnCircle = [
+        //    { x: measureData.normalizePoints[0].x, y: measureData.normalizePoints[0].y },
+        //    { x: measureData.normalizePoints[1].x, y: measureData.normalizePoints[1].y },
+        //    { x: measureData.normalizePoints[2].x, y: measureData.normalizePoints[2].y },
+        //];
+        //this.Head = { x: measureData.measurePoints[0].x, y: measureData.measurePoints[0].y };
+        //this.Back = { x: measureData.measurePoints[1].x, y: measureData.measurePoints[1].y };
         let imgSrc = urlImage;
         if (imgSrc != this.Image.src) {
             this.Image.src = imgSrc;
@@ -264,29 +239,6 @@ class PrepPic_t {
         } else {
             this.invalidate();
         }
-    }
-    setElement(element, bRefreshMode) {
-        element.InitIndivData();
-        this.Element = element;
-        this.ElementDescription.innerHTML = element.getDescriptiveHtml();
-        this.PtsOnCircle = null;
-        let md = this.Element.ElementProp.IndivData && this.Element.ElementProp.IndivData.MeasuredData;
-        if (md) {
-            this.Head = md.HeadPosition;
-            this.Back = md.BackPosition;
-            if (md.PtsOnCircle && md.PtsOnCircle.length >= 3) {
-                this.PtsOnCircle = md.PtsOnCircle;
-            }
-        }
-        if (bRefreshMode) {
-            let imgSrc = this.Element.getFileUrl(false);
-            let bOnlyRawExists = (imgSrc.endsWith(".orig.jpg"));
-            this.CheckBoxRaw.checked = bOnlyRawExists;
-            this.Raw = bOnlyRawExists;
-        }
-        this.refreshImage();
-        this.refreshMeasurement();
-        this.AnythingChanged = false;
     }
 }
 window.PrepPic = new PrepPic_t();

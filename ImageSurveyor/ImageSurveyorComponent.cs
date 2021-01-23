@@ -48,7 +48,11 @@ namespace Blazor.ImageSurveyor
     [Inject]
     public IJSRuntime JsRuntime { get; protected set; } = default!;
 
+    private DotNetObjectReference<ImageSurveyorComponent>? thisRef=null;
+
     public async Task InitAsync(ImageSurveyorOptions? options = null) {
+      this.thisRef = DotNetObjectReference.Create(this);
+      await this.JsRuntime.InvokeVoidAsync("PrepPic.init",this.thisRef);
       await this.JsRuntime.InvokeVoidAsync("PrepPic.PrepareDisplay",this.divMain);
     }
     public string ImageUrl { get; private set; }="";
@@ -61,8 +65,12 @@ namespace Blazor.ImageSurveyor
         await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl,measureData);
       }
     }
+    [JSInvokable]
+    public void MeasureData_Changed(object oMeasureData) {
 
+    }
     public void Dispose() {
+      this.thisRef?.Dispose();
     }
   }
 }
