@@ -207,6 +207,49 @@ namespace BioMap
         }
       });
     }
+    public static async Task MigrateImageSize(SessionData sd,Action<int> callbackCompletion) {
+      await Task.Run(()=>{
+        var ds = DataService.Instance;
+        var sDataDir = ds.GetDataDir(sd);
+        ds.AddLogEntry(sd,"Migrating data");
+        var sMigSrcDir = System.IO.Path.Combine(sDataDir,"migration_source");
+        var sConfDir = System.IO.Path.Combine(sDataDir,"conf");
+        var sImagesDir = System.IO.Path.Combine(sDataDir,"images");
+        var sImagesOrigDir = System.IO.Path.Combine(sDataDir,"images_orig");
+        var aElements=ds.GetElements(sd);
+        int nLoopCnt=0;
+        foreach (var el in aElements) {
+          callbackCompletion(((nLoopCnt++)*100)/aElements.Length);
+          if (el.ElementName.StartsWith("IMG_20200630")) {
+            int iii=0;
+          }
+          if (el.Classification.ClassName=="ID photo" || el.Classification.ClassName=="Normalized non-ID photo") {
+            try {
+              var sMigSrcFilePath = System.IO.Path.Combine(sMigSrcDir,"elements",el.ElementName+".orig.jpg");
+              if (System.IO.File.Exists(sMigSrcFilePath)) {
+                var sFilePath = ds.GetFilePathForImage(sd.CurrentUser.Project,el.ElementName,true);
+                if (System.IO.File.Exists(sFilePath)) {
+                  using (var imgMigSrc = Image.Load(sMigSrcFilePath)) {
+                    using (var img = Image.Load(sFilePath)) {
+                      float fScale=((float)img.Width)/imgMigSrc.Width;
+                      el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.X*=fScale;
+                      el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.Y*=fScale;
+                      el.ElementProp.IndivData.MeasuredData.OrigBackPosition.X*=fScale;
+                      el.ElementProp.IndivData.MeasuredData.OrigBackPosition.Y*=fScale;
+                      for (int i=0;i<3;i++) {
+                        el.ElementProp.IndivData.MeasuredData.PtsOnCircle[i].X*=fScale;
+                        el.ElementProp.IndivData.MeasuredData.PtsOnCircle[i].Y*=fScale;
+                      }
+                      ds.WriteElement(sd,el);
+                    }
+                  }
+                }
+              }
+            } catch { }
+          }
+        }
+      });
+    }
    public static async Task MigrateData(SessionData sd,Action<int> callbackCompletion) {
       await Task.Run(()=>{
         var ds = DataService.Instance;

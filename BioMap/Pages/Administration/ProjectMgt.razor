@@ -70,6 +70,12 @@
             </FieldBody>
           </Field>
           <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Migrate image sizes"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<700)" Clicked="@(async (e)=>{ await MigrateImageSize_Clicked(); })">@Localize["Start"]</Button>
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Edit area of interest"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
               <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<700)" Clicked="@((e)=>{ EditAoi_Clicked(); })">@Localize["Start"]</Button>
@@ -213,6 +219,18 @@
     progressModalRef.Show();
     try {
       await Migration.MigrateCategories(SD,(completion) => {
+        progressCompletion=completion;
+        this.InvokeAsync(() => { StateHasChanged(); });
+      });
+    } finally {
+      await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+    }
+  }
+  private async Task MigrateImageSize_Clicked() {
+    progressCompletion=0;
+    progressModalRef.Show();
+    try {
+      await Migration.MigrateImageSize(SD,(completion) => {
         progressCompletion=completion;
         this.InvokeAsync(() => { StateHasChanged(); });
       });
