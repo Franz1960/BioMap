@@ -13,7 +13,7 @@
       @ref="imageSurveyor"
       Height="60vh"
       AfterRenderEvent=@(async ()=>await LoadElementToMeasure(elementToMeasure))
-      MeasureDataChanged=@((md)=>elementToMeasure.MeasureData=md)
+      MeasureDataChanged=@((md)=>MeasureDataChanged(elementToMeasure,md))
       />
     </Column>
     <Column ColumnSize="ColumnSize.Is2">

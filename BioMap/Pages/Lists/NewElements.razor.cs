@@ -55,6 +55,12 @@ namespace BioMap.Pages.Lists
         }
       }
     }
+    private void MeasureDataChanged(Element el,Blazor.ImageSurveyor.ImageSurveyorMeasureData md) {
+      el.MeasureData=md;
+      Utilities.CallDelayed(2000,()=>{
+        DS.WriteElement(SD,el);
+        });
+    }
     private async Task ResetPositions_Clicked(Element el) {
       var sFilePath = DS.GetFilePathForImage(SD.CurrentUser.Project,el.ElementName,true);
       if (System.IO.File.Exists(sFilePath)) {
