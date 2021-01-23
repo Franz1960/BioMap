@@ -20,6 +20,9 @@ namespace Blazor.ImageSurveyor
     public EventCallback AfterRenderEvent { get; set; }
 
     [Parameter]
+    public EventCallback<ImageSurveyorMeasureData> MeasureDataChanged { get; set; }
+
+    [Parameter]
     public string? CssClass { get; set; }
 
     private string _height = "500px";
@@ -62,12 +65,13 @@ namespace Blazor.ImageSurveyor
       if (string.CompareOrdinal(sImageUrl,this.ImageUrl)!=0 || string.CompareOrdinal(sMeasureDataJson,this.MeasureDataJson)!=0) {
         this.ImageUrl=sImageUrl;
         this.MeasureDataJson=sMeasureDataJson;
-        await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl,measureData);
+        await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl,sMeasureDataJson);
       }
     }
     [JSInvokable]
-    public void MeasureData_Changed(object oMeasureData) {
-
+    public void MeasureData_Changed(string sJsonMeasureData) {
+      var measureData=JsonConvert.DeserializeObject<ImageSurveyorMeasureData>(sJsonMeasureData);
+      this.MeasureDataChanged.InvokeAsync(measureData);
     }
     public void Dispose() {
       this.thisRef?.Dispose();

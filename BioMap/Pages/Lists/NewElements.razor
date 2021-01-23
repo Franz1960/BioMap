@@ -9,7 +9,12 @@
   @if (elementToMeasure!=null) {
   <Row Margin="Margin.Is1.OnY">
     <Column>
-      <Blazor.ImageSurveyor.ImageSurveyor @ref="imageSurveyor" Height="60vh" AfterRenderEvent=@(async ()=>await LoadElementToMeasure(elementToMeasure)) />
+      <Blazor.ImageSurveyor.ImageSurveyor
+      @ref="imageSurveyor"
+      Height="60vh"
+      AfterRenderEvent=@(async ()=>await LoadElementToMeasure(elementToMeasure))
+      MeasureDataChanged=@((md)=>elementToMeasure.MeasureData=md)
+      />
     </Column>
     <Column ColumnSize="ColumnSize.Is2">
       <Row Margin="Margin.Is1.OnY">
@@ -17,6 +22,14 @@
           <Button Color="Color.Light" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await ResetPositions_Clicked(elementToMeasure); })">
             <Icon Name="IconName.Clear"></Icon>
             @Localize["Reset positions"]
+          </Button>
+        </Column>
+      </Row>
+      <Row Margin="Margin.Is1.OnY">
+        <Column>
+          <Button Color="Color.Light" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@((e)=>{ DS.WriteElement(SD,elementToMeasure); })">
+            <Icon Name="IconName.Save"></Icon>
+            @Localize["Save positions"]
           </Button>
         </Column>
       </Row>

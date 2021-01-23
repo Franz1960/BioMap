@@ -14,15 +14,15 @@ namespace Blazor.ImageSurveyor
   public class ImageSurveyorMeasureData
   {
     [JsonObject(MemberSerialization.Fields)]
-    public class Point
+    public class Point2d
     {
-      public float X;
-      public float Y;
+      public float x;
+      public float y;
     }
-    public string method { get; set; }
+    public string method;
 
-    public object[] normalizePoints { get; set; }
-    public object[] measurePoints { get; set; }
+    public Point2d[] normalizePoints;
+    public Point2d[] measurePoints;
 
   }
 }

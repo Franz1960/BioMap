@@ -226,15 +226,15 @@ namespace BioMap
                   using (var imgMigSrc = Image.Load(sMigSrcFilePath)) {
                     using (var img = Image.Load(sFilePath)) {
                       float fScale=((float)img.Width)/imgMigSrc.Width;
-                      el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.X*=fScale;
-                      el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.Y*=fScale;
-                      el.ElementProp.IndivData.MeasuredData.OrigBackPosition.X*=fScale;
-                      el.ElementProp.IndivData.MeasuredData.OrigBackPosition.Y*=fScale;
-                      for (int i=0;i<3;i++) {
-                        el.ElementProp.IndivData.MeasuredData.PtsOnCircle[i].X*=fScale;
-                        el.ElementProp.IndivData.MeasuredData.PtsOnCircle[i].Y*=fScale;
-                      }
-                      ds.WriteElement(sd,el);
+                      //el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.X*=fScale;
+                      //el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.Y*=fScale;
+                      //el.ElementProp.IndivData.MeasuredData.OrigBackPosition.X*=fScale;
+                      //el.ElementProp.IndivData.MeasuredData.OrigBackPosition.Y*=fScale;
+                      //for (int i=0;i<3;i++) {
+                      //  el.ElementProp.IndivData.MeasuredData.PtsOnCircle[i].X*=fScale;
+                      //  el.ElementProp.IndivData.MeasuredData.PtsOnCircle[i].Y*=fScale;
+                      //}
+                      //ds.WriteElement(sd,el);
                     }
                   }
                 }
@@ -381,50 +381,50 @@ namespace BioMap
                     &&
                     jIndivData["MeasuredData"]["HeadBodyLength"]!=null
                     ) {
-                      measuredData = new Element.IndivData_t.MeasuredData_t {
-                        HeadPosition = new System.Numerics.Vector2 {
-                          X = jIndivData["MeasuredData"]["HeadPosition"]["x"].Value<float>(),
-                          Y = jIndivData["MeasuredData"]["HeadPosition"]["y"].Value<float>(),
-                        },
-                        BackPosition = new System.Numerics.Vector2 {
-                          X = jIndivData["MeasuredData"]["BackPosition"]["x"].Value<float>(),
-                          Y = jIndivData["MeasuredData"]["BackPosition"]["y"].Value<float>(),
-                        },
-                        HeadBodyLength = jIndivData["MeasuredData"]["HeadBodyLength"].Value<float>(),
-                      };
-                      if (
-                        jIndivData["MeasuredData"]["OrigHeadPosition"]!=null
-                        &&
-                        jIndivData["MeasuredData"]["PtsOnCircle"]!=null
-                      )
-                        try {
-                          measuredData.OrigHeadPosition = new System.Numerics.Vector2 {
-                            X = jIndivData["MeasuredData"]["OrigHeadPosition"]["x"].Value<float>(),
-                            Y = jIndivData["MeasuredData"]["OrigHeadPosition"]["y"].Value<float>(),
-                          };
-                          measuredData.OrigBackPosition = new System.Numerics.Vector2 {
-                            X = jIndivData["MeasuredData"]["OrigBackPosition"]["x"].Value<float>(),
-                            Y = jIndivData["MeasuredData"]["OrigBackPosition"]["y"].Value<float>(),
-                          };
-                          measuredData.PtsOnCircle = new System.Numerics.Vector2[]
-                          {
-                          new System.Numerics.Vector2
-                          {
-                            X = jIndivData["MeasuredData"]["PtsOnCircle"][0]["x"].Value<float>(),
-                            Y = jIndivData["MeasuredData"]["PtsOnCircle"][0]["y"].Value<float>(),
-                          },
-                          new System.Numerics.Vector2
-                          {
-                            X = jIndivData["MeasuredData"]["PtsOnCircle"][1]["x"].Value<float>(),
-                            Y = jIndivData["MeasuredData"]["PtsOnCircle"][1]["y"].Value<float>(),
-                          },
-                          new System.Numerics.Vector2
-                          {
-                            X = jIndivData["MeasuredData"]["PtsOnCircle"][2]["x"].Value<float>(),
-                            Y = jIndivData["MeasuredData"]["PtsOnCircle"][2]["y"].Value<float>(),
-                          },
-                          };
-                        } catch { }
+                      //measuredData = new Element.IndivData_t.MeasuredData_t {
+                      //  HeadPosition = new System.Numerics.Vector2 {
+                      //    X = jIndivData["MeasuredData"]["HeadPosition"]["x"].Value<float>(),
+                      //    Y = jIndivData["MeasuredData"]["HeadPosition"]["y"].Value<float>(),
+                      //  },
+                      //  BackPosition = new System.Numerics.Vector2 {
+                      //    X = jIndivData["MeasuredData"]["BackPosition"]["x"].Value<float>(),
+                      //    Y = jIndivData["MeasuredData"]["BackPosition"]["y"].Value<float>(),
+                      //  },
+                      //  HeadBodyLength = jIndivData["MeasuredData"]["HeadBodyLength"].Value<float>(),
+                      //};
+                      //if (
+                      //  jIndivData["MeasuredData"]["OrigHeadPosition"]!=null
+                      //  &&
+                      //  jIndivData["MeasuredData"]["PtsOnCircle"]!=null
+                      //)
+                      //  try {
+                      //    measuredData.OrigHeadPosition = new System.Numerics.Vector2 {
+                      //      X = jIndivData["MeasuredData"]["OrigHeadPosition"]["x"].Value<float>(),
+                      //      Y = jIndivData["MeasuredData"]["OrigHeadPosition"]["y"].Value<float>(),
+                      //    };
+                      //    measuredData.OrigBackPosition = new System.Numerics.Vector2 {
+                      //      X = jIndivData["MeasuredData"]["OrigBackPosition"]["x"].Value<float>(),
+                      //      Y = jIndivData["MeasuredData"]["OrigBackPosition"]["y"].Value<float>(),
+                      //    };
+                      //    measuredData.PtsOnCircle = new System.Numerics.Vector2[]
+                      //    {
+                      //    new System.Numerics.Vector2
+                      //    {
+                      //      X = jIndivData["MeasuredData"]["PtsOnCircle"][0]["x"].Value<float>(),
+                      //      Y = jIndivData["MeasuredData"]["PtsOnCircle"][0]["y"].Value<float>(),
+                      //    },
+                      //    new System.Numerics.Vector2
+                      //    {
+                      //      X = jIndivData["MeasuredData"]["PtsOnCircle"][1]["x"].Value<float>(),
+                      //      Y = jIndivData["MeasuredData"]["PtsOnCircle"][1]["y"].Value<float>(),
+                      //    },
+                      //    new System.Numerics.Vector2
+                      //    {
+                      //      X = jIndivData["MeasuredData"]["PtsOnCircle"][2]["x"].Value<float>(),
+                      //      Y = jIndivData["MeasuredData"]["PtsOnCircle"][2]["y"].Value<float>(),
+                      //    },
+                      //    };
+                      //  } catch { }
                     }
                     indivData = new Element.IndivData_t {
                       IId = ConvInvar.ToInt(jIndivData["IId"]?.Value<string>()),

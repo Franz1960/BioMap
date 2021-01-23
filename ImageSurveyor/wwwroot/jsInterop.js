@@ -149,7 +149,7 @@ class PrepPic_t {
                 }
             }
             PrepPic.DragPos = p;
-            PrepPic.dotNetObject.invokeMethodAsync('MeasureData_Changed', PrepPic.MeasureData);
+            PrepPic.dotNetObject.invokeMethodAsync('MeasureData_Changed', JSON.stringify(PrepPic.MeasureData));
         } else {
             PrepPic.DragPos = null;
         }
@@ -221,7 +221,7 @@ class PrepPic_t {
         if (!this.Image) {
             this.Image = document.createElement('img');
         }
-        this.MeasureData = measureData;
+        this.MeasureData = JSON.parse(measureData);
         this.Raw = true;
         //this.PtsOnCircle = [
         //    { x: measureData.normalizePoints[0].x, y: measureData.normalizePoints[0].y },

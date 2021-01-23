@@ -17,6 +17,7 @@ namespace BioMap.Pages.Lists
     private Element elementToMeasure=null;
     private Element elementToIdentify=null;
     protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
+    private bool disableSetImage=false;
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
       await RefreshData();
@@ -37,26 +38,22 @@ namespace BioMap.Pages.Lists
     private async Task Measure_Clicked(Element el) {
       this.elementToMeasure=el;
       this.elementToIdentify=null;
+      this.disableSetImage=false;
       await this.InvokeAsync(()=>StateHasChanged());
     }
     private async Task Identify_Clicked(Element el) {
       this.elementToMeasure=null;
       this.elementToIdentify=el;
+      this.disableSetImage=false;
       await this.InvokeAsync(()=>StateHasChanged());
     }
     private async Task LoadElementToMeasure(Element el) {
-      await this.imageSurveyor.SetImageUrlAsync("api/photos/"+elementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=1",new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
-        method="HeadToCloakInPetriDish",
-        normalizePoints=new[] {
-          new { x=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].Y },
-          new { x=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].Y },
-          new { x=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].Y },
-        },
-        measurePoints=new[] {
-          new {x=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigHeadPosition.X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigHeadPosition.Y},
-          new {x=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigBackPosition.X,y=elementToMeasure.ElementProp.IndivData.MeasuredData.OrigBackPosition.Y},
-        },
-      });
+      if (!this.disableSetImage) {
+        if (elementToMeasure!=null) {
+          await this.imageSurveyor.SetImageUrlAsync("api/photos/"+elementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=1",elementToMeasure.MeasureData);
+          this.disableSetImage=true;
+        }
+      }
     }
     private async Task ResetPositions_Clicked(Element el) {
       var sFilePath = DS.GetFilePathForImage(SD.CurrentUser.Project,el.ElementName,true);
@@ -64,14 +61,15 @@ namespace BioMap.Pages.Lists
         using (var img = Image.Load(sFilePath)) {
           int w=img.Width;
           int h=img.Height;
-          el.ElementProp.IndivData.MeasuredData.PtsOnCircle=new [] {
-            new System.Numerics.Vector2(w*0.25f,h*0.50f),
-            new System.Numerics.Vector2(w*0.75f,h*0.25f),
-            new System.Numerics.Vector2(w*0.75f,h*0.75f),
+          el.MeasureData.normalizePoints=new [] {
+            new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=w*0.25f,y=h*0.50f },
+            new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=w*0.75f,y=h*0.25f },
+            new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=w*0.75f,y=h*0.75f },
           };
-          el.ElementProp.IndivData.MeasuredData.OrigHeadPosition=new System.Numerics.Vector2(w*0.50f,h*0.25f);
-          el.ElementProp.IndivData.MeasuredData.OrigBackPosition=new System.Numerics.Vector2(w*0.50f,h*0.75f);
+          el.MeasureData.measurePoints[0]=new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=w*0.50f,y=h*0.25f };
+          el.MeasureData.measurePoints[1]=new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=w*0.50f,y=h*0.75f };
         }
+        this.disableSetImage=false;
         await this.LoadElementToMeasure(el);
       }
     }

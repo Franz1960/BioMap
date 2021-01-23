@@ -44,12 +44,7 @@ namespace BioMap
       [JsonObject(MemberSerialization.Fields)]
       public class MeasuredData_t
       {
-        public System.Numerics.Vector2 HeadPosition = new System.Numerics.Vector2(300,100);
-        public System.Numerics.Vector2 BackPosition = new System.Numerics.Vector2(300,500);
         public double HeadBodyLength;
-        public System.Numerics.Vector2 OrigHeadPosition = new System.Numerics.Vector2(300,100);
-        public System.Numerics.Vector2 OrigBackPosition = new System.Numerics.Vector2(300,500);
-        public System.Numerics.Vector2[] PtsOnCircle = { new System.Numerics.Vector2(300,300),new System.Numerics.Vector2(400,400),new System.Numerics.Vector2(500,300) };
       }
       public int IId;
       public string Gender;
@@ -69,7 +64,8 @@ namespace BioMap
     public readonly string Project;
     public string ElementName;
     public ElementProp_t ElementProp;
-    public ElementClassification Classification = new ElementClassification();
+    public ElementClassification Classification=new ElementClassification();
+    public Blazor.ImageSurveyor.ImageSurveyorMeasureData MeasureData=null;
     //
     public Element(string sProject) {
       this.Project=sProject;

@@ -262,6 +262,10 @@ namespace BioMap
               command.CommandText = "ALTER TABLE elements ADD COLUMN classification TEXT";
               command.ExecuteNonQuery();
             } catch { }
+            try {
+              command.CommandText = "ALTER TABLE elements ADD COLUMN measuredata TEXT";
+              command.ExecuteNonQuery();
+            } catch { }
           }
           #endregion
           this.AccessedDbs.Add(sProject);
@@ -736,10 +740,12 @@ namespace BioMap
     public void WriteElement(string sProject,Element el) {
       this.OperateOnDb(sProject,(command) => {
         string sJsonClassification=JsonConvert.SerializeObject(el.Classification);
+        string sJsonMeasureData=JsonConvert.SerializeObject(el.MeasureData);
         command.CommandText =
-          "REPLACE INTO elements (name,classification,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
+          "REPLACE INTO elements (name,classification,measuredata,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
           "VALUES ('" + el.ElementName + "'," +
           "'" + sJsonClassification +
+          "','" + sJsonMeasureData +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lat) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lng) +
@@ -761,30 +767,15 @@ namespace BioMap
             "')";
           command.ExecuteNonQuery();
         }
-        if (el.ElementProp?.IndivData?.MeasuredData?.PtsOnCircle!=null && el.ElementProp.IndivData.MeasuredData.PtsOnCircle.Length==3) {
+        if (el.ElementProp?.IndivData?.MeasuredData!=null) {
           command.CommandText =
-            "REPLACE INTO indivdata (name,normcirclepos0x,normcirclepos0y,normcirclepos1x,normcirclepos1y,normcirclepos2x,normcirclepos2y" +
-            ",headposx,headposy,backposx,backposy,origheadposx,origheadposy,origbackposx,origbackposy,headbodylength,dateofbirth,ageyears,winters,gender,iid" +
+            "REPLACE INTO indivdata (name,headbodylength,dateofbirth,ageyears,winters,gender,iid" +
             ",traitYellowDominance" +
             ",traitBlackDominance" +
             ",traitVertBlackBreastCenterStrip" +
             ",traitHorizBlackBreastBellyStrip" +
             ",traitManyIsolatedBlackBellyDots" +
             ") VALUES ('" + el.ElementName + "'" +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].X) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[0].Y) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].X) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[1].Y) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].X) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.PtsOnCircle[2].Y) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadPosition.X) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadPosition.Y) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.BackPosition.X) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.BackPosition.Y) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.X) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigHeadPosition.Y) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigBackPosition.X) +
-            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.OrigBackPosition.Y) +
             "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadBodyLength) +
             ",'" + ConvInvar.ToString(el.ElementProp.IndivData.DateOfBirth) + "'" +
             "," + ConvInvar.ToString(el.GetAgeYears()) +
@@ -841,6 +832,7 @@ namespace BioMap
         sSqlCondition=filters.AddAllFiltersToWhereClause(sSqlCondition);
       }
       var lElements = new List<Element>();
+      var lDirtyElements = new List<Element>();
       this.OperateOnDb(sd,(command) => {
         command.CommandText = "SELECT elements.name" +
           ",elements.category" +
@@ -878,6 +870,7 @@ namespace BioMap
           ",elements.place" +
           ",elements.comment" +
           ",elements.classification" +
+          ",elements.measuredata" +
           " FROM elements" +
           " LEFT JOIN indivdata ON (indivdata.name=elements.name)" +
           " LEFT JOIN photos ON (photos.name=elements.name)" +
@@ -887,6 +880,7 @@ namespace BioMap
         var dr = command.ExecuteReader();
         while (dr.Read()) {
           try {
+            bool bDirty=false;
             var sElementName = dr.GetString(0);
             DateTime dtDateTimeOriginal = dr.GetDateTime(4);
             var oDateTimeOriginal = dr.GetValue(9);
@@ -898,9 +892,31 @@ namespace BioMap
             if (!string.IsNullOrEmpty(sJsonClassification)) {
               ec=JsonConvert.DeserializeObject<ElementClassification>(sJsonClassification);
             }
+            var sJsonMeasureData = dr.GetValue(36) as string;
+            Blazor.ImageSurveyor.ImageSurveyorMeasureData md = null;
+            if (!string.IsNullOrEmpty(sJsonMeasureData)) {
+              md=JsonConvert.DeserializeObject<Blazor.ImageSurveyor.ImageSurveyorMeasureData>(sJsonMeasureData);
+            } else if (!dr.IsDBNull(7) && !dr.IsDBNull(8) && !dr.IsDBNull(10) && !dr.IsDBNull(18)) {
+              md=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
+                method="HeadToCloakInPetriDish",
+                normalizePoints=new[] {
+                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(27),y=dr.GetFloat(28) },
+                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(29),y=dr.GetFloat(30) },
+                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(31),y=dr.GetFloat(32) },
+                },
+                measurePoints=new[] {
+                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(19),y=dr.GetFloat(20) },
+                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(21),y=dr.GetFloat(22) },
+                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(23),y=dr.GetFloat(24) },
+                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(25),y=dr.GetFloat(26) },
+                },
+              };
+              bDirty=true;
+            }
             var el = new Element(sd.CurrentUser.Project) {
               ElementName = sElementName,
               Classification = ec,
+              MeasureData = md,
               ElementProp = new Element.ElementProp_t {
                 MarkerInfo = new Element.MarkerInfo_t {
                   category = dr.GetInt32(1),
@@ -943,25 +959,21 @@ namespace BioMap
                   }
                   el.ElementProp.IndivData.MeasuredData = new Element.IndivData_t.MeasuredData_t {
                     HeadBodyLength = dr.GetDouble(18),
-                    OrigHeadPosition = new System.Numerics.Vector2(dr.GetFloat(19),dr.GetFloat(20)),
-                    OrigBackPosition = new System.Numerics.Vector2(dr.GetFloat(21),dr.GetFloat(22)),
-                    HeadPosition = new System.Numerics.Vector2(dr.GetFloat(23),dr.GetFloat(24)),
-                    BackPosition = new System.Numerics.Vector2(dr.GetFloat(25),dr.GetFloat(26)),
-                    PtsOnCircle = new System.Numerics.Vector2[]
-                    {
-                      new System.Numerics.Vector2(dr.GetFloat(27), dr.GetFloat(28)),
-                      new System.Numerics.Vector2(dr.GetFloat(29), dr.GetFloat(30)),
-                      new System.Numerics.Vector2(dr.GetFloat(31), dr.GetFloat(32)),
-                    },
                   };
                 }
               }
             }
             lElements.Add(el);
+            if (bDirty) {
+              lDirtyElements.Add(el);
+            }
           } catch { }
         }
         dr.Close();
       });
+      foreach (var el in lDirtyElements) {
+        this.WriteElement(sd,el);
+      }
       if (this.IsMigrationInProcess || (sd!=null && sd.MaySeeRealLocations)) {
         return lElements.ToArray();
       } else {
