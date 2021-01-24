@@ -893,22 +893,26 @@ namespace BioMap
               ec=JsonConvert.DeserializeObject<ElementClassification>(sJsonClassification);
             }
             var sJsonMeasureData = dr.GetValue(36) as string;
-            Blazor.ImageSurveyor.ImageSurveyorMeasureData md = null;
+            Blazor.ImageSurveyor.ImageSurveyorMeasureData? md = null;
             if (!string.IsNullOrEmpty(sJsonMeasureData)) {
               md=JsonConvert.DeserializeObject<Blazor.ImageSurveyor.ImageSurveyorMeasureData>(sJsonMeasureData);
+              while (md.measurePoints.Length<4) {
+                md.measurePoints=md.measurePoints.Append(new System.Numerics.Vector2()).ToArray();
+                bDirty=true;
+              }
             } else if (!dr.IsDBNull(7) && !dr.IsDBNull(8) && !dr.IsDBNull(10) && !dr.IsDBNull(18)) {
               md=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
                 method="HeadToCloakInPetriDish",
                 normalizePoints=new[] {
-                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(27),y=dr.GetFloat(28) },
-                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(29),y=dr.GetFloat(30) },
-                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(31),y=dr.GetFloat(32) },
+                  new System.Numerics.Vector2 { X=dr.GetFloat(27),Y=dr.GetFloat(28) },
+                  new System.Numerics.Vector2 { X=dr.GetFloat(29),Y=dr.GetFloat(30) },
+                  new System.Numerics.Vector2 { X=dr.GetFloat(31),Y=dr.GetFloat(32) },
                 },
                 measurePoints=new[] {
-                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(19),y=dr.GetFloat(20) },
-                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(21),y=dr.GetFloat(22) },
-                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(23),y=dr.GetFloat(24) },
-                  new Blazor.ImageSurveyor.ImageSurveyorMeasureData.Point2d { x=dr.GetFloat(25),y=dr.GetFloat(26) },
+                  new System.Numerics.Vector2 { X=dr.GetFloat(19),Y=dr.GetFloat(20) },
+                  new System.Numerics.Vector2 { X=dr.GetFloat(21),Y=dr.GetFloat(22) },
+                  new System.Numerics.Vector2 { X=dr.GetFloat(23),Y=dr.GetFloat(24) },
+                  new System.Numerics.Vector2 { X=dr.GetFloat(25),Y=dr.GetFloat(26) },
                 },
               };
               bDirty=true;

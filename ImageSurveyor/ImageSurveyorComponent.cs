@@ -11,19 +11,13 @@ namespace Blazor.ImageSurveyor
   public class ImageSurveyorComponent : ComponentBase, IDisposable
   {
     [Parameter]
-    public string? Id { get; set; }
+    public bool Raw { get; set; }
 
     [Parameter]
     public ImageSurveyorOptions? Options { get; set; }
 
-    [Parameter]
-    public EventCallback AfterRenderEvent { get; set; }
-
-    [Parameter]
-    public EventCallback<ImageSurveyorMeasureData> MeasureDataChanged { get; set; }
-
-    [Parameter]
-    public string? CssClass { get; set; }
+    public event EventHandler? AfterRender;
+    public event EventHandler<ImageSurveyorMeasureData>? MeasureDataChanged;
 
     private string _height = "500px";
 
@@ -45,7 +39,12 @@ namespace Blazor.ImageSurveyor
       if (firstRender) {
         await InitAsync(Options);
       }
-      await AfterRenderEvent.InvokeAsync(null);
+      {
+        var handler=this.AfterRender;
+        if (handler!=null) {
+          handler.Invoke(this,EventArgs.Empty);
+        }
+      }
     }
 
     [Inject]
@@ -60,18 +59,24 @@ namespace Blazor.ImageSurveyor
     }
     public string ImageUrl { get; private set; }="";
     public string MeasureDataJson { get; private set; }="";
-    public async Task SetImageUrlAsync(string sImageUrl,ImageSurveyorMeasureData measureData) {
+    public async Task SetImageUrlAsync(string sImageUrl,bool bRaw,ImageSurveyorMeasureData measureData) {
       var sMeasureDataJson=JsonConvert.SerializeObject(measureData);
       if (string.CompareOrdinal(sImageUrl,this.ImageUrl)!=0 || string.CompareOrdinal(sMeasureDataJson,this.MeasureDataJson)!=0) {
         this.ImageUrl=sImageUrl;
         this.MeasureDataJson=sMeasureDataJson;
-        await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl,sMeasureDataJson);
+        await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl,bRaw,sMeasureDataJson);
+        await Task.Delay(100);
       }
     }
     [JSInvokable]
     public void MeasureData_Changed(string sJsonMeasureData) {
       var measureData=JsonConvert.DeserializeObject<ImageSurveyorMeasureData>(sJsonMeasureData);
-      this.MeasureDataChanged.InvokeAsync(measureData);
+      {
+        var handler=this.MeasureDataChanged;
+        if (handler!=null) {
+          handler.Invoke(this,measureData);
+        }
+      }
     }
     public void Dispose() {
       this.thisRef?.Dispose();

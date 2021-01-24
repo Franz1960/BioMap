@@ -38,12 +38,15 @@ namespace BioMap
     /// <returns>
     /// A decimal string with '.' as decimal separator.
     /// </returns>
-    public static string ToDecimalString(double dValue,int nFraction) {
-      System.Text.StringBuilder sbFormat = new System.Text.StringBuilder("0.");
-      for (int i = 0;i<nFraction;i++) {
-        sbFormat.Append('0');
+    public static string ToDecimalString(double? dValue,int nFraction) {
+      if (dValue.HasValue) {
+        System.Text.StringBuilder sbFormat = new System.Text.StringBuilder("0.");
+        for (int i = 0;i<nFraction;i++) {
+          sbFormat.Append('0');
+        }
+        return dValue.Value.ToString(sbFormat.ToString(),System.Globalization.CultureInfo.InvariantCulture);
       }
-      return dValue.ToString(sbFormat.ToString(),System.Globalization.CultureInfo.InvariantCulture);
+      return "";
     }
     public static string ToString(DateTime value,bool bIncludeTime=true)
     {

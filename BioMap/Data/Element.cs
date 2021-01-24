@@ -65,7 +65,7 @@ namespace BioMap
     public string ElementName;
     public ElementProp_t ElementProp;
     public ElementClassification Classification=new ElementClassification();
-    public Blazor.ImageSurveyor.ImageSurveyorMeasureData MeasureData=null;
+    public Blazor.ImageSurveyor.ImageSurveyorMeasureData? MeasureData=null;
     //
     public Element(string sProject) {
       this.Project=sProject;
