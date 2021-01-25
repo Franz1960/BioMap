@@ -19,6 +19,7 @@ namespace BioMap.Pages.Lists
     private Blazor.ImageSurveyor.ImageSurveyor imageSurveyorPrev;
     private bool disableSetImage=false;
     private bool elementChanged=false;
+    private bool normImageDirty=false;
     private Element ElementToIdentify {
       get => this._ElementToIdentify;
       set {
@@ -35,8 +36,21 @@ namespace BioMap.Pages.Lists
       get => this._ElementToMeasure;
       set {
         if (value!=this._ElementToMeasure) {
-          if (this._ElementToMeasure!=null) {
+          if (this._ElementToMeasure!=null && this.normImageDirty) {
             DS.WriteElement(SD,this._ElementToMeasure);
+            // Bild normieren.
+            if (this._ElementToMeasure.MeasureData.normalizePoints!=null) {
+              var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._ElementToMeasure.ElementName,true);
+              var sDstFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._ElementToMeasure.ElementName,false);
+              using (var imgSrc = Image.Load(sSrcFile)) {
+                var mNormalize=this._ElementToMeasure.MeasureData.GetNormalizeMatrix();
+                var atb=new AffineTransformBuilder();
+                atb.AppendMatrix(mNormalize);
+                imgSrc.Mutate(x => x.Transform(atb));
+                imgSrc.Mutate(x => x.Crop(600,600));
+                imgSrc.SaveAsJpeg(sDstFile);
+              }
+            }
           }
           this._ElementToMeasure=value;
         };
@@ -124,10 +138,47 @@ namespace BioMap.Pages.Lists
       if (!this.disableSetImage) {
         if (this.ElementToMeasure!=null) {
           this.disableSetImage=true;
-          await this.imageSurveyor.SetImageUrlAsync(
-            "api/photos/"+this.ElementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig="+(this.Raw?"1":"0"),
-            this.Raw,
-            this.ElementToMeasure.MeasureData);
+          if (this.ElementToMeasure.MeasureData==null) {
+            this.ElementToMeasure.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
+              method="HeadToCloakInPetriDish",
+              normalizePoints=null,
+              measurePoints=new[] {
+                new System.Numerics.Vector2 { X=100,Y=300},
+                new System.Numerics.Vector2 { X=500,Y=300 },
+                new System.Numerics.Vector2 { X=300,Y=100 },
+                new System.Numerics.Vector2 { X=300,Y=400 },
+              },
+            };
+          } else if (this.ElementToMeasure.HasImageButNoOrigImage(SD)) {
+            this.ElementToMeasure.MeasureData.normalizePoints=null;
+          }
+          bool bHasImageButNoOrigImage=(this.ElementToMeasure.MeasureData.normalizePoints==null);
+          if (bHasImageButNoOrigImage) {
+            this.Raw=false;
+          }
+          var sUrlOrigImage="api/photos/"+this.ElementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=1";
+          string sUrlImage;
+          if (this.Raw) {
+            sUrlImage=sUrlOrigImage;
+          } else {
+            if (bHasImageButNoOrigImage) {
+              sUrlImage="api/photos/"+this.ElementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=0";
+            } else {
+              var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.ElementToMeasure.ElementName,true);
+              using (var imgSrc = Image.Load(sSrcFile)) {
+                var mNormalize=this.ElementToMeasure.MeasureData.GetNormalizeMatrix();
+                var atb=new AffineTransformBuilder();
+                atb.AppendMatrix(mNormalize);
+                imgSrc.Mutate(x => x.Transform(atb));
+                imgSrc.Mutate(x => x.Crop(600,600));
+                var bs = new System.IO.MemoryStream();
+                imgSrc.SaveAsJpeg(bs);
+                sUrlImage="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
+              }
+            }
+          }
+          await this.imageSurveyor.SetImageUrlAsync(sUrlImage,this.Raw,this.ElementToMeasure.MeasureData);
+          this.normImageDirty=false;
         }
       }
     }
@@ -139,6 +190,7 @@ namespace BioMap.Pages.Lists
       }
       el.ElementProp.IndivData.MeasuredData.HeadBodyLength=0.1f*System.Numerics.Vector2.Distance(md.measurePoints[2],md.measurePoints[3]);
       el.MeasureData=md;
+      this.normImageDirty=true;
       this.StateHasChanged();
     }
     private async Task ResetPositions_Clicked(Element el) {

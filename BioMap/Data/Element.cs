@@ -66,6 +66,17 @@ namespace BioMap
     public ElementProp_t ElementProp;
     public ElementClassification Classification=new ElementClassification();
     public Blazor.ImageSurveyor.ImageSurveyorMeasureData? MeasureData=null;
+    public bool HasImageButNoOrigImage(SessionData sd) {
+      var ds=DataService.Instance;
+      if (
+        System.IO.File.Exists(ds.GetFilePathForImage(sd.CurrentUser.Project,this.ElementName,false))
+        &&
+        !System.IO.File.Exists(ds.GetFilePathForImage(sd.CurrentUser.Project,this.ElementName,true))
+        ) {
+        return true;
+      }
+      return false;
+    }
     //
     public Element(string sProject) {
       this.Project=sProject;

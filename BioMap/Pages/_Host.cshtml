@@ -103,6 +103,10 @@
   @*<script src="~/workaround-gradient.js"></script>*@
 
   <script>
+    window.onbeforeunload = function () {
+      // Return non-null to have a message "Really really leave?" displayed.
+      return null;
+    }
     function ApiCall(sPhpFile, fetchArgs, aArgs) {
       return new Promise((resolve, reject) => {
         try {

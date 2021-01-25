@@ -900,7 +900,7 @@ namespace BioMap
                 md.measurePoints=md.measurePoints.Append(new System.Numerics.Vector2()).ToArray();
                 bDirty=true;
               }
-            } else if (!dr.IsDBNull(7) && !dr.IsDBNull(8) && !dr.IsDBNull(10) && !dr.IsDBNull(18)) {
+            } else if (!dr.IsDBNull(7) && !dr.IsDBNull(8) && !dr.IsDBNull(10) && !dr.IsDBNull(18) && !dr.IsDBNull(20)) {
               md=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
                 method="HeadToCloakInPetriDish",
                 normalizePoints=new[] {

@@ -13,7 +13,6 @@ namespace BioMap
   {
     public static string GetFilePathForExistingImage(string sProject,string id,bool bForceOrig=false) {
       var ds = DataService.Instance;
-      var sDataDir = ds.GetDataDir(sProject);
       string sFilePath = ds.GetFilePathForImage(sProject,id,false);
       if (bForceOrig || !System.IO.File.Exists(sFilePath)) {
         sFilePath = ds.GetFilePathForImage(sProject,id,true);
