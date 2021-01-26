@@ -152,9 +152,19 @@ namespace BioMap.Pages.Lists
           } else if (this.ElementToMeasure.HasImageButNoOrigImage(SD)) {
             this.ElementToMeasure.MeasureData.normalizePoints=null;
           }
+          bool bHasOrigImageButNoImage=this.ElementToMeasure.HasOrigImageButNoImage(SD);
+          if (bHasOrigImageButNoImage) {
+            this.ElementToMeasure.MeasureData.normalizePoints=new[] {
+              new System.Numerics.Vector2 { X=100,Y=100},
+              new System.Numerics.Vector2 { X=300,Y=300 },
+              new System.Numerics.Vector2 { X=100,Y=500 },
+            };
+          }
           bool bHasImageButNoOrigImage=(this.ElementToMeasure.MeasureData.normalizePoints==null);
           if (bHasImageButNoOrigImage) {
             this.Raw=false;
+          } else if (bHasOrigImageButNoImage) {
+            this.Raw=true;
           }
           var sUrlOrigImage="api/photos/"+this.ElementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=1";
           string sUrlImage;
@@ -187,6 +197,13 @@ namespace BioMap.Pages.Lists
         var mNormalize=md.GetNormalizeMatrix();
         md.measurePoints[2]=System.Numerics.Vector2.Transform(md.measurePoints[0],mNormalize);
         md.measurePoints[3]=System.Numerics.Vector2.Transform(md.measurePoints[1],mNormalize);
+      }
+      if (el.ElementProp.IndivData==null) {
+        el.ElementProp.IndivData=new Element.IndivData_t {
+          MeasuredData=new Element.IndivData_t.MeasuredData_t {
+            HeadBodyLength=0,
+          },
+        };
       }
       el.ElementProp.IndivData.MeasuredData.HeadBodyLength=0.1f*System.Numerics.Vector2.Distance(md.measurePoints[2],md.measurePoints[3]);
       el.MeasureData=md;

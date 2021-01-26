@@ -77,6 +77,17 @@ namespace BioMap
       }
       return false;
     }
+    public bool HasOrigImageButNoImage(SessionData sd) {
+      var ds=DataService.Instance;
+      if (
+        !System.IO.File.Exists(ds.GetFilePathForImage(sd.CurrentUser.Project,this.ElementName,false))
+        &&
+        System.IO.File.Exists(ds.GetFilePathForImage(sd.CurrentUser.Project,this.ElementName,true))
+        ) {
+        return true;
+      }
+      return false;
+    }
     //
     public Element(string sProject) {
       this.Project=sProject;
