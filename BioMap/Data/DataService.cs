@@ -541,7 +541,8 @@ namespace BioMap
         if (!string.IsNullOrEmpty(sJson)) {
           var species=JsonConvert.DeserializeObject<List<Species>>(sJson);
           project.Species.AddRange(species);
-        } else {
+        }
+        if (project.Species.Count<1) {
           project.InitSpeciesByGroupForYellowBelliedToad();
           this.WriteProject(sd,project);
         }
@@ -892,9 +893,9 @@ namespace BioMap
             if (!string.IsNullOrEmpty(sJsonClassification)) {
               ec=JsonConvert.DeserializeObject<ElementClassification>(sJsonClassification);
             }
-            var sJsonMeasureData = dr.GetValue(36) as string;
+            var sJsonMeasureData = dr.IsDBNull(36) ? null : dr.GetValue(36) as string;
             Blazor.ImageSurveyor.ImageSurveyorMeasureData? md = null;
-            if (!string.IsNullOrEmpty(sJsonMeasureData)) {
+            if (!string.IsNullOrEmpty(sJsonMeasureData) && sJsonMeasureData!="null") {
               md=JsonConvert.DeserializeObject<Blazor.ImageSurveyor.ImageSurveyorMeasureData>(sJsonMeasureData);
               while (md.measurePoints.Length<4) {
                 md.measurePoints=md.measurePoints.Append(new System.Numerics.Vector2()).ToArray();
