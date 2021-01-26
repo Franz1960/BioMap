@@ -134,7 +134,10 @@ namespace BioMap.Shared
             var elm = this.GetElementMarker(sKey);
             if (elm!=null && elm.Element!=null) {
               if (this.PhotoPopup!=null) {
-                this.PhotoPopup.Show(elm.Element);
+                this.PhotoPopup.Show(elm.Element,()=>{
+                  this.RefreshElementMarkers();
+                  this.StateHasChanged();
+                });
                 // Set below lowest Z index.
                 int? minZIndex = null;
                 foreach (var elm1 in this.ElementMarkers) {
@@ -161,6 +164,8 @@ namespace BioMap.Shared
           }
         }
       }
+    }
+    protected virtual void RefreshElementMarkers() {
     }
     private double? PrevRadiusFactor = null;
     private async Task RefreshRadii() {

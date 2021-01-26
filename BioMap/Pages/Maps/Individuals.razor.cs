@@ -30,7 +30,7 @@ namespace BioMap.Pages.Maps
         this.RefreshElementMarkers();
       }
     }
-    private void RefreshElementMarkers() {
+    protected override void RefreshElementMarkers() {
       var lElementMarkers = new List<ElementMarker>();
       if (SD.CurrentUser.Level>=0) {
         var dictIndividuals = DataService.Instance.GetIndividuals(SD,SD.Filters);

@@ -42,6 +42,7 @@
 @code{
   //
   private Modal modalRef;
+  private Action callbackOnClosed=null;
   private ElementEdit ElementEditRef;
   private IconName sizeButtonIconName = IconName.Expand;
   private bool centered = false;
@@ -49,8 +50,9 @@
   private int? maxHeight = 80;
   public string Title { get; set; }
   public string ElementName { get; set; }
-  public void Show(Element el) {
+  public void Show(Element el,Action callbackOnClosed=null) {
     this.ElementEditRef.Element=el;
+    this.callbackOnClosed=callbackOnClosed;
     this.ElementName=el.ElementName;
     this.Title=el.ElementName;
     this.StateHasChanged();
@@ -74,6 +76,10 @@
       DS.WriteElement(SD,this.ElementEditRef.Element);
       string sJson = JsonConvert.SerializeObject(this.ElementEditRef.Element);
       DS.AddLogEntry(SD,"Changed element "+this.ElementEditRef.Element.ElementName+": "+saDiff[0]+" --> "+saDiff[1]);
+    }
+    if (this.callbackOnClosed!=null) {
+      this.callbackOnClosed();
+      this.callbackOnClosed=null;
     }
   }
 }
