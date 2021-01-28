@@ -98,6 +98,13 @@ namespace BioMap.Shared
         MapTypeId = (string.IsNullOrEmpty(SD.CurrentUser.Prefs.MaptypeId)?MapTypeId.Roadmap:Enum.Parse<MapTypeId>(SD.CurrentUser.Prefs.MaptypeId)),
         StreetViewControl=false,
       };
+      if (DS.GetAoi(SD)==null) {
+        mapOptions.Center=new LatLngLiteral() {
+          Lat = 49.1433,
+          Lng = 12.3847
+        };
+        mapOptions.Zoom=8;
+      }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
