@@ -68,9 +68,9 @@ namespace BioMap.Shared
     public async Task ClearAoiPath() {
       var b=await this.googleMap.InteropObject.GetBounds();
       var path=new List<LatLngLiteral>(new [] {
-        new LatLngLiteral((b.West+b.East)/2,b.North),
-        new LatLngLiteral(b.East,b.South),
-        new LatLngLiteral(b.West,b.South),
+        new LatLngLiteral((b.West+b.East)/2,(2*b.North+b.South)/3),
+        new LatLngLiteral((2*b.East+b.West)/3,(b.North+2*b.South)/3),
+        new LatLngLiteral((b.East+2*b.West)/3,(b.North+2*b.South)/3),
       });
       this.AoiPolygonOptions.Paths=new List<List<LatLngLiteral>>(new[] { path });
       await this.AoiPolygon.SetOptions(this.AoiPolygonOptions);

@@ -30,6 +30,10 @@
   protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
     if (firstRender) {
+      var vertices = DS.GetAoi(SD);
+      if (vertices==null) {
+        await base.ClearAoiPath();
+      }
     }
   }
   private async Task Clear_Clicked() {
