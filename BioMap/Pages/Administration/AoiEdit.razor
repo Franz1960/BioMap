@@ -1,5 +1,6 @@
 ﻿@page "/Maps/AoiEdit"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject NavigationManager NM
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
 @using GoogleMapsComponents
@@ -14,11 +15,11 @@
     <CheckBox Checked="ShowPlaces" CheckedChanged="@((e)=>{ ShowPlaces=e; })" LabelText=@Localize["Show places"] />
   </Column>
   <Column>
-    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Clear_Clicked(); })"><Blazorise.Icon Name="IconName.Clear"/> @Localize["Clear"]</Button>
+    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Clear_Clicked(); })"><Blazorise.Icon Name="IconName.Clear" /> @Localize["Clear"]</Button>
   </Column>
-  <Column>
+  @*<Column>
     <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save_Clicked(); })">@Localize["Save"]</Button>
-  </Column>
+  </Column>*@
 </Row>
 <GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
 
@@ -26,7 +27,13 @@
   protected override async Task OnInitializedAsync() {
     await base.OnInitializedAsync();
     base.AoiEditable=true;
+    NM.LocationChanged+=NM_LocationChanged;
   }
+  private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
+    NM.LocationChanged-=NM_LocationChanged;
+    //this.Save_Clicked();
+  }
+  private System.Timers.Timer Timer;
   protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
     if (firstRender) {
@@ -34,6 +41,15 @@
       if (vertices==null) {
         await base.ClearAoiPath();
       }
+      this.Timer=new System.Timers.Timer(2000);
+      this.Timer.Elapsed+=async (sender,e) => {
+        try {
+          this.Timer.Stop();
+          await this.Save_Clicked();
+          this.Timer.Start();
+        } catch { }
+      };
+      this.Timer.Start();
     }
   }
   private async Task Clear_Clicked() {
@@ -41,6 +57,8 @@
   }
   private async Task Save_Clicked() {
     var latLngLiterals = await base.GetAoiPath();
-    DS.WriteAoi(SD,latLngLiterals);
+    if (latLngLiterals!=null && latLngLiterals.Count()>=3) {
+      DS.WriteAoi(SD,latLngLiterals);
+    }
   }
 }

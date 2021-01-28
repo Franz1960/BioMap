@@ -569,9 +569,10 @@ namespace BioMap
       string sJson=this.GetProjectProperty(sd,"aoi");
       // If DB has no value, try to read it from conf/aoi.json.
       if (string.IsNullOrEmpty(sJson)) {
-        try {
-          sJson = System.IO.File.ReadAllText(this.GetDataDir(sd) + "conf/aoi.json");
-        } catch { }
+        var sFilePath=this.GetDataDir(sd) + "conf/aoi.json";
+        if (System.IO.File.Exists(sFilePath)) {
+          sJson = System.IO.File.ReadAllText(sFilePath);
+        }
       }
       if (!string.IsNullOrEmpty(sJson)) {
         try {

@@ -75,7 +75,7 @@ namespace BioMap.Shared
       this.AoiPolygonOptions.Paths=new List<List<LatLngLiteral>>(new[] { path });
       await this.AoiPolygon.SetOptions(this.AoiPolygonOptions);
     }
-    private Polygon AoiPolygon = null;
+    protected Polygon AoiPolygon = null;
     private PolygonOptions AoiPolygonOptions = null;
     //
     protected GoogleMap googleMap;
