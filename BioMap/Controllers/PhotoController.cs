@@ -39,6 +39,7 @@ namespace BioMap
               int nReqWidth = ConvInvar.ToInt(Request.Query["width"]);
               using (var image = Image.Load(sFilePath)) {
                 int nReqHeight = (nReqWidth*image.Height)/image.Width;
+                image.Mutate(x => x.AutoOrient());
                 image.Mutate(x => x.Resize(nReqWidth,nReqHeight));
                 image.SaveAsJpeg(bs);
               }
@@ -48,6 +49,7 @@ namespace BioMap
               var bs = new MemoryStream();
               int nMaxDim = ConvInvar.ToInt(Request.Query["maxdim"]);
               using (var image = Image.Load(sFilePath)) {
+                image.Mutate(x => x.AutoOrient());
                 int nReqWidth;
                 int nReqHeight;
                 if (image.Height<=image.Width) {

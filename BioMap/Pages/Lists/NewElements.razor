@@ -59,7 +59,7 @@
           </CardHeader>
           @if (el.HasPhotoData()) {
             <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">
-              <CardImage Source="@("api/photos/"+@el.ElementName+"?maxdim=240&Project="+@SD.CurrentUser.Project+"&ForceOrig=1")" Alt="@el.ElementName"></CardImage>
+              <CardImage Source="@("api/photos/"+@el.ElementName+"?maxdim=320&Project="+@SD.CurrentUser.Project+"&ForceOrig=1")" Alt="@el.ElementName"></CardImage>
             </a>
           }
           <CardBody>

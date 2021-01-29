@@ -43,6 +43,7 @@ namespace BioMap.Pages.Lists
               var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._ElementToMeasure.ElementName,true);
               var sDstFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._ElementToMeasure.ElementName,false);
               using (var imgSrc = Image.Load(sSrcFile)) {
+                imgSrc.Mutate(x => x.AutoOrient());
                 var mNormalize=this._ElementToMeasure.MeasureData.GetNormalizeMatrix();
                 var atb=new AffineTransformBuilder();
                 atb.AppendMatrix(mNormalize);
@@ -176,6 +177,7 @@ namespace BioMap.Pages.Lists
             } else {
               var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.ElementToMeasure.ElementName,true);
               using (var imgSrc = Image.Load(sSrcFile)) {
+                imgSrc.Mutate(x => x.AutoOrient());
                 var mNormalize=this.ElementToMeasure.MeasureData.GetNormalizeMatrix();
                 var atb=new AffineTransformBuilder();
                 atb.AppendMatrix(mNormalize);
