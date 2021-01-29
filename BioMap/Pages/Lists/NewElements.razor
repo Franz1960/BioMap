@@ -10,8 +10,7 @@
   @if (ElementToMeasure!=null) {
     <Row Margin="Margin.Is1.OnY">
       <Column>
-        <Blazor.ImageSurveyor.ImageSurveyor @ref="imageSurveyor"
-                                            Height="60vh" />
+        <Blazor.ImageSurveyor.ImageSurveyor @ref="imageSurveyor" Height="60vh" />
       </Column>
       <Column ColumnSize="ColumnSize.Is2">
         <Row Margin="Margin.Is1.OnY">
@@ -49,73 +48,52 @@
     </Row>
   }
 </div>
-<div style="height: calc(40vh);overflow: auto;">
+<div style="height: calc(40vh - 6px);overflow-y: scroll;overflow-x:hidden;margin-top:6px;">
   <Row Margin="Margin.Is1.OnY">
     <Column>
-      <Table Class="table-striped table-sm">
-        <TableHeader>
-          <TableRow>
-            <TableHeaderCell Style="width:18%;">
-              @Localize["Place"]
-            </TableHeaderCell>
-            <TableHeaderCell Style="width:15%;">
-              @Localize["Time"]
-            </TableHeaderCell>
-            <TableHeaderCell Style="width:25%;">
-              @Localize["Name"]
-            </TableHeaderCell>
-            <TableHeaderCell>
-              @Localize["Image"]
-            </TableHeaderCell>
-            <TableHeaderCell>
-              @Localize["Action"]
-            </TableHeaderCell>
-            <TableHeaderCell>
-              @Localize["User"]
-            </TableHeaderCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          @foreach (var el in Elements) {
-            <TableRow Background="@((ElementToMeasure==el || ElementToIdentify==el)?Background.Primary:Background.None)">
-              <TableRowCell>
-                @el.GetPlaceName()
-              </TableRowCell>
-              <TableRowCell>
-                @el.GetIsoDateTime()
-              </TableRowCell>
-              <TableRowCell>
-                <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a>
-              </TableRowCell>
-              <TableRowCell>
-                @if (el.HasPhotoData()) {
-                  <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">
-                    <Figure Size="FigureSize.Is96x96">
-                      <FigureImage Source="@("api/photos/"+@el.ElementName+"?maxdim=96&Project="+@SD.CurrentUser.Project+"&ForceOrig=1")" AlternateText="@el.ElementName" />
-                    </Figure>
-                  </a>
-                }
-              </TableRowCell>
-              <TableRowCell>
-                <Button Color="Color.Light" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await Measure_Clicked(el); })">
-                  <Icon Name="IconName.Crop"></Icon>
-                  @Localize["Measure#To_measure_length"]
-                </Button>
-                <Button Color="Color.Light" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await Identify_Clicked(el); })">
-                  <Icon Name="IconName.IdCard"></Icon>
-                  @Localize["Identify"]
-                </Button>
-              </TableRowCell>
-              <TableRowCell>
-                @el.ElementProp.UploadInfo.UserId
-                <Button Float="Float.Right" Color="Color.Light" Disabled="!SD.CurrentUser.MayDeleteElement(el)" Clicked="@(async (e)=>{ await DeleteElement(el); })">
-                  <Icon Name="IconName.Delete"></Icon>
-                </Button>
-              </TableRowCell>
-            </TableRow>
+      <CardDeck Style="margin-right:4px;">
+        @foreach (var el in Elements) {
+        <Card Style="min-width:270px;max-width:320px;margin-bottom:4px;margin-left:4px;margin-right:4px;">
+          <CardHeader>
+            @el.ElementName
+          </CardHeader>
+          @if (el.HasPhotoData()) {
+            <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">
+              <CardImage Source="@("api/photos/"+@el.ElementName+"?maxdim=240&Project="+@SD.CurrentUser.Project+"&ForceOrig=1")" Alt="@el.ElementName"></CardImage>
+            </a>
           }
-        </TableBody>
-      </Table>
+          <CardBody>
+            <Table Class="table-sm">
+              <TableRow>
+                <TableRowCell>@Localize["Place"]</TableRowCell>
+                <TableRowCell>@el.GetPlaceName()</TableRowCell>
+              </TableRow>
+              <TableRow>
+                <TableRowCell>@Localize["Time"]</TableRowCell>
+                <TableRowCell>@el.GetIsoDateTime()</TableRowCell>
+              </TableRow>
+              <TableRow>
+                <TableRowCell>@Localize["User"]</TableRowCell>
+                <TableRowCell>@el.ElementProp.UploadInfo.UserId</TableRowCell>
+              </TableRow>
+            </Table>
+          </CardBody>
+          <CardFooter>
+            <Button Color="@((ElementToMeasure==el)?Color.Primary:Color.Light)" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await Measure_Clicked(el); })">
+              <Icon Name="IconName.Crop"></Icon>
+              @Localize["Measure#To_measure_length"]
+            </Button>
+            <Button Color="@((ElementToIdentify==el)?Color.Primary:Color.Light)" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await Identify_Clicked(el); })">
+              <Icon Name="IconName.IdCard"></Icon>
+              @Localize["Identify"]
+            </Button>
+            <Button Color="Color.Light" Disabled="!SD.CurrentUser.MayDeleteElement(el)" Clicked="@(async (e)=>{ await DeleteElement(el); })">
+              <Icon Name="IconName.Delete"></Icon>
+            </Button>
+          </CardFooter>
+        </Card>
+        }
+      </CardDeck>
     </Column>
   </Row>
 </div>
