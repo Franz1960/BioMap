@@ -1,0 +1,25 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Row>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["User"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+        <Select TValue="string" @bind-SelectedValue="SD.Filters.UserFilter">
+          <SelectItem TValue="string" Value="@("*")">(@Localize["All"])</SelectItem>
+          @foreach (var user in DS.GetAllUsers(SD)) {
+            <SelectItem TValue="string" Value="@(user.EMail)">@user.GetNiceName()</SelectItem>
+          }
+        </Select>
+      </FieldBody>
+    </Field>
+  </Column>
+</Row>
+
+@code {
+}

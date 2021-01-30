@@ -6,85 +6,95 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<div style="height:60vh;overflow: hidden;">
-  @if (ElementToMeasure!=null) {
-    <Row Margin="Margin.Is1.OnY">
-      <Column>
-        <Blazor.ImageSurveyor.ImageSurveyor @ref="imageSurveyor" Height="60vh" />
-      </Column>
-      <Column ColumnSize="ColumnSize.Is2">
+<Accordion>
+  <Collapse Visible="@(ElementToMeasure!=null)">
+    <CollapseBody>
+    @if (ElementToMeasure!=null)  {
+      <div style="height:80vh;overflow: hidden;">
         <Row Margin="Margin.Is1.OnY">
           <Column>
-            <Button Color="@(Raw?Color.Light:Color.Primary)" Disabled="@(false)" Clicked="@(()=>{ Raw=!Raw; })">
-              <Icon Name="IconName.Crop"></Icon>
-              @Localize["Display normalized"]
-            </Button>
+            <Blazor.ImageSurveyor.ImageSurveyor @ref="imageSurveyor" Height="60vh" />
+          </Column>
+          <Column ColumnSize="ColumnSize.Is2">
+            <Row Margin="Margin.Is1.OnY">
+              <Column>
+                <Button Color="@(Raw?Color.Light:Color.Primary)" Disabled="@(false)" Clicked="@(()=>{ Raw=!Raw; })">
+                  <Icon Name="IconName.Crop"></Icon>
+                  @Localize["Display normalized"]
+                </Button>
+              </Column>
+            </Row>
+            <Row Margin="Margin.Is1.OnY">
+              <Column>
+                <Button Color="Color.Light" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await ResetPositions_Clicked(ElementToMeasure); })">
+                  <Icon Name="IconName.Clear"></Icon>
+                  @Localize["Reset positions"]
+                </Button>
+              </Column>
+            </Row>
+            <Row Margin="Margin.Is1.OnY">
+              <Column>
+                <Field Horizontal="true">
+                  <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Length"]</FieldLabel>
+                  <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+                    <TextEdit Disabled="true" Text="@(ConvInvar.ToDecimalString(ElementToMeasure.ElementProp?.IndivData?.MeasuredData?.HeadBodyLength,1))" />
+                  </FieldBody>
+                </Field>
+              </Column>
+            </Row>
           </Column>
         </Row>
+      </div>
+    }
+    </CollapseBody>
+  </Collapse>
+  <Collapse Visible="@(ElementToMeasure==null && ElementToIdentify==null)">
+    <CollapseHeader>
+      <Heading Size="HeadingSize.Is5">
+        <Button Clicked="@(()=>{ ElementToMeasure=null; })">@Localize["Select"]</Button>
+      </Heading>
+    </CollapseHeader>
+    <CollapseBody>
+      <div style="height: calc(40vh - 6px);overflow-y: scroll;overflow-x:hidden;margin-top:6px;">
         <Row Margin="Margin.Is1.OnY">
           <Column>
-            <Button Color="Color.Light" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await ResetPositions_Clicked(ElementToMeasure); })">
-              <Icon Name="IconName.Clear"></Icon>
-              @Localize["Reset positions"]
-            </Button>
+            <CardDeck Style="margin-right:4px;">
+              @foreach (var el in Elements) {
+                <Card Style="min-width:270px;max-width:320px;margin-bottom:4px;margin-left:4px;margin-right:4px;">
+                  <CardHeader>
+                    @el.ElementName
+                  </CardHeader>
+                  @if (el.HasPhotoData()) {
+                    <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">
+                      <CardImage Source="@("api/photos/"+@el.ElementName+"?maxdim=320&Project="+@SD.CurrentUser.Project+"&ForceOrig=1")" Alt="@el.ElementName"></CardImage>
+                    </a>
+                  }
+                  <CardBody>
+                    @Localize["Place"]: @el.GetPlaceName()<br />
+                    @Localize["Time"]: @el.GetIsoDateTime()<br />
+                    @Localize["Uploaded"]: @el.ElementProp.UploadInfo.UserId
+                  </CardBody>
+                  <CardFooter>
+                    <Button Color="@((ElementToMeasure==el)?Color.Primary:Color.Light)" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await Measure_Clicked(el); })">
+                      <Icon Name="IconName.Crop"></Icon>
+                      @Localize["Measure#To_measure_length"]
+                    </Button>
+                    <Button Color="@((ElementToIdentify==el)?Color.Primary:Color.Light)" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await Identify_Clicked(el); })">
+                      <Icon Name="IconName.IdCard"></Icon>
+                      @Localize["Identify"]
+                    </Button>
+                    <Button Color="Color.Light" Disabled="!SD.CurrentUser.MayDeleteElement(el)" Clicked="@(async (e)=>{ await DeleteElement(el); })">
+                      <Icon Name="IconName.Delete"></Icon>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              }
+            </CardDeck>
           </Column>
         </Row>
-        <Row Margin="Margin.Is1.OnY">
-          <Column>
-            <Field Horizontal="true">
-              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Length"]</FieldLabel>
-              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-                <TextEdit Disabled="true" Text="@(ConvInvar.ToDecimalString(ElementToMeasure.ElementProp?.IndivData?.MeasuredData?.HeadBodyLength,1))" />
-              </FieldBody>
-            </Field>
-          </Column>
-        </Row>
-      </Column>
-    </Row>
-  } else if (ElementToIdentify!=null) {
-    <Row Margin="Margin.Is1.OnY">
-      <Column>
-      </Column>
-    </Row>
-  }
-</div>
-<div style="height: calc(40vh - 6px);overflow-y: scroll;overflow-x:hidden;margin-top:6px;">
-  <Row Margin="Margin.Is1.OnY">
-    <Column>
-      <CardDeck Style="margin-right:4px;">
-        @foreach (var el in Elements) {
-        <Card Style="min-width:270px;max-width:320px;margin-bottom:4px;margin-left:4px;margin-right:4px;">
-          <CardHeader>
-            @el.ElementName
-          </CardHeader>
-          @if (el.HasPhotoData()) {
-            <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">
-              <CardImage Source="@("api/photos/"+@el.ElementName+"?maxdim=320&Project="+@SD.CurrentUser.Project+"&ForceOrig=1")" Alt="@el.ElementName"></CardImage>
-            </a>
-          }
-        <CardBody>
-          @Localize["Place"]: @el.GetPlaceName()<br/>
-          @Localize["Time"]: @el.GetIsoDateTime()<br />
-          @Localize["Uploaded"]: @el.ElementProp.UploadInfo.UserId
-        </CardBody>
-          <CardFooter>
-            <Button Color="@((ElementToMeasure==el)?Color.Primary:Color.Light)" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await Measure_Clicked(el); })">
-              <Icon Name="IconName.Crop"></Icon>
-              @Localize["Measure#To_measure_length"]
-            </Button>
-            <Button Color="@((ElementToIdentify==el)?Color.Primary:Color.Light)" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await Identify_Clicked(el); })">
-              <Icon Name="IconName.IdCard"></Icon>
-              @Localize["Identify"]
-            </Button>
-            <Button Color="Color.Light" Disabled="!SD.CurrentUser.MayDeleteElement(el)" Clicked="@(async (e)=>{ await DeleteElement(el); })">
-              <Icon Name="IconName.Delete"></Icon>
-            </Button>
-          </CardFooter>
-        </Card>
-        }
-      </CardDeck>
-    </Column>
-  </Row>
-</div>
+      </div>
+    </CollapseBody>
+  </Collapse>
+</Accordion>
 
 <PhotoPopup @ref="PhotoPopup1" />

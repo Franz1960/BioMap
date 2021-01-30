@@ -41,5 +41,12 @@ namespace BioMap
       }
       return false;
     }
+    public string GetNiceName() {
+      if (!string.IsNullOrEmpty(this.FullName)) {
+        return this.FullName+" ("+this.EMail+")";
+      } else {
+        return this.EMail;
+      }
+    }
   }
 }

@@ -108,6 +108,18 @@ namespace BioMap
       " LEFT JOIN indivdata i1 ON (i1.name=e1.name)" +
       " WHERE (i1.iid=indivdata.iid AND e1.category=350 AND e1.creationtime>elements.creationtime)" +
       ")";
+    public string UserFilter {
+      get {
+        return this._UserFilter;
+      }
+      set {
+        if (value!=this._UserFilter) {
+          this._UserFilter=value;
+          Utilities.FireEvent(this.FilterChanged,this,EventArgs.Empty);
+        }
+      }
+    }
+    private string _UserFilter = "";
     public DateTime? DateFromFilter {
       get {
         return this._DateFromFilter;
@@ -286,6 +298,7 @@ namespace BioMap
       if (this.FilteringTarget==FilteringTargetEnum.Elements) {
         sResult = Filters.AddToWhereClause(sResult,this.GetDateFilterWhereClause());
         sResult = AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
+        sResult = AddToWhereInClause(sResult,"elements.uploader",ExpandUserFilter(this.UserFilter));
         if (!string.IsNullOrEmpty(this.ClassFilter)) {
           var classification=JsonConvert.DeserializeObject<ElementClassification>(this.ClassFilter);
           if (!string.IsNullOrEmpty(classification.ClassName)) {
@@ -365,6 +378,13 @@ namespace BioMap
       }
     }
     private static string ExpandHibernationsFilter(string sFilter) {
+      string sResult = sFilter.Trim();
+      if (sResult=="-" || sResult=="*") {
+        return "";
+      }
+      return sResult;
+    }
+    private static string ExpandUserFilter(string sFilter) {
       string sResult = sFilter.Trim();
       if (sResult=="-" || sResult=="*") {
         return "";
