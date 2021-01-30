@@ -28,6 +28,7 @@ namespace BioMap.Shared
           if (el==null) {
             throw new ArgumentException("Element must not be null.");
           } else {
+            SD.SelectedElementName=el.ElementName;
             this.OrigJson=JsonConvert.SerializeObject(el);
             this.hasPhoto=el.HasPhotoData();
             this.Properties.Clear();

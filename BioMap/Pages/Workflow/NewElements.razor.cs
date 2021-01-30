@@ -14,24 +14,14 @@ namespace BioMap.Pages.Workflow
   public partial class NewElements : ComponentBase
   {
     private Element[] Elements = new Element[0];
+    private int? SelectedElementIndex=null;
+    private string NewClass="";
     private PhotoPopup PhotoPopup1;
     protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
     private Blazor.ImageSurveyor.ImageSurveyor imageSurveyorPrev;
     private bool disableSetImage=false;
     private bool elementChanged=false;
     private bool normImageDirty=false;
-    private Element ElementToIdentify {
-      get => this._ElementToIdentify;
-      set {
-        if (value!=this._ElementToIdentify) {
-          if (this._ElementToIdentify!=null) {
-            DS.WriteElement(SD,this._ElementToIdentify);
-          }
-          this._ElementToIdentify=value;
-        };
-      }
-    }
-    private Element _ElementToIdentify=null;
     private Element ElementToMeasure {
       get => this._ElementToMeasure;
       set {
@@ -54,6 +44,7 @@ namespace BioMap.Pages.Workflow
             }
           }
           this._ElementToMeasure=value;
+          SD.SelectedElementName=this._ElementToMeasure?.ElementName;
         };
       }
     }
@@ -74,12 +65,20 @@ namespace BioMap.Pages.Workflow
     private bool _Raw=true;
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
+      SD.Filters.FilteringTarget=Filters.FilteringTargetEnum.Elements;
+      SD.Filters.FilterChanged+=async (sender,ev) => {
+        await this.RefreshData();
+        await this.SelectElement();
+        this.disableSetImage=false;
+        this.elementChanged=true;
+        this.StateHasChanged();
+      };
       await RefreshData();
+      await this.SelectElement();
       NM.LocationChanged+=NM_LocationChanged;
     }
     private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
       NM.LocationChanged-=NM_LocationChanged;
-      this.ElementToIdentify=null;
       this.ElementToMeasure=null;
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
@@ -100,14 +99,14 @@ namespace BioMap.Pages.Workflow
         if (this.elementChanged) {
           if (this.ElementToMeasure!=null) {
             this.elementChanged=false;
-            await this.LoadElementToMeasure(this.ElementToMeasure);
+            await this.LoadElementToMeasure();
           }
         }
       }
     }
     private async void imageSurveyor_AfterRenderEvent(object sender,EventArgs e) {
       if (this.ElementToMeasure!=null) {
-        await this.LoadElementToMeasure(this.ElementToMeasure);
+        await this.LoadElementToMeasure();
       }
     }
     private void imageSurveyor_MeasureDataChanged(object sender,Blazor.ImageSurveyor.ImageSurveyorMeasureData measureData) {
@@ -115,27 +114,68 @@ namespace BioMap.Pages.Workflow
         this.MeasureDataChanged(this.ElementToMeasure,measureData);
       }
     }
+    private async Task SelectElement() {
+      this.ElementToMeasure=(await DS.GetElementsAsync(SD,SD.Filters,"elements.name='"+SD.SelectedElementName+"'")).FirstOrDefault();
+      if (this.ElementToMeasure==null) {
+        await this.OnSelectNext();
+      } else {
+        for (int i=0;i<this.Elements.Length;i++) {
+          if (this.Elements[i].ElementName==this.ElementToMeasure?.ElementName) {
+            this.SelectedElementIndex=i;
+            break;
+          }
+        }
+      }
+    }
     private async Task RefreshData() {
-      this.Elements = Elements = await DS.GetElementsAsync(SD,SD.Filters,"elements.classification LIKE '%\"ClassName\":\"New\"%'","elements.creationtime ASC");
+      this.Elements = await DS.GetElementsAsync(SD,SD.Filters,"elements.classification LIKE '%\"ClassName\":\"New\"%'","elements.creationtime ASC");
     }
     private void OnSelectClick(Element el) {
       this.PhotoPopup1.Show(el);
     }
+    private async Task OnSelectPrev() {
+      await this.RefreshData();
+      if (this.SelectedElementIndex.HasValue && this.SelectedElementIndex.Value>=1 && this.Elements.Length>=1) {
+        this.SelectedElementIndex--;
+      } else if (this.Elements.Length>=1) {
+        this.SelectedElementIndex=this.Elements.Length-1;
+      } else {
+        this.SelectedElementIndex=null;
+      }
+      if (this.SelectedElementIndex.HasValue) {
+        this.ElementToMeasure=this.Elements[this.SelectedElementIndex.Value];
+      } else {
+        this.ElementToMeasure=null;
+      }
+      this.disableSetImage=false;
+      this.elementChanged=true;
+      StateHasChanged();
+    }
+    private async Task OnSelectNext() {
+      await this.RefreshData();
+      if (this.SelectedElementIndex.HasValue && this.SelectedElementIndex.Value<this.Elements.Length-1) {
+        this.SelectedElementIndex++;
+      } else if (this.Elements.Length>=1) {
+        this.SelectedElementIndex=0;
+      } else {
+        this.SelectedElementIndex=null;
+      }
+      if (this.SelectedElementIndex.HasValue) {
+        this.ElementToMeasure=this.Elements[this.SelectedElementIndex.Value];
+      } else {
+        this.ElementToMeasure=null;
+      }
+      this.disableSetImage=false;
+      this.elementChanged=true;
+      StateHasChanged();
+    }
     private async Task Measure_Clicked(Element el) {
       this.ElementToMeasure=el;
-      this.ElementToIdentify=null;
       this.disableSetImage=false;
       this.elementChanged=true;
       await this.InvokeAsync(()=>StateHasChanged());
     }
-    private async Task Identify_Clicked(Element el) {
-      this.ElementToMeasure=null;
-      this.ElementToIdentify=el;
-      this.disableSetImage=false;
-      this.elementChanged=true;
-      await this.InvokeAsync(()=>StateHasChanged());
-    }
-    private async Task LoadElementToMeasure(Element el) {
+    private async Task LoadElementToMeasure() {
       if (!this.disableSetImage) {
         if (this.ElementToMeasure!=null) {
           this.disableSetImage=true;
@@ -228,11 +268,13 @@ namespace BioMap.Pages.Workflow
             measurePoints=new [] {
               new System.Numerics.Vector2 { X=w*0.50f,Y=h*0.25f },
               new System.Numerics.Vector2 { X=w*0.50f,Y=h*0.75f },
+              new System.Numerics.Vector2 { X=w*0.50f,Y=h*0.25f },
+              new System.Numerics.Vector2 { X=w*0.50f,Y=h*0.75f },
             },
           };
         }
         this.disableSetImage=false;
-        await this.LoadElementToMeasure(el);
+        await this.LoadElementToMeasure();
       }
     }
     private async Task DeleteElement(Element el) {

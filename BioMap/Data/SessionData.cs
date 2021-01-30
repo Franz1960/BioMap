@@ -21,6 +21,7 @@ namespace BioMap
       Utilities.FireEvent(this.CurrentProjectChanged,this,EventArgs.Empty);
     }
     public bool ShowCustomMap { get; set; }
+    public string SelectedElementName { get; set; }
     public Filters Filters { get; }
     public bool SizeTimeChartShowVintageBoundaries { get; set; } = true;
     public string SizeTimeChartGrowingCurveMode { get; set; } = "GrowingCurve";
