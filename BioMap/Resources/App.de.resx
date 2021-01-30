@@ -201,6 +201,9 @@
   <data name="BioMap helps monitor yellow-bellied toads." xml:space="preserve">
     <value>BioMap hilft beim Monitoring von Gelbbauchunken.</value>
   </data>
+  <data name="by" xml:space="preserve">
+    <value>von</value>
+  </data>
   <data name="By place" xml:space="preserve">
     <value>Nach Ort</value>
   </data>
@@ -677,6 +680,9 @@
   </data>
   <data name="Totals" xml:space="preserve">
     <value>Gesamtzahlen</value>
+  </data>
+  <data name="Uploaded" xml:space="preserve">
+    <value>Hochgeladen</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>Benutzer</value>

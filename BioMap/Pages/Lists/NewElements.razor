@@ -62,22 +62,11 @@
               <CardImage Source="@("api/photos/"+@el.ElementName+"?maxdim=320&Project="+@SD.CurrentUser.Project+"&ForceOrig=1")" Alt="@el.ElementName"></CardImage>
             </a>
           }
-          <CardBody>
-            <Table Class="table-sm">
-              <TableRow>
-                <TableRowCell>@Localize["Place"]</TableRowCell>
-                <TableRowCell>@el.GetPlaceName()</TableRowCell>
-              </TableRow>
-              <TableRow>
-                <TableRowCell>@Localize["Time"]</TableRowCell>
-                <TableRowCell>@el.GetIsoDateTime()</TableRowCell>
-              </TableRow>
-              <TableRow>
-                <TableRowCell>@Localize["User"]</TableRowCell>
-                <TableRowCell>@el.ElementProp.UploadInfo.UserId</TableRowCell>
-              </TableRow>
-            </Table>
-          </CardBody>
+        <CardBody>
+          @Localize["Place"]: @el.GetPlaceName()<br/>
+          @Localize["Time"]: @el.GetIsoDateTime()<br />
+          @Localize["Uploaded"]: @el.ElementProp.UploadInfo.UserId
+        </CardBody>
           <CardFooter>
             <Button Color="@((ElementToMeasure==el)?Color.Primary:Color.Light)" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await Measure_Clicked(el); })">
               <Icon Name="IconName.Crop"></Icon>

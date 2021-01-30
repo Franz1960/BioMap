@@ -26,7 +26,7 @@
       <TableHeader>
         <TableRow>
           <TableHeaderCell>
-            @Localize["Cat."]
+            @Localize["Classification"]
           </TableHeaderCell>
           <TableHeaderCell Style="width:18%;">
             @Localize["Details"]
@@ -46,7 +46,7 @@
         @foreach (var el in Elements) {
           <TableRow>
             <TableRowCell>
-              @el.ElementProp.MarkerInfo.category
+              @Localize[@el.GetClassName()]
             </TableRowCell>
             <TableRowCell>
               @el.GetDetails()
