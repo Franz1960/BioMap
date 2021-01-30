@@ -285,6 +285,7 @@ namespace BioMap
       if (this.FilteringTarget==FilteringTargetEnum.Individuals) {
         sResult = Filters.AddToWhereClause(sResult,this.GetDateFilterWhereClause());
         sResult = AddToWhereInClause(sResult,"elements.place",ExpandPlaceFilter(this.PlaceFilter));
+        sResult = AddToWhereInClause(sResult,"elements.uploader",ExpandUserFilter(this.UserFilter));
         sResult = AddToWhereInClause(sResult,"indivdata.iid",ExpandIndiFilter(this.IndiFilter));
         sResult = AddToWhereInClause(sResult,"indivdata.gender",ExpandGenderFilter(this.GenderFilter));
         sResult = AddToWhereCompareClause(sResult,"indivdata.winters",ExpandHibernationsFilter(this.HibernationsFilter));
