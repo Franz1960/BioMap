@@ -60,15 +60,26 @@
             <BarItem>
               <BarDropdown>
                 <BarDropdownToggle>
+                  <BarIcon IconName="IconName.Forward" />
+                  @Localize["Workflow"]
+                </BarDropdownToggle>
+                <BarDropdownMenu>
+                  <BarDropdownItem To="/Workflow/NewElements">
+                    <BarIcon IconName="IconName.Inbox" />
+                    @Localize["New Elements"]
+                  </BarDropdownItem>
+                </BarDropdownMenu>
+              </BarDropdown>
+            </BarItem>
+            <BarItem>
+              <BarDropdown>
+                <BarDropdownToggle>
                   <BarIcon IconName="IconName.List" />
                   @Localize["Lists"]
                 </BarDropdownToggle>
                 <BarDropdownMenu>
                   <BarDropdownItem To="/Lists/AllElements">
                     @Localize["All Elements"]
-                  </BarDropdownItem>
-                  <BarDropdownItem To="/Lists/NewElements">
-                    @Localize["New Elements"]
                   </BarDropdownItem>
                   <BarDropdownItem To="/Lists/AllIndividuals">
                     @Localize["All Individuals"]

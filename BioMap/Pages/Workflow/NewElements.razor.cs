@@ -9,7 +9,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using BioMap.Shared;
 
-namespace BioMap.Pages.Lists
+namespace BioMap.Pages.Workflow
 {
   public partial class NewElements : ComponentBase
   {

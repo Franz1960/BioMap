@@ -696,6 +696,9 @@
   <data name="Welcome to BioMap!" xml:space="preserve">
     <value>Willkommen bei BioMap!</value>
   </data>
+  <data name="Workflow" xml:space="preserve">
+    <value>Arbeitsablauf</value>
+  </data>
   <data name="Year" xml:space="preserve">
     <value>Jahr</value>
   </data>
