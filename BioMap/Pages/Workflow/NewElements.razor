@@ -24,9 +24,9 @@
               <Row Margin="Margin.Is1.OnY">
                 <Column>
                   <strong>@ElementToMeasure.ElementName</strong><br />
-                  @Localize["Place"]: @ElementToMeasure.GetPlaceName()<br />
-                  @Localize["Time"]: @ElementToMeasure.GetIsoDateTime()<br />
-                  @Localize["Uploaded"]: @ElementToMeasure.ElementProp.UploadInfo.UserId
+                  <Icon Name="IconName.LocationArrow" /> @ElementToMeasure.GetPlaceName()<br />
+                  <Icon Name="IconName.Clock" /> @ElementToMeasure.GetIsoDateTime()<br />
+                  <Icon Name="IconName.User" /> @ElementToMeasure.ElementProp.UploadInfo.UserId
                 </Column>
               </Row>
               <Divider />
