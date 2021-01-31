@@ -6,6 +6,8 @@ using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.Jpeg;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using System.Linq;
 
 namespace BioMap
@@ -130,6 +132,35 @@ namespace BioMap
       }
       el.ElementProp.CreationTime = ((el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? el.ElementProp.ExifData.DateTimeOriginal.Value : el.ElementProp.UploadInfo.Timestamp);
       return el;
+    }
+    public void InitMeasureData(SessionData sd,bool bOnlyIfNotCompatible) {
+      var DS=DataService.Instance;
+      bool bPrevNormed=ElementClassification.IsNormed(this?.Classification?.ClassName);
+      bool bNewNormed=(string.CompareOrdinal(this.MeasureData?.normalizer?.NormalizeMethod,sd.CurrentProject.ImageNormalizer.NormalizeMethod)==0);
+      if (!bOnlyIfNotCompatible || bNewNormed!=bPrevNormed) {
+        var sSrcFile=DS.GetFilePathForImage(sd.CurrentUser.Project,this.ElementName,true);
+        if (System.IO.File.Exists(sSrcFile)) {
+          using (var imgSrc = Image.Load(sSrcFile)) {
+            if (ElementClassification.IsNormed(this.Classification?.ClassName)) {
+              var normalizer=sd.CurrentProject.ImageNormalizer;
+              this.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
+                normalizer=normalizer,
+                normalizePoints=normalizer.GetDefaultNormalizePoints(imgSrc.Width,imgSrc.Height).ToArray(),
+                measurePoints=normalizer.GetDefaultMeasurePoints(imgSrc.Width,imgSrc.Height).ToArray(),
+              };
+            } else {
+              var normalizer=new Blazor.ImageSurveyor.ImageSurveyorNormalizer() {
+                NormalizeMethod="CropRectangle",
+              };
+              this.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
+                normalizer=normalizer,
+                normalizePoints=normalizer.GetDefaultNormalizePoints(imgSrc.Width,imgSrc.Height).ToArray(),
+                measurePoints=normalizer.GetDefaultMeasurePoints(imgSrc.Width,imgSrc.Height).ToArray(),
+              };
+            }
+          }
+        }
+      }
     }
     public DateTime? GetDateOfBirth() {
       return this.ElementProp.IndivData?.DateOfBirth;

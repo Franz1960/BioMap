@@ -203,48 +203,17 @@ namespace BioMap.Pages.Workflow
         if (this.Element!=null) {
           this.disableSetImage=true;
           if (this.Element.MeasureData==null) {
-            var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
-            using (var imgSrc = Image.Load(sSrcFile)) {
-              if (ElementClassification.IsNormed(this.Element.Classification?.ClassName)) {
-                var normalizer=SD.CurrentProject.ImageNormalizer;
-                this.Element.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
-                  normalizer=normalizer,
-                  normalizePoints=normalizer.GetDefaultNormalizePoints(imgSrc.Width,imgSrc.Height).ToArray(),
-                  measurePoints=normalizer.GetDefaultMeasurePoints(imgSrc.Width,imgSrc.Height).ToArray(),
-                };
-              } else {
-                var normalizer=new Blazor.ImageSurveyor.ImageSurveyorNormalizer() {
-                  NormalizeMethod="CropRectangle",
-                };
-                this.Element.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
-                  normalizer=normalizer,
-                  normalizePoints=normalizer.GetDefaultNormalizePoints(imgSrc.Width,imgSrc.Height).ToArray(),
-                  measurePoints=normalizer.GetDefaultMeasurePoints(imgSrc.Width,imgSrc.Height).ToArray(),
-                };
-              }
-            }
+            this.Element.InitMeasureData(SD,false);
           } else if (this.Element.HasImageButNoOrigImage(SD)) {
             this.Element.MeasureData.normalizePoints=null;
           }
           bool bHasOrigImageButNoImage=this.Element.HasOrigImageButNoImage(SD);
           if (bHasOrigImageButNoImage) {
-            var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
-            using (var imgSrc = Image.Load(sSrcFile)) {
-              var normalizer=new Blazor.ImageSurveyor.ImageSurveyorNormalizer() {
-                NormalizeMethod="CropRectangle",
-              };
-              this.Element.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
-                normalizer=normalizer,
-                normalizePoints=normalizer.GetDefaultNormalizePoints(imgSrc.Width,imgSrc.Height).ToArray(),
-                measurePoints=normalizer.GetDefaultMeasurePoints(imgSrc.Width,imgSrc.Height).ToArray(),
-              };
-            }
+            this.Element.InitMeasureData(SD,true);
           }
           bool bHasImageButNoOrigImage=(this.Element.MeasureData.normalizePoints==null);
           if (bHasImageButNoOrigImage) {
             this.Raw=false;
-          } else if (bHasOrigImageButNoImage) {
-            this.Raw=true;
           }
           var sUrlOrigImage="api/photos/"+this.Element.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=1";
           string sUrlImage;
