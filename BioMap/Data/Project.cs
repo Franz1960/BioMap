@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using Blazor.ImageSurveyor;
 
 namespace BioMap
 {
@@ -37,6 +38,9 @@ namespace BioMap
     public Species GetSpecies(string sSciName) {
       return this.Species.Find((s)=>string.CompareOrdinal(s.SciName,sSciName)==0);
     }
+    public ImageSurveyorNormalizer ImageNormalizer { get; } =new ImageSurveyorNormalizer() {
+      NormalizeMethod="HeadToCloakInPetriDish",
+    };
     public void InitSpeciesByGroupForYellowBelliedToad() {
       this.Species.Clear();
       {

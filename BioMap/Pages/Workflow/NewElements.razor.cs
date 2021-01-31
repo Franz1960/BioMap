@@ -15,40 +15,43 @@ namespace BioMap.Pages.Workflow
   {
     private Element[] Elements = new Element[0];
     private int? SelectedElementIndex=null;
-    private string NewClass="";
     private PhotoPopup PhotoPopup1;
     protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
     private Blazor.ImageSurveyor.ImageSurveyor imageSurveyorPrev;
     private bool disableSetImage=false;
     private bool elementChanged=false;
     private bool normImageDirty=false;
-    private Element ElementToMeasure {
-      get => this._ElementToMeasure;
+    private Element Element {
+      get => this._Element;
       set {
-        if (value!=this._ElementToMeasure) {
-          if (this._ElementToMeasure!=null && this.normImageDirty) {
-            DS.WriteElement(SD,this._ElementToMeasure);
+        if (value!=this._Element) {
+          if (this._Element!=null) {
+            DS.WriteElement(SD,this._Element);
             // Bild normieren.
-            if (this._ElementToMeasure.MeasureData.normalizePoints!=null) {
-              var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._ElementToMeasure.ElementName,true);
-              var sDstFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._ElementToMeasure.ElementName,false);
-              using (var imgSrc = Image.Load(sSrcFile)) {
-                imgSrc.Mutate(x => x.AutoOrient());
-                var mNormalize=this._ElementToMeasure.MeasureData.GetNormalizeMatrix();
-                var atb=new AffineTransformBuilder();
-                atb.AppendMatrix(mNormalize);
-                imgSrc.Mutate(x => x.Transform(atb));
-                imgSrc.Mutate(x => x.Crop(600,600));
-                imgSrc.SaveAsJpeg(sDstFile);
+            if (this.normImageDirty) {
+              if (this._Element.MeasureData.normalizePoints!=null) {
+                var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._Element.ElementName,true);
+                var sDstFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._Element.ElementName,false);
+                using (var imgSrc = Image.Load(sSrcFile)) {
+                  imgSrc.Mutate(x => x.AutoOrient());
+                  var md=this._Element.MeasureData;
+                  (int nWidth,int nHeight)=md.GetNormalizedSize();
+                  var mNormalize=md.GetNormalizeMatrix();
+                  var atb=new AffineTransformBuilder();
+                  atb.AppendMatrix(mNormalize);
+                  imgSrc.Mutate(x => x.Transform(atb));
+                  imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
+                  imgSrc.SaveAsJpeg(sDstFile);
+                }
               }
             }
           }
-          this._ElementToMeasure=value;
-          SD.SelectedElementName=this._ElementToMeasure?.ElementName;
+          this._Element=value;
+          SD.SelectedElementName=this._Element?.ElementName;
         };
       }
     }
-    private Element _ElementToMeasure=null;
+    private Element _Element=null;
     private bool Raw {
       get {
         return this._Raw;
@@ -79,7 +82,7 @@ namespace BioMap.Pages.Workflow
     }
     private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
       NM.LocationChanged-=NM_LocationChanged;
-      this.ElementToMeasure=null;
+      this.Element=null;
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
@@ -97,30 +100,30 @@ namespace BioMap.Pages.Workflow
         this.imageSurveyorPrev=this.imageSurveyor;
       } else {
         if (this.elementChanged) {
-          if (this.ElementToMeasure!=null) {
+          if (this.Element!=null) {
             this.elementChanged=false;
-            await this.LoadElementToMeasure();
+            await this.LoadElement();
           }
         }
       }
     }
     private async void imageSurveyor_AfterRenderEvent(object sender,EventArgs e) {
-      if (this.ElementToMeasure!=null) {
-        await this.LoadElementToMeasure();
+      if (this.Element!=null) {
+        await this.LoadElement();
       }
     }
     private void imageSurveyor_MeasureDataChanged(object sender,Blazor.ImageSurveyor.ImageSurveyorMeasureData measureData) {
-      if (this.ElementToMeasure!=null) {
-        this.MeasureDataChanged(this.ElementToMeasure,measureData);
+      if (this.Element!=null) {
+        this.MeasureDataChanged(this.Element,measureData);
       }
     }
     private async Task SelectElement() {
-      this.ElementToMeasure=(await DS.GetElementsAsync(SD,SD.Filters,"elements.name='"+SD.SelectedElementName+"'")).FirstOrDefault();
-      if (this.ElementToMeasure==null) {
+      this.Element=(await DS.GetElementsAsync(SD,SD.Filters,"elements.name='"+SD.SelectedElementName+"'")).FirstOrDefault();
+      if (this.Element==null) {
         await this.OnSelectNext();
       } else {
         for (int i=0;i<this.Elements.Length;i++) {
-          if (this.Elements[i].ElementName==this.ElementToMeasure?.ElementName) {
+          if (this.Elements[i].ElementName==this.Element?.ElementName) {
             this.SelectedElementIndex=i;
             break;
           }
@@ -129,6 +132,26 @@ namespace BioMap.Pages.Workflow
     }
     private async Task RefreshData() {
       this.Elements = await DS.GetElementsAsync(SD,SD.Filters,"elements.classification LIKE '%\"ClassName\":\"New\"%'","elements.creationtime ASC");
+    }
+    private async Task newClass_Selected(string sNewClass) {
+      if (string.CompareOrdinal(sNewClass,this.Element?.Classification?.ClassName)!=0) {
+        bool bPrevNormed=ElementClassification.IsNormed(this.Element?.Classification?.ClassName);
+        bool bNewNormed=ElementClassification.IsNormed(sNewClass);
+        if (bNewNormed!=bPrevNormed) {
+          if (this.Element!=null) {
+            this.Element.MeasureData.normalizer=
+              bNewNormed
+              ?
+              SD.CurrentProject.ImageNormalizer
+              :
+              new Blazor.ImageSurveyor.ImageSurveyorNormalizer() { NormalizeMethod="CropRectangle", }
+              ;
+          }
+        }
+        this.Element.Classification.ClassName=sNewClass;
+        this.disableSetImage=false;
+        await this.LoadElement();
+      }
     }
     private void OnSelectClick(Element el) {
       this.PhotoPopup1.Show(el);
@@ -143,9 +166,9 @@ namespace BioMap.Pages.Workflow
         this.SelectedElementIndex=null;
       }
       if (this.SelectedElementIndex.HasValue) {
-        this.ElementToMeasure=this.Elements[this.SelectedElementIndex.Value];
+        this.Element=this.Elements[this.SelectedElementIndex.Value];
       } else {
-        this.ElementToMeasure=null;
+        this.Element=null;
       }
       this.disableSetImage=false;
       this.elementChanged=true;
@@ -161,85 +184,98 @@ namespace BioMap.Pages.Workflow
         this.SelectedElementIndex=null;
       }
       if (this.SelectedElementIndex.HasValue) {
-        this.ElementToMeasure=this.Elements[this.SelectedElementIndex.Value];
+        this.Element=this.Elements[this.SelectedElementIndex.Value];
       } else {
-        this.ElementToMeasure=null;
+        this.Element=null;
       }
       this.disableSetImage=false;
       this.elementChanged=true;
       StateHasChanged();
     }
     private async Task Measure_Clicked(Element el) {
-      this.ElementToMeasure=el;
+      this.Element=el;
       this.disableSetImage=false;
       this.elementChanged=true;
       await this.InvokeAsync(()=>StateHasChanged());
     }
-    private async Task LoadElementToMeasure() {
+    private async Task LoadElement() {
       if (!this.disableSetImage) {
-        if (this.ElementToMeasure!=null) {
+        if (this.Element!=null) {
           this.disableSetImage=true;
-          if (this.ElementToMeasure.MeasureData==null) {
-            this.ElementToMeasure.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
-              method="HeadToCloakInPetriDish",
-              normalizePoints=null,
-              measurePoints=new[] {
-                new System.Numerics.Vector2 { X=100,Y=300},
-                new System.Numerics.Vector2 { X=500,Y=300 },
-                new System.Numerics.Vector2 { X=300,Y=100 },
-                new System.Numerics.Vector2 { X=300,Y=400 },
-              },
-            };
-          } else if (this.ElementToMeasure.HasImageButNoOrigImage(SD)) {
-            this.ElementToMeasure.MeasureData.normalizePoints=null;
+          if (this.Element.MeasureData==null) {
+            var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
+            using (var imgSrc = Image.Load(sSrcFile)) {
+              if (ElementClassification.IsNormed(this.Element.Classification?.ClassName)) {
+                var normalizer=SD.CurrentProject.ImageNormalizer;
+                this.Element.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
+                  normalizer=normalizer,
+                  normalizePoints=normalizer.GetDefaultNormalizePoints(imgSrc.Width,imgSrc.Height).ToArray(),
+                  measurePoints=normalizer.GetDefaultMeasurePoints(imgSrc.Width,imgSrc.Height).ToArray(),
+                };
+              } else {
+                var normalizer=new Blazor.ImageSurveyor.ImageSurveyorNormalizer() {
+                  NormalizeMethod="CropRectangle",
+                };
+                this.Element.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
+                  normalizer=normalizer,
+                  normalizePoints=normalizer.GetDefaultNormalizePoints(imgSrc.Width,imgSrc.Height).ToArray(),
+                  measurePoints=normalizer.GetDefaultMeasurePoints(imgSrc.Width,imgSrc.Height).ToArray(),
+                };
+              }
+            }
+          } else if (this.Element.HasImageButNoOrigImage(SD)) {
+            this.Element.MeasureData.normalizePoints=null;
           }
-          bool bHasOrigImageButNoImage=this.ElementToMeasure.HasOrigImageButNoImage(SD);
+          bool bHasOrigImageButNoImage=this.Element.HasOrigImageButNoImage(SD);
           if (bHasOrigImageButNoImage) {
-            this.ElementToMeasure.MeasureData.normalizePoints=new[] {
-              new System.Numerics.Vector2 { X=100,Y=100},
-              new System.Numerics.Vector2 { X=300,Y=300 },
-              new System.Numerics.Vector2 { X=100,Y=500 },
-            };
+            var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
+            using (var imgSrc = Image.Load(sSrcFile)) {
+              var normalizer=new Blazor.ImageSurveyor.ImageSurveyorNormalizer() {
+                NormalizeMethod="CropRectangle",
+              };
+              this.Element.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
+                normalizer=normalizer,
+                normalizePoints=normalizer.GetDefaultNormalizePoints(imgSrc.Width,imgSrc.Height).ToArray(),
+                measurePoints=normalizer.GetDefaultMeasurePoints(imgSrc.Width,imgSrc.Height).ToArray(),
+              };
+            }
           }
-          bool bHasImageButNoOrigImage=(this.ElementToMeasure.MeasureData.normalizePoints==null);
+          bool bHasImageButNoOrigImage=(this.Element.MeasureData.normalizePoints==null);
           if (bHasImageButNoOrigImage) {
             this.Raw=false;
           } else if (bHasOrigImageButNoImage) {
             this.Raw=true;
           }
-          var sUrlOrigImage="api/photos/"+this.ElementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=1";
+          var sUrlOrigImage="api/photos/"+this.Element.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=1";
           string sUrlImage;
           if (this.Raw) {
             sUrlImage=sUrlOrigImage;
           } else {
             if (bHasImageButNoOrigImage) {
-              sUrlImage="api/photos/"+this.ElementToMeasure.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=0";
+              sUrlImage="api/photos/"+this.Element.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=0";
             } else {
-              var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.ElementToMeasure.ElementName,true);
+              var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
               using (var imgSrc = Image.Load(sSrcFile)) {
                 imgSrc.Mutate(x => x.AutoOrient());
-                var mNormalize=this.ElementToMeasure.MeasureData.GetNormalizeMatrix();
+                var md=this.Element.MeasureData;
+                (int nWidth,int nHeight)=md.GetNormalizedSize();
+                var mNormalize=md.GetNormalizeMatrix();
                 var atb=new AffineTransformBuilder();
                 atb.AppendMatrix(mNormalize);
                 imgSrc.Mutate(x => x.Transform(atb));
-                imgSrc.Mutate(x => x.Crop(600,600));
+                imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
                 var bs = new System.IO.MemoryStream();
                 imgSrc.SaveAsJpeg(bs);
                 sUrlImage="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
               }
             }
           }
-          await this.imageSurveyor.SetImageUrlAsync(sUrlImage,this.Raw,this.ElementToMeasure.MeasureData);
+          await this.imageSurveyor.SetImageUrlAsync(sUrlImage,this.Raw,this.Element.MeasureData);
           this.normImageDirty=false;
         }
       }
     }
     private void MeasureDataChanged(Element el,Blazor.ImageSurveyor.ImageSurveyorMeasureData md) {
-      if (this.Raw) {
-        var mNormalize=md.GetNormalizeMatrix();
-        md.measurePoints[2]=System.Numerics.Vector2.Transform(md.measurePoints[0],mNormalize);
-        md.measurePoints[3]=System.Numerics.Vector2.Transform(md.measurePoints[1],mNormalize);
-      }
       if (el.ElementProp.IndivData==null) {
         el.ElementProp.IndivData=new Element.IndivData_t {
           MeasuredData=new Element.IndivData_t.MeasuredData_t {
@@ -247,7 +283,9 @@ namespace BioMap.Pages.Workflow
           },
         };
       }
-      el.ElementProp.IndivData.MeasuredData.HeadBodyLength=0.1f*System.Numerics.Vector2.Distance(md.measurePoints[2],md.measurePoints[3]);
+      if (string.CompareOrdinal(md.normalizer.NormalizeMethod,"HeadToCloakInPetriDish")==0) {
+        el.ElementProp.IndivData.MeasuredData.HeadBodyLength=0.1f*System.Numerics.Vector2.Distance(md.measurePoints[2],md.measurePoints[3]);
+      }
       el.MeasureData=md;
       this.normImageDirty=true;
       this.StateHasChanged();
@@ -258,23 +296,26 @@ namespace BioMap.Pages.Workflow
         using (var img = Image.Load(sFilePath)) {
           int w=img.Width;
           int h=img.Height;
-          el.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
-            method="HeadToCloakInPetriDish",
-            normalizePoints=new [] {
-              new System.Numerics.Vector2 { X=w*0.25f,Y=h*0.50f },
-              new System.Numerics.Vector2 { X=w*0.75f,Y=h*0.25f },
-              new System.Numerics.Vector2 { X=w*0.75f,Y=h*0.75f },
-            },
-            measurePoints=new [] {
-              new System.Numerics.Vector2 { X=w*0.50f,Y=h*0.25f },
-              new System.Numerics.Vector2 { X=w*0.50f,Y=h*0.75f },
-              new System.Numerics.Vector2 { X=w*0.50f,Y=h*0.25f },
-              new System.Numerics.Vector2 { X=w*0.50f,Y=h*0.75f },
-            },
-          };
+          if (ElementClassification.IsNormed(this.Element?.Classification?.ClassName)) {
+            var normalizer=SD.CurrentProject.ImageNormalizer;
+            el.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
+              normalizer=normalizer,
+              normalizePoints=normalizer.GetDefaultNormalizePoints(w,h).ToArray(),
+              measurePoints=normalizer.GetDefaultMeasurePoints(w,h).ToArray(),
+            };
+          } else {
+            var normalizer = new Blazor.ImageSurveyor.ImageSurveyorNormalizer() {
+              NormalizeMethod="CropRectangle",
+            };
+            el.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
+              normalizer=normalizer,
+              normalizePoints=normalizer.GetDefaultNormalizePoints(w,h).ToArray(),
+              measurePoints=normalizer.GetDefaultMeasurePoints(w,h).ToArray(),
+            };
+          }
         }
         this.disableSetImage=false;
-        await this.LoadElementToMeasure();
+        await this.LoadElement();
       }
     }
     private async Task DeleteElement(Element el) {

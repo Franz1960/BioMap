@@ -21,17 +21,8 @@ namespace Blazor.ImageSurveyor
 
     private string _height = "500px";
 
-    /// <summary>
-    /// Default height 500px
-    /// Used as style atribute "height: {Height}"
-    /// </summary>
     [Parameter]
-    public string Height {
-      get => _height;
-      set => _height = value ?? "500px";
-    }
-
-    protected string StyleStr => $"height: {Height};";
+    public string Style { get; set; }="";
 
     protected ElementReference divMain { get; set; }
 
@@ -60,6 +51,7 @@ namespace Blazor.ImageSurveyor
     public string ImageUrl { get; private set; }="";
     public string MeasureDataJson { get; private set; }="";
     public async Task SetImageUrlAsync(string sImageUrl,bool bRaw,ImageSurveyorMeasureData measureData) {
+      this.Raw=bRaw;
       var sMeasureDataJson=JsonConvert.SerializeObject(measureData);
       if (string.CompareOrdinal(sImageUrl,this.ImageUrl)!=0 || string.CompareOrdinal(sMeasureDataJson,this.MeasureDataJson)!=0) {
         this.ImageUrl=sImageUrl;
@@ -70,11 +62,18 @@ namespace Blazor.ImageSurveyor
     }
     [JSInvokable]
     public void MeasureData_Changed(string sJsonMeasureData) {
-      var measureData=JsonConvert.DeserializeObject<ImageSurveyorMeasureData>(sJsonMeasureData);
+      var md=JsonConvert.DeserializeObject<ImageSurveyorMeasureData>(sJsonMeasureData);
+      if (this.Raw) {
+        if (string.CompareOrdinal(md.normalizer.NormalizeMethod,"HeadToCloakInPetriDish")==0) {
+          var mNormalize=md.GetNormalizeMatrix();
+          md.measurePoints[2]=System.Numerics.Vector2.Transform(md.measurePoints[0],mNormalize);
+          md.measurePoints[3]=System.Numerics.Vector2.Transform(md.measurePoints[1],mNormalize);
+        }
+      }
       {
         var handler=this.MeasureDataChanged;
         if (handler!=null) {
-          handler.Invoke(this,measureData);
+          handler.Invoke(this,md);
         }
       }
     }

@@ -18,7 +18,7 @@ class PrepPic_t {
     init(dotNetImageSurvey) {
         this.dotNetObject = dotNetImageSurvey;
     }
-    drawMarker(ctx, position, radius, color = "magenta", text = "") {
+    drawMarker(ctx, position, radius, color = "lightcyan", text = "") {
         let r = radius;
         let rh = r / 2;
         let x = position.X;
@@ -72,51 +72,55 @@ class PrepPic_t {
         ctx.scale(this.Zoom, this.Zoom);
         ctx.drawImage(this.Image, 0, 0);
         if (this.Raw) {
-            let ptHead = PrepPic.MeasureData.measurePoints[0];
-            let ptBack = PrepPic.MeasureData.measurePoints[1];
-            let ptsOnCircle = PrepPic.MeasureData.normalizePoints;
-            PrepPic.drawMarker(ctx, ptHead, MH, 'magenta', 'Kopfspitze');
-            PrepPic.drawMarker(ctx, ptBack, MH, 'brown', 'Kloake');
-            // Draw circle around Petri dish.
-            for (let i = 0; i < ptsOnCircle.length; i++) {
-                PrepPic.drawMarker(ctx, ptsOnCircle[i], MH, 'lightcyan', '');
+            if (this.MeasureData.normalizer.NormalizeMethod == "HeadToCloakInPetriDish") {
+                let ptHead = PrepPic.MeasureData.measurePoints[0];
+                let ptBack = PrepPic.MeasureData.measurePoints[1];
+                let ptsOnCircle = PrepPic.MeasureData.normalizePoints;
+                PrepPic.drawMarker(ctx, ptHead, MH, 'magenta', 'Kopfspitze');
+                PrepPic.drawMarker(ctx, ptBack, MH, 'brown', 'Kloake');
+                // Draw circle around Petri dish.
+                for (let i = 0; i < ptsOnCircle.length; i++) {
+                    PrepPic.drawMarker(ctx, ptsOnCircle[i], MH);
+                }
+                let circle = PrepPic_t.GetCircleFrom3Points(
+                    ptsOnCircle[0].X,
+                    ptsOnCircle[0].Y,
+                    ptsOnCircle[1].X,
+                    ptsOnCircle[1].Y,
+                    ptsOnCircle[2].X,
+                    ptsOnCircle[2].Y);
+                ctx.beginPath();
+                ctx.arc(circle.xCenter, circle.yCenter, circle.radius, 0, 2 * Math.PI);
+                ctx.lineWidth = 4 / this.Zoom;
+                ctx.stroke();
+                //
+                let fScale = circle.radius / 500;
+                let fBoxSide = fScale * 600;
+                let fLength = PrepPic_t.calcDistance(ptHead, ptBack);
+                let ptBoxCenter = {
+                    X: (ptHead.X + ptBack.X) / 2,
+                    Y: (ptHead.Y + ptBack.Y) / 2,
+                };
+                let phi = Math.atan2(ptHead.Y - ptBack.Y, ptHead.X - ptBack.X);
+                ctx.translate(ptBoxCenter.X, ptBoxCenter.Y);
+                ctx.rotate(phi);
+                ctx.strokeRect(-fBoxSide / 2, -fBoxSide / 2, fBoxSide, fBoxSide);
+            } else if (this.MeasureData.normalizer.NormalizeMethod == "CropRectangle") {
+                let ptA = PrepPic.MeasureData.normalizePoints[0];
+                let ptB = PrepPic.MeasureData.normalizePoints[1];
+                PrepPic.drawMarker(ctx, ptA, MH);
+                PrepPic.drawMarker(ctx, ptB, MH);
+                ctx.lineWidth = 4 / this.Zoom;
+                ctx.strokeRect(ptA.X, ptA.Y, ptB.X - ptA.X, ptB.Y - ptA.Y);
             }
-            let circle = PrepPic_t.GetCircleFrom3Points(
-                ptsOnCircle[0].X,
-                ptsOnCircle[0].Y,
-                ptsOnCircle[1].X,
-                ptsOnCircle[1].Y,
-                ptsOnCircle[2].X,
-                ptsOnCircle[2].Y);
-            ctx.beginPath();
-            ctx.arc(circle.xCenter, circle.yCenter, circle.radius, 0, 2 * Math.PI);
-            ctx.lineWidth = 4 / this.Zoom;
-            ctx.stroke();
-            //
-            let fScale = circle.radius / 500;
-            let fBoxSide = fScale * 600;
-            let fLength = PrepPic_t.calcDistance(ptHead, ptBack);
-            let ptBoxCenter = {
-                X: (ptHead.X + ptBack.X) / 2,
-                Y: (ptHead.Y + ptBack.Y) / 2,
-            };
-            let phi = Math.atan2(ptHead.Y - ptBack.Y, ptHead.X - ptBack.X);
-            ctx.translate(ptBoxCenter.X, ptBoxCenter.Y);
-            ctx.rotate(phi);
-            ctx.strokeRect(-fBoxSide / 2, -fBoxSide / 2, fBoxSide, fBoxSide);
-            //
-            //glMatrix.mat2d.identity(this.M2D);
-            //glMatrix.mat2d.translate(this.M2D, this.M2D, [300, 300]);
-            //glMatrix.mat2d.scale(this.M2D, this.M2D, [1 / fScale, 1 / fScale]);
-            //glMatrix.mat2d.rotate(this.M2D, this.M2D, -Math.PI / 2 - phi);
-            //glMatrix.mat2d.translate(this.M2D, this.M2D, [-ptBoxCenter.X, -ptBoxCenter.Y]);
-            //ctxClipped.setTransform(this.M2D[0], this.M2D[1], this.M2D[2], this.M2D[3], this.M2D[4], this.M2D[5]);
-            //ctxClipped.drawImage(this.Image, 0, 0);
         } else {
-            let ptHead = PrepPic.MeasureData.measurePoints[2];
-            let ptBack = PrepPic.MeasureData.measurePoints[3];
-            PrepPic.drawMarker(ctx, ptHead, MH, 'magenta', 'Kopfspitze');
-            PrepPic.drawMarker(ctx, ptBack, MH, 'brown', 'Kloake');
+            if (this.MeasureData.normalizer.NormalizeMethod == "HeadToCloakInPetriDish") {
+                let ptHead = PrepPic.MeasureData.measurePoints[2];
+                let ptBack = PrepPic.MeasureData.measurePoints[3];
+                PrepPic.drawMarker(ctx, ptHead, MH, 'magenta', 'Kopfspitze');
+                PrepPic.drawMarker(ctx, ptBack, MH, 'brown', 'Kloake');
+            } else if (this.MeasureData.normalizer.NormalizeMethod == "CropRectangle") {
+            }
         }
         this.CanvasValid = true;
     }
@@ -133,29 +137,42 @@ class PrepPic_t {
             let p = { X: (event.clientX - rCanvas.left) / PrepPic.Zoom, Y: (event.clientY - rCanvas.top) / PrepPic.Zoom };
             if (!PrepPic.DragPos) {
                 PrepPic.DraggedPos = null;
-                if (PrepPic.Raw) {
-                    if (PrepPic.MeasureData.measurePoints[0] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.measurePoints[0]) <= MH) {
-                        PrepPic.DraggedPos = PrepPic.MeasureData.measurePoints[0];
-                    } else if (PrepPic.MeasureData.measurePoints[1] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.measurePoints[1]) <= MH) {
-                        PrepPic.DraggedPos = PrepPic.MeasureData.measurePoints[1];
+                if (PrepPic.MeasureData.normalizer.NormalizeMethod == "HeadToCloakInPetriDish") {
+                    if (PrepPic.Raw) {
+                        if (PrepPic.MeasureData.measurePoints[0] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.measurePoints[0]) <= MH) {
+                            PrepPic.DraggedPos = PrepPic.MeasureData.measurePoints[0];
+                        } else if (PrepPic.MeasureData.measurePoints[1] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.measurePoints[1]) <= MH) {
+                            PrepPic.DraggedPos = PrepPic.MeasureData.measurePoints[1];
+                        } else {
+                            for (let i = 0; i < PrepPic.MeasureData.normalizePoints.length; i++) {
+                                if (PrepPic.MeasureData.normalizePoints[i] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.normalizePoints[i]) <= MH) {
+                                    PrepPic.DraggedPos = PrepPic.MeasureData.normalizePoints[i];
+                                }
+                            }
+                        }
                     } else {
+                        if (PrepPic.MeasureData.measurePoints[2] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.measurePoints[2]) <= MH) {
+                            PrepPic.DraggedPos = PrepPic.MeasureData.measurePoints[2];
+                        } else if (PrepPic.MeasureData.measurePoints[3] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.measurePoints[3]) <= MH) {
+                            PrepPic.DraggedPos = PrepPic.MeasureData.measurePoints[3];
+                        }
+                    }
+                } else if (PrepPic.MeasureData.normalizer.NormalizeMethod == "CropRectangle") {
+                    if (PrepPic.Raw) {
                         for (let i = 0; i < PrepPic.MeasureData.normalizePoints.length; i++) {
                             if (PrepPic.MeasureData.normalizePoints[i] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.normalizePoints[i]) <= MH) {
                                 PrepPic.DraggedPos = PrepPic.MeasureData.normalizePoints[i];
                             }
                         }
-                    }
-                } else {
-                    if (PrepPic.MeasureData.measurePoints[2] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.measurePoints[2]) <= MH) {
-                        PrepPic.DraggedPos = PrepPic.MeasureData.measurePoints[2];
-                    } else if (PrepPic.MeasureData.measurePoints[3] && PrepPic_t.calcDistance(p, PrepPic.MeasureData.measurePoints[3]) <= MH) {
-                        PrepPic.DraggedPos = PrepPic.MeasureData.measurePoints[3];
+                    } else {
                     }
                 }
             } else {
                 if (p != PrepPic.DragPos && PrepPic.DraggedPos) {
                     PrepPic.DraggedPos.X += (p.X - PrepPic.DragPos.X);
                     PrepPic.DraggedPos.Y += (p.Y - PrepPic.DragPos.Y);
+                    PrepPic.DraggedPos.X = Math.max(0, Math.min(PrepPic.Image.width, PrepPic.DraggedPos.X));
+                    PrepPic.DraggedPos.Y = Math.max(0, Math.min(PrepPic.Image.height, PrepPic.DraggedPos.Y));
                     PrepPic.invalidate();
                     PrepPic.AnythingChanged = true;
                 }

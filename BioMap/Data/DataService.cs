@@ -904,7 +904,6 @@ namespace BioMap
               }
             } else if (!dr.IsDBNull(7) && !dr.IsDBNull(8) && !dr.IsDBNull(10) && !dr.IsDBNull(18) && !dr.IsDBNull(20)) {
               md=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
-                method="HeadToCloakInPetriDish",
                 normalizePoints=new[] {
                   new System.Numerics.Vector2 { X=dr.GetFloat(27),Y=dr.GetFloat(28) },
                   new System.Numerics.Vector2 { X=dr.GetFloat(29),Y=dr.GetFloat(30) },
@@ -918,6 +917,9 @@ namespace BioMap
                 },
               };
               bDirty=true;
+            }
+            if (md!=null && md.normalizer==null) {
+              md.normalizer=sd.CurrentProject.ImageNormalizer;
             }
             var el = new Element(sd.CurrentUser.Project) {
               ElementName = sElementName,
