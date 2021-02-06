@@ -146,6 +146,7 @@ namespace BioMap.Pages.Workflow
               :
               new Blazor.ImageSurveyor.ImageSurveyorNormalizer() { NormalizeMethod="CropRectangle", }
               ;
+            this.Element.InitMeasureData(SD,false);
           }
         }
         this.Element.Classification.ClassName=sNewClass;
@@ -157,6 +158,7 @@ namespace BioMap.Pages.Workflow
       this.PhotoPopup1.Show(el);
     }
     private async Task OnSelectPrev() {
+      this.Element=null;
       await this.RefreshData();
       if (this.SelectedElementIndex.HasValue && this.SelectedElementIndex.Value>=1 && this.Elements.Length>=1) {
         this.SelectedElementIndex--;
@@ -175,6 +177,7 @@ namespace BioMap.Pages.Workflow
       StateHasChanged();
     }
     private async Task OnSelectNext() {
+      this.Element=null;
       await this.RefreshData();
       if (this.SelectedElementIndex.HasValue && this.SelectedElementIndex.Value<this.Elements.Length-1) {
         this.SelectedElementIndex++;
@@ -207,10 +210,7 @@ namespace BioMap.Pages.Workflow
           } else if (this.Element.HasImageButNoOrigImage(SD)) {
             this.Element.MeasureData.normalizePoints=null;
           }
-          bool bHasOrigImageButNoImage=this.Element.HasOrigImageButNoImage(SD);
-          if (bHasOrigImageButNoImage) {
-            this.Element.InitMeasureData(SD,true);
-          }
+          this.Element.InitMeasureData(SD,true);
           bool bHasImageButNoOrigImage=(this.Element.MeasureData.normalizePoints==null);
           if (bHasImageButNoOrigImage) {
             this.Raw=false;
