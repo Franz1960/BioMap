@@ -502,7 +502,10 @@ namespace BioMap
       this.OperateOnDb(sProject,(command) => {
         command.CommandText = "SELECT value FROM project WHERE name='"+sPropertyName+"'";
         var r = command.ExecuteScalar();
-        sValue = command.ExecuteScalar() as string;
+        var sRawValue = command.ExecuteScalar() as string;
+        if (!string.IsNullOrEmpty(sRawValue)) {
+          sValue = sRawValue;
+        }
       });
       return sValue;
     }
