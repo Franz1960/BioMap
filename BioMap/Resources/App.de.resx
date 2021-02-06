@@ -270,6 +270,9 @@
   <data name="Crop" xml:space="preserve">
     <value>Zuschneiden</value>
   </data>
+  <data name="Current elements" xml:space="preserve">
+    <value>Aktuelle Anzahl von Elementen</value>
+  </data>
   <data name="Data Protection Officer" xml:space="preserve">
     <value>Datenschutzbeauftragter</value>
   </data>
@@ -308,6 +311,9 @@
   </data>
   <data name="Deads" xml:space="preserve">
     <value>Tote</value>
+  </data>
+  <data name="Default value" xml:space="preserve">
+    <value>Standardwert</value>
   </data>
   <data name="Details" xml:space="preserve">
     <value>Details</value>
@@ -471,6 +477,12 @@
   <data name="Length / Time Chart" xml:space="preserve">
     <value>Längen-Zeit-Diagramm</value>
   </data>
+  <data name="Level to see elements" xml:space="preserve">
+    <value>Zugangsstufe zum Anzeigen der Elemente</value>
+  </data>
+  <data name="Level to see exact locations" xml:space="preserve">
+    <value>Zugangsstufe zum Anzeigen der genauen Positionen</value>
+  </data>
   <data name="Lists" xml:space="preserve">
     <value>Listen</value>
   </data>
@@ -503,6 +515,9 @@
   </data>
   <data name="Maps" xml:space="preserve">
     <value>Karten</value>
+  </data>
+  <data name="Max. allowed elements" xml:space="preserve">
+    <value>Max. erlaubte Anzahl von Elementen</value>
   </data>
   <data name="Measure#To_measure_length" xml:space="preserve">
     <value>Vermessen</value>
@@ -569,6 +584,9 @@
   </data>
   <data name="Over time" xml:space="preserve">
     <value>Über der Zeit</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>Besitzer</value>
   </data>
   <data name="Pictures" xml:space="preserve">
     <value>Bilder</value>
@@ -656,6 +674,9 @@
   </data>
   <data name="Start" xml:space="preserve">
     <value>Start</value>
+  </data>
+  <data name="Start date" xml:space="preserve">
+    <value>Startdatum</value>
   </data>
   <data name="Statistics" xml:space="preserve">
     <value>Statistik</value>

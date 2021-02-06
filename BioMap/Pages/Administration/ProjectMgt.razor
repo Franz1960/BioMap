@@ -50,12 +50,14 @@
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Level to see elements"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
               <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsOwner" @bind-Value="SD.CurrentProject.MinLevelToSeeElements" />
+              <FieldHelp>@Localize["Default value"]: 200</FieldHelp>
             </FieldBody>
           </Field>
           <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Level to see exact locations"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
               <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsOwner" @bind-Value="SD.CurrentProject.MinLevelToSeeExactLocations" />
+              <FieldHelp>@Localize["Default value"]: 400</FieldHelp>
             </FieldBody>
           </Field>
         </CardBody>
