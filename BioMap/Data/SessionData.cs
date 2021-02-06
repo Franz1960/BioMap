@@ -26,9 +26,14 @@ namespace BioMap
     public bool SizeTimeChartShowVintageBoundaries { get; set; } = true;
     public string SizeTimeChartGrowingCurveMode { get; set; } = "GrowingCurve";
     public bool AlienateLocations { get; set; } = false;
+    public bool MaySeeElements {
+      get {
+        return (CurrentUser.Level>=CurrentProject.MinLevelToSeeElements);
+      }
+    }
     public bool MaySeeRealLocations {
       get {
-        return (CurrentUser.Level>=400 && !AlienateLocations);
+        return (CurrentUser.Level>=CurrentProject.MinLevelToSeeExactLocations && !AlienateLocations);
       }
     }
   }

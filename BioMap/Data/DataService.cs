@@ -534,6 +534,8 @@ namespace BioMap
       project.AoiMaxLng=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiMaxLng"));
       project.AoiTolerance=ConvInvar.ToDouble(this.GetProjectProperty(sd,"AoiTolerance"));
       project.SpeciesSciName=this.GetProjectProperty(sd,"SpeciesSciName");
+      project.MinLevelToSeeElements=ConvInvar.ToInt(this.GetProjectProperty(sd,"MinLevelToSeeElements","200"));
+      project.MinLevelToSeeExactLocations=ConvInvar.ToInt(this.GetProjectProperty(sd,"MinLevelToSeeExactLocations","400"));
       //
       project.Species.Clear();
       {
@@ -559,6 +561,8 @@ namespace BioMap
       this.SetProjectProperty(sd,"AoiMaxLng",ConvInvar.ToString(project.AoiMaxLng));
       this.SetProjectProperty(sd,"AoiTolerance",ConvInvar.ToString(project.AoiTolerance));
       this.SetProjectProperty(sd,"SpeciesSciName",project.SpeciesSciName);
+      this.SetProjectProperty(sd,"MinLevelToSeeElements",ConvInvar.ToString(project.MinLevelToSeeElements));
+      this.SetProjectProperty(sd,"MinLevelToSeeExactLocations",ConvInvar.ToString(project.MinLevelToSeeExactLocations));
       //
       {
         var sJson=JsonConvert.SerializeObject(project.Species);
@@ -827,7 +831,7 @@ namespace BioMap
       return await Task<Element[]>.Run(()=>{return this.GetElements(sd,filters,sSqlCondition,sSqlOrderBy); });
     }
     public Element[] GetElements(SessionData sd,Filters filters = null,string sSqlCondition = "",string sSqlOrderBy = "elements.creationtime") {
-      if (!sd.CurrentUser.MaySeeElements) {
+      if (!sd.MaySeeElements) {
         return Array.Empty<Element>();
       }
       if (filters!=null) {

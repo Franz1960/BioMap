@@ -20,6 +20,8 @@ namespace BioMap
     public double AoiMaxLng;
     public double AoiTolerance;
     public string SpeciesSciName;
+    public int MinLevelToSeeElements=200;
+    public int MinLevelToSeeExactLocations=400;
     //
     public bool IsLocationInsideAoi(BioMap.LatLng latLng) {
       double tolLat=(this.AoiMaxLat-this.AoiMinLat)*0.5*this.AoiTolerance;

@@ -46,6 +46,18 @@
               <NumericEdit TValue="int" Disabled="true" Value="DS.GetElementCount(SD)" />
             </FieldBody>
           </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Level to see elements"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsOwner" @bind-Value="SD.CurrentProject.MinLevelToSeeElements" />
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Level to see exact locations"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsOwner" @bind-Value="SD.CurrentProject.MinLevelToSeeExactLocations" />
+            </FieldBody>
+          </Field>
         </CardBody>
       </Card>
     </Column>

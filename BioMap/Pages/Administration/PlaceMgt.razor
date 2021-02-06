@@ -67,7 +67,7 @@
             <tr>
               <th scope="col"></th>
               <th scope="col">@Localize["Place"]</th>
-              @if (SD.CurrentUser.MaySeeLocations) {
+              @if (SD.MaySeeRealLocations) {
                 <th scope="col">@Localize["Latitude"]</th>
                 <th scope="col">@Localize["Longitude"]</th>
               }
@@ -86,7 +86,7 @@
                 </Button>
               </td>
               <th scope="row">@place.Name</th>
-              @if (SD.CurrentUser.MaySeeLocations) {
+              @if (SD.MaySeeRealLocations) {
                 <td>
                   <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" @onfocusout="(e)=>ChangeByUser(place)" />
                 </td>
