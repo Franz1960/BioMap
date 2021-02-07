@@ -18,6 +18,7 @@ namespace BioMap.Pages.Workflow
     private PhotoPopup PhotoPopup1;
     protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
     private Blazor.ImageSurveyor.ImageSurveyor imageSurveyorPrev;
+    private string PatternImgSrc="";
     private bool disableSetImage=false;
     private bool elementChanged=false;
     private bool normImageDirty=false;
@@ -257,7 +258,31 @@ namespace BioMap.Pages.Workflow
       }
       el.MeasureData=md;
       this.normImageDirty=true;
+      Utilities.CallDelayed(200,async ()=>await this.RefreshPatternImg());
+      //Task.Run(async ()=>await RefreshPatternImg());
       this.StateHasChanged();
+    }
+    private async Task RefreshPatternImg() {
+      try {
+        var el=this.Element;
+        if (el!=null) {
+          var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
+          using (var imgSrc = Image.Load(sSrcFile)) {
+            imgSrc.Mutate(x => x.AutoOrient());
+            var md=this.Element.MeasureData;
+            (int nWidth,int nHeight)=md.GetPatternSize(300);
+            var mPattern=md.GetPatternMatrix(nHeight);
+            var atb=new AffineTransformBuilder();
+            atb.AppendMatrix(mPattern);
+            imgSrc.Mutate(x => x.Transform(atb));
+            imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
+            var bs = new System.IO.MemoryStream();
+            imgSrc.SaveAsJpeg(bs);
+            this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
+          }
+          await this.InvokeAsync(()=>StateHasChanged());
+        }
+      } catch { }
     }
     private async Task ResetPositions_Clicked(Element el) {
       var sFilePath = DS.GetFilePathForImage(SD.CurrentUser.Project,el.ElementName,true);

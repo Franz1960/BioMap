@@ -16,9 +16,11 @@ namespace Blazor.ImageSurveyor
     public ImageSurveyorNormalizer normalizer;
     public System.Numerics.Vector2[] normalizePoints;
     public System.Numerics.Vector2[] measurePoints;
+    public float PatternRelWidth { get => 0.30f; }
+    public float PatternRelHeight { get => 0.80f; }
     //
     public System.Numerics.Matrix3x2 GetNormalizeMatrix() {
-      var mNormalize=System.Numerics.Matrix3x2.Identity;
+      var mResult=System.Numerics.Matrix3x2.Identity;
       if (string.CompareOrdinal(this.normalizer.NormalizeMethod,"HeadToCloakInPetriDish")==0) {
         try {
           var md=this;
@@ -36,7 +38,7 @@ namespace Blazor.ImageSurveyor
           };
           float phi=MathF.Atan2(md.measurePoints[0].Y-md.measurePoints[1].Y,md.measurePoints[0].X-md.measurePoints[1].X);
           //
-          mNormalize=
+          mResult=
             System.Numerics.Matrix3x2.CreateTranslation(-ptBoxCenter.X,-ptBoxCenter.Y)*
             System.Numerics.Matrix3x2.CreateRotation(-MathF.PI/2-phi)*
             System.Numerics.Matrix3x2.CreateScale(1/fScale)*
@@ -46,15 +48,49 @@ namespace Blazor.ImageSurveyor
         try {
           var md=this;
           //
-          mNormalize=
+          mResult=
             System.Numerics.Matrix3x2.CreateTranslation(-md.normalizePoints[0].X,-md.normalizePoints[0].Y);
         } catch { }
       }
-      return mNormalize;
+      return mResult;
+    }
+   public System.Numerics.Matrix3x2 GetPatternMatrix(int nPatternHeight) {
+      var md=this;
+      var mResult=this.GetNormalizeMatrix();
+      (int nWidth,int nHeight)=md.GetPatternSize(nPatternHeight);
+      if (string.CompareOrdinal(this.normalizer.NormalizeMethod,"HeadToCloakInPetriDish")==0) {
+        try {
+          var vCenter=(md.measurePoints[2]+md.measurePoints[3])/2;
+          var fLength=(md.measurePoints[2]-md.measurePoints[3]).Length();
+          //float fScale=fLength/(float)((md.normalizer.NormalizeReference/2)/md.normalizer.NormalizePixelSize);
+          float fScale=(fLength*this.PatternRelHeight)/(nPatternHeight);
+          var ptBoxCenter=new System.Numerics.Vector2 {
+            X=(md.measurePoints[2].X+md.measurePoints[3].X)/2,
+            Y=(md.measurePoints[2].Y+md.measurePoints[3].Y)/2,
+          };
+          float phi=MathF.Atan2(md.measurePoints[2].Y-md.measurePoints[3].Y,md.measurePoints[2].X-md.measurePoints[3].X);
+          //
+          mResult=
+            mResult*
+            System.Numerics.Matrix3x2.CreateTranslation(-ptBoxCenter.X,-ptBoxCenter.Y)*
+            System.Numerics.Matrix3x2.CreateRotation(-MathF.PI/2-phi)*
+            System.Numerics.Matrix3x2.CreateScale(1/fScale)*
+            System.Numerics.Matrix3x2.CreateTranslation(nWidth/2,nHeight/2);
+        } catch { }
+      }
+      return mResult;
     }
     public (int,int) GetNormalizedSize() {
       if (string.CompareOrdinal(this.normalizer.NormalizeMethod,"HeadToCloakInPetriDish")==0) {
         return (this.normalizer.NormalizedWidthPx,this.normalizer.NormalizedHeightPx);
+      } else if (string.CompareOrdinal(this.normalizer.NormalizeMethod,"CropRectangle")==0) {
+        return ((int)(this.normalizePoints[1].X-this.normalizePoints[0].X),(int)(this.normalizePoints[1].Y-this.normalizePoints[0].Y));
+      }
+      return (0,0);
+    }
+    public (int,int) GetPatternSize(int nPatternHeight) {
+      if (string.CompareOrdinal(this.normalizer.NormalizeMethod,"HeadToCloakInPetriDish")==0) {
+        return ((int)((this.PatternRelWidth*nPatternHeight)/this.PatternRelHeight),nPatternHeight);
       } else if (string.CompareOrdinal(this.normalizer.NormalizeMethod,"CropRectangle")==0) {
         return ((int)(this.normalizePoints[1].X-this.normalizePoints[0].X),(int)(this.normalizePoints[1].Y-this.normalizePoints[0].Y));
       }

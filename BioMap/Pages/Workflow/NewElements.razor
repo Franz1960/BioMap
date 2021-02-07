@@ -18,6 +18,18 @@
         <UserFilter />
       </Column>
     </Row>
+    <Row Margin="Margin.Is1.OnY">
+      <Column>
+        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
+          <Icon Name="IconName.StepBackward"></Icon>
+        </Button>
+      </Column>
+      <Column>
+        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
+          <Icon Name="IconName.StepForward"></Icon>
+        </Button>
+      </Column>
+    </Row>
     <Divider />
     @if (Element!=null) {
       <Row Margin="Margin.Is1.OnY">
@@ -163,14 +175,11 @@
       <Divider />
       <Row Margin="Margin.Is1.OnY">
         <Column>
-          <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
-            <Icon Name="IconName.StepBackward"></Icon>
-          </Button>
+          <Image Source="@PatternImgSrc" Style="height:200px;" />
         </Column>
         <Column>
-          <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
-            <Icon Name="IconName.StepForward"></Icon>
-          </Button>
+        </Column>
+        <Column>
         </Column>
       </Row>
     }
