@@ -126,13 +126,24 @@ namespace BioMap
         var sDataDir = this.GetDataDir(sProjectName);
         if (!System.IO.Directory.Exists(sDataDir)) {
           System.IO.Directory.CreateDirectory(sDataDir);
+          if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux)) {
+            Utilities.Bash("chown www-data:www-data -R "+sDataDir);
+          }
           this.SendMail(
             sd,
             "webmaster@itools.de",
             "Neues BioMap Projekt erzeugt: "+sProjectName,
             "Der Benutzer '"+sd.CurrentUser?.EMail+"' erzeugte das neue Projekt '"+sProjectName+"'.");
         }
-      } catch { }
+      } catch (Exception ex) {
+        try {
+          this.SendMail(
+            sd,
+            "webmaster@itools.de",
+            "Exception beim Erzeugen eines neuen BioMap-Projekts: "+sProjectName,
+            "Der Benutzer '"+sd.CurrentUser?.EMail+"' versuchte, das neue Projekt '"+sProjectName+"' zu erzeugen. Dabei kam es zu einem Ausnahmefehler."+Environment.NewLine+ex.ToString());
+        } catch { }
+      }
     }
     //
     private readonly List<string> AccessedDbs = new List<string>();
