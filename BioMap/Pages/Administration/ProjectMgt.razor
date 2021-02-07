@@ -259,12 +259,6 @@
     progressCompletion=0;
     progressModalRef.Show();
     try {
-      await DataCalculator.CalculatePlacesOfElements(SD,(completion) => {
-        if (progressCompletion!=completion) {
-          progressCompletion=completion;
-          this.InvokeAsync(() => { StateHasChanged(); });
-        }
-      });
     } finally {
       await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
     }

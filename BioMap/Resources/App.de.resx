@@ -624,6 +624,9 @@
   <data name="Recalculate all" xml:space="preserve">
     <value>Alles neu berechnen</value>
   </data>
+  <data name="Recalculate locations for all elements" xml:space="preserve">
+    <value>Orte für alle Elemente neu berechnen</value>
+  </data>
   <data name="Recaptures" xml:space="preserve">
     <value>Wiederfänge</value>
   </data>

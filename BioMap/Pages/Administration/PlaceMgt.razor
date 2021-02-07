@@ -10,6 +10,12 @@
   <Column>
     <CheckBox @bind-Checked="SD.AlienateLocations" LabelText=@Localize["Alienate locations"] />
   </Column>
+  <Column>
+    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await RecalculatePlaces_Clicked(); })">
+      <Icon Name="IconName.LocationArrow" />
+      @Localize["Recalculate locations for all elements"]
+    </Button>
+  </Column>
 </Row>
 <Row Margin="Margin.Is1.OnY">
   <Column>
@@ -44,15 +50,15 @@
                     </Column>
                   </Row>
                   @if (!string.IsNullOrEmpty(newPlaceErrorMessage)) {
-                  <Row Margin="Margin.Is1.OnY">
-                    <Column>
-                      <Alert Color="Color.Danger" Visible="true">
-                        <AlertMessage>
-                          @newPlaceErrorMessage
-                        </AlertMessage>
-                      </Alert>
-                    </Column>
-                  </Row>
+                    <Row Margin="Margin.Is1.OnY">
+                      <Column>
+                        <Alert Color="Color.Danger" Visible="true">
+                          <AlertMessage>
+                            @newPlaceErrorMessage
+                          </AlertMessage>
+                        </Alert>
+                      </Column>
+                    </Row>
                   }
                 </Column>
                 <Column>
@@ -79,34 +85,34 @@
           </thead>
           <tbody>
             @foreach (var place in AllPlaces) {
-            <tr>
-              <td scope="row">
-                <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<500" Clicked="@(async (e)=>{ DS.DeletePlace(SD,place.Name);RefreshData();await this.LocationEditRef.RefreshPlaces(); })">
-                  <Icon Name="IconName.Delete"></Icon>
-                </Button>
-              </td>
-              <th scope="row">@place.Name</th>
-              @if (SD.MaySeeRealLocations) {
-                <td>
-                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" @onfocusout="(e)=>ChangeByUser(place)" />
+              <tr>
+                <td scope="row">
+                  <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<500" Clicked="@(async (e)=>{ DS.DeletePlace(SD,place.Name);RefreshData();await this.LocationEditRef.RefreshPlaces(); })">
+                    <Icon Name="IconName.Delete"></Icon>
+                  </Button>
                 </td>
+                <th scope="row">@place.Name</th>
+                @if (SD.MaySeeRealLocations) {
+                  <td>
+                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" @onfocusout="(e)=>ChangeByUser(place)" />
+                  </td>
+                  <td>
+                    <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lng" @onfocusout="(e)=>ChangeByUser(place)" />
+                  </td>
+                }
                 <td>
-                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lng" @onfocusout="(e)=>ChangeByUser(place)" />
+                  <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" @onfocusout="(e)=>ChangeByUser(place)" />
                 </td>
-              }
-              <td>
-                <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" @onfocusout="(e)=>ChangeByUser(place)" />
-              </td>
-              @foreach (var idx in Enumerable.Range(0,Places.Traits.Length)) {
-                <td>
-                  <Select TValue="int" Disabled="!SD.CurrentUser.MayChangeElements" SelectedValue="place.TraitValues[idx]" SelectedValueChanged="(value)=>TraitValueChanged(place,idx,value)">
-                    @foreach (var idx1 in Enumerable.Range(0,Places.Traits[idx].ValueNames.Length)) {
-                      <SelectItem Value="idx1">@Places.Traits[idx].ValueNames[idx1]</SelectItem>
-                    }
-                  </Select>
-                </td>
-              }
-            </tr>
+                @foreach (var idx in Enumerable.Range(0,Places.Traits.Length)) {
+                  <td>
+                    <Select TValue="int" Disabled="!SD.CurrentUser.MayChangeElements" SelectedValue="place.TraitValues[idx]" SelectedValueChanged="(value)=>TraitValueChanged(place,idx,value)">
+                      @foreach (var idx1 in Enumerable.Range(0,Places.Traits[idx].ValueNames.Length)) {
+                        <SelectItem Value="idx1">@Places.Traits[idx].ValueNames[idx1]</SelectItem>
+                      }
+                    </Select>
+                  </td>
+                }
+              </tr>
             }
           </tbody>
         </table>
@@ -114,14 +120,46 @@
     </Card>
   </Column>
 </Row>
+<Modal @ref="progressModalRef">
+  <ModalContent Centered="true">
+    <ModalHeader>
+      <ModalTitle>
+        @Localize["Operation in progress.."]
+      </ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+      <Progress Margin="Margin.Is3.FromBottom">
+        <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
+      </Progress>
+      @if (messages.Count>=1) {
+        foreach (var msg in messages) {
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              @msg
+            </Column>
+          </Row>
+        }
+        <Row Margin="Margin.Is2.OnY">
+          <Column>
+            <Button Color="Color.Primary" Float="Float.Right" @onclick="()=>progressModalRef.Hide()">@Localize["Close"]</Button>
+          </Column>
+        </Row>
+      }
+    </ModalBody>
+  </ModalContent>
+</Modal>
 
 @code {
+  private Modal progressModalRef;
+  private int progressCompletion = 0;
+  private List<string> messages = new List<string>();
+  //
   private bool addPlaceVisible = false;
   private bool addPlaceFirstTimeVisible = true;
   private LocationEdit LocationEditRef;
-  private string newPlaceName="";
+  private string newPlaceName = "";
   private GoogleMapsComponents.Maps.LatLngLiteral newPlaceLocation;
-  private string newPlaceErrorMessage="";
+  private string newPlaceErrorMessage = "";
   //
   private Place[] AllPlaces = new Place[0];
   protected override void OnInitialized() {
@@ -146,6 +184,20 @@
     this.AllPlaces = DS.GetPlaces(SD);
     StateHasChanged();
   }
+  private async Task RecalculatePlaces_Clicked() {
+    progressCompletion=0;
+    progressModalRef.Show();
+    try {
+      await DataCalculator.CalculatePlacesOfElements(SD,(completion) => {
+        if (progressCompletion!=completion) {
+          progressCompletion=completion;
+          this.InvokeAsync(() => { StateHasChanged(); });
+        }
+      });
+    } finally {
+      await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+    }
+  }
   private async Task AddPlace_Opened() {
     if (this.addPlaceVisible) {
       addPlaceVisible=false;
@@ -157,7 +209,7 @@
     await this.InvokeAsync(() => { StateHasChanged(); });
   }
   private async Task AddPlace_Clicked() {
-    var latLng= new LatLng { lat=this.newPlaceLocation.Lat,lng=this.newPlaceLocation.Lng };
+    var latLng = new LatLng { lat=this.newPlaceLocation.Lat,lng=this.newPlaceLocation.Lng };
     if (string.IsNullOrEmpty(this.newPlaceName) || DS.GetPlaceByName(SD,this.newPlaceName)!=null) {
       this.newPlaceErrorMessage=Localize["Provide a new name."];
     } else if (!SD.CurrentProject.IsLocationInsideAoi(latLng)) {
@@ -173,7 +225,7 @@
       this.RefreshData();
       await this.LocationEditRef.RefreshPlaces();
     }
-    await this.InvokeAsync(()=>{ StateHasChanged(); });
+    await this.InvokeAsync(() => { StateHasChanged(); });
   }
   private void TraitValueChanged(Place place,int idx,int value) {
     place.TraitValues[idx]=value;
