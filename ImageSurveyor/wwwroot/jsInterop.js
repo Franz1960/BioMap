@@ -14,9 +14,10 @@ class PrepPic_t {
         this.DraggedPos = null;
         this.M2D = glMatrix.mat2d.create();
         this.AnythingChanged = false;
+        this.LoadCnt = 0;
     }
     init(dotNetImageSurvey) {
-        this.dotNetObject = dotNetImageSurvey;
+        PrepPic.dotNetObject = dotNetImageSurvey;
     }
     drawMarker(ctx, position, radius, color = "lightcyan", text = "") {
         let r = radius;
@@ -34,45 +35,45 @@ class PrepPic_t {
         ctx.moveTo(x, y - r);
         ctx.lineTo(x, y - rh);
         ctx.strokeStyle = color;
-        ctx.lineWidth = 4 / this.Zoom;
+        ctx.lineWidth = 4 / PrepPic.Zoom;
         ctx.stroke();
         ctx.font = "bold " + r.toFixed(0) + "px Arial";
         ctx.fillStyle = color;
         ctx.fillText(text, x + r * 1.20, y + rh);
     }
     getMarkerWidth() {
-        return 60 / this.Zoom;
+        return 60 / PrepPic.Zoom;
     }
     PrepareDisplay(divMain) {
-        this.DivMain = divMain;
-        this.DivMain.CodeBehind = this;
+        PrepPic.DivMain = divMain;
+        PrepPic.DivMain.CodeBehind = PrepPic;
         //
-        window.onresize = (ev) => { this.invalidate(); };
-        this.Canvas = document.createElement('canvas');
-        this.Canvas.addEventListener('pointerdown', this.canvasPointerActed);
-        this.Canvas.addEventListener('pointermove', this.canvasPointerActed);
-        this.DivMain.appendChild(this.Canvas);
-        this.DivMain.addEventListener('resize', (event) => { this.invalidate(); });
+        window.onresize = (ev) => { PrepPic.invalidate(); };
+        PrepPic.Canvas = document.createElement('canvas');
+        PrepPic.Canvas.addEventListener('pointerdown', PrepPic.canvasPointerActed);
+        PrepPic.Canvas.addEventListener('pointermove', PrepPic.canvasPointerActed);
+        PrepPic.DivMain.appendChild(PrepPic.Canvas);
+        PrepPic.DivMain.addEventListener('resize', (event) => { PrepPic.invalidate(); });
     }
     cropAndSave(urlSaveNormedImage) {
     }
     draw() {
-        if (!this.Image || this.Image.width < 1 || this.Image.height < 1 || !this.DivMain || this.DivMain.width < 1 || this.DivMain.height < 1) {
+        if (!PrepPic.Image || PrepPic.Image.width < 1 || PrepPic.Image.height < 1 || !PrepPic.DivMain || PrepPic.DivMain.width < 1 || PrepPic.DivMain.height < 1) {
             return;
         }
-        let rDivMain = this.DivMain.getBoundingClientRect();
-        this.Canvas.height = rDivMain.height;
-        this.Canvas.width = (this.Canvas.height * this.Image.width) / this.Image.height;
-        let rCanvas = this.Canvas.getBoundingClientRect();
-        this.Zoom = rCanvas.width / this.Image.width;
+        let rDivMain = PrepPic.DivMain.getBoundingClientRect();
+        PrepPic.Canvas.height = rDivMain.height;
+        PrepPic.Canvas.width = (PrepPic.Canvas.height * PrepPic.Image.width) / PrepPic.Image.height;
+        let rCanvas = PrepPic.Canvas.getBoundingClientRect();
+        PrepPic.Zoom = rCanvas.width / PrepPic.Image.width;
         const MW = PrepPic.getMarkerWidth();
         const MH = MW / 2;
-        let ctx = this.Canvas.getContext("2d");
+        let ctx = PrepPic.Canvas.getContext("2d");
         ctx.resetTransform();
-        ctx.scale(this.Zoom, this.Zoom);
-        ctx.drawImage(this.Image, 0, 0);
-        if (this.Raw) {
-            if (this.MeasureData.normalizer.NormalizeMethod == "HeadToCloakInPetriDish") {
+        ctx.scale(PrepPic.Zoom, PrepPic.Zoom);
+        ctx.drawImage(PrepPic.Image, 0, 0);
+        if (PrepPic.Raw) {
+            if (PrepPic.MeasureData.normalizer.NormalizeMethod == "HeadToCloakInPetriDish") {
                 let ptHead = PrepPic.MeasureData.measurePoints[0];
                 let ptBack = PrepPic.MeasureData.measurePoints[1];
                 let ptsOnCircle = PrepPic.MeasureData.normalizePoints;
@@ -91,7 +92,7 @@ class PrepPic_t {
                     ptsOnCircle[2].Y);
                 ctx.beginPath();
                 ctx.arc(circle.xCenter, circle.yCenter, circle.radius, 0, 2 * Math.PI);
-                ctx.lineWidth = 4 / this.Zoom;
+                ctx.lineWidth = 4 / PrepPic.Zoom;
                 ctx.stroke();
                 //
                 let fScale = circle.radius / 500;
@@ -105,33 +106,32 @@ class PrepPic_t {
                 ctx.translate(ptBoxCenter.X, ptBoxCenter.Y);
                 ctx.rotate(phi);
                 ctx.strokeRect(-fBoxSide / 2, -fBoxSide / 2, fBoxSide, fBoxSide);
-            } else if (this.MeasureData.normalizer.NormalizeMethod == "CropRectangle") {
+            } else if (PrepPic.MeasureData.normalizer.NormalizeMethod == "CropRectangle") {
                 let ptA = PrepPic.MeasureData.normalizePoints[0];
                 let ptB = PrepPic.MeasureData.normalizePoints[1];
                 PrepPic.drawMarker(ctx, ptA, MH);
                 PrepPic.drawMarker(ctx, ptB, MH);
-                ctx.lineWidth = 4 / this.Zoom;
+                ctx.lineWidth = 4 / PrepPic.Zoom;
                 ctx.strokeRect(ptA.X, ptA.Y, ptB.X - ptA.X, ptB.Y - ptA.Y);
             }
         } else {
-            if (this.MeasureData.normalizer.NormalizeMethod == "HeadToCloakInPetriDish") {
+            if (PrepPic.MeasureData.normalizer.NormalizeMethod == "HeadToCloakInPetriDish") {
                 let ptHead = PrepPic.MeasureData.measurePoints[2];
                 let ptBack = PrepPic.MeasureData.measurePoints[3];
                 PrepPic.drawMarker(ctx, ptHead, MH, 'magenta', 'Kopfspitze');
                 PrepPic.drawMarker(ctx, ptBack, MH, 'brown', 'Kloake');
-            } else if (this.MeasureData.normalizer.NormalizeMethod == "CropRectangle") {
+            } else if (PrepPic.MeasureData.normalizer.NormalizeMethod == "CropRectangle") {
             }
         }
-        this.CanvasValid = true;
+        PrepPic.CanvasValid = true;
     }
     invalidate() {
-        this.CanvasValid = false;
-        this.draw();
+        PrepPic.CanvasValid = false;
+        PrepPic.draw();
     }
     canvasPointerActed(event) {
         const MW = PrepPic.getMarkerWidth();
         const MH = MW / 2;
-        // console.log("Event-Typ: "+event.type+", button: "+event.button+", buttons: "+event.buttons);
         if (event.buttons == 1) {
             let rCanvas = PrepPic.Canvas.getBoundingClientRect();
             let p = { X: (event.clientX - rCanvas.left) / PrepPic.Zoom, Y: (event.clientY - rCanvas.top) / PrepPic.Zoom };
@@ -217,18 +217,20 @@ class PrepPic_t {
         }
     }
     setImage(urlImage, bRaw, measureData) {
-        if (!this.Image) {
-            this.Image = document.createElement('img');
+        if (!PrepPic.Image) {
+            PrepPic.Image = document.createElement('img');
+            PrepPic.Image.addEventListener("load", (ev) => {
+                PrepPic.LoadCnt++;
+                PrepPic.invalidate();
+            });
         }
-        this.Raw = bRaw;
-        this.MeasureData = JSON.parse(measureData);
-        if (urlImage != this.Image.src) {
-            this.Image.src = urlImage;
-            if (this.Image) {
-                this.Image.addEventListener("load", (ev) => { this.invalidate(); });
-            }
+        PrepPic.Raw = bRaw;
+        PrepPic.MeasureData = JSON.parse(measureData);
+        if (urlImage != PrepPic.Image.src) {
+            PrepPic.LoadCnt = 0;
+            PrepPic.Image.src = urlImage;
         } else {
-            this.invalidate();
+            PrepPic.invalidate();
         }
     }
 }

@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Blazor.ImageSurveyor
 {
-  public class ImageSurveyorComponent : ComponentBase, IDisposable
+  public partial class ImageSurveyor : IDisposable
   {
     [Parameter]
     public bool Raw { get; set; }
@@ -26,7 +26,9 @@ namespace Blazor.ImageSurveyor
 
     protected ElementReference divMain { get; set; }
 
+    private bool Initialized=false;
     protected override async Task OnAfterRenderAsync(bool firstRender) {
+      await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
         await InitAsync(Options);
       }
@@ -41,12 +43,17 @@ namespace Blazor.ImageSurveyor
     [Inject]
     public IJSRuntime JsRuntime { get; protected set; } = default!;
 
-    private DotNetObjectReference<ImageSurveyorComponent>? thisRef=null;
+    private DotNetObjectReference<ImageSurveyor>? thisRef=null;
 
     public async Task InitAsync(ImageSurveyorOptions? options = null) {
       this.thisRef = DotNetObjectReference.Create(this);
       await this.JsRuntime.InvokeVoidAsync("PrepPic.init",this.thisRef);
       await this.JsRuntime.InvokeVoidAsync("PrepPic.PrepareDisplay",this.divMain);
+      // Load image if already available.
+      if (!string.IsNullOrEmpty(this.ImageUrl)) {
+        await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl,this.Raw,this.MeasureDataJson);
+      }
+      this.Initialized=true;
     }
     public string ImageUrl { get; private set; }="";
     public string MeasureDataJson { get; private set; }="";
@@ -56,8 +63,9 @@ namespace Blazor.ImageSurveyor
       if (string.CompareOrdinal(sImageUrl,this.ImageUrl)!=0 || string.CompareOrdinal(sMeasureDataJson,this.MeasureDataJson)!=0) {
         this.ImageUrl=sImageUrl;
         this.MeasureDataJson=sMeasureDataJson;
-        await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl,bRaw,sMeasureDataJson);
-        await Task.Delay(100);
+        if (this.Initialized) {
+          await this.JsRuntime.InvokeVoidAsync("PrepPic.setImage",this.ImageUrl,bRaw,sMeasureDataJson);
+        }
       }
     }
     [JSInvokable]
