@@ -103,7 +103,7 @@
             await imageStream.CopyToAsync(destStream);
             destStream.Close();
           }
-          var el = Element.CreateFromImageFile(SD.CurrentUser.Project,sDestTempFilePath,SD.CurrentUser.EMail);
+          var el = Element.CreateFromImageFile(SD.CurrentUser.Project,sDestTempFilePath,SD);
           if (!SD.CurrentUser.MayUploadElements) {
             messages.Add("User access level ("+SD.CurrentUser.Level+") is too low.");
           } else if (DS.GetElementCount(SD)>=SD.CurrentProject.MaxAllowedElements) {

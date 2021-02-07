@@ -84,31 +84,31 @@ namespace BioMap
         return StatusCode(500,$"Internal server error: {ex}");
       }
     }
-    [HttpPost]
-    public IActionResult Upload() {
-      string sProject = this.HttpContext.Request.Cookies["Project"];
-      string EMailAddr = this.HttpContext.Request.Cookies["UserId"];
-      var ds = DataService.Instance;
-      var sImagesOrigDir = System.IO.Path.Combine(ds.GetDataDir(sProject),"images_orig");
-      try {
-        if (Request.Form.Files.Count>=1) {
-          var file = Request.Form.Files[0];
-          var pathToSave = sImagesOrigDir;
-          if (file.Length > 0) {
-            var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-            var fullPath = System.IO.Path.Combine(pathToSave,fileName);
-            using (var stream = new System.IO.FileStream(fullPath,System.IO.FileMode.Create)) {
-              file.CopyTo(stream);
-            }
-            var el = Element.CreateFromImageFile(sProject,fullPath,EMailAddr);
-            ds.WriteElement(sProject,el);
-            return Ok(fileName);
-          }
-        }
-      } catch (Exception ex) {
-        return StatusCode(500,$"Internal server error: {ex}");
-      }
-      return BadRequest();
-    }
+    //[HttpPost]
+    //public IActionResult Upload() {
+    //  string sProject = this.HttpContext.Request.Cookies["Project"];
+    //  string EMailAddr = this.HttpContext.Request.Cookies["UserId"];
+    //  var ds = DataService.Instance;
+    //  var sImagesOrigDir = System.IO.Path.Combine(ds.GetDataDir(sProject),"images_orig");
+    //  try {
+    //    if (Request.Form.Files.Count>=1) {
+    //      var file = Request.Form.Files[0];
+    //      var pathToSave = sImagesOrigDir;
+    //      if (file.Length > 0) {
+    //        var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+    //        var fullPath = System.IO.Path.Combine(pathToSave,fileName);
+    //        using (var stream = new System.IO.FileStream(fullPath,System.IO.FileMode.Create)) {
+    //          file.CopyTo(stream);
+    //        }
+    //        var el = Element.CreateFromImageFile(sProject,fullPath,EMailAddr);
+    //        ds.WriteElement(sProject,el);
+    //        return Ok(fileName);
+    //      }
+    //    }
+    //  } catch (Exception ex) {
+    //    return StatusCode(500,$"Internal server error: {ex}");
+    //  }
+    //  return BadRequest();
+    //}
   }
 }

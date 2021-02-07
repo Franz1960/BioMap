@@ -94,13 +94,13 @@ namespace BioMap
     public Element(string sProject) {
       this.Project=sProject;
     }
-    public static Element CreateFromImageFile(string sProject,string sImageFilePath,string sUserId) {
+    public static Element CreateFromImageFile(string sProject,string sImageFilePath,SessionData sd) {
       using (var sImageStream = new System.IO.FileStream(sImageFilePath,System.IO.FileMode.Open)) {
         var sElementName = System.IO.Path.GetFileName(sImageFilePath);
-        return CreateFromImageFile(sProject,sImageStream,sElementName,sUserId);
+        return CreateFromImageFile(sProject,sImageStream,sElementName,sd);
       }
     }
-    public static Element CreateFromImageFile(string sProject,System.IO.Stream sImageStream,string sElementName,string sUserId) {
+    public static Element CreateFromImageFile(string sProject,System.IO.Stream sImageStream,string sElementName,SessionData sd) {
       var metaData = ImageMetadataReader.ReadMetadata(sImageStream);
       var ifd0Directory = metaData.OfType<ExifIfd0Directory>().FirstOrDefault();
       var subIfdDirectory = metaData.OfType<ExifSubIfdDirectory>().FirstOrDefault();
@@ -111,7 +111,7 @@ namespace BioMap
       el.ElementProp=new ElementProp_t();
       el.ElementProp.UploadInfo=new Element.UploadInfo_t {
         Timestamp = DateTime.Now,
-        UserId = sUserId,
+        UserId = sd.CurrentUser.EMail,
       };
       el.ElementProp.MarkerInfo=new MarkerInfo_t();
       el.ElementProp.MarkerInfo.category=100;
@@ -121,6 +121,7 @@ namespace BioMap
           lat=geoLocation.Latitude,
           lng=geoLocation.Longitude,
         };
+        el.ElementProp.MarkerInfo.PlaceName=Place.GetNearestPlace(sd,el.ElementProp.MarkerInfo.position)?.Name;
       }
       el.ElementProp.ExifData=new ExifData_t();
       if (subIfdDirectory!=null && subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal,out var dateTime)) {
