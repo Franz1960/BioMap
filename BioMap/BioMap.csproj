@@ -68,7 +68,6 @@ The web app has been developed for a nature protection project in Germany. The p
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.2" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.113.7" />
   </ItemGroup>
 
@@ -86,6 +85,7 @@ The web app has been developed for a nature protection project in Germany. The p
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\source.3rd\ImageSharp\src\ImageSharp\ImageSharp.csproj" />
     <ProjectReference Include="..\ImageSurveyor\ImageSurveyor.csproj" />
   </ItemGroup>
 

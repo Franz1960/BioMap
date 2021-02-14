@@ -6,7 +6,12 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.ColorSpaces;
+using SixLabors.ImageSharp.ColorSpaces.Conversion;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Convolution;
+using BioMap.ImageProc;
 using BioMap.Shared;
 
 namespace BioMap.Pages.Workflow
@@ -111,6 +116,7 @@ namespace BioMap.Pages.Workflow
     private async void imageSurveyor_AfterRenderEvent(object sender,EventArgs e) {
       if (this.Element!=null) {
         await this.LoadElement();
+        Utilities.CallDelayed(200,async ()=>await this.RefreshPatternImg());
       }
     }
     private void imageSurveyor_MeasureDataChanged(object sender,Blazor.ImageSurveyor.ImageSurveyorMeasureData measureData) {
@@ -276,6 +282,8 @@ namespace BioMap.Pages.Workflow
             atb.AppendMatrix(mPattern);
             imgSrc.Mutate(x => x.Transform(atb));
             imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
+            imgSrc.Mutate(x => x.MaxChroma(0.20f,new[] { new System.Numerics.Vector2(10,80) }));
+            imgSrc.Mutate(x => x.DetectEdges());
             var bs = new System.IO.MemoryStream();
             imgSrc.SaveAsJpeg(bs);
             this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
