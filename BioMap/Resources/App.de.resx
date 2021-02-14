@@ -345,6 +345,9 @@
   <data name="EMail address" xml:space="preserve">
     <value>EMail-Adresse</value>
   </data>
+  <data name="Entropy" xml:space="preserve">
+    <value>Entropie</value>
+  </data>
   <data name="Exclude fresh born" xml:space="preserve">
     <value>Ohne Hüpferlinge</value>
   </data>
@@ -656,6 +659,9 @@
   </data>
   <data name="Select project" xml:space="preserve">
     <value>Projekt auswählen</value>
+  </data>
+  <data name="Share of yellow" xml:space="preserve">
+    <value>Gelbanteil</value>
   </data>
   <data name="Show custom map" xml:space="preserve">
     <value>Eigene Karte anzeigen</value>

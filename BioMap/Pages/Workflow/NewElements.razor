@@ -174,12 +174,12 @@
       </Row>
       <Divider />
       <Row Margin="Margin.Is1.OnY">
-        <Column>
+        <Column ColumnSize="ColumnSize.Is4">
           <Image Source="@PatternImgSrc" Style="height:200px;" />
         </Column>
         <Column>
-        </Column>
-        <Column>
+          <p>@Localize["Share of yellow"]: @((ShareOfYellow*100).ToString("0.0"))%</p>
+          <p>@Localize["Entropy"]: @((Entropy*100).ToString("0.0"))%</p>
         </Column>
       </Row>
     }

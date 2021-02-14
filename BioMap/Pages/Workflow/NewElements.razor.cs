@@ -24,6 +24,8 @@ namespace BioMap.Pages.Workflow
     protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
     private Blazor.ImageSurveyor.ImageSurveyor imageSurveyorPrev;
     private string PatternImgSrc="";
+    private float ShareOfYellow=0;
+    private float Entropy=0;
     private bool disableSetImage=false;
     private bool elementChanged=false;
     private bool normImageDirty=false;
@@ -273,6 +275,8 @@ namespace BioMap.Pages.Workflow
         var el=this.Element;
         if (el!=null) {
           var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
+          var analyseYellowShare = new AnalyseProcessor();
+          var analyseEntropy = new AnalyseProcessor();
           using (var imgSrc = Image.Load(sSrcFile)) {
             imgSrc.Mutate(x => x.AutoOrient());
             var md=this.Element.MeasureData;
@@ -283,10 +287,14 @@ namespace BioMap.Pages.Workflow
             imgSrc.Mutate(x => x.Transform(atb));
             imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
             imgSrc.Mutate(x => x.MaxChroma(0.20f,new[] { new System.Numerics.Vector2(10,80) }));
-            imgSrc.Mutate(x => x.DetectEdges());
+            imgSrc.Mutate(x => x.ApplyProcessor(analyseYellowShare));
+            var imgEdges = imgSrc.Clone(x => x.DetectEdges());
+            imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
             var bs = new System.IO.MemoryStream();
             imgSrc.SaveAsJpeg(bs);
             this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
+            this.ShareOfYellow=analyseYellowShare.AnalyseData.ShareOfWhite;
+            this.Entropy=analyseEntropy.AnalyseData.ShareOfWhite;
           }
           await this.InvokeAsync(()=>StateHasChanged());
         }
