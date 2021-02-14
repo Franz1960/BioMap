@@ -91,6 +91,8 @@ namespace BioMap.ImageProc
         Rgba32 rgba = default;
         Span<TPixel> row = this.source.GetPixelRowSpan(y);
         ref TPixel rowRef = ref MemoryMarshal.GetReference(row);
+        float YCbCr_Achromatic_Cb = 127.5F;
+        float YCbCr_Achromatic_Cr = 127.5F;
 
         if (this.hueIntervals==null) {
           float fThreshold = this.threshold / 2F;
@@ -100,7 +102,7 @@ namespace BioMap.ImageProc
 
             // Calculate YCbCr value and compare to threshold.
             var yCbCr = this.colorSpaceConverter.ToYCbCr(rgba);
-            if (MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr.Achromatic.Cb),MathF.Abs(yCbCr.Cr - YCbCr.Achromatic.Cr)) >= fThreshold) {
+            if (MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr_Achromatic_Cb),MathF.Abs(yCbCr.Cr - YCbCr_Achromatic_Cr)) >= fThreshold) {
               color = this.upper;
             } else {
               color = this.lower;
@@ -131,7 +133,7 @@ namespace BioMap.ImageProc
             if (bHueOk) {
               // Calculate YCbCr value and compare to threshold.
               var yCbCr = this.colorSpaceConverter.ToYCbCr(rgba);
-              if (MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr.Achromatic.Cb),MathF.Abs(yCbCr.Cr - YCbCr.Achromatic.Cr)) >= fThreshold) {
+              if (MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr_Achromatic_Cb),MathF.Abs(yCbCr.Cr - YCbCr_Achromatic_Cr)) >= fThreshold) {
                 color = this.upper;
               } else {
                 color = this.lower;
