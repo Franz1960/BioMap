@@ -25,6 +25,7 @@ namespace BioMap.Pages.Workflow
     private Blazor.ImageSurveyor.ImageSurveyor imageSurveyorPrev;
     private string PatternImgSrc="";
     private float ShareOfYellow=0;
+    private float AsymmetryOfYellow=0;
     private float Entropy=0;
     private bool disableSetImage=false;
     private bool elementChanged=false;
@@ -293,8 +294,9 @@ namespace BioMap.Pages.Workflow
             var bs = new System.IO.MemoryStream();
             imgSrc.SaveAsJpeg(bs);
             this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
-            this.ShareOfYellow=analyseYellowShare.AnalyseData.ShareOfWhite;
-            this.Entropy=analyseEntropy.AnalyseData.ShareOfWhite;
+            this.ShareOfYellow=(float)analyseYellowShare.AnalyseData.ShareOfWhite;
+            this.AsymmetryOfYellow=(float)((analyseYellowShare.AnalyseData.LowerShareOfWhite-analyseYellowShare.AnalyseData.UpperShareOfWhite)/Math.Max(0.01,analyseYellowShare.AnalyseData.ShareOfWhite));
+            this.Entropy=(float)analyseEntropy.AnalyseData.ShareOfWhite;
           }
           await this.InvokeAsync(()=>StateHasChanged());
         }

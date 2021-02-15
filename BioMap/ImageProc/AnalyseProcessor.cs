@@ -24,7 +24,17 @@ namespace BioMap.ImageProc
       /// <summary>
       /// The proportion of white pixels.
       /// </summary>
-      public float ShareOfWhite { get; set; }
+      public double ShareOfWhite { get; set; }
+
+      /// <summary>
+      /// The proportion of white pixels in the upper half.
+      /// </summary>
+      public double UpperShareOfWhite { get; set; }
+
+      /// <summary>
+      /// The proportion of white pixels in the lower half.
+      /// </summary>
+      public double LowerShareOfWhite { get; set; }
     }
 
     public AnalyseData_t AnalyseData = new AnalyseData_t();

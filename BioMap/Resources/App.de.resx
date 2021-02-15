@@ -192,6 +192,9 @@
   <data name="Area extension tolerance" xml:space="preserve">
     <value>Toleranz der Ausdehnung des Projektgebiets</value>
   </data>
+  <data name="Asymmetry" xml:space="preserve">
+    <value>Asymmetrie</value>
+  </data>
   <data name="Author" xml:space="preserve">
     <value>Autor</value>
   </data>

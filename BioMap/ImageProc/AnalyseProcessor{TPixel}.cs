@@ -38,9 +38,28 @@ namespace BioMap.ImageProc
       this.definition = definition;
     }
 
+    protected override void BeforeImageApply() {
+      base.BeforeImageApply();
+      this.data.WhitePixelCntPerRow=new double[this.SourceRectangle.Height];
+    }
+
     protected override void AfterImageApply() {
       base.AfterImageApply();
-      this.definition.AnalyseData.ShareOfWhite = this.data.WhitePixelCnt / (this.SourceRectangle.Width * this.SourceRectangle.Height);
+      double fWhiteTotal=0;
+      double fWhiteUpper=0;
+      double fWhiteLower=0;
+      double fPixelArea=this.SourceRectangle.Width * this.SourceRectangle.Height;
+      for (int y = 0;y<this.data.WhitePixelCntPerRow.Length;y++) {
+        fWhiteTotal += this.data.WhitePixelCntPerRow[y];
+        if (y < this.data.WhitePixelCntPerRow.Length/2) {
+          fWhiteUpper += this.data.WhitePixelCntPerRow[y];
+        } else {
+          fWhiteLower += this.data.WhitePixelCntPerRow[y];
+        }
+      }
+      this.definition.AnalyseData.ShareOfWhite = fWhiteTotal / fPixelArea;
+      this.definition.AnalyseData.UpperShareOfWhite = fWhiteUpper * 2 / fPixelArea;
+      this.definition.AnalyseData.LowerShareOfWhite = fWhiteLower * 2 / fPixelArea;
     }
 
     /// <inheritdoc/>
@@ -59,7 +78,7 @@ namespace BioMap.ImageProc
 
     public class Data_t
     {
-      public float WhitePixelCnt = 0;
+      public double[] WhitePixelCntPerRow;
     }
 
     /// <summary>
@@ -99,7 +118,7 @@ namespace BioMap.ImageProc
               fWhitePixelCnt += 1;
             }
           }
-          this.Data.WhitePixelCnt += fWhitePixelCnt;
+          this.Data.WhitePixelCntPerRow[y] += fWhitePixelCnt;
         }
       }
     }
