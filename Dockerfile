@@ -12,12 +12,13 @@ RUN dotnet restore
 COPY BioMap/. ./BioMap/
 COPY ImageSurveyor/. ./ImageSurveyor/
 WORKDIR /source/BioMap
-RUN dotnet publish -c debug -o /app --no-restore
+RUN dotnet publish -c release -o /app --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
-RUN apt-get update
-RUN apt-get install openssh-server unzip curl -y
+#RUN apt-get update
+#RUN apt-get install openssh-server unzip curl -y
+#RUN service ssh start
 WORKDIR /var/www/dotnet/biomap/bin
 COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "BioMap.dll"]
