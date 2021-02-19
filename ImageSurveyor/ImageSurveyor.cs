@@ -19,8 +19,6 @@ namespace Blazor.ImageSurveyor
     public event EventHandler? AfterRender;
     public event EventHandler<ImageSurveyorMeasureData>? MeasureDataChanged;
 
-    private string _height = "500px";
-
     [Parameter]
     public string Style { get; set; }="";
 
