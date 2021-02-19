@@ -22,4 +22,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0
 #RUN service ssh start
 WORKDIR /var/www/dotnet/biomap/bin
 COPY --from=build /app ./
-ENTRYPOINT ["dotnet", "BioMap.dll"]
+ENTRYPOINT ["dotnet", "BioMap.dll",">/var/log/biomap.log"]
