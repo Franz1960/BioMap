@@ -42,14 +42,16 @@ namespace BioMap.Pages.Workflow
                 var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._Element.ElementName,true);
                 var sDstFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._Element.ElementName,false);
                 using (var imgSrc = Image.Load(sSrcFile)) {
-                  imgSrc.Mutate(x => x.AutoOrient());
-                  var md=this._Element.MeasureData;
-                  (int nWidth,int nHeight)=md.GetNormalizedSize();
-                  var mNormalize=md.GetNormalizeMatrix();
-                  var atb=new AffineTransformBuilder();
-                  atb.AppendMatrix(mNormalize);
-                  imgSrc.Mutate(x => x.Transform(atb));
-                  imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
+                  try {
+                    imgSrc.Mutate(x => x.AutoOrient());
+                    var md=this._Element.MeasureData;
+                    (int nWidth,int nHeight)=md.GetNormalizedSize();
+                    var mNormalize=md.GetNormalizeMatrix();
+                    var atb=new AffineTransformBuilder();
+                    atb.AppendMatrix(mNormalize);
+                    imgSrc.Mutate(x => x.Transform(atb));
+                    imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
+                  } catch { }
                   imgSrc.SaveAsJpeg(sDstFile);
                 }
               }
@@ -124,7 +126,7 @@ namespace BioMap.Pages.Workflow
     }
     private void imageSurveyor_MeasureDataChanged(object sender,Blazor.ImageSurveyor.ImageSurveyorMeasureData measureData) {
       if (this.Element!=null) {
-        this.MeasureDataChanged(this.Element,measureData);
+        Utilities.CallDelayed(200,this.MeasureDataChanged,this.Element,measureData);
       }
     }
     private async Task SelectElement() {
@@ -235,14 +237,16 @@ namespace BioMap.Pages.Workflow
             } else {
               var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
               using (var imgSrc = Image.Load(sSrcFile)) {
-                imgSrc.Mutate(x => x.AutoOrient());
-                var md=this.Element.MeasureData;
-                (int nWidth,int nHeight)=md.GetNormalizedSize();
-                var mNormalize=md.GetNormalizeMatrix();
-                var atb=new AffineTransformBuilder();
-                atb.AppendMatrix(mNormalize);
-                imgSrc.Mutate(x => x.Transform(atb));
-                imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
+                try {
+                  imgSrc.Mutate(x => x.AutoOrient());
+                  var md=this.Element.MeasureData;
+                  (int nWidth,int nHeight)=md.GetNormalizedSize();
+                  var mNormalize=md.GetNormalizeMatrix();
+                  var atb=new AffineTransformBuilder();
+                  atb.AppendMatrix(mNormalize);
+                  imgSrc.Mutate(x => x.Transform(atb));
+                  imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
+                } catch { }
                 var bs = new System.IO.MemoryStream();
                 imgSrc.SaveAsJpeg(bs);
                 sUrlImage="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
@@ -254,7 +258,9 @@ namespace BioMap.Pages.Workflow
         }
       }
     }
-    private void MeasureDataChanged(Element el,Blazor.ImageSurveyor.ImageSurveyorMeasureData md) {
+    private void MeasureDataChanged(object[] oaArgs) {
+      var el=(Element)oaArgs[0];
+      var md=(Blazor.ImageSurveyor.ImageSurveyorMeasureData)oaArgs[1];
       if (el.ElementProp.IndivData==null) {
         el.ElementProp.IndivData=new Element.IndivData_t {
           MeasuredData=new Element.IndivData_t.MeasuredData_t {
@@ -268,9 +274,8 @@ namespace BioMap.Pages.Workflow
       el.MeasureData=md;
       this.normImageDirty=true;
       Utilities.CallDelayed(200,this.RefreshPatternImg);
-      this.StateHasChanged();
     }
-    private async void RefreshPatternImg() {
+    private async void RefreshPatternImg(object[] oaArgs) {
       try {
         var el=this.Element;
         if (el!=null) {

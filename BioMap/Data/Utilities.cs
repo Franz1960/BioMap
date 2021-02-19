@@ -26,7 +26,7 @@ namespace BioMap
     }
     private class DelayedCaller
     {
-      internal DelayedCaller(int delayMs,Action action) {
+      internal DelayedCaller(int delayMs,Action<object[]> action,params object[] oaArgs) {
         this.DelayMs=delayMs;
         this.Action=action;
         this.Timer=new Timer(delayMs);
@@ -37,13 +37,14 @@ namespace BioMap
         lock (DelayedCallers) {
           DelayedCallers.Remove(this.Action);
         }
-        this.Action();
+        this.Action(this.Args);
       }
-      internal Action Action;
+      internal Action<object[]> Action;
+      internal object[] Args;
       internal Timer Timer;
       internal int DelayMs;
     }
-    private static readonly Dictionary<Action,DelayedCaller> DelayedCallers = new Dictionary<Action, DelayedCaller>();
+    private static readonly Dictionary<Action<object[]>,DelayedCaller> DelayedCallers = new Dictionary<Action<object[]>, DelayedCaller>();
     /// <summary>
     /// Execute an action after a given delay. If this method is called again for the same action before the action 
     /// has been executed, the delay will start over again.
@@ -56,14 +57,15 @@ namespace BioMap
     /// <param name="action">
     /// The action.
     /// </param>
-    public static void CallDelayed(int delayMs,Action action) {
+    public static void CallDelayed(int delayMs,Action<object[]> action,params object[] oaArgs) {
       lock (DelayedCallers) {
         DelayedCaller dc=null;
         if (!DelayedCallers.TryGetValue(action,out dc)) {
-          dc=new DelayedCaller(delayMs,action);
+          dc=new DelayedCaller(delayMs,action,oaArgs);
           DelayedCallers[action] = dc;
         }
         dc.Timer.Stop();
+        dc.Args=oaArgs;
         dc.Timer.Start();
       }
     }
