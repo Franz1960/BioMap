@@ -15,7 +15,9 @@ WORKDIR /source/BioMap
 RUN dotnet publish -c debug -o /app --no-restore
 
 # final stage/image
-FROM mcr.microsoft.com/dotnet/sdk:5.0
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
+RUN apt-get update
+RUN apt-get install openssh-server unzip curl -y
 WORKDIR /var/www/dotnet/biomap/bin
 COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "BioMap.dll"]
