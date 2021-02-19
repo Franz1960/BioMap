@@ -50,7 +50,7 @@ namespace BioMap.Pages.Workflow
                     var atb=new AffineTransformBuilder();
                     atb.AppendMatrix(mNormalize);
                     imgSrc.Mutate(x => x.Transform(atb));
-                    imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
+                    imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
                   } catch { }
                   imgSrc.SaveAsJpeg(sDstFile);
                 }
@@ -245,7 +245,7 @@ namespace BioMap.Pages.Workflow
                   var atb=new AffineTransformBuilder();
                   atb.AppendMatrix(mNormalize);
                   imgSrc.Mutate(x => x.Transform(atb));
-                  imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
+                  imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
                 } catch { }
                 var bs = new System.IO.MemoryStream();
                 imgSrc.SaveAsJpeg(bs);
@@ -290,7 +290,7 @@ namespace BioMap.Pages.Workflow
             var atb=new AffineTransformBuilder();
             atb.AppendMatrix(mPattern);
             imgSrc.Mutate(x => x.Transform(atb));
-            imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
+            imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
             imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
             //imgSrc.Mutate(x => x.AdaptiveThreshold());
             imgSrc.Mutate(x => x.ApplyProcessor(analyseYellowShare));

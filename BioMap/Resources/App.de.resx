@@ -463,7 +463,7 @@
     <value>Sie können hier ein neues Projekt anlegen. Wählen Sie einen Namen, der Ihr Projekt eindeutig beschreibt, am besten in der Form "art-gebiet", also z.B. "gbu-oberhinkofen" für ein Projekt, in dem Gelbbauchunken in Oberhinkofen monitoriert werden sollen.</value>
   </data>
   <data name="IntroProjectSelection" xml:space="preserve">
-    <value>Sie können hier ein Projekt auswählen, für das sie sich interessieren. Sie können auch ein neues Projekt anlegen.</value>
+    <value>Sie können hier ein Projekt auswählen, für das Sie sich interessieren. Sie können auch ein neues Projekt anlegen.</value>
   </data>
   <data name="Juveniles" xml:space="preserve">
     <value>Juvenile</value>
