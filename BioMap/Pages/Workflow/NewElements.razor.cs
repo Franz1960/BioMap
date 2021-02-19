@@ -287,7 +287,8 @@ namespace BioMap.Pages.Workflow
             atb.AppendMatrix(mPattern);
             imgSrc.Mutate(x => x.Transform(atb));
             imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
-            imgSrc.Mutate(x => x.MaxChroma(0.10f,new[] { new System.Numerics.Vector2(10,80) }));
+            //imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
+            //imgSrc.Mutate(x => x.AdaptiveThreshold());
             imgSrc.Mutate(x => x.ApplyProcessor(analyseYellowShare));
             var imgEdges = imgSrc.Clone(x => x.DetectEdges());
             imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));

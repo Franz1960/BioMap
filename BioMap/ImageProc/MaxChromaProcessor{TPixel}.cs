@@ -133,11 +133,17 @@ namespace BioMap.ImageProc
             if (bHueOk) {
               // Calculate YCbCr value and compare to threshold.
               var yCbCr = this.colorSpaceConverter.ToYCbCr(rgba);
+              #if true
               if (MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr_Achromatic_Cb),MathF.Abs(yCbCr.Cr - YCbCr_Achromatic_Cr)) >= fThreshold) {
                 color = this.upper;
               } else {
                 color = this.lower;
               }
+              #else
+              // Grauwertbild erzeugen.
+              float l = MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr_Achromatic_Cb),MathF.Abs(yCbCr.Cr - YCbCr_Achromatic_Cr));
+              color.FromL8(new L8((byte)(l*2)));
+              #endif
             } else {
               color = this.lower;
             }
