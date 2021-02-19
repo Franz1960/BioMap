@@ -80,19 +80,21 @@ namespace BioMap.Pages.Workflow
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
       SD.Filters.FilteringTarget=Filters.FilteringTargetEnum.Elements;
-      SD.Filters.FilterChanged+=async (sender,ev) => {
-        await this.RefreshData();
-        await this.SelectElement();
-        this.disableSetImage=false;
-        this.elementChanged=true;
-        this.StateHasChanged();
-      };
+      SD.Filters.FilterChanged+=this.Filters_FilterChanged;
       await RefreshData();
       await this.SelectElement();
       NM.LocationChanged+=NM_LocationChanged;
     }
+    private async void Filters_FilterChanged(object sender,EventArgs e) {
+      await this.RefreshData();
+      await this.SelectElement();
+      this.disableSetImage=false;
+      this.elementChanged=true;
+      this.StateHasChanged();
+    }
     private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
       NM.LocationChanged-=NM_LocationChanged;
+      SD.Filters.FilterChanged-=this.Filters_FilterChanged;
       this.Element=null;
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
