@@ -1,1 +1,0 @@
-ssh itools.de -l fh "sudo docker exec -i biomap_run /bin/bash"
