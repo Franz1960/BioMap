@@ -119,7 +119,7 @@ namespace BioMap.Pages.Workflow
     private async void imageSurveyor_AfterRenderEvent(object sender,EventArgs e) {
       if (this.Element!=null) {
         await this.LoadElement();
-        Utilities.CallDelayed(200,async ()=>await this.RefreshPatternImg());
+        Utilities.CallDelayed(200,this.RefreshPatternImg);
       }
     }
     private void imageSurveyor_MeasureDataChanged(object sender,Blazor.ImageSurveyor.ImageSurveyorMeasureData measureData) {
@@ -267,11 +267,10 @@ namespace BioMap.Pages.Workflow
       }
       el.MeasureData=md;
       this.normImageDirty=true;
-      Utilities.CallDelayed(200,async ()=>await this.RefreshPatternImg());
-      //Task.Run(async ()=>await RefreshPatternImg());
+      Utilities.CallDelayed(200,this.RefreshPatternImg);
       this.StateHasChanged();
     }
-    private async Task RefreshPatternImg() {
+    private async void RefreshPatternImg() {
       try {
         var el=this.Element;
         if (el!=null) {
@@ -287,7 +286,7 @@ namespace BioMap.Pages.Workflow
             atb.AppendMatrix(mPattern);
             imgSrc.Mutate(x => x.Transform(atb));
             imgSrc.Mutate(x => x.Crop(nWidth,nHeight));
-            //imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
+            imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
             //imgSrc.Mutate(x => x.AdaptiveThreshold());
             imgSrc.Mutate(x => x.ApplyProcessor(analyseYellowShare));
             var imgEdges = imgSrc.Clone(x => x.DetectEdges());
