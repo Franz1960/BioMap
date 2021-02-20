@@ -289,15 +289,15 @@ namespace BioMap.Pages.Workflow
           var analyseYellowShare = new AnalyseProcessor();
           var analyseEntropy = new AnalyseProcessor();
           using (var imgSrc = Image.Load(sSrcFile)) {
-            //imgSrc.Mutate(x => x.AutoOrient());
-            //var md=this.Element.MeasureData;
-            //(int nWidth,int nHeight)=md.GetPatternSize(300);
-            //var mPattern=md.GetPatternMatrix(nHeight);
-            //var atb=new AffineTransformBuilder();
-            //atb.AppendMatrix(mPattern);
-            //imgSrc.Mutate(x => x.Transform(atb));
-            //imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
-            //imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
+            imgSrc.Mutate(x => x.AutoOrient());
+            var md = this.Element.MeasureData;
+            (int nWidth, int nHeight)=md.GetPatternSize(300);
+            var mPattern = md.GetPatternMatrix(nHeight);
+            var atb = new AffineTransformBuilder();
+            atb.AppendMatrix(mPattern);
+            imgSrc.Mutate(x => x.Transform(atb));
+            imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
+            imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
             //imgSrc.Mutate(x => x.ApplyProcessor(analyseYellowShare));
             //var imgEdges = imgSrc.Clone(x => x.DetectEdges());
             //imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
