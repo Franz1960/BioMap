@@ -300,15 +300,15 @@ namespace BioMap.Pages.Workflow
             imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
             imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
             //imgSrc.Mutate(x => x.AdaptiveThreshold());
-            imgSrc.Mutate(x => x.ApplyProcessor(analyseYellowShare));
-            var imgEdges = imgSrc.Clone(x => x.DetectEdges());
-            imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
-            var bs = new System.IO.MemoryStream();
-            imgSrc.SaveAsJpeg(bs);
-            this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
-            this.ShareOfYellow=(float)analyseYellowShare.AnalyseData.ShareOfWhite;
-            this.AsymmetryOfYellow=(float)((analyseYellowShare.AnalyseData.LowerShareOfWhite-analyseYellowShare.AnalyseData.UpperShareOfWhite)/Math.Max(0.01,analyseYellowShare.AnalyseData.ShareOfWhite));
-            this.Entropy=(float)analyseEntropy.AnalyseData.ShareOfWhite;
+            //imgSrc.Mutate(x => x.ApplyProcessor(analyseYellowShare));
+            //var imgEdges = imgSrc.Clone(x => x.DetectEdges());
+            //imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
+            //var bs = new System.IO.MemoryStream();
+            //imgSrc.SaveAsJpeg(bs);
+            //this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
+            //this.ShareOfYellow=(float)analyseYellowShare.AnalyseData.ShareOfWhite;
+            //this.AsymmetryOfYellow=(float)((analyseYellowShare.AnalyseData.LowerShareOfWhite-analyseYellowShare.AnalyseData.UpperShareOfWhite)/Math.Max(0.01,analyseYellowShare.AnalyseData.ShareOfWhite));
+            //this.Entropy=(float)analyseEntropy.AnalyseData.ShareOfWhite;
           }
           await this.InvokeAsync(()=>StateHasChanged());
         }
