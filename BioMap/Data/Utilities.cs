@@ -140,5 +140,11 @@ namespace BioMap
       process.WaitForExit();
       return result;
     }
+    public static float GetScale(System.Numerics.Matrix3x2 m) {
+      var v0t=System.Numerics.Vector2.Transform(System.Numerics.Vector2.Zero, m);
+      var v1t=System.Numerics.Vector2.Transform(System.Numerics.Vector2.One, m);
+      float fScale=(v1t-v0t).Length();
+      return fScale;
+    }
   }
 }

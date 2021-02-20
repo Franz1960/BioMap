@@ -293,8 +293,8 @@ namespace BioMap.Pages.Workflow
             var md = this.Element.MeasureData;
             (int nWidth, int nHeight)=md.GetPatternSize(300);
             var mPattern = md.GetPatternMatrix(nHeight);
-            var fScaleMax = MathF.Max(MathF.Abs(mPattern.M11),MathF.Abs(mPattern.M22));
-            if (fScaleMax>=0.10f && fScaleMax<3.0f) {
+            var fScale = Utilities.GetScale(mPattern);
+            if (fScale>=0.10f && fScale<5.0f) {
               var atb = new AffineTransformBuilder();
               atb.AppendMatrix(mPattern);
               imgSrc.Mutate(x => x.Transform(atb));
