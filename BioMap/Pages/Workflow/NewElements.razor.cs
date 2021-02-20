@@ -41,18 +41,20 @@ namespace BioMap.Pages.Workflow
               if (this._Element.MeasureData.normalizePoints!=null) {
                 var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._Element.ElementName,true);
                 var sDstFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._Element.ElementName,false);
-                using (var imgSrc = Image.Load(sSrcFile)) {
+                var md=this._Element.MeasureData;
+                (int nWidth, int nHeight)=md.GetNormalizedSize();
+                using (var imgDst = new Image<Rgb24>(nWidth,nHeight,Color.Gray)) {
                   try {
-                    imgSrc.Mutate(x => x.AutoOrient());
-                    var md=this._Element.MeasureData;
-                    (int nWidth,int nHeight)=md.GetNormalizedSize();
-                    var mNormalize=md.GetNormalizeMatrix();
-                    var atb=new AffineTransformBuilder();
-                    atb.AppendMatrix(mNormalize);
-                    imgSrc.Mutate(x => x.Transform(atb));
-                    imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
+                    using (var imgSrc = Image.Load(sSrcFile)) {
+                      imgSrc.Mutate(x => x.AutoOrient());
+                      var mNormalize = md.GetNormalizeMatrix();
+                      var atb = new AffineTransformBuilder();
+                      atb.AppendMatrix(mNormalize);
+                      imgSrc.Mutate(x => x.Transform(atb));
+                      imgDst.Mutate(x => x.DrawImage(imgSrc,1f));
+                    }
                   } catch { }
-                  imgSrc.SaveAsJpeg(sDstFile);
+                  imgDst.SaveAsJpeg(sDstFile);
                 }
               }
             }
@@ -237,20 +239,22 @@ namespace BioMap.Pages.Workflow
             if (bHasImageButNoOrigImage) {
               sUrlImage="api/photos/"+this.Element.ElementName+"?Project="+SD.CurrentUser.Project+"&ForceOrig=0";
             } else {
-              var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
-              using (var imgSrc = Image.Load(sSrcFile)) {
+              var md = this.Element.MeasureData;
+              (int nWidth, int nHeight)=md.GetNormalizedSize();
+              using (var imgDst = new Image<Rgb24>(nWidth,nHeight,Color.Gray)) {
                 try {
-                  imgSrc.Mutate(x => x.AutoOrient());
-                  var md=this.Element.MeasureData;
-                  (int nWidth,int nHeight)=md.GetNormalizedSize();
-                  var mNormalize=md.GetNormalizeMatrix();
-                  var atb=new AffineTransformBuilder();
-                  atb.AppendMatrix(mNormalize);
-                  imgSrc.Mutate(x => x.Transform(atb));
-                  imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
+                  var sSrcFile = DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
+                  using (var imgSrc = Image.Load(sSrcFile)) {
+                    imgSrc.Mutate(x => x.AutoOrient());
+                    var mNormalize = md.GetNormalizeMatrix();
+                    var atb = new AffineTransformBuilder();
+                    atb.AppendMatrix(mNormalize);
+                    imgSrc.Mutate(x => x.Transform(atb));
+                    imgDst.Mutate(x => x.DrawImage(imgSrc,1f));
+                  }
                 } catch { }
                 var bs = new System.IO.MemoryStream();
-                imgSrc.SaveAsJpeg(bs);
+                imgDst.SaveAsJpeg(bs);
                 sUrlImage="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
               }
             }
