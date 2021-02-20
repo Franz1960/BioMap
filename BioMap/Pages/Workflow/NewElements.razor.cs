@@ -292,25 +292,23 @@ namespace BioMap.Pages.Workflow
             imgSrc.Mutate(x => x.AutoOrient());
             var md = this.Element.MeasureData;
             (int nWidth, int nHeight)=md.GetPatternSize(300);
-            try {
-              var mPattern = md.GetPatternMatrix(nHeight);
-              if (mPattern.GetDeterminant()!=0) {
-                var atb = new AffineTransformBuilder();
-                atb.AppendMatrix(mPattern);
-                imgSrc.Mutate(x => x.Transform(atb));
-              }
-            } catch { }
-            imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
-            imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
-            imgSrc.Mutate(x => x.ApplyProcessor(analyseYellowShare));
-            var imgEdges = imgSrc.Clone(x => x.DetectEdges());
-            imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
-            var bs = new System.IO.MemoryStream();
-            imgSrc.SaveAsJpeg(bs);
-            this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
-            this.ShareOfYellow=(float)analyseYellowShare.AnalyseData.ShareOfWhite;
-            this.AsymmetryOfYellow=(float)((analyseYellowShare.AnalyseData.LowerShareOfWhite-analyseYellowShare.AnalyseData.UpperShareOfWhite)/Math.Max(0.01,analyseYellowShare.AnalyseData.ShareOfWhite));
-            this.Entropy=(float)analyseEntropy.AnalyseData.ShareOfWhite;
+            var mPattern = md.GetPatternMatrix(nHeight);
+            var atb = new AffineTransformBuilder();
+            atb.AppendMatrix(mPattern);
+            imgSrc.Mutate(x => x.Transform(atb));
+            using (var imgCropped = new Image<Rgb24>(nWidth,nHeight,Color.Gray)) {
+              imgCropped.Mutate(x => x.DrawImage(imgSrc,1f));
+              imgCropped.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
+              imgCropped.Mutate(x => x.ApplyProcessor(analyseYellowShare));
+              var imgEdges = imgCropped.Clone(x => x.DetectEdges());
+              imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
+              var bs = new System.IO.MemoryStream();
+              imgCropped.SaveAsJpeg(bs);
+              this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
+              this.ShareOfYellow=(float)analyseYellowShare.AnalyseData.ShareOfWhite;
+              this.AsymmetryOfYellow=(float)((analyseYellowShare.AnalyseData.LowerShareOfWhite-analyseYellowShare.AnalyseData.UpperShareOfWhite)/Math.Max(0.01,analyseYellowShare.AnalyseData.ShareOfWhite));
+              this.Entropy=(float)analyseEntropy.AnalyseData.ShareOfWhite;
+            }
           }
           await this.InvokeAsync(()=>StateHasChanged());
         }
