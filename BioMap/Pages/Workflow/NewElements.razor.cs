@@ -295,7 +295,7 @@ namespace BioMap.Pages.Workflow
             var mPattern = md.GetPatternMatrix(nHeight);
             var atb = new AffineTransformBuilder();
             atb.AppendMatrix(mPattern);
-            imgSrc.Mutate(x => x.Transform(atb));
+            //imgSrc.Mutate(x => x.Transform(atb));
             using (var imgCropped = new Image<Rgb24>(nWidth,nHeight,Color.Gray)) {
               imgCropped.Mutate(x => x.DrawImage(imgSrc,1f));
               imgCropped.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
