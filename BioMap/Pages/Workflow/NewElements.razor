@@ -25,7 +25,13 @@
         </Button>
       </Column>
       <Column>
-        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
+        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(true); })" Block="true">
+          <Icon Name="IconName.Save" />
+          <Icon Name="IconName.StepForward" />
+        </Button>
+      </Column>
+      <Column>
+        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(false); })" Block="true">
           <Icon Name="IconName.StepForward"></Icon>
         </Button>
       </Column>

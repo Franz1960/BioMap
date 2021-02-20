@@ -277,6 +277,10 @@ namespace BioMap
               command.CommandText = "ALTER TABLE elements ADD COLUMN measuredata TEXT";
               command.ExecuteNonQuery();
             } catch { }
+            try {
+              command.CommandText = "ALTER TABLE elements ADD COLUMN croppingconfirmed INT";
+              command.ExecuteNonQuery();
+            } catch { }
           }
           #endregion
           this.AccessedDbs.Add(sProject);
@@ -762,9 +766,10 @@ namespace BioMap
         string sJsonClassification=JsonConvert.SerializeObject(el.Classification);
         string sJsonMeasureData=JsonConvert.SerializeObject(el.MeasureData);
         command.CommandText =
-          "REPLACE INTO elements (name,classification,measuredata,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
+          "REPLACE INTO elements (name,classification,croppingconfirmed,measuredata,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
           "VALUES ('" + el.ElementName + "'," +
           "'" + sJsonClassification +
+          "','" + (el.CroppingConfirmed?"1":"0") +
           "','" + sJsonMeasureData +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.position.lat) +
@@ -891,6 +896,7 @@ namespace BioMap
           ",elements.comment" +
           ",elements.classification" +
           ",elements.measuredata" +
+          ",elements.croppingconfirmed" +
           " FROM elements" +
           " LEFT JOIN indivdata ON (indivdata.name=elements.name)" +
           " LEFT JOIN photos ON (photos.name=elements.name)" +
@@ -939,9 +945,11 @@ namespace BioMap
             if (md!=null && md.normalizer==null) {
               md.normalizer=sd.CurrentProject.ImageNormalizer;
             }
+
             var el = new Element(sd.CurrentUser.Project) {
               ElementName = sElementName,
               Classification = ec,
+              CroppingConfirmed = (!dr.IsDBNull(37) && dr.GetInt32(37)==1),
               MeasureData = md,
               ElementProp = new Element.ElementProp_t {
                 MarkerInfo = new Element.MarkerInfo_t {

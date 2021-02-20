@@ -136,7 +136,7 @@ namespace BioMap.Pages.Workflow
     private async Task SelectElement() {
       this.Element=(await DS.GetElementsAsync(SD,SD.Filters,"elements.name='"+SD.SelectedElementName+"'")).FirstOrDefault();
       if (this.Element==null) {
-        await this.OnSelectNext();
+        await this.OnSelectNext(false);
       } else {
         for (int i=0;i<this.Elements.Length;i++) {
           if (this.Elements[i].ElementName==this.Element?.ElementName) {
@@ -147,7 +147,7 @@ namespace BioMap.Pages.Workflow
       }
     }
     private async Task RefreshData() {
-      this.Elements = await DS.GetElementsAsync(SD,SD.Filters,"elements.classification LIKE '%\"ClassName\":\"New\"%'","elements.creationtime ASC");
+      this.Elements = await DS.GetElementsAsync(SD,SD.Filters,"(elements.classification LIKE '%\"ClassName\":\"New\"%') OR (elements.croppingconfirmed<>1) OR (elements.croppingconfirmed IS NULL)","elements.creationtime ASC");
     }
     private async Task newClass_Selected(string sNewClass) {
       if (string.CompareOrdinal(sNewClass,this.Element?.Classification?.ClassName)!=0) {
@@ -192,8 +192,11 @@ namespace BioMap.Pages.Workflow
       this.elementChanged=true;
       StateHasChanged();
     }
-    private async Task OnSelectNext() {
-      this.Element=null;
+    private async Task OnSelectNext(bool bSave) {
+      if (bSave) {
+        this.Element.CroppingConfirmed=true;
+      }
+      this.Element=null; // Save implicitely.
       await this.RefreshData();
       if (this.SelectedElementIndex.HasValue && this.SelectedElementIndex.Value<this.Elements.Length-1) {
         this.SelectedElementIndex++;

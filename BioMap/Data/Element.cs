@@ -67,6 +67,7 @@ namespace BioMap
     public string ElementName;
     public ElementProp_t ElementProp;
     public ElementClassification Classification=new ElementClassification();
+    public bool CroppingConfirmed=false;
     public Blazor.ImageSurveyor.ImageSurveyorMeasureData? MeasureData=null;
     public bool HasImageButNoOrigImage(SessionData sd) {
       var ds=DataService.Instance;
