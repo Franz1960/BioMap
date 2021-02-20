@@ -147,7 +147,16 @@ namespace BioMap.Pages.Workflow
       }
     }
     private async Task RefreshData() {
-      this.Elements = await DS.GetElementsAsync(SD,SD.Filters,"(elements.classification LIKE '%\"ClassName\":\"New\"%') OR (elements.croppingconfirmed<>1) OR (elements.croppingconfirmed IS NULL)","elements.creationtime ASC");
+      var els = await DS.GetElementsAsync(SD,SD.Filters,
+        "(elements.classification LIKE '%\"ClassName\":\"New\"%') OR (elements.croppingconfirmed<>1) OR (elements.croppingconfirmed IS NULL)",
+        "elements.creationtime ASC");
+      var lElements = new List<Element>();
+      foreach (var el in els) {
+        if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project,el.ElementName))) {
+            lElements.Add(el);
+        }
+      }
+      this.Elements = lElements.ToArray();
     }
     private async Task newClass_Selected(string sNewClass) {
       if (string.CompareOrdinal(sNewClass,this.Element?.Classification?.ClassName)!=0) {
@@ -194,7 +203,12 @@ namespace BioMap.Pages.Workflow
     }
     private async Task OnSelectNext(bool bSave) {
       if (bSave) {
-        this.Element.CroppingConfirmed=true;
+        if (!this.Element.CroppingConfirmed) {
+          this.Element.CroppingConfirmed=true;
+          if (this.SelectedElementIndex.HasValue && this.SelectedElementIndex.Value>0) {
+            this.SelectedElementIndex--;
+          }
+        }
       }
       this.Element=null; // Save implicitely.
       await this.RefreshData();
@@ -230,7 +244,7 @@ namespace BioMap.Pages.Workflow
             this.Element.MeasureData.normalizePoints=null;
           }
           this.Element.InitMeasureData(SD,true);
-          bool bHasImageButNoOrigImage=(this.Element.MeasureData.normalizePoints==null);
+          bool bHasImageButNoOrigImage=(this.Element.MeasureData?.normalizePoints==null);
           if (bHasImageButNoOrigImage) {
             this.Raw=false;
           }
@@ -287,7 +301,7 @@ namespace BioMap.Pages.Workflow
     private async void RefreshPatternImg(object[] oaArgs) {
       try {
         var el=this.Element;
-        if (el!=null) {
+        if (el!=null && ElementClassification.IsNormed(el.Classification.ClassName)) {
           var sSrcFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
           var analyseYellowShare = new AnalyseProcessor();
           var analyseEntropy = new AnalyseProcessor();
@@ -316,9 +330,11 @@ namespace BioMap.Pages.Workflow
               }
             }
           }
-          await this.InvokeAsync(()=>StateHasChanged());
         }
-      } catch { }
+      } catch {
+        this.PatternImgSrc="";
+      }
+      await this.InvokeAsync(()=>StateHasChanged());
     }
     private async Task ResetPositions_Clicked(Element el) {
       var sFilePath = DS.GetFilePathForImage(SD.CurrentUser.Project,el.ElementName,true);
