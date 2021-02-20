@@ -296,7 +296,7 @@ namespace BioMap.Pages.Workflow
             if (mPattern.GetDeterminant()!=0) {
               var atb = new AffineTransformBuilder();
               atb.AppendMatrix(mPattern);
-              imgSrc.Mutate(x => x.Transform(atb));
+              //imgSrc.Mutate(x => x.Transform(atb));
             }
             imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
             imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
