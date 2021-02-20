@@ -279,7 +279,7 @@ namespace BioMap.Pages.Workflow
       }
       el.MeasureData=md;
       this.normImageDirty=true;
-      //Utilities.CallDelayed(200,this.RefreshPatternImg);
+      Utilities.CallDelayed(200,this.RefreshPatternImg);
     }
     private async void RefreshPatternImg(object[] oaArgs) {
       try {
@@ -293,9 +293,11 @@ namespace BioMap.Pages.Workflow
             var md = this.Element.MeasureData;
             (int nWidth, int nHeight)=md.GetPatternSize(300);
             var mPattern = md.GetPatternMatrix(nHeight);
-            var atb = new AffineTransformBuilder();
-            atb.AppendMatrix(mPattern);
-            //imgSrc.Mutate(x => x.Transform(atb));
+            if (mPattern.GetDeterminant()!=0) {
+              var atb = new AffineTransformBuilder();
+              atb.AppendMatrix(mPattern);
+              imgSrc.Mutate(x => x.Transform(atb));
+            }
             imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
             imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
             imgSrc.Mutate(x => x.ApplyProcessor(analyseYellowShare));
