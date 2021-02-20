@@ -279,7 +279,7 @@ namespace BioMap.Pages.Workflow
       }
       el.MeasureData=md;
       this.normImageDirty=true;
-      Utilities.CallDelayed(200,this.RefreshPatternImg);
+      //Utilities.CallDelayed(200,this.RefreshPatternImg);
     }
     private async void RefreshPatternImg(object[] oaArgs) {
       try {
