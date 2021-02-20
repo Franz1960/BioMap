@@ -282,6 +282,7 @@ namespace BioMap.Pages.Workflow
       //Utilities.CallDelayed(200,this.RefreshPatternImg);
     }
     private async void RefreshPatternImg(object[] oaArgs) {
+      return;
       try {
         var el=this.Element;
         if (el!=null) {
