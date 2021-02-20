@@ -292,12 +292,14 @@ namespace BioMap.Pages.Workflow
             imgSrc.Mutate(x => x.AutoOrient());
             var md = this.Element.MeasureData;
             (int nWidth, int nHeight)=md.GetPatternSize(300);
-            var mPattern = md.GetPatternMatrix(nHeight);
-            if (mPattern.GetDeterminant()!=0) {
-              var atb = new AffineTransformBuilder();
-              atb.AppendMatrix(mPattern);
-              //imgSrc.Mutate(x => x.Transform(atb));
-            }
+            try {
+              var mPattern = md.GetPatternMatrix(nHeight);
+              if (mPattern.GetDeterminant()!=0) {
+                var atb = new AffineTransformBuilder();
+                atb.AppendMatrix(mPattern);
+                imgSrc.Mutate(x => x.Transform(atb));
+              }
+            } catch { }
             imgSrc.Mutate(x => x.SafeCrop(nWidth,nHeight));
             imgSrc.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
             imgSrc.Mutate(x => x.ApplyProcessor(analyseYellowShare));
