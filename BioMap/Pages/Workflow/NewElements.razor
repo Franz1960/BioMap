@@ -20,6 +20,11 @@
     </Row>
     <Row Margin="Margin.Is1.OnY">
       <Column>
+        @Localize["Remaining elements"]: @RemainingElements
+      </Column>
+    </Row>
+    <Row Margin="Margin.Is1.OnY">
+      <Column>
         <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
           <Icon Name="IconName.StepBackward"></Icon>
         </Button>

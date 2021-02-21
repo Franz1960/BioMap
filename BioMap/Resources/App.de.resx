@@ -327,6 +327,9 @@
   <data name="Different Individuals" xml:space="preserve">
     <value>Verschiedene Individuen</value>
   </data>
+  <data name="Display normalized" xml:space="preserve">
+    <value>Normiert anzeigen</value>
+  </data>
   <data name="Distance" xml:space="preserve">
     <value>Distanz</value>
   </data>
@@ -639,11 +642,17 @@
   <data name="Register" xml:space="preserve">
     <value>Registrieren</value>
   </data>
+  <data name="Remaining elements" xml:space="preserve">
+    <value>Verbleibende Elemente</value>
+  </data>
   <data name="Reproduction" xml:space="preserve">
     <value>Fortpflanzung</value>
   </data>
   <data name="Reproduction rate" xml:space="preserve">
     <value>Reproduktionsrate</value>
+  </data>
+  <data name="Reset positions" xml:space="preserve">
+    <value>Positionen zurücksetzen</value>
   </data>
   <data name="Responsible in terms of press law" xml:space="preserve">
     <value>Verantwortlich im Sinne des Presserechts</value>

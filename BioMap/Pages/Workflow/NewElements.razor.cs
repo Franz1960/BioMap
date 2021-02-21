@@ -19,6 +19,7 @@ namespace BioMap.Pages.Workflow
   public partial class NewElements : ComponentBase
   {
     private Element[] Elements = new Element[0];
+    private int RemainingElements=0;
     private int? SelectedElementIndex=null;
     private PhotoPopup PhotoPopup1;
     protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
@@ -157,6 +158,7 @@ namespace BioMap.Pages.Workflow
         }
       }
       this.Elements = lElements.ToArray();
+      this.RemainingElements=this.Elements.Length;
     }
     private async Task newClass_Selected(string sNewClass) {
       if (string.CompareOrdinal(sNewClass,this.Element?.Classification?.ClassName)!=0) {
