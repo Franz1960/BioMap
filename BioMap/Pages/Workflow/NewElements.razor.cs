@@ -320,7 +320,7 @@ namespace BioMap.Pages.Workflow
               imgSrc.Mutate(x => x.Transform(atb));
               using (var imgCropped = new Image<Rgb24>(nWidth,nHeight,Color.Gray)) {
                 imgCropped.Mutate(x => x.DrawImage(imgSrc,1f));
-                imgCropped.Mutate(x => x.MaxChroma(0.05f,new[] { new System.Numerics.Vector2(1,100) }));
+                imgCropped.Mutate(x => x.MaxChroma(0.10f,new[] { new System.Numerics.Vector2(1,100) }));
                 imgCropped.Mutate(x => x.ApplyProcessor(analyseYellowShare));
                 var imgEdges = imgCropped.Clone(x => x.DetectEdges());
                 imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
