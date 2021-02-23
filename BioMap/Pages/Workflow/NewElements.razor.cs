@@ -204,18 +204,19 @@ namespace BioMap.Pages.Workflow
       StateHasChanged();
     }
     private async Task OnSelectNext(bool bSave) {
+      bool bCroppingConfirmed=false;
       if (bSave) {
         if (!this.Element.CroppingConfirmed) {
           this.Element.CroppingConfirmed=true;
-          if (this.SelectedElementIndex.HasValue && this.SelectedElementIndex.Value>0) {
-            this.SelectedElementIndex--;
-          }
+          bCroppingConfirmed=true;
         }
       }
       this.Element=null; // Save implicitely.
       await this.RefreshData();
       if (this.SelectedElementIndex.HasValue && this.SelectedElementIndex.Value<this.Elements.Length-1) {
-        this.SelectedElementIndex++;
+        if (!bCroppingConfirmed) {
+          this.SelectedElementIndex++;
+        }
       } else if (this.Elements.Length>=1) {
         this.SelectedElementIndex=0;
       } else {
