@@ -211,7 +211,7 @@ namespace BioMap
         sb.Append(", #");
         sb.Append(this.GetIId());
         sb.Append(", ");
-        sb.Append(this.GetGender());
+        sb.Append(this.Gender);
         sb.Append(", ");
         sb.Append(this.GetHeadBodyLengthNice());
       }
@@ -263,11 +263,18 @@ namespace BioMap
       var sPlaceName = this.ElementProp.MarkerInfo.PlaceName;
       return sPlaceName;
     }
-    public string GetGender() {
-      if (this.ElementProp.IndivData!=null) {
-        return this.ElementProp.IndivData.Gender;
+    public string Gender {
+      get {
+        if (this.ElementProp.IndivData!=null) {
+          return this.ElementProp.IndivData.Gender;
+        }
+        return "";
       }
-      return "";
+      set {
+        if (this.ElementProp.IndivData!=null) {
+          this.ElementProp.IndivData.Gender=value;
+        }
+      }
     }
     public bool HasPhotoData() {
       return (!string.IsNullOrEmpty(this.ElementProp.ExifData?.Make) || !string.IsNullOrEmpty(this.ElementProp.ExifData?.Model));

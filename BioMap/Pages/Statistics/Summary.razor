@@ -112,10 +112,10 @@
           new Tuple<string,string>("2+ "+Localize["Hibernations"],"indivdata.winters>=2"),
           new Tuple<string,string>("3 "+Localize["Hibernations"],"indivdata.winters=3"),
           new Tuple<string,string>("3+ "+Localize["Hibernations"],"indivdata.winters>=3"),
-          new Tuple<string,string>(Localize["Female"],"indivdata.gender='fa'"),
-          new Tuple<string,string>(Localize["Male"],"indivdata.gender='ma'"),
-          new Tuple<string,string>(Localize["Female"]+" 2+ "+Localize["Hibernations"],"indivdata.gender='fa' AND indivdata.winters>=2"),
-          new Tuple<string,string>(Localize["Male"]+" 2+ "+Localize["Hibernations"],"indivdata.gender='ma' AND indivdata.winters>=2"),
+          new Tuple<string,string>(Localize["Female"],"indivdata.gender='f'"),
+          new Tuple<string,string>(Localize["Male"],"indivdata.gender='m'"),
+          new Tuple<string,string>(Localize["Female"]+" 2+ "+Localize["Hibernations"],"indivdata.gender='f' AND indivdata.winters>=2"),
+          new Tuple<string,string>(Localize["Male"]+" 2+ "+Localize["Hibernations"],"indivdata.gender='m' AND indivdata.winters>=2"),
         };
       } else {
         aIndiSpecs = new[] {
@@ -123,8 +123,8 @@
           new Tuple<string,string>("0 "+Localize["Hibernations"],"indivdata.winters=0"),
           new Tuple<string,string>("1 "+Localize["Hibernations"],"indivdata.winters=1"),
           new Tuple<string,string>("2+ "+Localize["Hibernations"],"indivdata.winters>=2"),
-          new Tuple<string,string>(Localize["Female"]+" 2+ "+Localize["Hibernations"],"indivdata.gender='fa' AND indivdata.winters>=2"),
-          new Tuple<string,string>(Localize["Male"]+" 2+ "+Localize["Hibernations"],"indivdata.gender='ma' AND indivdata.winters>=2"),
+          new Tuple<string,string>(Localize["Female"]+" 2+ "+Localize["Hibernations"],"indivdata.gender='f' AND indivdata.winters>=2"),
+          new Tuple<string,string>(Localize["Male"]+" 2+ "+Localize["Hibernations"],"indivdata.gender='m' AND indivdata.winters>=2"),
         };
       }
       foreach (var indiSpec in aIndiSpecs) {

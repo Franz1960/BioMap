@@ -40,7 +40,7 @@
               </div>
             }
           </td>
-          <td>@((MarkupString)GetForElements(iid,el => el.GetGender()))</td>
+          <td>@((MarkupString)GetForElements(iid,el => el.Gender))</td>
           <td>@((MarkupString)GetForElements(iid,el => el.GetHeadBodyLengthNice()))</td>
           <td>@((MarkupString)GetForElements(iid,el => el.GetPlaceName()))</td>
           <td>
@@ -126,8 +126,8 @@
   private bool AreGendersConsistent(int iid) {
     string sGender = null;
     foreach (var el in this.Individuals[iid]) {
-      string g = el.GetGender();
-      if (g=="fa" || g=="ma") {
+      string g = el.Gender;
+      if (g=="f" || g=="m") {
         if (sGender==null) {
           sGender=g;
         } else if (g!=sGender) {

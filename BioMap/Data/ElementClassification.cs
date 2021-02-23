@@ -58,7 +58,10 @@ namespace BioMap
       }
     }
     public static bool IsNormed(string sClassName) {
-      return (string.CompareOrdinal(sClassName,"ID photo")==0 ||string.CompareOrdinal(sClassName,"Normalized non-ID photo")==0);
+      return (string.CompareOrdinal(sClassName,"ID photo")==0 || string.CompareOrdinal(sClassName,"Normalized non-ID photo")==0);
+    }
+    public bool IsIdPhoto() {
+      return (string.CompareOrdinal(this.ClassName,"ID photo")==0);
     }
     public string ClassName="New";
     public LivingBeing_t LivingBeing;

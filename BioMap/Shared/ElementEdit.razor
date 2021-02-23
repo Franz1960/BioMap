@@ -116,11 +116,12 @@
     <Field Horizontal="true">
       <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Gender"]</FieldLabel>
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
-        <Select @bind-SelectedValue="Element.ElementProp.IndivData.Gender" Disabled="@(!Edit)">
-          @foreach (var gender in new[] { "ma","fa","j","j0","j1","j2" }) {
-            <SelectItem Value="gender">@gender</SelectItem>
-          }
-          </Select>
+        <Select @bind-SelectedValue="Element.Gender" Disabled="@(!Edit)">
+          <SelectItem TValue="string" Value="@("")">@Localize["Unknown"]</SelectItem>
+          <SelectItem TValue="string" Value="@("j")">@Localize["Other"]</SelectItem>
+          <SelectItem TValue="string" Value="@("f")">@Localize["Female"]</SelectItem>
+          <SelectItem TValue="string" Value="@("m")">@Localize["Male"]</SelectItem>
+        </Select>
         </FieldBody>
       </Field>
       <Field Horizontal="true">

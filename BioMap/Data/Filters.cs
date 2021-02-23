@@ -367,13 +367,13 @@ namespace BioMap
       } else {
         var sResult = "";
         if (sFilter.Contains("j")) {
-          sResult+="j0 j1 j2 j3 ";
+          sResult+="j ";
         }
         if (sFilter.Contains("m")) {
-          sResult+="ma ";
+          sResult+="m ";
         }
         if (sFilter.Contains("f")) {
-          sResult+="fa ";
+          sResult+="f ";
         }
         return sResult.Trim();
       }

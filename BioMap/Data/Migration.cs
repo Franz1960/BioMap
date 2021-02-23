@@ -207,6 +207,25 @@ namespace BioMap
         }
       });
     }
+    public static async Task MigrateGenders(SessionData sd,Action<int> callbackCompletion) {
+      await Task.Run(()=>{
+        var ds = DataService.Instance;
+        var aElements=ds.GetElements(sd);
+        int nLoopCnt=0;
+        foreach (var el in aElements) {
+          callbackCompletion(((nLoopCnt++)*100)/aElements.Length);
+          var sOldGender=el.ElementProp?.IndivData?.Gender;
+          if (sOldGender!=null) {
+            el.ElementProp.IndivData.Gender=
+              sOldGender.StartsWith("f") ? "f" :
+              sOldGender.StartsWith("m") ? "m" :
+              sOldGender.StartsWith("j") ? "j" :
+              "";
+            ds.WriteElement(sd,el);
+          }
+        }
+      });
+    }
     public static async Task MigrateImageSize(SessionData sd,Action<int> callbackCompletion) {
       await Task.Run(()=>{
         var ds = DataService.Instance;

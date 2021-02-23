@@ -30,7 +30,7 @@
         </Button>
       </Column>
       <Column>
-        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(true); })" Block="true">
+        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(true); })" Block="true" Disabled=@(Element!=null && Element.Classification.IsIdPhoto() && string.IsNullOrEmpty(Element?.Gender))>
           <Icon Name="IconName.Save" />
           <Icon Name="IconName.StepForward" />
         </Button>
@@ -146,6 +146,23 @@
           </Buttons>
         </Column>
       </Row>
+      @if (Element!=null && Element.Classification.IsIdPhoto()) {
+        <Row Margin="Margin.Is1.OnY">
+          <Column>
+            <Field Horizontal="true">
+              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["Gender"]</FieldLabel>
+              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <Select TValue="string" @bind-SelectedValue="Element.Gender">
+                  <SelectItem TValue="string" Value="@("")">@Localize["Unknown"]</SelectItem>
+                  <SelectItem TValue="string" Value="@("j")">@Localize["Other"]</SelectItem>
+                  <SelectItem TValue="string" Value="@("f")">@Localize["Female"]</SelectItem>
+                  <SelectItem TValue="string" Value="@("m")">@Localize["Male"]</SelectItem>
+                </Select>
+              </FieldBody>
+            </Field>
+          </Column>
+        </Row>
+      }
       <Row Margin="Margin.Is1.OnY">
         <Column>
           <Field Horizontal="false">

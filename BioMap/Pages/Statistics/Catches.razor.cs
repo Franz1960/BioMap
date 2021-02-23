@@ -491,7 +491,7 @@ namespace BioMap.Pages.Statistics
           var aMaleCount = new int[12];
           foreach (var ea in aaIndisByIId.Values) {
             foreach (var el in ea) {
-              string sGender=el.GetGender();
+              string sGender=el.Gender;
               if (sGender.StartsWith("f")) {
                 aFemaleCount[el.ElementProp.CreationTime.Month-1]++;
               } else if (sGender.StartsWith("m")) {

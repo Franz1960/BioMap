@@ -35,7 +35,7 @@
             @((MarkupString)GetForElements(iid,el=>el.GetDateOfBirthAsString(),true))
           }
         </td>
-        <td>@((MarkupString)GetForElements(iid,el=>el.GetGender()))</td>
+        <td>@((MarkupString)GetForElements(iid,el=>el.Gender))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetHeadBodyLengthNice()))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetPlaceName()))</td>
         <td>
@@ -118,8 +118,8 @@
   private bool AreGendersConsistent(int iid) {
     string sGender = null;
     foreach (var el in this.Individuals[iid]) {
-      string g = el.GetGender();
-      if (g=="fa" || g=="ma") {
+      string g = el.Gender;
+      if (g=="f" || g=="m") {
         if (sGender==null) {
           sGender=g;
         } else if (g!=sGender) {
@@ -168,7 +168,7 @@
         csv.Append(sep+'"'+el.GetIsoDateTime()+'"');
         csv.Append(sep+ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat,12));
         csv.Append(sep+ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng,12));
-        csv.Append(sep+el.GetGender());
+        csv.Append(sep+el.Gender);
         csv.Append(sep+ConvInvar.ToDecimalString(el.GetHeadBodyLengthMm(),1));
         csv.Append(sep+'"'+sbTraits.ToString()+'"');
         csv.Append(sep+sDistance);
