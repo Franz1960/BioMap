@@ -44,19 +44,15 @@ namespace BioMap.Pages.Workflow
                 var sDstFile=DS.GetFilePathForImage(SD.CurrentUser.Project,this._Element.ElementName,false);
                 var md=this._Element.MeasureData;
                 (int nWidth, int nHeight)=md.GetNormalizedSize();
-                using (var imgDst = new Image<Rgb24>(nWidth,nHeight,Color.Gray)) {
-                  try {
-                    using (var imgSrc = Image.Load(sSrcFile)) {
-                      imgSrc.Mutate(x => x.AutoOrient());
-                      var mNormalize = md.GetNormalizeMatrix();
-                      var atb = new AffineTransformBuilder();
-                      atb.AppendMatrix(mNormalize);
-                      imgSrc.Mutate(x => x.Transform(atb));
-                      imgDst.Mutate(x => x.DrawImage(imgSrc,1f));
+                try {
+                  using (var imgSrc = Image.Load(sSrcFile)) {
+                    imgSrc.Mutate(x => x.AutoOrient());
+                    var mNormalize = md.GetNormalizeMatrix();
+                    using (var imgDst = Utilities.TransformAndCropOutOfImage(imgSrc,mNormalize,new Size(nWidth,nHeight))) {
+                      imgDst.SaveAsJpeg(sDstFile);
                     }
-                  } catch { }
-                  imgDst.SaveAsJpeg(sDstFile);
-                }
+                  }
+                } catch { }
               }
             }
           }
@@ -261,22 +257,18 @@ namespace BioMap.Pages.Workflow
             } else {
               var md = this.Element.MeasureData;
               (int nWidth, int nHeight)=md.GetNormalizedSize();
-              using (var imgDst = new Image<Rgb24>(nWidth,nHeight,Color.Gray)) {
-                try {
-                  var sSrcFile = DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
-                  using (var imgSrc = Image.Load(sSrcFile)) {
-                    imgSrc.Mutate(x => x.AutoOrient());
-                    var mNormalize = md.GetNormalizeMatrix();
-                    var atb = new AffineTransformBuilder();
-                    atb.AppendMatrix(mNormalize);
-                    imgSrc.Mutate(x => x.Transform(atb));
-                    imgDst.Mutate(x => x.DrawImage(imgSrc,1f));
+              var bs = new System.IO.MemoryStream();
+              try {
+                var sSrcFile = DS.GetFilePathForImage(SD.CurrentUser.Project,this.Element.ElementName,true);
+                using (var imgSrc = Image.Load(sSrcFile)) {
+                  imgSrc.Mutate(x => x.AutoOrient());
+                  var mNormalize = md.GetNormalizeMatrix();
+                  using (var imgDst = Utilities.TransformAndCropOutOfImage(imgSrc,mNormalize,new Size(nWidth,nHeight))) {
+                    imgDst.SaveAsJpeg(bs);
                   }
-                } catch { }
-                var bs = new System.IO.MemoryStream();
-                imgDst.SaveAsJpeg(bs);
-                sUrlImage="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
-              }
+                }
+              } catch { }
+              sUrlImage="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
             }
           }
           await this.imageSurveyor.SetImageUrlAsync(sUrlImage,this.Raw,this.Element.MeasureData);
@@ -313,24 +305,17 @@ namespace BioMap.Pages.Workflow
             var md = this.Element.MeasureData;
             (int nWidth, int nHeight)=md.GetPatternSize(300);
             var mPattern = md.GetPatternMatrix(nHeight);
-            var fScale = Utilities.GetScale(mPattern);
-            if (fScale>=0.10f && fScale<5.0f) {
-              var atb = new AffineTransformBuilder();
-              atb.AppendMatrix(mPattern);
-              imgSrc.Mutate(x => x.Transform(atb));
-              using (var imgCropped = new Image<Rgb24>(nWidth,nHeight,Color.Gray)) {
-                imgCropped.Mutate(x => x.DrawImage(imgSrc,1f));
-                imgCropped.Mutate(x => x.MaxChroma(0.10f,new[] { new System.Numerics.Vector2(1,100) }));
-                imgCropped.Mutate(x => x.ApplyProcessor(analyseYellowShare));
-                var imgEdges = imgCropped.Clone(x => x.DetectEdges());
-                imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
-                var bs = new System.IO.MemoryStream();
-                imgCropped.SaveAsJpeg(bs);
-                this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
-                this.ShareOfYellow=(float)analyseYellowShare.AnalyseData.ShareOfWhite;
-                this.AsymmetryOfYellow=(float)((analyseYellowShare.AnalyseData.LowerShareOfWhite-analyseYellowShare.AnalyseData.UpperShareOfWhite)/Math.Max(0.01,analyseYellowShare.AnalyseData.ShareOfWhite));
-                this.Entropy=(float)analyseEntropy.AnalyseData.ShareOfWhite;
-              }
+            using (var imgCropped = Utilities.TransformAndCropOutOfImage(imgSrc,mPattern,new Size(nWidth,nHeight))) {
+              imgCropped.Mutate(x => x.MaxChroma(0.10f,new[] { new System.Numerics.Vector2(1,100) }));
+              imgCropped.Mutate(x => x.ApplyProcessor(analyseYellowShare));
+              var imgEdges = imgCropped.Clone(x => x.DetectEdges());
+              imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
+              var bs = new System.IO.MemoryStream();
+              imgCropped.SaveAsJpeg(bs);
+              this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
+              this.ShareOfYellow=(float)analyseYellowShare.AnalyseData.ShareOfWhite;
+              this.AsymmetryOfYellow=(float)((analyseYellowShare.AnalyseData.LowerShareOfWhite-analyseYellowShare.AnalyseData.UpperShareOfWhite)/Math.Max(0.01,analyseYellowShare.AnalyseData.ShareOfWhite));
+              this.Entropy=(float)analyseEntropy.AnalyseData.ShareOfWhite;
             }
           }
         }
