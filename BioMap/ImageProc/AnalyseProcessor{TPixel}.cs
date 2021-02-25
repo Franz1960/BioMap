@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
@@ -40,26 +41,32 @@ namespace BioMap.ImageProc
 
     protected override void BeforeImageApply() {
       base.BeforeImageApply();
-      this.data.WhitePixelCntPerRow=new double[this.SourceRectangle.Height];
+      this.data.BlackPixelCntPerRow=new double[this.SourceRectangle.Height];
     }
 
     protected override void AfterImageApply() {
       base.AfterImageApply();
-      double fWhiteTotal=0;
-      double fWhiteUpper=0;
-      double fWhiteLower=0;
+      int yLength = this.data.BlackPixelCntPerRow.Length;
+      int yCenter = yLength / 2;
+      double fBlackTotal=0;
+      double mom1Sum=0;
+      double mom2Sum=0;
       double fPixelArea=this.SourceRectangle.Width * this.SourceRectangle.Height;
-      for (int y = 0;y<this.data.WhitePixelCntPerRow.Length;y++) {
-        fWhiteTotal += this.data.WhitePixelCntPerRow[y];
-        if (y < this.data.WhitePixelCntPerRow.Length/2) {
-          fWhiteUpper += this.data.WhitePixelCntPerRow[y];
-        } else {
-          fWhiteLower += this.data.WhitePixelCntPerRow[y];
-        }
+      var lVerticalProfile = new List<double>();
+      for (int y = 0;y<yLength;y++) {
+        int yd = y - yCenter;
+        double a = this.data.BlackPixelCntPerRow[y];
+        lVerticalProfile.Add(this.data.BlackPixelCntPerRow[y] / fPixelArea);
+        fBlackTotal += a;
+        mom1Sum += yd * a;
+        mom2Sum += yd * yd * a;
       }
-      this.definition.AnalyseData.ShareOfWhite = fWhiteTotal / fPixelArea;
-      this.definition.AnalyseData.UpperShareOfWhite = fWhiteUpper * 2 / fPixelArea;
-      this.definition.AnalyseData.LowerShareOfWhite = fWhiteLower * 2 / fPixelArea;
+      this.definition.AnalyseData.VerticalProfile = lVerticalProfile.ToArray();
+      this.definition.AnalyseData.ShareOfBlack = fBlackTotal / fPixelArea;
+      var mom1 = mom1Sum / fBlackTotal;
+      var mom2 = mom2Sum / fBlackTotal;
+      this.definition.AnalyseData.VerticalCenterOfMass = mom1 / yCenter;
+      this.definition.AnalyseData.VerticalStdDeviation = Math.Sqrt(mom2 - mom1 * mom1) / yCenter;
     }
 
     /// <inheritdoc/>
@@ -78,7 +85,7 @@ namespace BioMap.ImageProc
 
     public class Data_t
     {
-      public double[] WhitePixelCntPerRow;
+      public double[] BlackPixelCntPerRow;
     }
 
     /// <summary>
@@ -109,16 +116,16 @@ namespace BioMap.ImageProc
         ref TPixel rowRef = ref MemoryMarshal.GetReference(row);
 
         {
-          float fWhitePixelCnt = 0;
+          float fBlackPixelCnt = 0;
           for (int x = this.minX;x < this.maxX;x++) {
             ref TPixel color = ref Unsafe.Add(ref rowRef,x);
             color.ToRgba32(ref rgba);
 
-            if (rgba == (Rgba32)Color.White) {
-              fWhitePixelCnt += 1;
+            if (rgba == (Rgba32)Color.Black) {
+              fBlackPixelCnt += 1;
             }
           }
-          this.Data.WhitePixelCntPerRow[y] += fWhitePixelCnt;
+          this.Data.BlackPixelCntPerRow[y] += fBlackPixelCnt;
         }
       }
     }

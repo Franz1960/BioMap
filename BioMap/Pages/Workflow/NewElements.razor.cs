@@ -25,8 +25,9 @@ namespace BioMap.Pages.Workflow
     protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
     private Blazor.ImageSurveyor.ImageSurveyor imageSurveyorPrev;
     private string PatternImgSrc="";
-    private float ShareOfYellow=0;
-    private float AsymmetryOfYellow=0;
+    private float ShareOfBlack=0;
+    private float CenterOfMass=0;
+    private float StdDeviation=0;
     private float Entropy=0;
     private bool disableSetImage=false;
     private bool elementChanged=false;
@@ -313,9 +314,10 @@ namespace BioMap.Pages.Workflow
               var bs = new System.IO.MemoryStream();
               imgCropped.SaveAsJpeg(bs);
               this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
-              this.ShareOfYellow=(float)analyseYellowShare.AnalyseData.ShareOfWhite;
-              this.AsymmetryOfYellow=(float)((analyseYellowShare.AnalyseData.LowerShareOfWhite-analyseYellowShare.AnalyseData.UpperShareOfWhite)/Math.Max(0.01,analyseYellowShare.AnalyseData.ShareOfWhite));
-              this.Entropy=(float)analyseEntropy.AnalyseData.ShareOfWhite;
+              this.ShareOfBlack=(float)analyseYellowShare.AnalyseData.ShareOfBlack;
+              this.CenterOfMass=(float)(analyseYellowShare.AnalyseData.VerticalCenterOfMass);
+              this.StdDeviation=(float)(analyseYellowShare.AnalyseData.VerticalStdDeviation);
+              this.Entropy=(float)(1-analyseEntropy.AnalyseData.ShareOfBlack);
             }
           }
         }
@@ -351,12 +353,6 @@ namespace BioMap.Pages.Workflow
         this.disableSetImage=false;
         await this.LoadElement();
       }
-    }
-    private async Task DeleteElement(Element el) {
-      DS.DeleteElement(SD,el);
-      DS.AddLogEntry(SD,"Deleted element "+el.ElementName);
-      await RefreshData();
-      await this.InvokeAsync(()=>StateHasChanged());
     }
   }
 }

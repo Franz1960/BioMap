@@ -693,6 +693,9 @@
   <data name="Show vintage boundaries" xml:space="preserve">
     <value>Jahrgangsgrenzen anzeigen</value>
   </data>
+  <data name="Standard deviation" xml:space="preserve">
+    <value>Standardabweichung</value>
+  </data>
   <data name="Start" xml:space="preserve">
     <value>Start</value>
   </data>

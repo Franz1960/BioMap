@@ -22,19 +22,24 @@ namespace BioMap.ImageProc
     public class AnalyseData_t
     {
       /// <summary>
-      /// The proportion of white pixels.
+      /// The proportion of black pixels.
       /// </summary>
-      public double ShareOfWhite { get; set; }
+      public double ShareOfBlack { get; set; }
 
       /// <summary>
-      /// The proportion of white pixels in the upper half.
+      /// The center of mass of vertical black density distribution.
       /// </summary>
-      public double UpperShareOfWhite { get; set; }
+      public double VerticalCenterOfMass { get; set; }
 
       /// <summary>
-      /// The proportion of white pixels in the lower half.
+      /// The standard deviation of vertical black density distribution.
       /// </summary>
-      public double LowerShareOfWhite { get; set; }
+      public double VerticalStdDeviation { get; set; }
+
+      /// <summary>
+      /// Vertical profile of black density.
+      /// </summary>
+      public double[] VerticalProfile { get; set; }
     }
 
     public AnalyseData_t AnalyseData = new AnalyseData_t();
