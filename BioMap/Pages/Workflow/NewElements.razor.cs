@@ -48,7 +48,7 @@ namespace BioMap.Pages.Workflow
                   using (var imgSrc = Image.Load(sSrcFile)) {
                     imgSrc.Mutate(x => x.AutoOrient());
                     var mNormalize = md.GetNormalizeMatrix();
-                    using (var imgDst = Utilities.TransformAndCropOutOfImage(imgSrc,mNormalize,new Size(nWidth,nHeight))) {
+                    using (var imgDst = ImageOperations.TransformAndCropOutOfImage(imgSrc,mNormalize,new Size(nWidth,nHeight))) {
                       imgDst.SaveAsJpeg(sDstFile);
                     }
                   }
@@ -263,7 +263,7 @@ namespace BioMap.Pages.Workflow
                 using (var imgSrc = Image.Load(sSrcFile)) {
                   imgSrc.Mutate(x => x.AutoOrient());
                   var mNormalize = md.GetNormalizeMatrix();
-                  using (var imgDst = Utilities.TransformAndCropOutOfImage(imgSrc,mNormalize,new Size(nWidth,nHeight))) {
+                  using (var imgDst = ImageOperations.TransformAndCropOutOfImage(imgSrc,mNormalize,new Size(nWidth,nHeight))) {
                     imgDst.SaveAsJpeg(bs);
                   }
                 }
@@ -305,7 +305,7 @@ namespace BioMap.Pages.Workflow
             var md = this.Element.MeasureData;
             (int nWidth, int nHeight)=md.GetPatternSize(300);
             var mPattern = md.GetPatternMatrix(nHeight);
-            using (var imgCropped = Utilities.TransformAndCropOutOfImage(imgSrc,mPattern,new Size(nWidth,nHeight))) {
+            using (var imgCropped = ImageOperations.TransformAndCropOutOfImage(imgSrc,mPattern,new Size(nWidth,nHeight))) {
               imgCropped.Mutate(x => x.MaxChroma(0.10f,new[] { new System.Numerics.Vector2(1,100) }));
               imgCropped.Mutate(x => x.ApplyProcessor(analyseYellowShare));
               var imgEdges = imgCropped.Clone(x => x.DetectEdges());
