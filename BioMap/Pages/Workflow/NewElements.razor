@@ -45,7 +45,9 @@
     @if (Element!=null) {
       <Row Margin="Margin.Is1.OnY">
         <Column>
-          <strong>@Element.ElementName</strong><br />
+          <a href="javascript:void(0);" @onclick="()=>ElementName_Click(Element)">
+            <strong>@Element.ElementName</strong>
+          </a><br />
           <Icon Name="IconName.LocationArrow" /> @Element.GetPlaceName()<br />
           <Icon Name="IconName.Clock" /> @Element.GetIsoDateTime()<br />
           <Icon Name="IconName.User" /> @Element.ElementProp.UploadInfo.UserId

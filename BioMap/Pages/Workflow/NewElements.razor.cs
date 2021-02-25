@@ -177,7 +177,7 @@ namespace BioMap.Pages.Workflow
         await this.LoadElement();
       }
     }
-    private void OnSelectClick(Element el) {
+    private void ElementName_Click(Element el) {
       this.PhotoPopup1.Show(el);
     }
     private async Task OnSelectPrev() {
