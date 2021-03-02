@@ -204,15 +204,17 @@
       </Row>
       <Divider />
       <Row Margin="Margin.Is1.OnY">
-        <Column ColumnSize="ColumnSize.Is4">
-          <Image Source="@PatternImgSrc" Style="height:200px;" />
-        </Column>
-        <Column>
-          <p>@Localize["Share of yellow"]: @(((1-ShareOfBlack)*100).ToString("0.0"))%</p>
-          <p>@Localize["Asymmetry"]: @((CenterOfMass*100).ToString("0.0"))%</p>
-          <p>@Localize["Standard deviation"]: @((StdDeviation*100).ToString("0.0"))%</p>
-          <p>@Localize["Entropy"]: @((Entropy*100).ToString("0.0"))%</p>
-        </Column>
+        @if (!string.IsNullOrEmpty(PatternImgSrc)) { 
+          <Column ColumnSize="ColumnSize.Is4">
+            <Image Source="@PatternImgSrc" Style="height:200px;" />
+          </Column>
+          <Column>
+            <p>@Localize["Share of yellow"]: @(((1-ShareOfBlack)*100).ToString("0.0"))%</p>
+            <p>@Localize["Asymmetry"]: @((CenterOfMass*100).ToString("0.0"))%</p>
+            <p>@Localize["Standard deviation"]: @((StdDeviation*100).ToString("0.0"))%</p>
+            <p>@Localize["Entropy"]: @((Entropy*100).ToString("0.0"))%</p>
+          </Column>
+        }
       </Row>
     }
   </Column>

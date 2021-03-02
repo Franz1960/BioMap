@@ -295,6 +295,7 @@ namespace BioMap.Pages.Workflow
       Utilities.CallDelayed(200,this.RefreshPatternImg);
     }
     private async void RefreshPatternImg(object[] oaArgs) {
+      string sPatternImgSrc="";
       try {
         var el=this.Element;
         if (el!=null && ElementClassification.IsNormed(el.Classification.ClassName)) {
@@ -313,7 +314,7 @@ namespace BioMap.Pages.Workflow
               imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
               var bs = new System.IO.MemoryStream();
               imgCropped.SaveAsJpeg(bs);
-              this.PatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
+              sPatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
               this.ShareOfBlack=(float)analyseYellowShare.AnalyseData.ShareOfBlack;
               this.CenterOfMass=(float)(analyseYellowShare.AnalyseData.VerticalCenterOfMass);
               this.StdDeviation=(float)(analyseYellowShare.AnalyseData.VerticalStdDeviation);
@@ -322,9 +323,10 @@ namespace BioMap.Pages.Workflow
           }
         }
       } catch {
-        this.PatternImgSrc="";
+      } finally {
+        this.PatternImgSrc=sPatternImgSrc;
+        await this.InvokeAsync(()=>StateHasChanged());
       }
-      await this.InvokeAsync(()=>StateHasChanged());
     }
     private async Task ResetPositions_Clicked(Element el) {
       var sFilePath = DS.GetFilePathForImage(SD.CurrentUser.Project,el.ElementName,true);
