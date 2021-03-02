@@ -330,6 +330,7 @@ namespace BioMap.Pages.Workflow
       var sFilePath = DS.GetFilePathForImage(SD.CurrentUser.Project,el.ElementName,true);
       if (System.IO.File.Exists(sFilePath)) {
         using (var img = Image.Load(sFilePath)) {
+          img.Mutate(x => x.AutoOrient());
           int w=img.Width;
           int h=img.Height;
           if (ElementClassification.IsNormed(this.Element?.Classification?.ClassName)) {

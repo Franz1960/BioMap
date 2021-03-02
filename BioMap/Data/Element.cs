@@ -143,6 +143,7 @@ namespace BioMap
         var sSrcFile=DS.GetFilePathForImage(sd.CurrentUser.Project,this.ElementName,true);
         if (System.IO.File.Exists(sSrcFile)) {
           using (var imgSrc = Image.Load(sSrcFile)) {
+            imgSrc.Mutate(x => x.AutoOrient());
             if (ElementClassification.IsNormed(this.Classification?.ClassName)) {
               var normalizer=sd.CurrentProject.ImageNormalizer;
               this.MeasureData=new Blazor.ImageSurveyor.ImageSurveyorMeasureData {

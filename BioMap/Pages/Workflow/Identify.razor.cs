@@ -60,6 +60,9 @@ namespace BioMap.Pages.Workflow
       this.Element=(await DS.GetElementsAsync(SD,SD.Filters,"elements.name='"+SD.SelectedElementName+"'")).FirstOrDefault();
     }
     private async Task RefreshData() {
+      await this.RefreshElementsToCompare();
+    }
+    private async Task RefreshElementsToCompare() {
       var els = await DS.GetElementsAsync(SD,SD.Filters,
         "(elements.classification LIKE '%\"ClassName\":\"ID photo\"%')",
         "elements.creationtime ASC");
