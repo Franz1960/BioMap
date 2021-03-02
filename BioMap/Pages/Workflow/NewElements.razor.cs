@@ -146,7 +146,7 @@ namespace BioMap.Pages.Workflow
     }
     private async Task RefreshData() {
       var els = await DS.GetElementsAsync(SD,SD.Filters,
-        "(elements.classification LIKE '%\"ClassName\":\"New\"%') OR (elements.croppingconfirmed<>1) OR (elements.croppingconfirmed IS NULL)",
+        "((elements.classification LIKE '%\"ClassName\":\"New\"%') OR (elements.croppingconfirmed<>1) OR (elements.croppingconfirmed IS NULL))",
         "elements.creationtime ASC");
       var lElements = new List<Element>();
       foreach (var el in els) {
