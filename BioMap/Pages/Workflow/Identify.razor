@@ -7,31 +7,37 @@
 @using BioMap
 
 <Row Margin="Margin.Is1.OnY">
-  <Column ColumnSize="ColumnSize.Is7">
-    <Container Style="height:99vh;overflow-y:scroll;">
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <UserFilter />
-        </Column>
-      </Row>
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <div class="row">
-            @foreach (var el in ElementsToCompare) {
-              <div class="card" style="width: 240px;">
-                <a href="javascript:void(0);" @onclick="()=>{ }">
-                  <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
-                </a>
-                <div class="card-footer">
-                  <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName())</small>
+  @if (ElementToCompare==null) {
+    <Column ColumnSize="ColumnSize.Is7">
+      <Container Style="height:99vh;overflow-y:scroll;">
+        <Row Margin="Margin.Is1.OnY">
+          <Column>
+            <UserFilter />
+          </Column>
+        </Row>
+        <Row Margin="Margin.Is1.OnY">
+          <Column>
+            <div class="row">
+              @foreach (var el in ElementsToCompare) {
+                <div class="card" style="width: 240px;">
+                  <a href="javascript:void(0);" @onclick="()=>{ ElementFromList_Clicked(el); }">
+                    <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
+                  </a>
+                  <div class="card-footer">
+                    <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName())</small>
+                  </div>
                 </div>
-              </div>
-            }
-          </div>
-        </Column>
-      </Row>
-    </Container>
-  </Column>
+              }
+            </div>
+          </Column>
+        </Row>
+      </Container>
+    </Column>
+  } else {
+    <Column>
+      <img src="api/photos/@ElementToCompare.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
+    </Column>
+  }
   <Column>
     @if (Element!=null && Element.HasPhotoData()) {
       <Row Margin="Margin.Is1.OnY">
@@ -44,14 +50,13 @@
           <a href="javascript:void(0);" @onclick="()=>ElementName_Click(Element)">
             <strong>@Element.ElementName</strong>
           </a><br />
-          <Icon Name="IconName.LocationArrow" /> @Element.GetPlaceName()<br />
-          <Icon Name="IconName.Clock" /> @Element.GetIsoDateTime()<br />
+          <Icon Name="IconName.LocationArrow" /> @Element.GetPlaceName()
+          <Icon Name="IconName.Clock" /> @Element.GetIsoDateTime()
           <Icon Name="IconName.User" /> @Element.ElementProp.UploadInfo.UserId
         </Column>
       </Row>
       <Row Margin="Margin.Is1.OnY">
         <Column>
-          <img src="api/photos/@Element.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
         </Column>
       </Row>
     }

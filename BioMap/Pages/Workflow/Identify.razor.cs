@@ -19,6 +19,8 @@ namespace BioMap.Pages.Workflow
   public partial class Identify : ComponentBase
   {
     private Element[] ElementsToCompare = new Element[0];
+    private Element ElementToCompare = null;
+    private ElementEdit ElementEditRef;
     private PhotoPopup PhotoPopup1;
     private Element Element {
       get => this._Element;
@@ -76,6 +78,10 @@ namespace BioMap.Pages.Workflow
     }
     private void ElementName_Click(Element el) {
       this.PhotoPopup1.Show(el);
+    }
+    private void ElementFromList_Clicked(Element el) {
+      this.ElementToCompare=el;
+      this.StateHasChanged();
     }
   }
 }
