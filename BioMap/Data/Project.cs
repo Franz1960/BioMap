@@ -43,6 +43,18 @@ namespace BioMap
     public ImageSurveyorNormalizer ImageNormalizer { get; } =new ImageSurveyorNormalizer() {
       NormalizeMethod="HeadToCloakInPetriDish",
     };
+    public bool MaleGenderFeatures {
+      get {
+        // For bombina variegata it's true; ToDo: make configurable for other species.
+        return true;
+      }
+    }
+    public bool FemaleGenderFeatures {
+      get {
+        // For bombina variegata it's false; ToDo: make configurable for other species.
+        return false;
+      }
+    }
     public void InitSpeciesByGroupForYellowBelliedToad() {
       this.Species.Clear();
       {

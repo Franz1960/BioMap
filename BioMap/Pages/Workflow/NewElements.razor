@@ -30,7 +30,7 @@
         </Button>
       </Column>
       <Column>
-        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(true); })" Block="true" Disabled=@(Element!=null && Element.Classification.IsIdPhoto() && string.IsNullOrEmpty(Element?.Gender))>
+        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(true); })" Block="true" Disabled=@(Element!=null && Element.Classification.IsIdPhoto() && string.IsNullOrEmpty(Element?.GenderFeature))>
           <Icon Name="IconName.Save" />
           <Icon Name="IconName.StepForward" />
         </Button>
@@ -152,14 +152,18 @@
         <Row Margin="Margin.Is1.OnY">
           <Column>
             <Field Horizontal="true">
-              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["Gender"]</FieldLabel>
-              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                <Select TValue="string" @bind-SelectedValue="Element.Gender">
+              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is7.OnDesktop">@Localize["Gender features"]</FieldLabel>
+              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is5.OnDesktop">
+                <Select TValue="string" @bind-SelectedValue="Element.GenderFeature">
                   <SelectItem TValue="string" Value="@("")">@Localize["Unknown"]</SelectItem>
-                  <SelectItem TValue="string" Value="@("j")">@Localize["Other"]</SelectItem>
-                  <SelectItem TValue="string" Value="@("f")">@Localize["Female"]</SelectItem>
-                  <SelectItem TValue="string" Value="@("m")">@Localize["Male"]</SelectItem>
-                </Select>
+                  <SelectItem TValue="string" Value="@("-")">@Localize["None"]</SelectItem>
+                  @if (SD.CurrentProject.FemaleGenderFeatures) {
+                    <SelectItem TValue="string" Value="@("f")">@Localize["Female"]</SelectItem>
+                  }
+                  @if (SD.CurrentProject.MaleGenderFeatures) {
+                    <SelectItem TValue="string" Value="@("m")">@Localize["Male"]</SelectItem>
+                  }
+                  </Select>
               </FieldBody>
             </Field>
           </Column>

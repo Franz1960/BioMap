@@ -281,6 +281,10 @@ namespace BioMap
               command.CommandText = "ALTER TABLE elements ADD COLUMN croppingconfirmed INT";
               command.ExecuteNonQuery();
             } catch { }
+            try {
+              command.CommandText = "ALTER TABLE indivdata ADD COLUMN genderfeature TEXT";
+              command.ExecuteNonQuery();
+            } catch { }
           }
           #endregion
           this.AccessedDbs.Add(sProject);
@@ -794,7 +798,7 @@ namespace BioMap
         }
         if (el.ElementProp?.IndivData?.MeasuredData!=null) {
           command.CommandText =
-            "REPLACE INTO indivdata (name,headbodylength,dateofbirth,ageyears,winters,gender,iid" +
+            "REPLACE INTO indivdata (name,headbodylength,dateofbirth,ageyears,winters,genderfeature,gender,iid" +
             ",traitYellowDominance" +
             ",traitBlackDominance" +
             ",traitVertBlackBreastCenterStrip" +
@@ -805,6 +809,7 @@ namespace BioMap
             ",'" + ConvInvar.ToString(el.ElementProp.IndivData.DateOfBirth) + "'" +
             "," + ConvInvar.ToString(el.GetAgeYears()) +
             "," + ConvInvar.ToString(el.GetWinters()) +
+            ",'" + el.ElementProp.IndivData.GenderFeature+"'" +
             ",'" + el.ElementProp.IndivData.Gender+"'" +
             "," + ConvInvar.ToString(el.ElementProp.IndivData.IId) +
             "," + (el.ElementProp.IndivData.TraitValues.TryGetValue("YellowDominance",out int nYD) ? ConvInvar.ToString(nYD) : "0") + "" +
@@ -897,6 +902,7 @@ namespace BioMap
           ",elements.classification" +
           ",elements.measuredata" +
           ",elements.croppingconfirmed" +
+          ",indivdata.genderfeature" +
           " FROM elements" +
           " LEFT JOIN indivdata ON (indivdata.name=elements.name)" +
           " LEFT JOIN photos ON (photos.name=elements.name)" +
@@ -977,6 +983,7 @@ namespace BioMap
               if (!dr.IsDBNull(10)) {
                 el.ElementProp.IndivData = new Element.IndivData_t {
                   IId = dr.GetInt32(10),
+                  GenderFeature = (dr.IsDBNull(38) ? "" : dr.GetString(38)),
                   Gender = dr.GetString(11),
                   DateOfBirth = dr.GetDateTime(12),
                 };

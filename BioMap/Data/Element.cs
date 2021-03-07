@@ -49,6 +49,7 @@ namespace BioMap
         public double HeadBodyLength;
       }
       public int IId;
+      public string GenderFeature;
       public string Gender;
       public DateTime DateOfBirth;
       public MeasuredData_t MeasuredData;
@@ -274,6 +275,19 @@ namespace BioMap
       set {
         if (this.ElementProp.IndivData!=null) {
           this.ElementProp.IndivData.Gender=value;
+        }
+      }
+    }
+    public string GenderFeature {
+      get {
+        if (this.ElementProp.IndivData!=null) {
+          return this.ElementProp.IndivData.GenderFeature;
+        }
+        return "";
+      }
+      set {
+        if (this.ElementProp.IndivData!=null) {
+          this.ElementProp.IndivData.GenderFeature=value;
         }
       }
     }

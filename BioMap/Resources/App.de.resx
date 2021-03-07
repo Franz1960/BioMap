@@ -393,6 +393,9 @@
   <data name="Gender" xml:space="preserve">
     <value>Geschlecht</value>
   </data>
+  <data name="Gender features" xml:space="preserve">
+    <value>Geschlechtsmerkmale</value>
+  </data>
   <data name="Growing curve" xml:space="preserve">
     <value>Wachstumskurve</value>
   </data>
@@ -561,6 +564,9 @@
   <data name="New individuals" xml:space="preserve">
     <value>Neue Individuen</value>
   </data>
+  <data name="None" xml:space="preserve">
+    <value>Keine</value>
+  </data>
   <data name="Normalized non-ID photo" xml:space="preserve">
     <value>Normiertes Nicht-Passfoto</value>
   </data>
@@ -725,6 +731,9 @@
   </data>
   <data name="Totals" xml:space="preserve">
     <value>Gesamtzahlen</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unbekannt</value>
   </data>
   <data name="Uploaded" xml:space="preserve">
     <value>Hochgeladen</value>
