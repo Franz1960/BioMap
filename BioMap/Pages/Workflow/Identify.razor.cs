@@ -76,6 +76,8 @@ namespace BioMap.Pages.Workflow
       }
       this.ElementsToCompare = lElements.ToArray();
     }
+    private async Task IdentifyAs(Element elementToCompare) {
+    }
     private void ElementName_Click(Element el) {
       this.PhotoPopup1.Show(el);
     }

@@ -34,9 +34,36 @@
       </Container>
     </Column>
   } else {
+<Column>
+  <Row Margin="Margin.Is1.OnY">
     <Column>
       <img src="api/photos/@ElementToCompare.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
     </Column>
+  </Row>
+  <Row Margin="Margin.Is1.OnY">
+    <Column>
+      <a href="javascript:void(0);" @onclick="()=>ElementName_Click(ElementToCompare)">
+        <strong>@ElementToCompare.ElementName</strong>
+      </a><br />
+      <Icon Name="IconName.LocationArrow" /> @ElementToCompare.GetPlaceName()
+      <Icon Name="IconName.Clock" /> @ElementToCompare.GetIsoDateTime()
+      <Icon Name="IconName.User" /> @ElementToCompare.ElementProp.UploadInfo.UserId
+    </Column>
+  </Row>
+  <Row Margin="Margin.Is1.OnY">
+    <Column>
+      <Button Color="Color.Light" Clicked="@(async (e)=>{ await IdentifyAs(ElementToCompare); })" Block="true">
+        #@ElementToCompare.GetIId()
+        <Icon Name="IconName.Check" />
+      </Button>
+    </Column>
+    <Column>
+      <Button Color="Color.Light" Clicked="@(async (e)=>{ ElementToCompare=null; })" Block="true">
+        <Icon Name="IconName.List"></Icon>
+      </Button>
+    </Column>
+  </Row>
+</Column>
   }
   <Column>
     @if (Element!=null && Element.HasPhotoData()) {
