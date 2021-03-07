@@ -152,7 +152,12 @@
         <Row Margin="Margin.Is1.OnY">
           <Column>
             <Field Horizontal="true">
-              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is7.OnDesktop">@Localize["Gender features"]</FieldLabel>
+              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is7.OnDesktop">
+                @Localize["Gender features"]
+                @if (!string.IsNullOrEmpty(Element.GetIId())) {
+                  @(" ("+Element.Gender+")")
+                }
+              </FieldLabel>
               <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is5.OnDesktop">
                 <Select TValue="string" @bind-SelectedValue="Element.GenderFeature">
                   <SelectItem TValue="string" Value="@("")">@Localize["Unknown"]</SelectItem>
@@ -163,7 +168,7 @@
                   @if (SD.CurrentProject.MaleGenderFeatures) {
                     <SelectItem TValue="string" Value="@("m")">@Localize["Male"]</SelectItem>
                   }
-                  </Select>
+                </Select>
               </FieldBody>
             </Field>
           </Column>
@@ -208,7 +213,7 @@
       </Row>
       <Divider />
       <Row Margin="Margin.Is1.OnY">
-        @if (!string.IsNullOrEmpty(PatternImgSrc)) { 
+        @if (!string.IsNullOrEmpty(PatternImgSrc)) {
           <Column ColumnSize="ColumnSize.Is4">
             <Image Source="@PatternImgSrc" Style="height:200px;" />
           </Column>
