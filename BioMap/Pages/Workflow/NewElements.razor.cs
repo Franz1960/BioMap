@@ -20,7 +20,7 @@ namespace BioMap.Pages.Workflow
   {
     private Element[] Elements = new Element[0];
     private int RemainingElements=0;
-    private int? SelectedElementIndex=null;
+    private DateTime? SelectedElementTime=null;
     private PhotoPopup PhotoPopup1;
     protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
     private Blazor.ImageSurveyor.ImageSurveyor imageSurveyorPrev;
@@ -59,6 +59,9 @@ namespace BioMap.Pages.Workflow
           }
           this._Element=value;
           SD.SelectedElementName=this._Element?.ElementName;
+          if (this._Element!=null) {
+            this.SelectedElementTime=this._Element.ElementProp.CreationTime;
+          }
         };
       }
     }
@@ -135,13 +138,6 @@ namespace BioMap.Pages.Workflow
       this.Element=(await DS.GetElementsAsync(SD,SD.Filters,"elements.name='"+SD.SelectedElementName+"'")).FirstOrDefault();
       if (this.Element==null) {
         await this.OnSelectNext(false);
-      } else {
-        for (int i=0;i<this.Elements.Length;i++) {
-          if (this.Elements[i].ElementName==this.Element?.ElementName) {
-            this.SelectedElementIndex=i;
-            break;
-          }
-        }
       }
     }
     private async Task RefreshData() {
@@ -194,45 +190,27 @@ namespace BioMap.Pages.Workflow
     private async Task OnSelectPrev() {
       this.Element=null;
       await this.RefreshData();
-      if (this.SelectedElementIndex.HasValue && this.SelectedElementIndex.Value>=1 && this.Elements.Length>=1) {
-        this.SelectedElementIndex--;
+      if (this.SelectedElementTime.HasValue) {
+        this.Element=this.Elements.LastOrDefault((el)=>(el.ElementProp.CreationTime<this.SelectedElementTime));
       } else if (this.Elements.Length>=1) {
-        this.SelectedElementIndex=this.Elements.Length-1;
-      } else {
-        this.SelectedElementIndex=null;
-      }
-      if (this.SelectedElementIndex.HasValue) {
-        this.Element=this.Elements[this.SelectedElementIndex.Value];
-      } else {
-        this.Element=null;
+        this.Element=this.Elements[0];
       }
       this.disableSetImage=false;
       this.elementChanged=true;
       StateHasChanged();
     }
     private async Task OnSelectNext(bool bSave) {
-      bool bCroppingConfirmed=false;
       if (bSave) {
         if (!this.Element.CroppingConfirmed) {
           this.Element.CroppingConfirmed=true;
-          bCroppingConfirmed=true;
         }
       }
       this.Element=null; // Save implicitely.
       await this.RefreshData();
-      if (this.SelectedElementIndex.HasValue && this.SelectedElementIndex.Value<this.Elements.Length-1) {
-        if (!bCroppingConfirmed) {
-          this.SelectedElementIndex++;
-        }
+      if (this.SelectedElementTime.HasValue) {
+        this.Element=this.Elements.FirstOrDefault((el)=>(el.ElementProp.CreationTime>this.SelectedElementTime));
       } else if (this.Elements.Length>=1) {
-        this.SelectedElementIndex=0;
-      } else {
-        this.SelectedElementIndex=null;
-      }
-      if (this.SelectedElementIndex.HasValue) {
-        this.Element=this.Elements[this.SelectedElementIndex.Value];
-      } else {
-        this.Element=null;
+        this.Element=this.Elements[0];
       }
       this.disableSetImage=false;
       this.elementChanged=true;
