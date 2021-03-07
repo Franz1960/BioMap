@@ -90,10 +90,6 @@ namespace BioMap
         endpoints.MapControllers();
       });
 
-      app.ApplicationServices
-        .UseBootstrapProviders()
-        .UseFontAwesomeIcons();
-
       var ds = app.ApplicationServices.GetRequiredService<DataService>();
       ds.Init();
     }
