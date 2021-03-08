@@ -47,6 +47,10 @@ namespace BioMap
       public class MeasuredData_t
       {
         public double HeadBodyLength;
+        public double ShareOfBlack;
+        public double CenterOfMass;
+        public double StdDeviation;
+        public double Entropy;
       }
       public int IId;
       public string GenderFeature;

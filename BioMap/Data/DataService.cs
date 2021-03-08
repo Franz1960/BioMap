@@ -285,6 +285,22 @@ namespace BioMap
               command.CommandText = "ALTER TABLE indivdata ADD COLUMN genderfeature TEXT";
               command.ExecuteNonQuery();
             } catch { }
+            try {
+              command.CommandText = "ALTER TABLE indivdata ADD COLUMN shareofblack REAL";
+              command.ExecuteNonQuery();
+            } catch { }
+            try {
+              command.CommandText = "ALTER TABLE indivdata ADD COLUMN centerofmass REAL";
+              command.ExecuteNonQuery();
+            } catch { }
+            try {
+              command.CommandText = "ALTER TABLE indivdata ADD COLUMN stddeviation REAL";
+              command.ExecuteNonQuery();
+            } catch { }
+            try {
+              command.CommandText = "ALTER TABLE indivdata ADD COLUMN entropy REAL";
+              command.ExecuteNonQuery();
+            } catch { }
           }
           #endregion
           this.AccessedDbs.Add(sProject);
@@ -798,7 +814,18 @@ namespace BioMap
         }
         if (el.ElementProp?.IndivData?.MeasuredData!=null) {
           command.CommandText =
-            "REPLACE INTO indivdata (name,headbodylength,dateofbirth,ageyears,winters,genderfeature,gender,iid" +
+            "REPLACE INTO indivdata (name" +
+            ",headbodylength" +
+            ",shareofblack" +
+            ",centerofmass" +
+            ",stddeviation" +
+            ",entropy" +
+            ",dateofbirth" +
+            ",ageyears" +
+            ",winters" +
+            ",genderfeature" +
+            ",gender" +
+            ",iid" +
             ",traitYellowDominance" +
             ",traitBlackDominance" +
             ",traitVertBlackBreastCenterStrip" +
@@ -806,6 +833,10 @@ namespace BioMap
             ",traitManyIsolatedBlackBellyDots" +
             ") VALUES ('" + el.ElementName + "'" +
             "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.HeadBodyLength) +
+            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.ShareOfBlack) +
+            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.CenterOfMass) +
+            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.StdDeviation) +
+            "," + ConvInvar.ToString(el.ElementProp.IndivData.MeasuredData.Entropy) +
             ",'" + ConvInvar.ToString(el.ElementProp.IndivData.DateOfBirth) + "'" +
             "," + ConvInvar.ToString(el.GetAgeYears()) +
             "," + ConvInvar.ToString(el.GetWinters()) +
@@ -903,6 +934,10 @@ namespace BioMap
           ",elements.measuredata" +
           ",elements.croppingconfirmed" +
           ",indivdata.genderfeature" +
+          ",indivdata.shareofblack" +
+          ",indivdata.centerofmass" +
+          ",indivdata.stddeviation" +
+          ",indivdata.entropy" +
           " FROM elements" +
           " LEFT JOIN indivdata ON (indivdata.name=elements.name)" +
           " LEFT JOIN photos ON (photos.name=elements.name)" +
@@ -1000,6 +1035,10 @@ namespace BioMap
                   }
                   el.ElementProp.IndivData.MeasuredData = new Element.IndivData_t.MeasuredData_t {
                     HeadBodyLength = dr.GetDouble(18),
+                    ShareOfBlack = dr.IsDBNull(39) ? 0 : dr.GetDouble(39),
+                    CenterOfMass = dr.IsDBNull(40) ? 0 : dr.GetDouble(40),
+                    StdDeviation = dr.IsDBNull(41) ? 0 : dr.GetDouble(41),
+                    Entropy = dr.IsDBNull(42) ? 0 : dr.GetDouble(42),
                   };
                 }
               }

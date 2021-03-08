@@ -25,10 +25,6 @@ namespace BioMap.Pages.Workflow
     protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
     private Blazor.ImageSurveyor.ImageSurveyor imageSurveyorPrev;
     private string PatternImgSrc="";
-    private float ShareOfBlack=0;
-    private float CenterOfMass=0;
-    private float StdDeviation=0;
-    private float Entropy=0;
     private bool disableSetImage=false;
     private bool elementChanged=false;
     private bool normImageDirty=false;
@@ -216,12 +212,6 @@ namespace BioMap.Pages.Workflow
       this.elementChanged=true;
       StateHasChanged();
     }
-    private async Task Measure_Clicked(Element el) {
-      this.Element=el;
-      this.disableSetImage=false;
-      this.elementChanged=true;
-      await this.InvokeAsync(()=>StateHasChanged());
-    }
     private async Task LoadElement() {
       if (!this.disableSetImage) {
         if (this.Element!=null) {
@@ -303,10 +293,10 @@ namespace BioMap.Pages.Workflow
               var bs = new System.IO.MemoryStream();
               imgCropped.SaveAsJpeg(bs);
               sPatternImgSrc="data:image/png;base64,"+Convert.ToBase64String(bs.ToArray());
-              this.ShareOfBlack=(float)analyseYellowShare.AnalyseData.ShareOfBlack;
-              this.CenterOfMass=(float)(analyseYellowShare.AnalyseData.VerticalCenterOfMass);
-              this.StdDeviation=(float)(analyseYellowShare.AnalyseData.VerticalStdDeviation);
-              this.Entropy=(float)(1-analyseEntropy.AnalyseData.ShareOfBlack);
+              this.Element.ElementProp.IndivData.MeasuredData.ShareOfBlack=(float)analyseYellowShare.AnalyseData.ShareOfBlack;
+              this.Element.ElementProp.IndivData.MeasuredData.CenterOfMass=(float)(analyseYellowShare.AnalyseData.VerticalCenterOfMass);
+              this.Element.ElementProp.IndivData.MeasuredData.StdDeviation=(float)(analyseYellowShare.AnalyseData.VerticalStdDeviation);
+              this.Element.ElementProp.IndivData.MeasuredData.Entropy=(float)(1-analyseEntropy.AnalyseData.ShareOfBlack);
             }
           }
         }

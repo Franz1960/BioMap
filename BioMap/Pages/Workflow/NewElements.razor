@@ -218,10 +218,10 @@
             <Image Source="@PatternImgSrc" Style="height:200px;" />
           </Column>
           <Column>
-            <p>@Localize["Share of yellow"]: @(((1-ShareOfBlack)*100).ToString("0.0"))%</p>
-            <p>@Localize["Asymmetry"]: @((CenterOfMass*100).ToString("0.0"))%</p>
-            <p>@Localize["Standard deviation"]: @((StdDeviation*100).ToString("0.0"))%</p>
-            <p>@Localize["Entropy"]: @((Entropy*100).ToString("0.0"))%</p>
+            <p>@Localize["Share of yellow"]: @(((1-this.Element.ElementProp.IndivData.MeasuredData.ShareOfBlack)*100).ToString("0.0"))%</p>
+            <p>@Localize["Asymmetry"]: @((this.Element.ElementProp.IndivData.MeasuredData.CenterOfMass*100).ToString("0.0"))%</p>
+            <p>@Localize["Standard deviation"]: @((this.Element.ElementProp.IndivData.MeasuredData.StdDeviation*100).ToString("0.0"))%</p>
+            <p>@Localize["Entropy"]: @((this.Element.ElementProp.IndivData.MeasuredData.Entropy*100).ToString("0.0"))%</p>
           </Column>
         }
       </Row>
