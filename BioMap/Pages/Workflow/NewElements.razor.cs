@@ -99,6 +99,16 @@ namespace BioMap.Pages.Workflow
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
+        if (IsSpecialAuto) {
+          var timer=new System.Timers.Timer(3000);
+          timer.Elapsed+=async (sender,e)=>{
+            await this.OnSelectNext(false);
+            if (this.RemainingElements<1) {
+              timer.Enabled=false;
+            }
+          };
+          timer.Enabled=true;
+        }
       }
       if (this.imageSurveyor!=this.imageSurveyorPrev) {
         if (this.imageSurveyorPrev!=null) {
@@ -136,23 +146,35 @@ namespace BioMap.Pages.Workflow
         await this.OnSelectNext(false);
       }
     }
+    private bool IsSpecialAuto { get => (SD.CurrentUser.Level==742); }
     private async Task RefreshData() {
-      var els = await DS.GetElementsAsync(SD,SD.Filters,
-        "((elements.classification LIKE '%\"ClassName\":\"New\"%') OR (elements.croppingconfirmed<>1) OR (elements.croppingconfirmed IS NULL))",
-        "elements.creationtime ASC");
       var lElements = new List<Element>();
-      foreach (var el in els) {
-        if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project,el.ElementName))) {
-            lElements.Add(el);
-        }
-      }
-      if (lElements.Count<1) {
-        els = await DS.GetElementsAsync(SD,SD.Filters,
-          "(((elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND ifnull(indivdata.genderfeature,'')=''))",
+      if (IsSpecialAuto) {
+        var els = await DS.GetElementsAsync(SD,SD.Filters,
+          "(((elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND ifnull(indivdata.stddeviation,0)=0))",
           "elements.creationtime ASC");
         foreach (var el in els) {
           if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project,el.ElementName))) {
               lElements.Add(el);
+          }
+        }
+      } else {
+        var els = await DS.GetElementsAsync(SD,SD.Filters,
+          "((elements.classification LIKE '%\"ClassName\":\"New\"%') OR (elements.croppingconfirmed<>1) OR (elements.croppingconfirmed IS NULL))",
+          "elements.creationtime ASC");
+        foreach (var el in els) {
+          if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project,el.ElementName))) {
+              lElements.Add(el);
+          }
+        }
+        if (lElements.Count<1) {
+          els = await DS.GetElementsAsync(SD,SD.Filters,
+            "(((elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND ifnull(indivdata.genderfeature,'')=''))",
+            "elements.creationtime ASC");
+          foreach (var el in els) {
+            if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project,el.ElementName))) {
+                lElements.Add(el);
+            }
           }
         }
       }
@@ -210,7 +232,7 @@ namespace BioMap.Pages.Workflow
       }
       this.disableSetImage=false;
       this.elementChanged=true;
-      StateHasChanged();
+      await this.InvokeAsync(() => { StateHasChanged(); });
     }
     private async Task LoadElement() {
       if (!this.disableSetImage) {

@@ -226,6 +226,7 @@ class PrepPic_t {
         }
         PrepPic.Raw = bRaw;
         PrepPic.MeasureData = JSON.parse(measureData);
+        PrepPic.dotNetObject.invokeMethodAsync('MeasureData_Changed', JSON.stringify(PrepPic.MeasureData));
         if (urlImage != PrepPic.Image.src) {
             PrepPic.LoadCnt = 0;
             PrepPic.Image.src = urlImage;
