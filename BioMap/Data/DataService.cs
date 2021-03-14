@@ -15,25 +15,25 @@ namespace BioMap
             DataService.Instance = this;
         }
         public static DataService Instance { get; private set; }
-        private readonly string DataBaseDir = "../../../data/";
-        public readonly string BaseProject = "biomap";
+        private readonly string dataBaseDir = "../../../data/";
+        private readonly string baseProject = "biomap";
         public string[] GetAllProjects()
         {
             var lProjects = new List<string>();
             try
             {
-                foreach (var sDirPath in System.IO.Directory.GetDirectories(DataBaseDir))
+                foreach (var sDirPath in System.IO.Directory.GetDirectories(dataBaseDir))
                 {
                     string sDirName = new System.IO.DirectoryInfo(sDirPath).Name;
-                    if (sDirName.StartsWith(this.BaseProject))
+                    if (sDirName.StartsWith(this.baseProject))
                     {
-                        if (sDirName.Length <= this.BaseProject.Length + 1)
+                        if (sDirName.Length <= this.baseProject.Length + 1)
                         {
                             lProjects.Add("");
                         }
                         else
                         {
-                            lProjects.Add(sDirName.Substring(this.BaseProject.Length + 1));
+                            lProjects.Add(sDirName.Substring(this.baseProject.Length + 1));
                         }
                     }
                 }
@@ -49,7 +49,7 @@ namespace BioMap
             {
                 sProjectDir += "." + sProject;
             }
-            return this.DataBaseDir + sProjectDir + "/";
+            return this.dataBaseDir + sProjectDir + "/";
         }
         public string GetDataDir(SessionData sd) => this.GetDataDir(sd.CurrentUser.Project);
         public string GetTempDir(string sProject)
@@ -421,7 +421,7 @@ namespace BioMap
                 }
             });
         }
-        public bool IsMigrationInProcess = false;
+        public bool IsMigrationInProcess { get; } = false;
         public bool SendMail(SessionData sd, string sTo, string sSubject, string sTextBody)
         {
             // EMail per REST-API auf Server itools.de versenden.
