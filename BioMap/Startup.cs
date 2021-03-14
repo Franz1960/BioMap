@@ -50,15 +50,14 @@ namespace BioMap
                   options.SupportedUICultures = supportedCultures;
               });
             services.AddControllers();
-            services
-            .AddBlazorise(options =>
+            services.AddBlazorise(options =>
              {
                  options.ChangeTextOnKeyPress = false; // optional
                  options.DelayTextOnKeyPress = true;
                  options.DelayTextOnKeyPressInterval = 500;
-             })
-            .AddBootstrapProviders()
-            .AddFontAwesomeIcons();
+             });
+            services.AddBootstrapProviders();
+            services.AddFontAwesomeIcons();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,8 +85,8 @@ namespace BioMap
             {
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
-          //
-          endpoints.MapControllers();
+                //
+                endpoints.MapControllers();
             });
 
             var ds = app.ApplicationServices.GetRequiredService<DataService>();
