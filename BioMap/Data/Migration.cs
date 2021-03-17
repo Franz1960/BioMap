@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -221,6 +221,21 @@ namespace BioMap
               sOldGender.StartsWith("m") ? "m" :
               sOldGender.StartsWith("j") ? "j" :
               "";
+            ds.WriteElement(sd,el);
+          }
+        }
+      });
+    }
+    public static async Task MigrateGenderFeatures(SessionData sd,Action<int> callbackCompletion) {
+      await Task.Run(()=>{
+        var ds = DataService.Instance;
+        var aElements=ds.GetElements(sd);
+        int nLoopCnt=0;
+        foreach (var el in aElements) {
+          callbackCompletion(((nLoopCnt++)*100)/aElements.Length);
+          var sGender=el.ElementProp?.IndivData?.Gender;
+          if ((sGender=="f" || sGender=="j") && string.IsNullOrEmpty(el.ElementProp?.IndivData?.GenderFeature)) {
+            el.ElementProp.IndivData.GenderFeature="-";
             ds.WriteElement(sd,el);
           }
         }
