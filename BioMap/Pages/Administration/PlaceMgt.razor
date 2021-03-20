@@ -1,4 +1,4 @@
-﻿@page "/Administration/Places"
+@page "/Administration/Places"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject NavigationManager NM
 @inject DataService DS
@@ -49,7 +49,8 @@
                       <Button Color="Color.Primary" Clicked="@(async ()=>{ await AddPlace_Clicked(); })">@Localize["Add place"]</Button>
                     </Column>
                   </Row>
-                  @if (!string.IsNullOrEmpty(newPlaceErrorMessage)) {
+                  @if (!string.IsNullOrEmpty(newPlaceErrorMessage))
+                  {
                     <Row Margin="Margin.Is1.OnY">
                       <Column>
                         <Alert Color="Color.Danger" Visible="true">
@@ -73,18 +74,21 @@
             <tr>
               <th scope="col"></th>
               <th scope="col">@Localize["Place"]</th>
-              @if (SD.MaySeeRealLocations) {
+              @if (SD.MaySeeRealLocations)
+              {
                 <th scope="col">@Localize["Latitude"]</th>
                 <th scope="col">@Localize["Longitude"]</th>
               }
               <th scope="col">@Localize["Radius"]</th>
-              @foreach (var trait in Places.Traits) {
+              @foreach (var trait in Places.Traits)
+              {
                 <th scope="col">@trait.Name</th>
               }
             </tr>
           </thead>
           <tbody>
-            @foreach (var place in AllPlaces) {
+            @foreach (var place in AllPlaces)
+            {
               <tr>
                 <td scope="row">
                   <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<500" Clicked="@(async (e)=>{ DS.DeletePlace(SD,place.Name);RefreshData();await this.LocationEditRef.RefreshPlaces(); })">
@@ -92,7 +96,8 @@
                   </Button>
                 </td>
                 <th scope="row">@place.Name</th>
-                @if (SD.MaySeeRealLocations) {
+                @if (SD.MaySeeRealLocations)
+                {
                   <td>
                     <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.LatLng.lat" @onfocusout="(e)=>ChangeByUser(place)" />
                   </td>
@@ -103,10 +108,12 @@
                 <td>
                   <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" @onfocusout="(e)=>ChangeByUser(place)" />
                 </td>
-                @foreach (var idx in Enumerable.Range(0,Places.Traits.Length)) {
+                @foreach (var idx in Enumerable.Range(0, Places.Traits.Length))
+                {
                   <td>
                     <Select TValue="int" Disabled="!SD.CurrentUser.MayChangeElements" SelectedValue="place.TraitValues[idx]" SelectedValueChanged="(value)=>TraitValueChanged(place,idx,value)">
-                      @foreach (var idx1 in Enumerable.Range(0,Places.Traits[idx].ValueNames.Length)) {
+                      @foreach (var idx1 in Enumerable.Range(0, Places.Traits[idx].ValueNames.Length))
+                      {
                         <SelectItem Value="idx1">@Places.Traits[idx].ValueNames[idx1]</SelectItem>
                       }
                     </Select>
@@ -131,8 +138,10 @@
       <Progress Margin="Margin.Is3.FromBottom">
         <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
       </Progress>
-      @if (messages.Count>=1) {
-        foreach (var msg in messages) {
+      @if (messages.Count >= 1)
+      {
+        foreach (var msg in messages)
+        {
           <Row Margin="Margin.Is1.OnY">
             <Column>
               @msg
@@ -162,83 +171,113 @@
   private string newPlaceErrorMessage = "";
   //
   private Place[] AllPlaces = new Place[0];
-  protected override void OnInitialized() {
+  protected override void OnInitialized()
+  {
     base.OnInitialized();
-    NM.LocationChanged+=NM_LocationChanged;
+    NM.LocationChanged += NM_LocationChanged;
     RefreshData();
   }
-  private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
-    NM.LocationChanged-=NM_LocationChanged;
+  private void NM_LocationChanged(object sender, LocationChangedEventArgs e)
+  {
+    NM.LocationChanged -= NM_LocationChanged;
     this.ChangeByUser(null);
   }
-  protected override async Task OnAfterRenderAsync(bool firstRender) {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
     await base.OnAfterRenderAsync(firstRender);
-    if (firstRender) {
+    if (firstRender)
+    {
     }
-    if (addPlaceVisible && addPlaceFirstTimeVisible) {
+    if (addPlaceVisible && addPlaceFirstTimeVisible)
+    {
       await this.LocationEditRef.FitBounds(false);
-      addPlaceFirstTimeVisible=false;
+      addPlaceFirstTimeVisible = false;
     }
   }
-  private void RefreshData() {
+  private void RefreshData()
+  {
     this.AllPlaces = DS.GetPlaces(SD);
     StateHasChanged();
   }
-  private async Task RecalculatePlaces_Clicked() {
-    progressCompletion=0;
+  private async Task RecalculatePlaces_Clicked()
+  {
+    progressCompletion = 0;
     progressModalRef.Show();
-    try {
-      await DataCalculator.CalculatePlacesOfElements(SD,(completion) => {
-        if (progressCompletion!=completion) {
-          progressCompletion=completion;
+    try
+    {
+      await DataCalculator.CalculatePlacesOfElements(SD, (completion) =>
+      {
+        if (progressCompletion != completion)
+        {
+          progressCompletion = completion;
           this.InvokeAsync(() => { StateHasChanged(); });
         }
       });
-    } finally {
+    }
+    finally
+    {
       await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
     }
   }
-  private async Task AddPlace_Opened() {
-    if (this.addPlaceVisible) {
-      addPlaceVisible=false;
-    } else {
-      this.newPlaceName="";
-      this.newPlaceErrorMessage="";
-      addPlaceVisible=true;
+  private async Task AddPlace_Opened()
+  {
+    if (this.addPlaceVisible)
+    {
+      addPlaceVisible = false;
+    }
+    else
+    {
+      this.newPlaceName = "";
+      this.newPlaceErrorMessage = "";
+      addPlaceVisible = true;
     }
     await this.InvokeAsync(() => { StateHasChanged(); });
   }
-  private async Task AddPlace_Clicked() {
-    var latLng = new LatLng { lat=this.newPlaceLocation.Lat,lng=this.newPlaceLocation.Lng };
-    if (string.IsNullOrEmpty(this.newPlaceName) || DS.GetPlaceByName(SD,this.newPlaceName)!=null) {
-      this.newPlaceErrorMessage=Localize["Provide a new name."];
-    } else if (!SD.CurrentProject.IsLocationInsideAoi(latLng)) {
-      this.newPlaceErrorMessage=Localize["Location must be in project area."];
-    } else {
-      DS.CreatePlace(SD,new Place {
-        Name=this.newPlaceName,
-        Radius=150,
-        LatLng=latLng,
+  private async Task AddPlace_Clicked()
+  {
+    var latLng = new LatLng { lat = this.newPlaceLocation.Lat, lng = this.newPlaceLocation.Lng };
+    if (string.IsNullOrEmpty(this.newPlaceName) || DS.GetPlaceByName(SD, this.newPlaceName) != null)
+    {
+      this.newPlaceErrorMessage = Localize["Provide a new name."];
+    }
+    else if (!SD.CurrentProject.IsLocationInsideAoi(latLng))
+    {
+      this.newPlaceErrorMessage = Localize["Location must be in project area."];
+    }
+    else
+    {
+      DS.CreatePlace(SD, new Place
+      {
+        Name = this.newPlaceName,
+        Radius = 150,
+        LatLng = latLng,
       });
-      this.newPlaceErrorMessage="";
-      this.addPlaceVisible=false;
+      this.newPlaceErrorMessage = "";
+      this.addPlaceVisible = false;
       this.RefreshData();
       await this.LocationEditRef.RefreshPlaces();
     }
     await this.InvokeAsync(() => { StateHasChanged(); });
   }
-  private void TraitValueChanged(Place place,int idx,int value) {
-    place.TraitValues[idx]=value;
+  private void TraitValueChanged(Place place, int idx, int value)
+  {
+    place.TraitValues[idx] = value;
     this.ChangeByUser(place);
   }
-  private void ChangeByUser(Place place) {
-    if (SD.MaySeeRealLocations) {
-      if (place==null) {
-        foreach (var p in this.AllPlaces) {
-          DS.WritePlace(SD,p);
+  private void ChangeByUser(Place place)
+  {
+    if (SD.MaySeeRealLocations)
+    {
+      if (place == null)
+      {
+        foreach (var p in this.AllPlaces)
+        {
+          DS.WritePlace(SD, p);
         }
-      } else {
-        DS.WritePlace(SD,place);
+      }
+      else
+      {
+        DS.WritePlace(SD, place);
       }
     }
   }

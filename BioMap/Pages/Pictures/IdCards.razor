@@ -1,4 +1,4 @@
-﻿@page "/Pictures/IdCards"
+@page "/Pictures/IdCards"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
 @inject SessionData SD
@@ -12,7 +12,8 @@
 <PhotoPopup @ref="PhotoPopup1" />
 
 <div class="row">
-  @foreach (var el in Elements) {
+  @foreach (var el in Elements)
+  {
     <div class="card" style="width: 240px;">
       <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">
         <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
@@ -27,18 +28,22 @@
 @code {
   private Element[] Elements = new Element[0];
   private PhotoPopup PhotoPopup1;
-  protected override void OnInitialized() {
+  protected override void OnInitialized()
+  {
     base.OnInitialized();
-    SD.Filters.FilterChanged+=(sender,ev) => {
+    SD.Filters.FilterChanged += (sender, ev) =>
+    {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
   }
-  private void RefreshData() {
-    this.Elements = DataService.Instance.GetElements(SD,SD.Filters,"indivdata.iid>=1 AND elements.category=350","indivdata.iid ASC,elements.creationtime ASC");
+  private void RefreshData()
+  {
+    this.Elements = DataService.Instance.GetElements(SD, SD.Filters, "indivdata.iid>=1 AND elements.category=350", "indivdata.iid ASC,elements.creationtime ASC");
   }
-  private void OnSelectClick(Element el) {
+  private void OnSelectClick(Element el)
+  {
     this.PhotoPopup1.Show(el);
   }
 }

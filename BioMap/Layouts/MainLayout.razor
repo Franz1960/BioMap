@@ -1,4 +1,4 @@
-﻿@layout RootLayout
+@layout RootLayout
 @inherits LayoutComponentBase
 @inject DataService DS
 @inject SessionData SD
@@ -202,7 +202,8 @@
                     <BarIcon IconName="IconName.Info" />
                     @Localize["About"]..
                   </BarDropdownItem>
-                  @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
+                  @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project))
+                  {
                     <BarDropdownItem To=@("/api/docs/"+doc.Filename+"?Project="+SD.CurrentUser.Project) Target="Target.Blank">
                       <BarIcon IconName=@((doc.DocType==Document.DocType_en.Pdf?IconName.FilePdf:IconName.Book)) />
                       @doc.DisplayName
@@ -242,11 +243,15 @@
 @code{
   [CascadingParameter] protected Theme Theme { get; set; }
 
-  RenderFragment customIcon =@<img src="/favicon-96x96.png" style="width:32px; height: 32px" />;
+  RenderFragment customIcon =@
+  <img src="/favicon-96x96.png" style="width:32px; height: 32px" />
+  ;
 
-  protected override async Task OnInitializedAsync() {
+  protected override async Task OnInitializedAsync()
+  {
     await base.OnInitializedAsync();
-    SD.CurrentProjectChanged+=(sender,e) => {
+    SD.CurrentProjectChanged += (sender, e) =>
+    {
       StateHasChanged();
     };
   }

@@ -1,4 +1,4 @@
-﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @using Microsoft.AspNetCore.Components.Forms
 @inject DataService DS
 @inject SessionData SD
@@ -17,10 +17,11 @@
               <DropdownMenu>
                 <DropdownItem Clicked="@((e)=>{SD.Filters.PlaceFilter="";dropdown.Hide();})"><Icon Name="IconName.Clear" /> @Localize["Clear"]</DropdownItem>
                 <DropdownDivider Style="min-width:400px"></DropdownDivider>
-                @foreach (var place in DS.GetPlaces(SD)) {
+                @foreach (var place in DS.GetPlaces(SD))
+                {
                   <Button Color="SD.Filters.PlaceFilter.Contains(place.Name)?Color.Primary:Color.Light"
-                          Class="small" 
-                          Clicked="(e)=>TogglePlace(place.Name)">
+                        Class="small"
+                        Clicked="(e)=>TogglePlace(place.Name)">
                     @place.Name
                   </Button>
                 }
@@ -38,17 +39,21 @@
 
 @code {
   Dropdown dropdown;
-  private void TogglePlace(string sPlaceName) {
+  private void TogglePlace(string sPlaceName)
+  {
     var lPlaces = new List<string>(SD.Filters.PlaceFilter.Split(Filters.SeparateChars));
     int idx = lPlaces.IndexOf(sPlaceName);
-    if (idx<0) {
+    if (idx < 0)
+    {
       lPlaces.Add(sPlaceName);
-    } else {
+    }
+    else
+    {
       lPlaces.RemoveAt(idx);
     }
     lPlaces.Sort();
     var sb = new System.Text.StringBuilder();
-    lPlaces.ForEach((p)=>sb.Append(p+" "));
-    SD.Filters.PlaceFilter=sb.ToString().Trim();
+    lPlaces.ForEach((p) => sb.Append(p + " "));
+    SD.Filters.PlaceFilter = sb.ToString().Trim();
   }
 }

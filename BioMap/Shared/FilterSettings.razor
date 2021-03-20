@@ -1,4 +1,4 @@
-﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @using Microsoft.AspNetCore.Components.Forms
 @inject DataService DS
 @inject SessionData SD
@@ -6,50 +6,58 @@
 @using BioMap
 
 <CardDeck>
-  @if (FilteringTarget==Filters.FilteringTargetEnum.Log) {
+  @if (FilteringTarget == Filters.FilteringTargetEnum.Log)
+  {
     <Card>
       <CardBody>
         <LogFilter />
       </CardBody>
     </Card>
-  } else@if (FilteringTarget==Filters.FilteringTargetEnum.Notes) {
-<Card>
-  <CardBody>
-    <NotesFilter />
-  </CardBody>
-</Card>
-} else {
-<Card>
-  <CardBody>
-    <DateFilter />
-    <PlaceFilter />
-  </CardBody>
-</Card>
-@if (FilteringTarget==Filters.FilteringTargetEnum.Individuals) {
-  <Card>
-    <CardBody>
-      <IndiFilter />
-      <UserFilter />
-    </CardBody>
-  </Card>
-  <Card>
-    <CardBody>
-      <GenderFilter />
-      <HibernationsFilter />
-      <OnlyFirstIndiFilter />
-      <OnlyLastIndiFilter />
-    </CardBody>
-  </Card>
-}
-@if (FilteringTarget==Filters.FilteringTargetEnum.Elements) {
-  <Card>
-    <CardBody>
-      <ClassFilter />
-      <UserFilter />
-    </CardBody>
-  </Card>
-}
-}
+  }
+  else
+  @if (FilteringTarget == Filters.FilteringTargetEnum.Notes)
+  {
+    <Card>
+      <CardBody>
+        <NotesFilter />
+      </CardBody>
+    </Card>
+  }
+  else
+  {
+    <Card>
+      <CardBody>
+        <DateFilter />
+        <PlaceFilter />
+      </CardBody>
+    </Card>
+    @if (FilteringTarget == Filters.FilteringTargetEnum.Individuals)
+    {
+      <Card>
+        <CardBody>
+          <IndiFilter />
+          <UserFilter />
+        </CardBody>
+      </Card>
+      <Card>
+        <CardBody>
+          <GenderFilter />
+          <HibernationsFilter />
+          <OnlyFirstIndiFilter />
+          <OnlyLastIndiFilter />
+        </CardBody>
+      </Card>
+    }
+    @if (FilteringTarget == Filters.FilteringTargetEnum.Elements)
+    {
+      <Card>
+        <CardBody>
+          <ClassFilter />
+          <UserFilter />
+        </CardBody>
+      </Card>
+    }
+  }
 </CardDeck>
 
 @code {
@@ -58,10 +66,12 @@
   [Parameter]
   public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
   //
-  protected override void OnInitialized() {
-    SD.Filters.FilteringTarget=this.FilteringTarget;
+  protected override void OnInitialized()
+  {
+    SD.Filters.FilteringTarget = this.FilteringTarget;
   }
-  private async void AnyValueChanged() {
+  private async void AnyValueChanged()
+  {
     await this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
     StateHasChanged();
   }

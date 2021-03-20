@@ -1,4 +1,4 @@
-﻿@page "/Add/LocElement"
+@page "/Add/LocElement"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
@@ -38,47 +38,59 @@
   private LocationEdit LocationEditRef;
   private ElementEdit ElementEditRef;
   //
-  protected override async Task OnInitializedAsync() {
+  protected override async Task OnInitializedAsync()
+  {
     await base.OnInitializedAsync();
   }
-  protected override async Task OnAfterRenderAsync(bool firstRender) {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
     await base.OnAfterRenderAsync(firstRender);
-    if (firstRender) {
+    if (firstRender)
+    {
       this.CreateNewElement();
     }
   }
-  private async Task LocationEdit_LocationChanged(GoogleMapsComponents.Maps.LatLngLiteral latLngLiteral) {
+  private async Task LocationEdit_LocationChanged(GoogleMapsComponents.Maps.LatLngLiteral latLngLiteral)
+  {
     var el = this.ElementEditRef.Element;
-    el.ElementProp.MarkerInfo.position=new LatLng { lat=latLngLiteral.Lat,lng=latLngLiteral.Lng };
-    el.ElementProp.MarkerInfo.PlaceName=Place.GetNearestPlace(SD,el.ElementProp.MarkerInfo.position)?.Name;
-    await this.InvokeAsync(()=>this.StateHasChanged());
+    el.ElementProp.MarkerInfo.position = new LatLng { lat = latLngLiteral.Lat, lng = latLngLiteral.Lng };
+    el.ElementProp.MarkerInfo.PlaceName = Place.GetNearestPlace(SD, el.ElementProp.MarkerInfo.position)?.Name;
+    await this.InvokeAsync(() => this.StateHasChanged());
   }
-  private void CreateNewElement() {
-    var el = new Element(SD.CurrentUser.Project) {
-      ElementName="LOC_"+DateTime.Now.ToString("yyyyMMddTHHmmssZ"),
-      ElementProp=new Element.ElementProp_t {
-        CreationTime=DateTime.Now,
-        MarkerInfo=new Element.MarkerInfo_t {
-          category=100,
+  private void CreateNewElement()
+  {
+    var el = new Element(SD.CurrentUser.Project)
+    {
+      ElementName = "LOC_" + DateTime.Now.ToString("yyyyMMddTHHmmssZ"),
+      ElementProp = new Element.ElementProp_t
+      {
+        CreationTime = DateTime.Now,
+        MarkerInfo = new Element.MarkerInfo_t
+        {
+          category = 100,
         },
-        UploadInfo=new Element.UploadInfo_t {
-          UserId=SD.CurrentUser.EMail,
-          Timestamp=DateTime.Now,
-          Comment="",
+        UploadInfo = new Element.UploadInfo_t
+        {
+          UserId = SD.CurrentUser.EMail,
+          Timestamp = DateTime.Now,
+          Comment = "",
         },
       },
     };
-    this.ElementEditRef.Element=el;
-    if (this.LocationEditRef?.Location!=null) {
+    this.ElementEditRef.Element = el;
+    if (this.LocationEditRef?.Location != null)
+    {
       this.LocationEdit_LocationChanged(this.LocationEditRef.Location).Wait();
     }
   }
-  private void Save() {
+  private void Save()
+  {
     var saDiff = this.ElementEditRef.EditingChangedContent();
-    if (saDiff!=null) {
-      DS.WriteElement(SD,this.ElementEditRef.Element);
+    if (saDiff != null)
+    {
+      DS.WriteElement(SD, this.ElementEditRef.Element);
       string sJson = JsonConvert.SerializeObject(this.ElementEditRef.Element);
-      DS.AddLogEntry(SD,"Changed element "+this.ElementEditRef.Element.ElementName+": "+saDiff[0]+" --> "+saDiff[1]);
+      DS.AddLogEntry(SD, "Changed element " + this.ElementEditRef.Element.ElementName + ": " + saDiff[0] + " --> " + saDiff[1]);
     }
   }
 }

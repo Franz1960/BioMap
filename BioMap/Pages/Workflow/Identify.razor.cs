@@ -88,7 +88,7 @@ namespace BioMap.Pages.Workflow
         }
         private async Task RefreshElementsToCompare()
         {
-            var els = await DS.GetElementsAsync(SD, SD.Filters,
+            var els = await DS.GetElementsAsync(SD, null,
               "(elements.classification LIKE '%\"ClassName\":\"ID photo\"%')",
               "elements.creationtime ASC");
             var lElements = new List<Element>();
@@ -114,6 +114,9 @@ namespace BioMap.Pages.Workflow
             if (this.ElementToCompare != null)
             {
                 this.PatternCompareImgSrc = Utilities.GetPatternImgSource(this.ElementToCompare, DS, SD);
+
+                this.Element.CalcSimilarity(this.ElementToCompare);
+
             }
             this.StateHasChanged();
         }

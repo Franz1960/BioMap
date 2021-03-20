@@ -1,4 +1,4 @@
-﻿@page "/Lists/AllIndividuals"
+@page "/Lists/AllIndividuals"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
 @inject SessionData SD
@@ -25,13 +25,17 @@
     </tr>
   </thead>
   <tbody>
-    @foreach (var iid in Individuals.Keys) {
+    @foreach (var iid in Individuals.Keys)
+    {
       <tr style=@GetTrStyle(iid)>
         <td scope="row">@(iid)</td>
         <td>
-          @if (AreDatesOfBirthConsistent(iid)) {
+          @if (AreDatesOfBirthConsistent(iid))
+          {
             @(Individuals[iid][0].GetDateOfBirthAsString())
-          } else {
+          }
+          else
+          {
             @((MarkupString)GetForElements(iid,el=>el.GetDateOfBirthAsString(),true))
           }
         </td>
@@ -39,7 +43,8 @@
         <td>@((MarkupString)GetForElements(iid,el=>el.GetHeadBodyLengthNice()))</td>
         <td>@((MarkupString)GetForElements(iid,el=>el.GetPlaceName()))</td>
         <td>
-          @foreach (var el in this.Individuals[iid]) {
+          @foreach (var el in this.Individuals[iid])
+          {
             @((MarkupString)this.GetLineBreak(iid))
             <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a>
           }
@@ -51,82 +56,112 @@
   </tbody>
 </table>
 
-@if (SD.CurrentUser.Level>=500) {
+@if (SD.CurrentUser.Level >= 500)
+{
   <Button Color="Color.Primary" Clicked="@(async (e)=>DownloadCsv_Clicked())">Download CSV</Button>
 }
 
 @code {
   private PhotoPopup PhotoPopup1;
-  private Dictionary<int,List<Element>> Individuals = new Dictionary<int,List<Element>>();
-  protected override void OnInitialized() {
+  private Dictionary<int, List<Element>> Individuals = new Dictionary<int, List<Element>>();
+  protected override void OnInitialized()
+  {
     base.OnInitialized();
-    SD.Filters.FilterChanged+=(sender,ev) => {
+    SD.Filters.FilterChanged += (sender, ev) =>
+    {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
   }
-  private void RefreshData() {
-    this.Individuals = DataService.Instance.GetIndividuals(SD,SD.Filters);
+  private void RefreshData()
+  {
+    this.Individuals = DataService.Instance.GetIndividuals(SD, SD.Filters);
   }
-  private string GetForElements(int iid,Func<Element,string> func,bool bAddYoBWarning = false) {
+  private string GetForElements(int iid, Func<Element, string> func, bool bAddYoBWarning = false)
+  {
     var sb = new System.Text.StringBuilder();
     string sPreFix = "";
     string sWarnPostfix = "";
     int? nOrigYoB = null;
-    foreach (var el in this.Individuals[iid]) {
-      if (!nOrigYoB.HasValue) {
-        nOrigYoB=el.GetYearOfBirth();
+    foreach (var el in this.Individuals[iid])
+    {
+      if (!nOrigYoB.HasValue)
+      {
+        nOrigYoB = el.GetYearOfBirth();
       }
-      if (bAddYoBWarning && !object.Equals(nOrigYoB,el.GetYearOfBirth())) {
-        sWarnPostfix=" !!!";
+      if (bAddYoBWarning && !object.Equals(nOrigYoB, el.GetYearOfBirth()))
+      {
+        sWarnPostfix = " !!!";
       }
-      sb.Append(sPreFix+func(el)+sWarnPostfix);
-      sPreFix="<br/>";
+      sb.Append(sPreFix + func(el) + sWarnPostfix);
+      sPreFix = "<br/>";
     }
     return sb.ToString();
   }
-  private string GetTrStyle(int iid) {
-    if (this.AreGendersConsistent(iid)) {
+  private string GetTrStyle(int iid)
+  {
+    if (this.AreGendersConsistent(iid))
+    {
       return "";
-    } else {
+    }
+    else
+    {
       return "background-color:orange;";
     }
   }
-  private string GetYoB(int iid) {
-    foreach (var el in this.Individuals[iid]) {
+  private string GetYoB(int iid)
+  {
+    foreach (var el in this.Individuals[iid])
+    {
       int? nElYoB = el.GetYearOfBirth();
-      if (nElYoB.HasValue) {
+      if (nElYoB.HasValue)
+      {
         return ConvInvar.ToString(nElYoB.Value);
       }
     }
     return "";
   }
-  private bool AreDatesOfBirthConsistent(int iid) {
+  private bool AreDatesOfBirthConsistent(int iid)
+  {
     DateTime? dtob = null;
-    foreach (var el in this.Individuals[iid]) {
-      if (dtob.HasValue) {
-        if (dtob!=el.GetDateOfBirth()) {
+    foreach (var el in this.Individuals[iid])
+    {
+      if (dtob.HasValue)
+      {
+        if (dtob != el.GetDateOfBirth())
+        {
           return false;
         }
-      } else {
-        dtob=el.GetDateOfBirth();
+      }
+      else
+      {
+        dtob = el.GetDateOfBirth();
       }
     }
     return true;
   }
-  private bool AreGendersConsistent(int iid) {
+  private bool AreGendersConsistent(int iid)
+  {
     string sGender = null;
-    foreach (var el in this.Individuals[iid]) {
+    foreach (var el in this.Individuals[iid])
+    {
       string g = el.Gender;
-      if (g=="f" || g=="m") {
-        if (sGender==null) {
-          sGender=g;
-        } else if (g!=sGender) {
+      if (g == "f" || g == "m")
+      {
+        if (sGender == null)
+        {
+          sGender = g;
+        }
+        else if (g != sGender)
+        {
           return false;
         }
-      } else {
-        if (sGender!=null) {
+      }
+      else
+      {
+        if (sGender != null)
+        {
           return false;
         }
       }
@@ -134,49 +169,58 @@
     return true;
   }
   private int oldIid = 0;
-  private string GetLineBreak(int iid) {
-    if (iid==this.oldIid) {
+  private string GetLineBreak(int iid)
+  {
+    if (iid == this.oldIid)
+    {
       return "<br/>";
     }
-    this.oldIid=iid;
+    this.oldIid = iid;
     return "";
   }
-  private void OnSelectClick(Element el) {
+  private void OnSelectClick(Element el)
+  {
     this.PhotoPopup1.Show(el);
   }
-  private async void DownloadCsv_Clicked() {
+  private async void DownloadCsv_Clicked()
+  {
     var sep = "\t";
     var csv = new System.Text.StringBuilder();
-    csv.Append("IId"+sep+"TimeStamp"+sep+"GpsLat"+sep+"GpsLng"+sep+"Gender"+sep+"Length"+sep+"Traits"+sep+"Distance"+sep+"Place"+sep+"ElementName"+"\n");
-    foreach (var aIndis in DS.GetIndividuals(SD,SD.Filters)) {
-      for (int idxEl=0;idxEl<aIndis.Value.Count;idxEl++) {
+    csv.Append("IId" + sep + "TimeStamp" + sep + "GpsLat" + sep + "GpsLng" + sep + "Gender" + sep + "Length" + sep + "Traits" + sep + "Distance" + sep + "Place" + sep + "ElementName" + "\n");
+    foreach (var aIndis in DS.GetIndividuals(SD, SD.Filters))
+    {
+      for (int idxEl = 0; idxEl < aIndis.Value.Count; idxEl++)
+      {
         var el = aIndis.Value[idxEl];
         var placeName = el.GetPlaceName();
         var sbTraits = new System.Text.StringBuilder();
-        foreach (var trait in el.ElementProp.IndivData.TraitValues) {
-          if (sbTraits.Length>0) {
+        foreach (var trait in el.ElementProp.IndivData.TraitValues)
+        {
+          if (sbTraits.Length > 0)
+          {
             sbTraits.Append(",");
           }
           sbTraits.Append(trait.Value);
         }
-        string sDistance="";
-        if (idxEl>=1) {
-          double dDistance = GeoCalculator.GetDistance(aIndis.Value[idxEl-1].ElementProp.MarkerInfo.position,el.ElementProp.MarkerInfo.position);
-          sDistance=ConvInvar.ToDecimalString(dDistance,0);
+        string sDistance = "";
+        if (idxEl >= 1)
+        {
+          double dDistance = GeoCalculator.GetDistance(aIndis.Value[idxEl - 1].ElementProp.MarkerInfo.position, el.ElementProp.MarkerInfo.position);
+          sDistance = ConvInvar.ToDecimalString(dDistance, 0);
         }
         csv.Append(el.GetIId());
-        csv.Append(sep+'"'+el.GetIsoDateTime()+'"');
-        csv.Append(sep+ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat,12));
-        csv.Append(sep+ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng,12));
-        csv.Append(sep+el.Gender);
-        csv.Append(sep+ConvInvar.ToDecimalString(el.GetHeadBodyLengthMm(),1));
-        csv.Append(sep+'"'+sbTraits.ToString()+'"');
-        csv.Append(sep+sDistance);
-        csv.Append(sep+placeName);
-        csv.Append(sep+'"'+el.ElementName+'"');
+        csv.Append(sep + '"' + el.GetIsoDateTime() + '"');
+        csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat, 12));
+        csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng, 12));
+        csv.Append(sep + el.Gender);
+        csv.Append(sep + ConvInvar.ToDecimalString(el.GetHeadBodyLengthMm(), 1));
+        csv.Append(sep + '"' + sbTraits.ToString() + '"');
+        csv.Append(sep + sDistance);
+        csv.Append(sep + placeName);
+        csv.Append(sep + '"' + el.ElementName + '"');
         csv.Append('\n');
       }
     }
-    await JSRuntime.InvokeVoidAsync("DownloadTextFile","Individuals.csv",csv.ToString());
+    await JSRuntime.InvokeVoidAsync("DownloadTextFile", "Individuals.csv", csv.ToString());
   }
 }

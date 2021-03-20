@@ -1,4 +1,4 @@
-﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @using Microsoft.AspNetCore.Components.Forms
 @inject DataService DS
 @inject IJSRuntime JSRuntime
@@ -9,7 +9,7 @@
 @*<div class="form-group">
   <span data-toggle="tooltip" title="@LabelToolTip">@LabelText: </span>
   <input type="checkbox" checked="@Checked" @onchange="Checked_Changed" />
-</div>*@
+  </div>*@
 
 @code {
   [Parameter]
@@ -23,10 +23,11 @@
   [Parameter]
   public EventCallback<ChangeEventArgs> OnAnyChangedCallback { get; set; }
   //
-  private void Checked_Changed(bool e) {
-    this.Checked=e;
+  private void Checked_Changed(bool e)
+  {
+    this.Checked = e;
     var ea = new ChangeEventArgs();
-    ea.Value=e;
+    ea.Value = e;
     this.CheckedChanged.InvokeAsync(e);
     this.OnAnyChangedCallback.InvokeAsync(ea);
   }

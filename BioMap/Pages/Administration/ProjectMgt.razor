@@ -6,7 +6,8 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-@if (!SD.CurrentUser.MaySeeProject) {
+@if (!SD.CurrentUser.MaySeeProject)
+{
   <Row>
     <Column>
       <Heading Size="HeadingSize.Is4">
@@ -14,7 +15,9 @@
       </Heading>
     </Column>
   </Row>
-} else {
+}
+else
+{
   <Row>
     <Column>
       <Card Margin="Margin.Is2.OnY">
@@ -146,10 +149,10 @@
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Add document"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
               @{
-                var addAttr = new Dictionary<string,object>(new KeyValuePair<string,object>[] {
-                  new KeyValuePair<string,object>("multiple","multiple"),
-                });
-            <InputFile AdditionalAttributes="addAttr" OnChange="@OnInputFileChange" />
+                var addAttr = new Dictionary<string, object>(new KeyValuePair<string, object>[] {
+            new KeyValuePair<string,object>("multiple","multiple"),
+            });
+                <InputFile AdditionalAttributes="addAttr" OnChange="@OnInputFileChange" />
               }
             </FieldBody>
           </Field>
@@ -162,7 +165,8 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
+              @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project))
+              {
                 <TableRow>
                   <TableRowCell>@doc.DisplayName</TableRowCell>
                   <TableRowCell>@doc.DocType.ToString()</TableRowCell>
@@ -191,8 +195,10 @@
       <Progress Margin="Margin.Is3.FromBottom">
         <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
       </Progress>
-      @if (messages.Count>=1) {
-        foreach (var msg in messages) {
+      @if (messages.Count >= 1)
+      {
+        foreach (var msg in messages)
+        {
           <Row Margin="Margin.Is1.OnY">
             <Column>
               @msg
@@ -214,106 +220,143 @@
   private int progressCompletion = 0;
   private List<string> messages = new List<string>();
   //
-  protected override void OnInitialized() {
-      base.OnInitialized();
-      NM.LocationChanged+=NM_LocationChanged;
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+    NM.LocationChanged += NM_LocationChanged;
   }
-  private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
-      NM.LocationChanged-=NM_LocationChanged;
-      DS.WriteProject(SD,SD.CurrentProject);
+  private void NM_LocationChanged(object sender, LocationChangedEventArgs e)
+  {
+    NM.LocationChanged -= NM_LocationChanged;
+    DS.WriteProject(SD, SD.CurrentProject);
   }
-  private async Task Import_Clicked() {
-      progressCompletion=0;
-      progressModalRef.Show();
-      try {
-          await Migration.MigrateData(SD,(completion) => {
-              progressCompletion=completion;
-              this.InvokeAsync(() => { StateHasChanged(); });
-          });
-      } finally {
-          await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
-      }
+  private async Task Import_Clicked()
+  {
+    progressCompletion = 0;
+    progressModalRef.Show();
+    try
+    {
+      await Migration.MigrateData(SD, (completion) =>
+      {
+        progressCompletion = completion;
+        this.InvokeAsync(() => { StateHasChanged(); });
+      });
+    }
+    finally
+    {
+      await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+    }
   }
-  private async Task MigrateCategories_Clicked() {
-      progressCompletion=0;
-      progressModalRef.Show();
-      try {
-          await Migration.MigrateCategories(SD,(completion) => {
-              progressCompletion=completion;
-              this.InvokeAsync(() => { StateHasChanged(); });
-          });
-      } finally {
-          await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
-      }
+  private async Task MigrateCategories_Clicked()
+  {
+    progressCompletion = 0;
+    progressModalRef.Show();
+    try
+    {
+      await Migration.MigrateCategories(SD, (completion) =>
+      {
+        progressCompletion = completion;
+        this.InvokeAsync(() => { StateHasChanged(); });
+      });
+    }
+    finally
+    {
+      await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+    }
   }
-  private async Task MigrateGenderFeatures_Clicked() {
-      progressCompletion=0;
-      progressModalRef.Show();
-      try {
-          await Migration.MigrateGenderFeatures(SD,(completion) => {
-              progressCompletion=completion;
-              this.InvokeAsync(() => { StateHasChanged(); });
-          });
-      } finally {
-          await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
-      }
+  private async Task MigrateGenderFeatures_Clicked()
+  {
+    progressCompletion = 0;
+    progressModalRef.Show();
+    try
+    {
+      await Migration.MigrateGenderFeatures(SD, (completion) =>
+      {
+        progressCompletion = completion;
+        this.InvokeAsync(() => { StateHasChanged(); });
+      });
+    }
+    finally
+    {
+      await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+    }
   }
-  private async Task MigrateImageSize_Clicked() {
-      progressCompletion=0;
-      progressModalRef.Show();
-      try {
-          await Migration.MigrateImageSize(SD,(completion) => {
-              progressCompletion=completion;
-              this.InvokeAsync(() => { StateHasChanged(); });
-          });
-      } finally {
-          await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
-      }
+  private async Task MigrateImageSize_Clicked()
+  {
+    progressCompletion = 0;
+    progressModalRef.Show();
+    try
+    {
+      await Migration.MigrateImageSize(SD, (completion) =>
+      {
+        progressCompletion = completion;
+        this.InvokeAsync(() => { StateHasChanged(); });
+      });
+    }
+    finally
+    {
+      await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+    }
   }
-  private void EditAoi_Clicked() {
-      NM.NavigateTo("/Maps/AoiEdit");
+  private void EditAoi_Clicked()
+  {
+    NM.NavigateTo("/Maps/AoiEdit");
   }
-  private async Task RecalculateAll_Clicked() {
-      progressCompletion=0;
-      progressModalRef.Show();
-      try {
-    } finally {
-          await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
-      }
+  private async Task RecalculateAll_Clicked()
+  {
+    progressCompletion = 0;
+    progressModalRef.Show();
+    try
+    {
+    }
+    finally
+    {
+      await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+    }
   }
-  private async Task OnInputFileChange(InputFileChangeEventArgs e) {
-      var maxAllowedFiles = 30;
-      int nUploadedFiles = 0;
-      messages.Clear();
-      progressCompletion=0;
-      progressModalRef.Show();
-      try {
-          var files = e.GetMultipleFiles(maxAllowedFiles);
-          for (int idxFile = 0;idxFile<files.Count;idxFile++) {
-              var docFile = files[idxFile];
-              progressCompletion=(int)Math.Round(((idxFile+0.5)*100)/files.Count);
-              await this.InvokeAsync(() => { StateHasChanged(); });
-              try {
-                  var docStream = docFile.OpenReadStream(20000000);
-                  var sDestFilePath = System.IO.Path.Combine(DS.GetDocsDir(SD.CurrentUser.Project),docFile.Name);
-                  using (var destStream = new System.IO.FileStream(sDestFilePath,System.IO.FileMode.Create)) {
-                      await docStream.CopyToAsync(destStream);
-                      destStream.Close();
-                  }
-                  nUploadedFiles++;
-              } catch (Exception ex) {
-                  messages.Add(ex.ToString());
-                  await this.InvokeAsync(() => { StateHasChanged(); });
-              }
-              progressCompletion=(int)Math.Round(((idxFile+1.0)*100)/files.Count);
-              await this.InvokeAsync(() => { StateHasChanged(); });
+  private async Task OnInputFileChange(InputFileChangeEventArgs e)
+  {
+    var maxAllowedFiles = 30;
+    int nUploadedFiles = 0;
+    messages.Clear();
+    progressCompletion = 0;
+    progressModalRef.Show();
+    try
+    {
+      var files = e.GetMultipleFiles(maxAllowedFiles);
+      for (int idxFile = 0; idxFile < files.Count; idxFile++)
+      {
+        var docFile = files[idxFile];
+        progressCompletion = (int)Math.Round(((idxFile + 0.5) * 100) / files.Count);
+        await this.InvokeAsync(() => { StateHasChanged(); });
+        try
+        {
+          var docStream = docFile.OpenReadStream(20000000);
+          var sDestFilePath = System.IO.Path.Combine(DS.GetDocsDir(SD.CurrentUser.Project), docFile.Name);
+          using (var destStream = new System.IO.FileStream(sDestFilePath, System.IO.FileMode.Create))
+          {
+            await docStream.CopyToAsync(destStream);
+            destStream.Close();
           }
-          messages.Add(string.Format(Localize["{0} files uploaded."],nUploadedFiles.ToString()));
+          nUploadedFiles++;
+        }
+        catch (Exception ex)
+        {
+          messages.Add(ex.ToString());
           await this.InvokeAsync(() => { StateHasChanged(); });
-      } finally {
-          if (messages.Count<1) {
-              await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
-          }
+        }
+        progressCompletion = (int)Math.Round(((idxFile + 1.0) * 100) / files.Count);
+        await this.InvokeAsync(() => { StateHasChanged(); });
       }
+      messages.Add(string.Format(Localize["{0} files uploaded."], nUploadedFiles.ToString()));
+      await this.InvokeAsync(() => { StateHasChanged(); });
+    }
+    finally
+    {
+      if (messages.Count < 1)
+      {
+        await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+      }
+    }
   }
 }

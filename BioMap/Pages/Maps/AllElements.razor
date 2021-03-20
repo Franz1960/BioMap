@@ -1,4 +1,4 @@
-﻿@page "/Maps/AllElements"
+@page "/Maps/AllElements"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @using GoogleMapsComponents
 @using GoogleMapsComponents.Maps
@@ -28,34 +28,42 @@
 
 @code{
   private PhotoPopup PhotoPopup1;
-  protected override async Task OnInitializedAsync() {
+  protected override async Task OnInitializedAsync()
+  {
     await base.OnInitializedAsync();
-    SD.Filters.FilterChanged+=(sender,ev) => {
+    SD.Filters.FilterChanged += (sender, ev) =>
+    {
       this.RefreshElementMarkers();
     };
   }
-  protected override async Task OnAfterRenderAsync(bool firstRender) {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
     await base.OnAfterRenderAsync(firstRender);
-    if (firstRender) {
-      base.PhotoPopup=this.PhotoPopup1;
+    if (firstRender)
+    {
+      base.PhotoPopup = this.PhotoPopup1;
       this.RefreshElementMarkers();
     }
   }
-  protected override void RefreshElementMarkers() {
+  protected override void RefreshElementMarkers()
+  {
     var lElementMarkers = new List<ElementMarker>();
-    if (SD.CurrentUser.Level>=0) {
-      foreach (var el in DS.GetElements(SD,SD.Filters)) {
-        var latLng = new LatLngLiteral(el.ElementProp.MarkerInfo.position.lng,el.ElementProp.MarkerInfo.position.lat);
+    if (SD.CurrentUser.Level >= 0)
+    {
+      foreach (var el in DS.GetElements(SD, SD.Filters))
+      {
+        var latLng = new LatLngLiteral(el.ElementProp.MarkerInfo.position.lng, el.ElementProp.MarkerInfo.position.lat);
         var symbolProps = el.GetSymbolProperties();
-        var elm = new ElementMarker {
-          Position=latLng,
-          Radius=symbolProps.Radius,
-          Color=symbolProps.BgColor,
-          Element=el,
+        var elm = new ElementMarker
+        {
+          Position = latLng,
+          Radius = symbolProps.Radius,
+          Color = symbolProps.BgColor,
+          Element = el,
         };
         lElementMarkers.Add(elm);
       }
     }
-    base.ElementMarkers=lElementMarkers.ToArray();
+    base.ElementMarkers = lElementMarkers.ToArray();
   }
 }

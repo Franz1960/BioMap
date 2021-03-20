@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -7,7 +7,7 @@
 @using BioMap
 
 <Row Margin="Margin.Is1.OnY">
-  <Column  ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+  <Column ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
     <Card>
       <CardHeader>
         <CardTitle Size="4">@Localize["Welcome to BioMap!"]</CardTitle>
@@ -31,7 +31,8 @@
   </Column>
 </Row>
 <Row Margin="Margin.Is2.OnY">
-  @if (SD.CurrentUser.Level<200) {
+  @if (SD.CurrentUser.Level < 200)
+  {
     <Column>
       <Card>
         <CardHeader>
@@ -64,7 +65,8 @@
             </CollapseHeader>
             <CollapseBody>
               <Select TValue="string" SelectedValue="@SD.CurrentUser.Project" SelectedValueChanged="@(async (e)=>{ await Project_SelectedValueChanged(e); })">
-                @foreach (var sProject in DS.GetAllProjects()) {
+                @foreach (var sProject in DS.GetAllProjects())
+                {
                   <SelectItem TValue="string" Value="@(sProject)">@sProject</SelectItem>
                 }
               </Select>
@@ -117,62 +119,78 @@
 @code {
   private string collapseVisible = "SelectProject";
   //
-  protected override Task OnInitializedAsync() {
+  protected override Task OnInitializedAsync()
+  {
     return base.OnInitializedAsync();
   }
-  protected override async Task OnAfterRenderAsync(bool firstRender) {
-    if (!DS.IsMigrationInProcess && firstRender) {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (!DS.IsMigrationInProcess && firstRender)
+    {
       bool bAnyChanged = false;
-      try {
-        SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie","Project");
-        var sEMail = await JSRuntime.InvokeAsync<string>("getCookie","UserId");
+      try
+      {
+        SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie", "Project");
+        var sEMail = await JSRuntime.InvokeAsync<string>("getCookie", "UserId");
         var sUserId = sEMail.Trim().ToLowerInvariant();
-        if (string.CompareOrdinal(sEMail,sUserId)!=0) {
-          await JSRuntime.InvokeAsync<string>("setCookie","UserId",sUserId);
-          sEMail=sUserId;
+        if (string.CompareOrdinal(sEMail, sUserId) != 0)
+        {
+          await JSRuntime.InvokeAsync<string>("setCookie", "UserId", sUserId);
+          sEMail = sUserId;
         }
-        if (string.CompareOrdinal(sEMail,SD.CurrentUser.EMail)!=0) {
+        if (string.CompareOrdinal(sEMail, SD.CurrentUser.EMail) != 0)
+        {
           SD.CurrentUser.EMail = sEMail;
-          bAnyChanged=true;
+          bAnyChanged = true;
         }
-        var sUserPermTicket = await JSRuntime.InvokeAsync<string>("getCookie","UserPermTicket."+SD.CurrentUser.Project);
+        var sUserPermTicket = await JSRuntime.InvokeAsync<string>("getCookie", "UserPermTicket." + SD.CurrentUser.Project);
         var user = new User();
-        DS.LoadUser(SD,sUserPermTicket,user);
-        if (!object.Equals(user,SD.CurrentUser)) {
-          DS.LoadUser(SD,sUserPermTicket,SD.CurrentUser);
-          bAnyChanged=true;
+        DS.LoadUser(SD, sUserPermTicket, user);
+        if (!object.Equals(user, SD.CurrentUser))
+        {
+          DS.LoadUser(SD, sUserPermTicket, SD.CurrentUser);
+          bAnyChanged = true;
         }
-      } catch { }
-      if (bAnyChanged) {
+      }
+      catch { }
+      if (bAnyChanged)
+      {
         StateHasChanged();
       }
     }
   }
-  private async Task Project_SelectedValueChanged(string sNewValue) {
-    if (sNewValue==null) {
-      sNewValue="";
+  private async Task Project_SelectedValueChanged(string sNewValue)
+  {
+    if (sNewValue == null)
+    {
+      sNewValue = "";
     }
-    SD.CurrentUser.Project=sNewValue;
-    await JSRuntime.InvokeAsync<string>("setCookie","Project",sNewValue);
-    NavigationManager.NavigateTo("/",true);
+    SD.CurrentUser.Project = sNewValue;
+    await JSRuntime.InvokeAsync<string>("setCookie", "Project", sNewValue);
+    NavigationManager.NavigateTo("/", true);
     SD.OnCurrentProjectChanged();
   }
   private string NewProjectName { get; set; } = "";
-  private bool NewProjectNameValid=false;
-  private void ValidateNewProjectName(ValidatorEventArgs e) {
+  private bool NewProjectNameValid = false;
+  private void ValidateNewProjectName(ValidatorEventArgs e)
+  {
     var sNewValue = e.Value as string;
-    var lExistingProjects=new List<string>(DS.GetAllProjects());
-    if (lExistingProjects.Contains(sNewValue)) {
-      e.Status=ValidationStatus.Error;
-    } else if (!string.IsNullOrEmpty(sNewValue)) {
-      e.Status=ValidationStatus.Success;
+    var lExistingProjects = new List<string>(DS.GetAllProjects());
+    if (lExistingProjects.Contains(sNewValue))
+    {
+      e.Status = ValidationStatus.Error;
     }
-    this.NewProjectNameValid=(e.Status==ValidationStatus.Success);
+    else if (!string.IsNullOrEmpty(sNewValue))
+    {
+      e.Status = ValidationStatus.Success;
+    }
+    this.NewProjectNameValid = (e.Status == ValidationStatus.Success);
   }
-  private async Task CreateNewProject_Clicked() {
-    DS.CreateNewProject(SD,this.NewProjectName);
-    SD.CurrentUser.Project=this.NewProjectName;
-    await JSRuntime.InvokeAsync<string>("setCookie","Project",this.NewProjectName);
-    NavigationManager.NavigateTo("/Administration/UserMgt",true);
+  private async Task CreateNewProject_Clicked()
+  {
+    DS.CreateNewProject(SD, this.NewProjectName);
+    SD.CurrentUser.Project = this.NewProjectName;
+    await JSRuntime.InvokeAsync<string>("setCookie", "Project", this.NewProjectName);
+    NavigationManager.NavigateTo("/Administration/UserMgt", true);
   }
 }

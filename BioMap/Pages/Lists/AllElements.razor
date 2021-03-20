@@ -1,4 +1,4 @@
-﻿@page "/Lists/AllElements"
+@page "/Lists/AllElements"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
 @inject SessionData SD
@@ -43,7 +43,8 @@
         </TableRow>
       </TableHeader>
       <TableBody>
-        @foreach (var el in Elements) {
+        @foreach (var el in Elements)
+        {
           <TableRow>
             <TableRowCell>
               @Localize[@el.GetClassName()]
@@ -71,7 +72,8 @@
 </Row>
 <Row>
   <Column>
-    @if (SD.CurrentUser.Level>=500) {
+    @if (SD.CurrentUser.Level >= 500)
+    {
       <Button Color="Color.Primary" Clicked="@(async (e)=>DownloadCsv_Clicked())">Download CSV</Button>
     }
   </Column>
@@ -82,40 +84,47 @@
 @code {
   private Element[] Elements = new Element[0];
   private PhotoPopup PhotoPopup1;
-  protected override void OnInitialized() {
+  protected override void OnInitialized()
+  {
     base.OnInitialized();
-    SD.Filters.FilterChanged+=(sender,ev) => {
+    SD.Filters.FilterChanged += (sender, ev) =>
+    {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
   }
-  private void RefreshData() {
-    this.Elements = DS.GetElements(SD,SD.Filters,"","elements.creationtime DESC");
+  private void RefreshData()
+  {
+    this.Elements = DS.GetElements(SD, SD.Filters, "", "elements.creationtime DESC");
   }
-  private void OnSelectClick(Element el) {
+  private void OnSelectClick(Element el)
+  {
     this.PhotoPopup1.Show(el);
   }
-  private void DeleteElement(Element el) {
-    DS.DeleteElement(SD,el);
-    DS.AddLogEntry(SD,"Deleted element "+el.ElementName);
+  private void DeleteElement(Element el)
+  {
+    DS.DeleteElement(SD, el);
+    DS.AddLogEntry(SD, "Deleted element " + el.ElementName);
     RefreshData();
     StateHasChanged();
   }
-  private async void DownloadCsv_Clicked() {
+  private async void DownloadCsv_Clicked()
+  {
     var sep = "\t";
     var csv = new System.Text.StringBuilder();
-    csv.Append("ElementName"+sep+"TimeStamp"+sep+"Class"+sep+"GpsLat"+sep+"GpsLng"+sep+"Place"+"\n");
-    foreach (var el in DS.GetElements(SD,SD.Filters)) {
+    csv.Append("ElementName" + sep + "TimeStamp" + sep + "Class" + sep + "GpsLat" + sep + "GpsLng" + sep + "Place" + "\n");
+    foreach (var el in DS.GetElements(SD, SD.Filters))
+    {
       var placeName = el.GetPlaceName();
-      csv.Append('"'+el.ElementName+'"');
-      csv.Append(sep+'"'+el.GetIsoDateTime()+'"');
-      csv.Append(sep+'"'+el.GetClassName()+'"');
-      csv.Append(sep+ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat,12));
-      csv.Append(sep+ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng,12));
-      csv.Append(sep+placeName);
+      csv.Append('"' + el.ElementName + '"');
+      csv.Append(sep + '"' + el.GetIsoDateTime() + '"');
+      csv.Append(sep + '"' + el.GetClassName() + '"');
+      csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat, 12));
+      csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng, 12));
+      csv.Append(sep + placeName);
       csv.Append('\n');
     }
-    await JSRuntime.InvokeVoidAsync("DownloadTextFile","AllElements.csv",csv.ToString());
+    await JSRuntime.InvokeVoidAsync("DownloadTextFile", "AllElements.csv", csv.ToString());
   }
 }

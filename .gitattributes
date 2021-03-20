@@ -38,6 +38,7 @@
 *.props             text        eol=lf
 *.ps1               text        eol=lf
 *.py                text        eol=lf
+*.razor             text        eol=lf
 *.rb                text        eol=lf
 *.resx              text        eol=lf
 *.runsettings       text        eol=lf

@@ -1,13 +1,17 @@
-﻿@inject DataService DS
+@inject DataService DS
 @inject SessionData SD
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
 
 
-@if (Element!=null) {
-  @if (hasPhoto) {
+@if (Element != null)
+{
+  @if (hasPhoto)
+  {
     <img src="api/photos/@Element.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
-  } else {
+  }
+  else
+  {
     <Field Horizontal="true">
       <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Time"]</FieldLabel>
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
@@ -24,40 +28,48 @@
             @Localize[Element.Classification.ClassName]
           </DropdownToggle>
           <DropdownMenu>
-            @foreach (var sClassName in ElementClassification.ClassNames) {
+            @foreach (var sClassName in ElementClassification.ClassNames)
+            {
               <DropdownItem Clicked="@((e)=>{ Element.Classification.ClassName=sClassName; })">
                 @Localize[sClassName]
               </DropdownItem>
             }
           </DropdownMenu>
         </Dropdown>
-        @if (string.CompareOrdinal(Element.Classification.ClassName,"Living being")==0) {
+        @if (string.CompareOrdinal(Element.Classification.ClassName, "Living being") == 0)
+        {
           <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
             <DropdownToggle Color="Color.Primary">
-              @if (string.IsNullOrEmpty(Element.Classification.LivingBeing?.Species?.SciName)) {
+              @if (string.IsNullOrEmpty(Element.Classification.LivingBeing?.Species?.SciName))
+              {
                 @Localize["(select)"]
-              } else {
+              }
+              else
+              {
                 @Element.Classification.LivingBeing?.Species?.GetLocalizedName(SD.CurrentCultureName)
               }
             </DropdownToggle>
             <DropdownMenu>
-              @foreach (var species in SD.CurrentProject.Species) {
+              @foreach (var species in SD.CurrentProject.Species)
+              {
                 <DropdownItem Active="(string.CompareOrdinal(Element.Classification.LivingBeing?.Species?.SciName,species.SciName)==0)"
-                              Clicked="@((e)=>Element.Classification.LivingBeing=new ElementClassification.LivingBeing_t { Species=SD.CurrentProject.GetSpecies(species.SciName) })">
+                        Clicked="@((e)=>Element.Classification.LivingBeing=new ElementClassification.LivingBeing_t { Species=SD.CurrentProject.GetSpecies(species.SciName) })">
                   @species.GetLocalizedName(SD.CurrentCultureName)
                 </DropdownItem>
               }
             </DropdownMenu>
           </Dropdown>
-          @if (!string.IsNullOrEmpty(Element.Classification?.LivingBeing?.Species?.SciName)) {
+          @if (!string.IsNullOrEmpty(Element.Classification?.LivingBeing?.Species?.SciName))
+          {
             <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
               <DropdownToggle Color="Color.Primary">
                 @Localize[Element.Classification.LivingBeing.Count.ToString()]
               </DropdownToggle>
               <DropdownMenu>
-                @foreach (var nCount in new int[] { 1,2,3,4,5,10,15,20,30,40,50,100,150,200,500,1000 }) {
+                @foreach (var nCount in new int[] { 1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 100, 150, 200, 500, 1000 })
+                {
                   <DropdownItem Active="(Element.Classification.LivingBeing.Count==nCount)"
-                                Clicked="@((e)=>{ Element.Classification.LivingBeing.Count=nCount; })">
+                        Clicked="@((e)=>{ Element.Classification.LivingBeing.Count=nCount; })">
                     @nCount.ToString()
                   </DropdownItem>
                 }
@@ -65,16 +77,20 @@
             </Dropdown>
             <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
               <DropdownToggle Color="Color.Primary">
-                @if (Element.Classification.LivingBeing.Stadium==(ElementClassification.Stadium)0) {
+                @if (Element.Classification.LivingBeing.Stadium == (ElementClassification.Stadium)0)
+                {
                   @Localize["(select)"]
-                } else {
+                }
+                else
+                {
                   @Localize[Element.Classification.LivingBeing.Stadium.ToString()]
                 }
               </DropdownToggle>
               <DropdownMenu>
-                @foreach (var enStadium in Enum.GetValues<ElementClassification.Stadium>()) {
+                @foreach (var enStadium in Enum.GetValues<ElementClassification.Stadium>())
+                {
                   <DropdownItem Active="(Element.Classification.LivingBeing.Stadium==enStadium)"
-                                Clicked="@((e)=>{ Element.Classification.LivingBeing.Stadium=enStadium; })">
+                        Clicked="@((e)=>{ Element.Classification.LivingBeing.Stadium=enStadium; })">
                     @Localize[enStadium.ToString()]
                   </DropdownItem>
                 }
@@ -82,24 +98,28 @@
             </Dropdown>
           }
         }
-        @if (string.CompareOrdinal(Element.Classification.ClassName,"Habitat")==0) {
-          @if (Element.Classification.Habitat==null) {
-            Element.Classification.Habitat=new ElementClassification.Habitat_t();
+        @if (string.CompareOrdinal(Element.Classification.ClassName, "Habitat") == 0)
+        {
+          @if (Element.Classification.Habitat == null)
+          {
+            Element.Classification.Habitat = new ElementClassification.Habitat_t();
           }
           <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
             <DropdownToggle Color="Color.Primary">
               @Element.Classification.Habitat.GetQualityAsSymbols()
             </DropdownToggle>
             <DropdownMenu>
-              @foreach (var nQuality in new int[] { 1,2,3,4,5 }) {
+              @foreach (var nQuality in new int[] { 1, 2, 3, 4, 5 })
+              {
                 <DropdownItem Active="(Element.Classification.Habitat.Quality==nQuality)"
-                              Clicked="@((e)=>{ Element.Classification.Habitat.Quality=nQuality; })">
+                        Clicked="@((e)=>{ Element.Classification.Habitat.Quality=nQuality; })">
                   @ElementClassification.Habitat_t.GetQualityAsSymbols(nQuality)
                 </DropdownItem>
               }
             </DropdownMenu>
           </Dropdown>
-          @if (SD.CurrentUser.MayChangeElements) {
+          @if (SD.CurrentUser.MayChangeElements)
+          {
             <CheckBox @bind-Checked="Element.Classification.Habitat.Monitoring" LabelText=@Localize["Monitoring"] />
           }
         }
@@ -112,7 +132,8 @@
       <MemoEdit @bind-Text="Element.ElementProp.UploadInfo.Comment" ReadOnly="@(!Edit)" />
     </FieldBody>
   </Field>
-  @if (Element.HasIndivData()) {
+  @if (Element.HasIndivData())
+  {
     <Field Horizontal="true">
       <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Gender"]</FieldLabel>
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
@@ -122,27 +143,28 @@
           <SelectItem TValue="string" Value="@("f")">@Localize["Female"]</SelectItem>
           <SelectItem TValue="string" Value="@("m")">@Localize["Male"]</SelectItem>
         </Select>
-        </FieldBody>
-      </Field>
-      <Field Horizontal="true">
-        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">IId</FieldLabel>
-        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
-          <NumericEdit @bind-Value="Element.ElementProp.IndivData.IId" Disabled="@(!Edit)" />
-        </FieldBody>
-      </Field>
-    }
+      </FieldBody>
+    </Field>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">IId</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+        <NumericEdit @bind-Value="Element.ElementProp.IndivData.IId" Disabled="@(!Edit)" />
+      </FieldBody>
+    </Field>
   }
-      <table class="table table-sm">
-        <tbody>
-          @foreach (var p in Properties) {
-            <tr>
-              <td>@((MarkupString)p[0])</td>
-              <td>@((MarkupString)p[1])</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+}
+<table class="table table-sm">
+  <tbody>
+    @foreach (var p in Properties)
+    {
+      <tr>
+        <td>@((MarkupString)p[0])</td>
+        <td>@((MarkupString)p[1])</td>
+      </tr>
+    }
+  </tbody>
+</table>
 
-      @code{
-        //
+@code{
+  //
       }

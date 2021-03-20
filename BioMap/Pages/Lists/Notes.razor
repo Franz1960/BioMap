@@ -1,4 +1,4 @@
-﻿@page "/Lists/Notes"
+@page "/Lists/Notes"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
 @inject SessionData SD
@@ -34,7 +34,8 @@
         </TableRow>
       </TableHeader>
       <TableBody>
-        @foreach (var idx in Enumerable.Range(0,ProtocolEntries.Length)) {
+        @foreach (var idx in Enumerable.Range(0, ProtocolEntries.Length))
+        {
           <TableRow>
             <TableRowCell>
               @ProtocolEntries[idx].CreationTime.ToString("yyyy-MM-dd HH:mm:ss")<br />@ProtocolEntries[idx].Author
@@ -57,22 +58,27 @@
 @code {
   private NotePopup refNotePopup;
   private ProtocolEntry[] ProtocolEntries = new ProtocolEntry[0];
-  protected override void OnInitialized() {
+  protected override void OnInitialized()
+  {
     base.OnInitialized();
-    SD.Filters.FilterChanged+=(sender,ev) => {
+    SD.Filters.FilterChanged += (sender, ev) =>
+    {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
   }
-  private void RefreshData() {
-    this.ProtocolEntries = DataService.Instance.GetProtocolEntries(SD,SD.Filters,"","notes.dt DESC");
+  private void RefreshData()
+  {
+    this.ProtocolEntries = DataService.Instance.GetProtocolEntries(SD, SD.Filters, "", "notes.dt DESC");
   }
-  private void AddProtocolEntry() {
-    var pe = new ProtocolEntry {
-      CreationTime=DateTime.Now,
-      Author=SD.CurrentUser.EMail,
-      Text="",
+  private void AddProtocolEntry()
+  {
+    var pe = new ProtocolEntry
+    {
+      CreationTime = DateTime.Now,
+      Author = SD.CurrentUser.EMail,
+      Text = "",
     };
     refNotePopup.Show(pe);
   }

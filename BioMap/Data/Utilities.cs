@@ -36,7 +36,8 @@ namespace BioMap
         public static double CalcTraitScore(double traitValue, double traitValueRef, double normValue)
         {
             double normedDelta = (traitValue - traitValueRef) / normValue;
-            return 1.0 / (1.0 + (normedDelta * normedDelta));
+            return 1 - Math.Min(2,Math.Abs(normedDelta));
+            //return 1.0 / (1.0 + (normedDelta * normedDelta));
         }
         public static string GetPatternImgSource(Element el, DataService ds, SessionData sd)
         {

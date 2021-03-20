@@ -1,13 +1,14 @@
-﻿@inject DataService DS
+@inject DataService DS
 @inject SessionData SD
 
 <Modal @ref="modalRef">
   <ModalContent Size="@modalSize" Centered="@centered">
     <ModalHeader>
       <ModalTitle>
-        @if (ProtocolEntry!=null) {
-           @ProtocolEntry.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")<br/>
-           @ProtocolEntry.Author
+        @if (ProtocolEntry != null)
+        {
+          @ProtocolEntry.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")<br />
+          @ProtocolEntry.Author
         }
       </ModalTitle>
       <Buttons Role="ButtonsRole.Toolbar">
@@ -17,7 +18,8 @@
       </Buttons>
     </ModalHeader>
     <ModalBody MaxHeight="@maxHeight">
-      @if (ProtocolEntry!=null) {
+      @if (ProtocolEntry != null)
+      {
         <MemoEdit @bind-Text="ProtocolEntry.Text" Style="min-height:400px"></MemoEdit>
       }
     </ModalBody>

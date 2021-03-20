@@ -1,4 +1,4 @@
-﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @using Microsoft.AspNetCore.Components.Forms
 @inject DataService DS
 @inject SessionData SD
@@ -12,7 +12,8 @@
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
         <Select TValue="string" @bind-SelectedValue="SD.Filters.LogUserFilter">
           <SelectItem TValue="string" Value="@("")"></SelectItem>
-          @foreach (var userEMail in DS.GetLogUsers(SD,SD.Filters)) {
+          @foreach (var userEMail in DS.GetLogUsers(SD, SD.Filters))
+          {
             <SelectItem TValue="string" Value="userEMail">@userEMail</SelectItem>
           }
         </Select>

@@ -1,4 +1,4 @@
-﻿@page "/Statistics/ByCategories"
+@page "/Statistics/ByCategories"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
 @inject SessionData SD
@@ -16,18 +16,21 @@
           <th scope="col">#</th>
           <th scope="col">@Localize["Category"]</th>
           <th scope="col">@Localize["All Years"]</th>
-          @for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
+          @for (int year = ProjectYearBegin; year <= ProjectYearEnd; year++)
+          {
             <th scope="col">@year</th>
           }
         </tr>
       </thead>
       <tbody>
-        @foreach (var dby in this.OtherData) {
+        @foreach (var dby in this.OtherData)
+        {
           <tr>
             <td scope="col">@dby.Id</td>
             <td scope="col">@dby.Name</td>
             <td scope="col">@dby.AllYears</td>
-            @for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
+            @for (int year = ProjectYearBegin; year <= ProjectYearEnd; year++)
+            {
               <td scope="col">@dby.ByYear[year-ProjectYearBegin]</td>
             }
           </tr>
@@ -52,42 +55,52 @@
   }
   private readonly List<DataByYears_t> IndividualData = new List<DataByYears_t>();
   private readonly List<DataByYears_t> OtherData = new List<DataByYears_t>();
-  protected override void OnInitialized() {
+  protected override void OnInitialized()
+  {
     base.OnInitialized();
-    ProjectYearBegin=SD.CurrentProject.StartDate.Value.Year;
-    ProjectYearEnd=DateTime.Now.Year;
-    SD.Filters.FilterChanged+=(sender,ev) => {
+    ProjectYearBegin = SD.CurrentProject.StartDate.Value.Year;
+    ProjectYearEnd = DateTime.Now.Year;
+    SD.Filters.FilterChanged += (sender, ev) =>
+    {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
   }
-  private void RefreshData() {
+  private void RefreshData()
+  {
     //
     this.OtherData.Clear();
-    foreach (var sClassName in ElementClassification.ClassNames) {
-      var aEls = DS.GetElements(SD,null,"elements.classification LIKE '%\"ClassName\":\""+sClassName+"\"%'");
+    foreach (var sClassName in ElementClassification.ClassNames)
+    {
+      var aEls = DS.GetElements(SD, null, "elements.classification LIKE '%\"ClassName\":\"" + sClassName + "\"%'");
       int nAllYears = 0;
-      var aByYears = new int[ProjectYearEnd+1-ProjectYearBegin];
-      foreach (var el in aEls) {
+      var aByYears = new int[ProjectYearEnd + 1 - ProjectYearBegin];
+      foreach (var el in aEls)
+      {
         int year = el.ElementProp.CreationTime.Year;
-        if (year>=ProjectYearBegin && year<=ProjectYearEnd) {
+        if (year >= ProjectYearBegin && year <= ProjectYearEnd)
+        {
           nAllYears++;
         }
       }
-      for (int year = ProjectYearBegin;year<=ProjectYearEnd;year++) {
-        foreach (var el in aEls) {
-          if (el.ElementProp.CreationTime.Year==year) {
-            aByYears[year-ProjectYearBegin]++;
+      for (int year = ProjectYearBegin; year <= ProjectYearEnd; year++)
+      {
+        foreach (var el in aEls)
+        {
+          if (el.ElementProp.CreationTime.Year == year)
+          {
+            aByYears[year - ProjectYearBegin]++;
           }
         }
       }
       this.OtherData.Add(
-        new DataByYears_t {
-          Id=sClassName,
-          Name=Localize[sClassName],
-          AllYears=nAllYears.ToString(),
-          ByYear=Array.ConvertAll<int,string>(aByYears,(n) => n.ToString()),
+        new DataByYears_t
+        {
+          Id = sClassName,
+          Name = Localize[sClassName],
+          AllYears = nAllYears.ToString(),
+          ByYear = Array.ConvertAll<int, string>(aByYears, (n) => n.ToString()),
         }
       );
     }

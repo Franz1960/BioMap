@@ -1,4 +1,4 @@
-﻿@page "/Add/Image"
+@page "/Add/Image"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
 @inject SessionData SD
@@ -13,18 +13,20 @@
 <Row Margin="Margin.Is2.OnY">
   <Column>
     @{
-      var addAttr = new Dictionary<string,object>(new KeyValuePair<string,object>[] {
-        new KeyValuePair<string,object>("accept","image/*"),
-        new KeyValuePair<string,object>("multiple","multiple"),
-      });
+      var addAttr = new Dictionary<string, object>(new KeyValuePair<string, object>[] {
+    new KeyValuePair<string,object>("accept","image/*"),
+    new KeyValuePair<string,object>("multiple","multiple"),
+    });
       <InputFile AdditionalAttributes="addAttr" OnChange="@OnInputFileChange" />
     }
-    @if (imageDataUrls.Count > 0) {
+    @if (imageDataUrls.Count > 0)
+    {
       <h4>Images</h4>
 
       <div class="card" style="width:30rem;">
         <div class="card-body">
-          @foreach (var imageDataUrl in imageDataUrls) {
+          @foreach (var imageDataUrl in imageDataUrls)
+          {
             <img class="rounded m-1" src="@imageDataUrl" />
           }
         </div>
@@ -32,7 +34,7 @@
     }
   </Column>
 </Row>
-<Modal @ref="progressModalRef" >
+<Modal @ref="progressModalRef">
   <ModalContent Centered="true" Size="ModalSize.ExtraLarge">
     <ModalHeader>
       <ModalTitle>
@@ -43,13 +45,15 @@
       <Progress Margin="Margin.Is3.FromBottom">
         <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
       </Progress>
-      @if (messages.Count>=1) {
-        foreach (var msg in messages) {
-        <Row Margin="Margin.Is1.OnY">
-          <Column>
-            @msg
-          </Column>
-        </Row>
+      @if (messages.Count >= 1)
+      {
+        foreach (var msg in messages)
+        {
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              @msg
+            </Column>
+          </Row>
         }
         <Row Margin="Margin.Is2.OnY">
           <Column>
@@ -70,67 +74,89 @@
 @code {
   private Modal progressModalRef;
   private int progressCompletion = 0;
-  private List<string> messages=new List<string>();
+  private List<string> messages = new List<string>();
   //
-  protected override async Task OnAfterRenderAsync(bool firstRender) {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
     await base.OnAfterRenderAsync(firstRender);
-    if (firstRender) {
-      await JSRuntime.InvokeAsync<string>("UploadImageFiles_Init","inputImageFiles","uploadUI");
+    if (firstRender)
+    {
+      await JSRuntime.InvokeAsync<string>("UploadImageFiles_Init", "inputImageFiles", "uploadUI");
     }
   }
-  private async void OnSelectClick() {
-    var sResult = await JSRuntime.InvokeAsync<string>("UploadImageFiles_Click","inputImageFiles");
+  private async void OnSelectClick()
+  {
+    var sResult = await JSRuntime.InvokeAsync<string>("UploadImageFiles_Click", "inputImageFiles");
   }
   //
   private IList<string> imageDataUrls = new List<string>();
   //
-  private async Task OnInputFileChange(InputFileChangeEventArgs e) {
+  private async Task OnInputFileChange(InputFileChangeEventArgs e)
+  {
     var maxAllowedFiles = 30;
-    int nUploadedFiles=0;
+    int nUploadedFiles = 0;
     messages.Clear();
-    progressCompletion=0;
+    progressCompletion = 0;
     progressModalRef.Show();
-    try {
-      var files= e.GetMultipleFiles(maxAllowedFiles);
-      for (int idxFile=0;idxFile<files.Count;idxFile++) {
-        var imageFile=files[idxFile];
-        progressCompletion=(int)Math.Round(((idxFile+0.5)*100)/files.Count);
+    try
+    {
+      var files = e.GetMultipleFiles(maxAllowedFiles);
+      for (int idxFile = 0; idxFile < files.Count; idxFile++)
+      {
+        var imageFile = files[idxFile];
+        progressCompletion = (int)Math.Round(((idxFile + 0.5) * 100) / files.Count);
         await this.InvokeAsync(() => { StateHasChanged(); });
-        try {
+        try
+        {
           var imageStream = imageFile.OpenReadStream(20000000);
-          var sDestTempFilePath = System.IO.Path.Combine(DS.GetTempDir(SD.CurrentUser.Project),imageFile.Name);
-          using (var destStream = new System.IO.FileStream(sDestTempFilePath,System.IO.FileMode.Create)) {
+          var sDestTempFilePath = System.IO.Path.Combine(DS.GetTempDir(SD.CurrentUser.Project), imageFile.Name);
+          using (var destStream = new System.IO.FileStream(sDestTempFilePath, System.IO.FileMode.Create))
+          {
             await imageStream.CopyToAsync(destStream);
             destStream.Close();
           }
-          var el = Element.CreateFromImageFile(SD.CurrentUser.Project,sDestTempFilePath,SD);
-          if (!SD.CurrentUser.MayUploadElements) {
-            messages.Add("User access level ("+SD.CurrentUser.Level+") is too low.");
-          } else if (DS.GetElementCount(SD)>=SD.CurrentProject.MaxAllowedElements) {
-            messages.Add("Maximum element count ("+SD.CurrentProject.MaxAllowedElements+") is exceeded. Contact the website administrator.");
-          } else if (el.ElementProp.MarkerInfo.position==null) {
-            messages.Add("No GPS location in \""+el.ElementName+"\"");
-          } else if (!SD.CurrentProject.IsLocationInsideAoi(el.ElementProp.MarkerInfo.position)) {
-            messages.Add("GPS location is outside project area \""+el.ElementName+"\"");
-          } else {
-            DS.WriteElement(SD,el);
-            var sDestFilePath = DS.GetFilePathForImage(SD.CurrentUser.Project,imageFile.Name,true);
-            Migration.CopyImageCompressed(sDestTempFilePath,sDestFilePath,2000);
-            DS.AddLogEntry(SD,"Uploaded file "+el.ElementName);
+          var el = Element.CreateFromImageFile(SD.CurrentUser.Project, sDestTempFilePath, SD);
+          if (!SD.CurrentUser.MayUploadElements)
+          {
+            messages.Add("User access level (" + SD.CurrentUser.Level + ") is too low.");
+          }
+          else if (DS.GetElementCount(SD) >= SD.CurrentProject.MaxAllowedElements)
+          {
+            messages.Add("Maximum element count (" + SD.CurrentProject.MaxAllowedElements + ") is exceeded. Contact the website administrator.");
+          }
+          else if (el.ElementProp.MarkerInfo.position == null)
+          {
+            messages.Add("No GPS location in \"" + el.ElementName + "\"");
+          }
+          else if (!SD.CurrentProject.IsLocationInsideAoi(el.ElementProp.MarkerInfo.position))
+          {
+            messages.Add("GPS location is outside project area \"" + el.ElementName + "\"");
+          }
+          else
+          {
+            DS.WriteElement(SD, el);
+            var sDestFilePath = DS.GetFilePathForImage(SD.CurrentUser.Project, imageFile.Name, true);
+            Migration.CopyImageCompressed(sDestTempFilePath, sDestFilePath, 2000);
+            DS.AddLogEntry(SD, "Uploaded file " + el.ElementName);
             nUploadedFiles++;
           }
           System.IO.File.Delete(sDestTempFilePath);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
           messages.Add(ex.ToString());
           await this.InvokeAsync(() => { StateHasChanged(); });
         }
-        progressCompletion=(int)Math.Round(((idxFile+1.0)*100)/files.Count);
+        progressCompletion = (int)Math.Round(((idxFile + 1.0) * 100) / files.Count);
         await this.InvokeAsync(() => { StateHasChanged(); });
       }
-      messages.Add(string.Format(Localize["{0} files uploaded."],nUploadedFiles.ToString()));
+      messages.Add(string.Format(Localize["{0} files uploaded."], nUploadedFiles.ToString()));
       await this.InvokeAsync(() => { StateHasChanged(); });
-    } finally {
-      if (messages.Count<1) {
+    }
+    finally
+    {
+      if (messages.Count < 1)
+      {
         await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
       }
     }

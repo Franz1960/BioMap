@@ -1,4 +1,4 @@
-﻿@page "/Pictures/IdCardsByPlaces"
+@page "/Pictures/IdCardsByPlaces"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject DataService DS
 @inject SessionData SD
@@ -11,12 +11,14 @@
 
 <PhotoPopup @ref="PhotoPopup1" />
 
-@foreach (var sPlace in ElementsByPlaces.Keys) {
+@foreach (var sPlace in ElementsByPlaces.Keys)
+{
   <div class="row">
     <h2>@sPlace</h2>
   </div>
   <div class="row">
-    @foreach (var el in ElementsByPlaces[sPlace]) {
+    @foreach (var el in ElementsByPlaces[sPlace])
+    {
       <div class="card" style="width: 240px;">
         <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">
           <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
@@ -30,28 +32,35 @@
 }
 
 @code {
-  private Dictionary<string,List<Element>> ElementsByPlaces = new Dictionary<string,List<Element>>();
+  private Dictionary<string, List<Element>> ElementsByPlaces = new Dictionary<string, List<Element>>();
   private PhotoPopup PhotoPopup1;
-  protected override void OnInitialized() {
+  protected override void OnInitialized()
+  {
     base.OnInitialized();
-    SD.Filters.FilterChanged+=(sender,ev) => {
+    SD.Filters.FilterChanged += (sender, ev) =>
+    {
       RefreshData();
       base.InvokeAsync(StateHasChanged);
     };
     RefreshData();
   }
-  private void RefreshData() {
-    var els = DataService.Instance.GetElements(SD,SD.Filters,"indivdata.iid>=1 AND elements.category=350","elements.place ASC,elements.creationtime ASC");
+  private void RefreshData()
+  {
+    var els = DataService.Instance.GetElements(SD, SD.Filters, "indivdata.iid>=1 AND elements.category=350", "elements.place ASC,elements.creationtime ASC");
     this.ElementsByPlaces.Clear();
-    foreach (var el in els) {
-      if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project,el.ElementName))) {
+    foreach (var el in els)
+    {
+      if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project, el.ElementName)))
+      {
         var sPlace = el.GetPlaceName();
-        if (sPlace==null) {
-          sPlace="";
+        if (sPlace == null)
+        {
+          sPlace = "";
         }
-        if (!this.ElementsByPlaces.TryGetValue(sPlace,out List<Element> lEls)) {
-          lEls=new List<Element>();
-          this.ElementsByPlaces.Add(sPlace,lEls);
+        if (!this.ElementsByPlaces.TryGetValue(sPlace, out List<Element> lEls))
+        {
+          lEls = new List<Element>();
+          this.ElementsByPlaces.Add(sPlace, lEls);
         }
         //foreach (var el1 in lEls.ToArray()) {
         //  if (el1.GetIId()==el.GetIId()) {
@@ -62,7 +71,8 @@
       }
     }
   }
-  private void OnSelectClick(Element el) {
+  private void OnSelectClick(Element el)
+  {
     this.PhotoPopup1.Show(el);
   }
 }

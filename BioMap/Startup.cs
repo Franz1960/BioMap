@@ -38,14 +38,14 @@ namespace BioMap
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.Configure<RequestLocalizationOptions>(options =>
               {
-            // Define the list of cultures your app will support
-            var supportedCultures = new List<CultureInfo>()
+                  // Define the list of cultures your app will support
+                  var supportedCultures = new List<CultureInfo>()
                   {
                 new CultureInfo("en"),
                 new CultureInfo("de")
                   };
-            // Set the default culture
-            options.DefaultRequestCulture = new RequestCulture("en");
+                  // Set the default culture
+                  options.DefaultRequestCulture = new RequestCulture("en");
                   options.SupportedCultures = supportedCultures;
                   options.SupportedUICultures = supportedCultures;
               });

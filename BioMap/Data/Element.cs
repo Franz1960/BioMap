@@ -444,8 +444,21 @@ namespace BioMap
                 }
             }
         }
+        public static double? CalcDistance(Element el1, Element el2)
+        {
+            LatLng ll1 = el1.ElementProp?.MarkerInfo?.position;
+            LatLng ll2 = el2.ElementProp?.MarkerInfo?.position;
+            if (ll1 != null && ll2 != null)
+            {
+                return GeoCalculator.GetDistance(ll2, ll1);
+            }
+            return null;
+        }
         public static double CalcSimilarity(Element el1, Element el2)
         {
+            if (el1?.ElementProp?.IndivData?.MeasuredData==null || el2?.ElementProp?.IndivData?.MeasuredData==null) {
+                return -10;
+            }
             double fSimilarity = 0;
             // Zeitlich sortieren (y(oung) / o(ld)).
             DateTime d1 = el1.ElementProp.CreationTime;
@@ -462,21 +475,18 @@ namespace BioMap
                 }
             }
             // Örtlicher Abstand.
-            double distance = 200;
-            LatLng ll1 = el1.ElementProp?.MarkerInfo?.position;
-            LatLng ll2 = el2.ElementProp?.MarkerInfo?.position;
-            if (ll1 != null && ll2 != null)
+            double? distance = Element.CalcDistance(el1,el2);
+            if (!distance.HasValue)
             {
-                distance = GeoCalculator.GetDistance(ll2, ll1);
             }
-            if (distance < 50 && nAgeDiffDays == 0)
+            else if (nAgeDiffDays == 0)
             {
-                // Am selben Tag am selben Ort -> müssen unterschiedlich sein.
+                // Am selben Tag gefangen -> müssen unterschiedlich sein.
                 fSimilarity -= 3;
             }
             else
             {
-                fSimilarity += Math.Min(3, 50 / (distance + 10));
+                fSimilarity += Math.Max(-3, 3 - distance.Value / 50);
             }
             // Geschlecht.
             string g1 = el1.Gender;
@@ -507,7 +517,6 @@ namespace BioMap
             var md1 = el1.ElementProp.IndivData?.MeasuredData;
             var md2 = el2.ElementProp.IndivData?.MeasuredData;
             if (md1!=null && md2!=null) {
-                fSimilarity=0;
                 fSimilarity += Utilities.CalcTraitScore(md1.ShareOfBlack, md2.ShareOfBlack, 0.20);
                 fSimilarity += Utilities.CalcTraitScore(md1.CenterOfMass, md2.CenterOfMass, 0.10);
                 fSimilarity += Utilities.CalcTraitScore(md1.StdDeviation, md2.StdDeviation, 0.02);

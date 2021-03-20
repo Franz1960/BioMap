@@ -1,4 +1,4 @@
-﻿@page "/Administration/UserMgt"
+@page "/Administration/UserMgt"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject NavigationManager NM
 @inject DataService DS
@@ -43,7 +43,8 @@
           <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
             <Button Color="Color.Primary" Disabled="TanRequested" Clicked="@((e)=>RequestTAN_Clicked())">
               @Localize["Request TAN"]
-              @if (TanRequested) {
+              @if (TanRequested)
+              {
                 <BarIcon IconName="IconName.Check" />
               }
             </Button>
@@ -64,7 +65,8 @@
           <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
             <Button Color="Color.Primary" Disabled="TanConfirmed || !UserAcknowledgeTerms || TAN==null || TAN.Trim().Length!=9" Clicked="@((e) => ConfirmTAN_Clicked())">
               @Localize["Confirm TAN"]
-              @if (TanConfirmed) {
+              @if (TanConfirmed)
+              {
                 <BarIcon IconName="IconName.Check" />
               }
             </Button>
@@ -80,7 +82,8 @@
     </Card>
   </Column>
 </Row>
-@if (SD.CurrentUser.MaySeeOtherUsers) {
+@if (SD.CurrentUser.MaySeeOtherUsers)
+{
   <Row>
     <Column>
       <Card Margin="Margin.Is4.OnY">
@@ -97,7 +100,8 @@
               </tr>
             </thead>
             <tbody>
-              @foreach (var user in AllUsers) {
+              @foreach (var user in AllUsers)
+              {
                 <tr>
                   <th scope="row">@user.EMail</th>
                   <td>
@@ -119,13 +123,17 @@
 @code {
   private Validations validations;
   private string TAN;
-  private bool UserAcknowledgeTerms {
-    get {
+  private bool UserAcknowledgeTerms
+  {
+    get
+    {
       return _UserAcknowledgeTerms;
     }
-    set {
-      if (value!=_UserAcknowledgeTerms) {
-        _UserAcknowledgeTerms=value;
+    set
+    {
+      if (value != _UserAcknowledgeTerms)
+      {
+        _UserAcknowledgeTerms = value;
         StateHasChanged();
       }
     }
@@ -135,55 +143,68 @@
   private bool TanRequested = false;
   private bool TanConfirmed = false;
 
-  private async void RequestTAN_Clicked() {
-    if (validations.ValidateAll()) {
+  private async void RequestTAN_Clicked()
+  {
+    if (validations.ValidateAll())
+    {
       validations.ClearAll();
       var sEMail = SD.CurrentUser.EMail?.Trim().ToLowerInvariant();
-      SD.CurrentUser.EMail=sEMail;
-      SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie","Project");
-      await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserId",sEMail });
-      TanRequested=DS.RequestTAN(SD,SD.CurrentUser.FullName?.Trim());
-      if (TanRequested) {
-        DS.AddLogEntry(SD,"TAN requested.");
+      SD.CurrentUser.EMail = sEMail;
+      SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie", "Project");
+      await JSRuntime.InvokeVoidAsync("setCookie", new[] { "UserId", sEMail });
+      TanRequested = DS.RequestTAN(SD, SD.CurrentUser.FullName?.Trim());
+      if (TanRequested)
+      {
+        DS.AddLogEntry(SD, "TAN requested.");
       }
     }
     StateHasChanged();
   }
-  private async void ConfirmTAN_Clicked() {
-    if (validations.ValidateAll()) {
+  private async void ConfirmTAN_Clicked()
+  {
+    if (validations.ValidateAll())
+    {
       validations.ClearAll();
-      string sPermTicket = DS.ConfirmTAN(SD,TAN?.Trim());
-      SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie","Project");
-      await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserPermTicket."+SD.CurrentUser.Project,sPermTicket });
-      SD.CurrentUser.Level=DS.GetUserLevel(SD,sPermTicket);
-      if (SD.CurrentUser.Level>=100) {
-        TanConfirmed=true;
-        DS.AddLogEntry(SD,"TAN confirmed with "+TAN+". Level "+SD.CurrentUser.Level+" returned.");
+      string sPermTicket = DS.ConfirmTAN(SD, TAN?.Trim());
+      SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie", "Project");
+      await JSRuntime.InvokeVoidAsync("setCookie", new[] { "UserPermTicket." + SD.CurrentUser.Project, sPermTicket });
+      SD.CurrentUser.Level = DS.GetUserLevel(SD, sPermTicket);
+      if (SD.CurrentUser.Level >= 100)
+      {
+        TanConfirmed = true;
+        DS.AddLogEntry(SD, "TAN confirmed with " + TAN + ". Level " + SD.CurrentUser.Level + " returned.");
       }
     }
     StateHasChanged();
   }
   private User[] AllUsers = new User[0];
-  protected override void OnInitialized() {
+  protected override void OnInitialized()
+  {
     base.OnInitialized();
-    NM.LocationChanged+=NM_LocationChanged;
+    NM.LocationChanged += NM_LocationChanged;
     RefreshData();
   }
-  protected override async Task OnAfterRenderAsync(bool firstRender) {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
     await base.OnAfterRenderAsync(firstRender);
-    if (firstRender) {
+    if (firstRender)
+    {
     }
-    if (SD.CurrentUser.Level>=700 && DS.GetAoi(SD)==null) {
+    if (SD.CurrentUser.Level >= 700 && DS.GetAoi(SD) == null)
+    {
       NM.NavigateTo("/Maps/AoiEdit");
     }
   }
-  private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
-    NM.LocationChanged-=NM_LocationChanged;
-    foreach (var user in this.AllUsers) {
-      DS.WriteUser(SD,user);
+  private void NM_LocationChanged(object sender, LocationChangedEventArgs e)
+  {
+    NM.LocationChanged -= NM_LocationChanged;
+    foreach (var user in this.AllUsers)
+    {
+      DS.WriteUser(SD, user);
     }
   }
-  private void RefreshData() {
+  private void RefreshData()
+  {
     this.AllUsers = DS.GetAllUsers(SD);
     StateHasChanged();
   }
