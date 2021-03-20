@@ -9,74 +9,69 @@
 <Row Margin="Margin.Is1.OnY">
   @if (ElementToCompare == null)
   {
-      <Column ColumnSize="ColumnSize.Is7">
-        <Container Style="height:99vh;overflow-y:scroll;">
-          <Row Margin="Margin.Is1.OnY">
-            <Column>
+    <Column ColumnSize="ColumnSize.Is7">
+      <Container Style="height:90vh;overflow-y:scroll;">
+        <Row Margin="Margin.Is1.OnY">
+          <Column>
+            @if (this.Element != null)
+            {
               <div class="row">
-              @foreach (var el in ElementsToCompare)
-              {
-                    <div class="card" style="width: 240px;">
-                      <a href="javascript:void(0);" @onclick="()=>{ ElementFromList_Clicked(el); }">
-                        <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
-                      </a>
-                      <div class="card-footer">
-                        <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName()) @el.CalcSimilarity(Element).ToString("0.000")</small>
-                      </div>
+                @foreach (var el in ElementsToCompare)
+                {
+                  <div class="card" style="width: 240px;">
+                    <a href="javascript:void(0);" @onclick="()=>{ ElementFromList_Clicked(el); }">
+                      <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
+                    </a>
+                    <div class="card-footer">
+                      <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName()) @el.CalcSimilarity(Element).ToString("0.000")</small>
                     </div>
-              }
+                  </div>
+                }
               </div>
-            </Column>
-          </Row>
-        </Container>
-      </Column>
+            }
+          </Column>
+        </Row>
+      </Container>
+    </Column>
   }
   else
   {
-      <Column>
-        <Row Margin="Margin.Is1.OnY">
-          <Column>
-            <img src="api/photos/@ElementToCompare.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
-          </Column>
-        </Row>
-        <Row Margin="Margin.Is1.OnY">
-          <Column>
-            <a href="javascript:void(0);" @onclick="()=>ElementName_Click(ElementToCompare)">
-              <strong>@ElementToCompare.ElementName</strong>
-            </a><br />
-            <Icon Name="IconName.LocationArrow" /> @ElementToCompare.GetPlaceName()
-            <Icon Name="IconName.Clock" /> @ElementToCompare.GetIsoDateTime()
-            <Icon Name="IconName.RulerHorizontal" /> @ElementToCompare.GetHeadBodyLengthNice()
-            <Icon Name="IconName.User" /> @ElementToCompare.ElementProp.UploadInfo.UserId
-          </Column>
-        </Row>
-        <Row Margin="Margin.Is1.OnY">
-          <Column>
+    <Column>
+      <Row Margin="Margin.Is1.OnY">
+        <Column>
+          <img src="api/photos/@ElementToCompare.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
+        </Column>
+      </Row>
+      <Row Margin="Margin.Is1.OnY">
+        <Column>
+          <a href="javascript:void(0);" @onclick="()=>ElementName_Click(ElementToCompare)">
+            <strong>@ElementToCompare.ElementName</strong>
+          </a><br />
+          <Icon Name="IconName.LocationArrow" /> @ElementToCompare.GetPlaceName()
+          <Icon Name="IconName.Clock" /> @ElementToCompare.GetIsoDateTime()
+          <Icon Name="IconName.RulerHorizontal" /> @ElementToCompare.GetHeadBodyLengthNice()
+          <Icon Name="IconName.User" /> @ElementToCompare.ElementProp.UploadInfo.UserId
+        </Column>
+      </Row>
+      <Row Margin="Margin.Is1.OnY">
+        <Column>
+          @if (this.Element != null)
+          {
             <p>@Localize["Share of yellow"]: @(((1-this.ElementToCompare.ElementProp.IndivData.MeasuredData.ShareOfBlack)*100).ToString("0.0"))%</p>
             <p>@Localize["Asymmetry"]: @((this.ElementToCompare.ElementProp.IndivData.MeasuredData.CenterOfMass*100).ToString("0.0"))%</p>
             <p>@Localize["Standard deviation"]: @((this.ElementToCompare.ElementProp.IndivData.MeasuredData.StdDeviation*100).ToString("0.0"))%</p>
             <p>@Localize["Entropy"]: @((this.ElementToCompare.ElementProp.IndivData.MeasuredData.Entropy*100).ToString("0.0"))%</p>
             <p>@Localize["Distance"]: @Element.CalcDistance(this.ElementToCompare,this.Element).Value.ToString("0") m</p>
             <p>@Localize["Similarity"]: @this.ElementToCompare.CalcSimilarity(Element).ToString("0.000")</p>
-          </Column>
-          <Column ColumnSize="ColumnSize.Is2">
-            <Image Source="@PatternCompareImgSrc" Style="height:200px;" />
-          </Column>
-        </Row>
-        <Row Margin="Margin.Is1.OnY">
-          <Column>
-            <Button Color="Color.Light" Clicked="@(async (e)=>{ ElementToCompare=null; })" Block="true">
-              <Icon Name="IconName.List"></Icon>
-            </Button>
-          </Column>
-          <Column>
-            <Button Color="Color.Light" Clicked="@(async (e)=>{ await IdentifyAs(ElementToCompare); })" Block="true">
-              #@ElementToCompare.GetIId()
-              <Icon Name="IconName.Check" />
-            </Button>
-          </Column>
-        </Row>
-      </Column>
+          }
+        </Column>
+        <Column ColumnSize="ColumnSize.Is2">
+          <Image Source="@PatternCompareImgSrc" Style="height:200px;" />
+        </Column>
+      </Row>
+      <Row Margin="Margin.Is1.OnY">
+      </Row>
+    </Column>
   }
   <Column>
     @if (Element != null && Element.HasPhotoData())
@@ -108,22 +103,48 @@
           <p>@Localize["Entropy"]: @((this.Element.ElementProp.IndivData.MeasuredData.Entropy*100).ToString("0.0"))%</p>
         </Column>
       </Row>
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">IId</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
-              <NumericEdit @bind-Value="Element.ElementProp.IndivData.IId" />
-            </FieldBody>
-          </Field>
-        </Column>
-      </Row>
     }
     <Row Margin="Margin.Is1.OnY">
       <Column>
         <UserFilter />
       </Column>
     </Row>
+  </Column>
+</Row>
+<Row Margin="Margin.Is1.OnY">
+  @if (ElementToCompare == null)
+  {
+    <Column ColumnSize="ColumnSize.Is7">
+    </Column>
+  }
+  else
+  {
+    <Column>
+      <Button Color="Color.Light" Clicked="@(async (e)=>{ ElementToCompare=null; })" Block="true">
+        <Icon Name="IconName.List"></Icon>
+      </Button>
+    </Column>
+    <Column>
+      <Button Color="Color.Light" Clicked="@(async (e)=>{ await IdentifyAs(ElementToCompare); })" Block="true">
+        #@ElementToCompare.GetIId()
+        <Icon Name="IconName.Check" />
+      </Button>
+    </Column>
+  }
+  <Column ColumnSize="ColumnSize.Is2">
+    @if (Element != null && Element.HasPhotoData()) {
+      <b>#@Element.GetIId()</b>
+    }
+  </Column>
+  <Column>
+    <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
+      <Icon Name="IconName.StepBackward"></Icon>
+    </Button>
+  </Column>
+  <Column>
+    <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
+      <Icon Name="IconName.StepForward"></Icon>
+    </Button>
   </Column>
 </Row>
 

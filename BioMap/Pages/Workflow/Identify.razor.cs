@@ -77,9 +77,57 @@ namespace BioMap.Pages.Workflow
             {
             }
         }
+        private async Task<Element[]> GetElementsToIdentify()
+        {
+            var aElements = await DS.GetElementsAsync(SD, null,
+              "(elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND (indivdata.iid IS NULL OR indivdata.iid<1)",
+              "elements.creationtime ASC");
+            return aElements;
+        }
+        private async Task OnSelectPrev()
+        {
+            DateTime? dtSelectedElement = this.Element?.ElementProp.CreationTime;
+            this.Element = null; // Save implicitely.
+            this.ElementToCompare = null;
+            var aElements = await this.GetElementsToIdentify();
+            if (dtSelectedElement.HasValue)
+            {
+                this.Element = aElements.LastOrDefault((el) => (el.ElementProp.CreationTime < dtSelectedElement.Value));
+                if (this.Element == null) {
+                    this.Element = aElements.LastOrDefault((el) => true);
+                }
+            }
+            else if (aElements.Length >= 1)
+            {
+                this.Element = aElements[0];
+            }
+            await this.InvokeAsync(() => { StateHasChanged(); });
+        }
+        private async Task OnSelectNext()
+        {
+            DateTime? dtSelectedElement = this.Element?.ElementProp.CreationTime;
+            this.Element = null; // Save implicitely.
+            this.ElementToCompare = null;
+            var aElements = await this.GetElementsToIdentify();
+            if (dtSelectedElement.HasValue)
+            {
+                this.Element = aElements.FirstOrDefault((el) => (el.ElementProp.CreationTime > dtSelectedElement.Value));
+                if (this.Element == null) {
+                    this.Element = aElements.FirstOrDefault((el) => true);
+                }
+            }
+            else if (aElements.Length >= 1)
+            {
+                this.Element = aElements[0];
+            }
+            await this.InvokeAsync(() => { StateHasChanged(); });
+        }
         private async Task SelectElement()
         {
-            this.Element = (await DS.GetElementsAsync(SD, SD.Filters, "elements.name='" + SD.SelectedElementName + "'")).FirstOrDefault();
+            this.Element = (await DS.GetElementsAsync(SD, null, "elements.name='" + SD.SelectedElementName + "'")).FirstOrDefault();
+            if (this.Element == null) {
+                await this.OnSelectNext();
+            }
         }
         private async Task RefreshData()
         {
@@ -102,6 +150,8 @@ namespace BioMap.Pages.Workflow
         }
         private async Task IdentifyAs(Element elementToCompare)
         {
+            this.Element.ElementProp.IndivData.IId = this.ElementToCompare.ElementProp.IndivData.IId;
+            await this.InvokeAsync(() => { StateHasChanged(); });
         }
         private void ElementName_Click(Element el)
         {

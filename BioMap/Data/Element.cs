@@ -446,8 +446,8 @@ namespace BioMap
         }
         public static double? CalcDistance(Element el1, Element el2)
         {
-            LatLng ll1 = el1.ElementProp?.MarkerInfo?.position;
-            LatLng ll2 = el2.ElementProp?.MarkerInfo?.position;
+            LatLng ll1 = el1?.ElementProp?.MarkerInfo?.position;
+            LatLng ll2 = el2?.ElementProp?.MarkerInfo?.position;
             if (ll1 != null && ll2 != null)
             {
                 return GeoCalculator.GetDistance(ll2, ll1);
