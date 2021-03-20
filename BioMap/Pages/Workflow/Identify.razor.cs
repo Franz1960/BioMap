@@ -41,8 +41,7 @@ namespace BioMap.Pages.Workflow
                         this.PatternImgSrc = Utilities.GetPatternImgSource(this._Element, DS, SD);
                         if (this.ElementsToCompare.Length >= 2)
                         {
-                            var lElements = new List<Element>(this.ElementsToCompare);
-                            Element.SortBySimilarity(lElements, this.Element);
+                            var lElements = Element.GetPrunedListSortedBySimilarity(this.ElementsToCompare, this.Element);
                             this.ElementsToCompare = lElements.ToArray();
                         }
                     }

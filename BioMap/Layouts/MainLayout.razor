@@ -243,9 +243,7 @@
 @code{
   [CascadingParameter] protected Theme Theme { get; set; }
 
-  RenderFragment customIcon =@
-  <img src="/favicon-96x96.png" style="width:32px; height: 32px" />
-  ;
+  RenderFragment customIcon = (x) => { x.AddMarkupContent(0, "<img src=\"/favicon-96x96.png\" style=\"width:32px; height: 32px\" />"); };
 
   protected override async Task OnInitializedAsync()
   {

@@ -36,6 +36,10 @@ indent_size = 2
 [*.{tt,ttinclude}]
 end_of_line = crlf
 
+# Razor Files
+[*.razor]
+end_of_line = lf
+
 # XML Configuration Files
 [*.{xml,config,props,targets,nuspec,resx,ruleset,vsixmanifest,vsct}]
 indent_size = 2

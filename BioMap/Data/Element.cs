@@ -517,10 +517,13 @@ namespace BioMap
             var md1 = el1.ElementProp.IndivData?.MeasuredData;
             var md2 = el2.ElementProp.IndivData?.MeasuredData;
             if (md1!=null && md2!=null) {
-                fSimilarity += Utilities.CalcTraitScore(md1.ShareOfBlack, md2.ShareOfBlack, 0.20);
-                fSimilarity += Utilities.CalcTraitScore(md1.CenterOfMass, md2.CenterOfMass, 0.10);
-                fSimilarity += Utilities.CalcTraitScore(md1.StdDeviation, md2.StdDeviation, 0.02);
-                fSimilarity += Utilities.CalcTraitScore(md1.Entropy, md2.Entropy, 0.01);
+                double fTraitScore = 0f;
+                fTraitScore += Utilities.CalcTraitScore(md1.ShareOfBlack, md2.ShareOfBlack, 0.20);
+                fTraitScore += Utilities.CalcTraitScore(md1.CenterOfMass, md2.CenterOfMass, 0.10);
+                fTraitScore += Utilities.CalcTraitScore(md1.StdDeviation, md2.StdDeviation, 0.02);
+                fTraitScore += Utilities.CalcTraitScore(md1.Entropy, md2.Entropy, 0.01);
+                fTraitScore += Utilities.CalcTraitScore(md1.Entropy/Math.Max(0.01,md1.ShareOfBlack), md2.Entropy/Math.Max(0.01,md2.ShareOfBlack), 0.01);
+                fSimilarity += 0.30 * fTraitScore;
             }
             //Trait.GetAllTraits().forEach((trait) =>
             //{
@@ -534,9 +537,10 @@ namespace BioMap
         {
             return Element.CalcSimilarity(this,other);
         }
-        public static void SortBySimilarity(List<Element> els, Element sample)
+        public static List<Element> GetPrunedListSortedBySimilarity(IEnumerable<Element> els, Element sample)
         {
-            els.Sort((a, b) =>
+            var lListToSort = new List<Element>(els);
+            lListToSort.Sort((a, b) =>
             {
                 var simA = a.CalcSimilarity(sample);
                 var simB = b.CalcSimilarity(sample);
@@ -553,6 +557,18 @@ namespace BioMap
                     return Element.CompareByIId(a, b);
                 }
             });
+            var lIidList = new List<int>();
+            var lPrunedList = new List<Element>();
+            foreach (var el in lListToSort) {
+                int? iid = el.GetIIdAsInt();
+                if (iid.HasValue) {
+                    if (!lIidList.Contains(iid.Value)) {
+                        lIidList.Add(iid.Value);
+                        lPrunedList.Add(el);
+                    }
+                }
+            }
+            return lPrunedList;
         }
     }
 #pragma warning restore IDE1006 // Naming Styles
