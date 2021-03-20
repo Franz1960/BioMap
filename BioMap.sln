@@ -9,9 +9,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
+		.gitignore = .gitignore
 		biomap_run-log-by-ssh.bat = biomap_run-log-by-ssh.bat
 		build-and-run.sh = build-and-run.sh
 		Dockerfile = Dockerfile
+		LICENSE.md = LICENSE.md
+		README.adoc = README.adoc
 		update-by-ssh.bat = update-by-ssh.bat
 	EndProjectSection
 EndProject
