@@ -271,31 +271,36 @@ namespace BioMap
         }
         public MarkupString GetTraitTable(string sClass, string sStyle, Func<string, string> localize = null)
         {
-            if (localize == null) {
+            if (localize == null)
+            {
                 localize = (t) => t;
             }
-            var saaRows = new string[][] {
+            var sb = new System.Text.StringBuilder();
+            if (this.ElementProp?.IndivData?.MeasuredData != null)
+            {
+                var saaRows = new string[][] {
                 new string[] { localize("Share of yellow"), ((1-this.ElementProp.IndivData.MeasuredData.ShareOfBlack)*100).ToString("0.0") + "%" },
                 new string[] { localize("Asymmetry"), (this.ElementProp.IndivData.MeasuredData.CenterOfMass*100).ToString("0.0") + "%" },
                 new string[] { localize("Standard deviation"), (this.ElementProp.IndivData.MeasuredData.StdDeviation*100).ToString("0.0") + "%" },
                 new string[] { localize("Entropy"), (this.ElementProp.IndivData.MeasuredData.Entropy*100).ToString("0.0") + "%" },
                 new string[] { localize("Granularity"), (this.ElementProp.IndivData.MeasuredData.Granularity*100).ToString("0.00") + "%" },
             };
-            var sb = new System.Text.StringBuilder();
-            sb.Append("<table class=\""+sClass+"\" style=\""+sStyle+"\">");
-            sb.Append("<tbody>");
-            foreach (var saRow in saaRows) {
-                sb.Append("<tr>");
-                sb.Append("<td>");
-                sb.Append(saRow[0]);
-                sb.Append("</td>");
-                sb.Append("<td>");
-                sb.Append(saRow[1]);
-                sb.Append("</td>");
-                sb.Append("</tr>");
+                sb.Append("<table class=\"" + sClass + "\" style=\"" + sStyle + "\">");
+                sb.Append("<tbody>");
+                foreach (var saRow in saaRows)
+                {
+                    sb.Append("<tr>");
+                    sb.Append("<td>");
+                    sb.Append(saRow[0]);
+                    sb.Append("</td>");
+                    sb.Append("<td>");
+                    sb.Append(saRow[1]);
+                    sb.Append("</td>");
+                    sb.Append("</tr>");
+                }
+                sb.Append("</tbody>");
+                sb.Append("</table>");
             }
-            sb.Append("</tbody>");
-            sb.Append("</table>");
             return new MarkupString(sb.ToString());
         }
         public string GetClassName()

@@ -45,25 +45,31 @@ namespace BioMap
             var sSrcFile = ds.GetFilePathForImage(sd.CurrentUser.Project, el.ElementName, true);
             var analyseYellowShare = new AnalyseProcessor();
             var analyseEntropy = new AnalyseProcessor();
-            using (var imgSrc = Image.Load(sSrcFile))
+            if (System.IO.File.Exists(sSrcFile))
             {
-                imgSrc.Mutate(x => x.AutoOrient());
-                var md = el.MeasureData;
-                (int nWidth, int nHeight) = md.GetPatternSize(300);
-                var mPattern = md.GetPatternMatrix(nHeight);
-                using (var imgCropped = ImageOperations.TransformAndCropOutOfImage(imgSrc, mPattern, new Size(nWidth, nHeight)))
+                using (var imgSrc = Image.Load(sSrcFile))
                 {
-                    imgCropped.Mutate(x => x.MaxChroma(0.10f, new[] { new System.Numerics.Vector2(1, 100) }));
-                    imgCropped.Mutate(x => x.ApplyProcessor(analyseYellowShare));
-                    var imgEdges = imgCropped.Clone(x => x.DetectEdges());
-                    imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
-                    var bs = new System.IO.MemoryStream();
-                    imgCropped.SaveAsJpeg(bs);
-                    sPatternImgSrc = "data:image/png;base64," + Convert.ToBase64String(bs.ToArray());
-                    el.ElementProp.IndivData.MeasuredData.ShareOfBlack = (float)analyseYellowShare.AnalyseData.ShareOfBlack;
-                    el.ElementProp.IndivData.MeasuredData.CenterOfMass = (float)(analyseYellowShare.AnalyseData.VerticalCenterOfMass);
-                    el.ElementProp.IndivData.MeasuredData.StdDeviation = (float)(analyseYellowShare.AnalyseData.VerticalStdDeviation);
-                    el.ElementProp.IndivData.MeasuredData.Entropy = (float)(1 - analyseEntropy.AnalyseData.ShareOfBlack);
+                    imgSrc.Mutate(x => x.AutoOrient());
+                    var md = el.MeasureData;
+                    (int nWidth, int nHeight) = md.GetPatternSize(300);
+                    var mPattern = md.GetPatternMatrix(nHeight);
+                    using (var imgCropped = ImageOperations.TransformAndCropOutOfImage(imgSrc, mPattern, new Size(nWidth, nHeight)))
+                    {
+                        imgCropped.Mutate(x => x.MaxChroma(0.10f, new[] { new System.Numerics.Vector2(1, 100) }));
+                        imgCropped.Mutate(x => x.ApplyProcessor(analyseYellowShare));
+                        var imgEdges = imgCropped.Clone(x => x.DetectEdges());
+                        imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
+                        var bs = new System.IO.MemoryStream();
+                        imgCropped.SaveAsJpeg(bs);
+                        sPatternImgSrc = "data:image/png;base64," + Convert.ToBase64String(bs.ToArray());
+                        if (el.ElementProp?.IndivData != null)
+                        {
+                            el.ElementProp.IndivData.MeasuredData.ShareOfBlack = (float)analyseYellowShare.AnalyseData.ShareOfBlack;
+                            el.ElementProp.IndivData.MeasuredData.CenterOfMass = (float)(analyseYellowShare.AnalyseData.VerticalCenterOfMass);
+                            el.ElementProp.IndivData.MeasuredData.StdDeviation = (float)(analyseYellowShare.AnalyseData.VerticalStdDeviation);
+                            el.ElementProp.IndivData.MeasuredData.Entropy = (float)(1 - analyseEntropy.AnalyseData.ShareOfBlack);
+                        }
+                    }
                 }
             }
             return sPatternImgSrc;
