@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MetadataExtractor;
@@ -52,6 +53,7 @@ namespace BioMap
                 public double CenterOfMass;
                 public double StdDeviation;
                 public double Entropy;
+                public double Granularity { get => (this.Entropy/Math.Max(0.01,this.ShareOfBlack)); }
             }
             public int IId;
             public string GenderFeature;
@@ -266,6 +268,35 @@ namespace BioMap
                 sb.Append(this.GetHeadBodyLengthNice());
             }
             return sb.ToString();
+        }
+        public MarkupString GetTraitTable(string sClass, string sStyle, Func<string, string> localize = null)
+        {
+            if (localize == null) {
+                localize = (t) => t;
+            }
+            var saaRows = new string[][] {
+                new string[] { localize("Share of yellow"), ((1-this.ElementProp.IndivData.MeasuredData.ShareOfBlack)*100).ToString("0.0") + "%" },
+                new string[] { localize("Asymmetry"), (this.ElementProp.IndivData.MeasuredData.CenterOfMass*100).ToString("0.0") + "%" },
+                new string[] { localize("Standard deviation"), (this.ElementProp.IndivData.MeasuredData.StdDeviation*100).ToString("0.0") + "%" },
+                new string[] { localize("Entropy"), (this.ElementProp.IndivData.MeasuredData.Entropy*100).ToString("0.0") + "%" },
+                new string[] { localize("Granularity"), (this.ElementProp.IndivData.MeasuredData.Granularity*100).ToString("0.00") + "%" },
+            };
+            var sb = new System.Text.StringBuilder();
+            sb.Append("<table class=\""+sClass+"\" style=\""+sStyle+"\">");
+            sb.Append("<tbody>");
+            foreach (var saRow in saaRows) {
+                sb.Append("<tr>");
+                sb.Append("<td>");
+                sb.Append(saRow[0]);
+                sb.Append("</td>");
+                sb.Append("<td>");
+                sb.Append(saRow[1]);
+                sb.Append("</td>");
+                sb.Append("</tr>");
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            return new MarkupString(sb.ToString());
         }
         public string GetClassName()
         {
@@ -522,7 +553,7 @@ namespace BioMap
                 fTraitScore += Utilities.CalcTraitScore(md1.CenterOfMass, md2.CenterOfMass, 0.10);
                 fTraitScore += Utilities.CalcTraitScore(md1.StdDeviation, md2.StdDeviation, 0.02);
                 fTraitScore += Utilities.CalcTraitScore(md1.Entropy, md2.Entropy, 0.01);
-                fTraitScore += Utilities.CalcTraitScore(md1.Entropy/Math.Max(0.01,md1.ShareOfBlack), md2.Entropy/Math.Max(0.01,md2.ShareOfBlack), 0.01);
+                fTraitScore += Utilities.CalcTraitScore(md1.Granularity, md2.Granularity, 0.01);
                 fSimilarity += 0.30 * fTraitScore;
             }
             //Trait.GetAllTraits().forEach((trait) =>

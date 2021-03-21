@@ -49,7 +49,7 @@
           </a><br />
           <Icon Name="IconName.LocationArrow" /> @ElementToCompare.GetPlaceName()
           <Icon Name="IconName.Clock" /> @ElementToCompare.GetIsoDateTime()
-          <Icon Name="IconName.RulerHorizontal" /> @ElementToCompare.GetHeadBodyLengthNice()
+          <b>@ElementToCompare.Gender</b> @ElementToCompare.GetHeadBodyLengthNice()
           <Icon Name="IconName.User" /> @ElementToCompare.ElementProp.UploadInfo.UserId
         </Column>
       </Row>
@@ -57,12 +57,29 @@
         <Column>
           @if (this.Element != null)
           {
-            <p>@Localize["Share of yellow"]: @(((1-this.ElementToCompare.ElementProp.IndivData.MeasuredData.ShareOfBlack)*100).ToString("0.0"))%</p>
-            <p>@Localize["Asymmetry"]: @((this.ElementToCompare.ElementProp.IndivData.MeasuredData.CenterOfMass*100).ToString("0.0"))%</p>
-            <p>@Localize["Standard deviation"]: @((this.ElementToCompare.ElementProp.IndivData.MeasuredData.StdDeviation*100).ToString("0.0"))%</p>
-            <p>@Localize["Entropy"]: @((this.ElementToCompare.ElementProp.IndivData.MeasuredData.Entropy*100).ToString("0.0"))%</p>
-            <p>@Localize["Distance"]: @Element.CalcDistance(this.ElementToCompare,this.Element).Value.ToString("0") m</p>
-            <p>@Localize["Similarity"]: @this.ElementToCompare.CalcSimilarity(Element).ToString("0.000")</p>
+              <div style="float:right;">
+            @this.ElementToCompare.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
+</div>
+<table class="table-striped table-sm" style="text-align:center;">
+              <tbody>
+                <tr>
+                  <td>
+                    @Localize["Distance"]
+                  </td>
+                  <td>
+                    @Element.CalcDistance(this.ElementToCompare,this.Element).Value.ToString("0") m
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    @Localize["Similarity"]
+                  </td>
+                  <td>
+                    @this.ElementToCompare.CalcSimilarity(Element).ToString("0.000")
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           }
         </Column>
         <Column ColumnSize="ColumnSize.Is2">
@@ -88,7 +105,7 @@
           </a><br />
           <Icon Name="IconName.LocationArrow" /> @Element.GetPlaceName()
           <Icon Name="IconName.Clock" /> @Element.GetIsoDateTime()
-          <Icon Name="IconName.RulerHorizontal" /> @Element.GetHeadBodyLengthNice()
+          <b>@Element.Gender</b> @Element.GetHeadBodyLengthNice()
           <Icon Name="IconName.User" /> @Element.ElementProp.UploadInfo.UserId
         </Column>
       </Row>
@@ -96,17 +113,28 @@
         <Column ColumnSize="ColumnSize.Is2">
           <Image Source="@PatternImgSrc" Style="height:200px;" />
         </Column>
+        <Column ColumnSize="ColumnSize.Is4">
+            @this.Element.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
+        </Column>
         <Column>
-          <p>@Localize["Share of yellow"]: @(((1-this.Element.ElementProp.IndivData.MeasuredData.ShareOfBlack)*100).ToString("0.0"))%</p>
-          <p>@Localize["Asymmetry"]: @((this.Element.ElementProp.IndivData.MeasuredData.CenterOfMass*100).ToString("0.0"))%</p>
-          <p>@Localize["Standard deviation"]: @((this.Element.ElementProp.IndivData.MeasuredData.StdDeviation*100).ToString("0.0"))%</p>
-          <p>@Localize["Entropy"]: @((this.Element.ElementProp.IndivData.MeasuredData.Entropy*100).ToString("0.0"))%</p>
         </Column>
       </Row>
     }
     <Row Margin="Margin.Is1.OnY">
       <Column>
         <UserFilter />
+      </Column>
+    </Row>
+    <Row Margin="Margin.Is1.OnY">
+      <Column>
+      <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
+          <Icon Name="IconName.StepBackward"></Icon>
+      </Button>
+      </Column>
+      <Column>
+      <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
+          <Icon Name="IconName.StepForward"></Icon>
+      </Button>
       </Column>
     </Row>
   </Column>
@@ -119,33 +147,20 @@
   }
   else
   {
-    <Column>
+    <Column ColumnSize="ColumnSize.Is2">
       <Button Color="Color.Light" Clicked="@(async (e)=>{ ElementToCompare=null; })" Block="true">
         <Icon Name="IconName.List"></Icon>
       </Button>
     </Column>
-    <Column>
+    <Column ColumnSize="ColumnSize.Is2">
       <Button Color="Color.Light" Clicked="@(async (e)=>{ await IdentifyAs(ElementToCompare); })" Block="true">
-        #@ElementToCompare.GetIId()
+        #@this.ElementToCompare.GetIId()
+        <Icon Name="IconName.ArrowRight" />
+        #@this.Element.GetIId()
         <Icon Name="IconName.Check" />
       </Button>
     </Column>
   }
-  <Column ColumnSize="ColumnSize.Is2">
-    @if (Element != null && Element.HasPhotoData()) {
-      <b>#@Element.GetIId()</b>
-    }
-  </Column>
-  <Column>
-    <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
-      <Icon Name="IconName.StepBackward"></Icon>
-    </Button>
-  </Column>
-  <Column>
-    <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
-      <Icon Name="IconName.StepForward"></Icon>
-    </Button>
-  </Column>
 </Row>
 
 <PhotoPopup @ref="PhotoPopup1" />

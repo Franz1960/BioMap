@@ -396,6 +396,9 @@
   <data name="Gender features" xml:space="preserve">
     <value>Geschlechtsmerkmale</value>
   </data>
+  <data name="Granularity" xml:space="preserve">
+    <value>Granularität</value>
+  </data>
   <data name="Growing curve" xml:space="preserve">
     <value>Wachstumskurve</value>
   </data>
