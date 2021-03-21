@@ -702,6 +702,12 @@
   <data name="Show vintage boundaries" xml:space="preserve">
     <value>Jahrgangsgrenzen anzeigen</value>
   </data>
+  <data name="Similarity" xml:space="preserve">
+    <value>Ähnlichkeit</value>
+  </data>
+  <data name="Similarity score" xml:space="preserve">
+    <value>Ähnlichkeitsgrad</value>
+  </data>
   <data name="Standard deviation" xml:space="preserve">
     <value>Standardabweichung</value>
   </data>

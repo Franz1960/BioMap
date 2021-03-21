@@ -1,0 +1,31 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@using BioMap
+
+@if (Element != null && Element.HasPhotoData()) {
+  <span>
+    <Icon Name="IconName.LocationArrow" /> @Element.GetPlaceName()
+    <Icon Name="IconName.Clock" /> @Element.GetIsoDateTime()
+    <b>@Element.Gender</b> @Element.GetHeadBodyLengthNice()
+    <Icon Name="IconName.User" /> @Element.ElementProp.UploadInfo.UserId
+    @this.IId
+  </span>
+}
+
+@code {
+  [Parameter]
+  public Element Element { get; set; }
+
+  private MarkupString IId
+  {
+    get
+    {
+      int? nIId = this.Element?.GetIIdAsInt();
+      if (nIId.HasValue && nIId.Value>=1)
+      {
+        return new MarkupString("<span><b>#</b> " + nIId.Value.ToString("0") + "</span>");
+      }
+      return new MarkupString(string.Empty);
+    }
+  }
+}

@@ -47,20 +47,19 @@
           <a href="javascript:void(0);" @onclick="()=>ElementName_Click(ElementToCompare)">
             <strong>@ElementToCompare.ElementName</strong>
           </a><br />
-          <Icon Name="IconName.LocationArrow" /> @ElementToCompare.GetPlaceName()
-          <Icon Name="IconName.Clock" /> @ElementToCompare.GetIsoDateTime()
-          <b>@ElementToCompare.Gender</b> @ElementToCompare.GetHeadBodyLengthNice()
-          <Icon Name="IconName.User" /> @ElementToCompare.ElementProp.UploadInfo.UserId
+          <ElementInfo Element="this.ElementToCompare" />
         </Column>
       </Row>
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          @if (this.Element != null)
-          {
-              <div style="float:right;">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 order-xl-3" style="float:right;">
+            <Image Source="@PatternImgSrc" Style="height:200px;" />
+          </div>
+          <div class="col-lg-5 order-xl-2" style="min-width:280px">
             @this.ElementToCompare.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
-</div>
-<table class="table-striped table-sm" style="text-align:center;">
+          </div>
+          <div class="col-lg-4 order-xl-1">
+            <table class="table-sm" style="text-align:left;">
               <tbody>
                 <tr>
                   <td>
@@ -72,7 +71,7 @@
                 </tr>
                 <tr>
                   <td>
-                    @Localize["Similarity"]
+                    @Localize["Similarity score"]
                   </td>
                   <td>
                     @this.ElementToCompare.CalcSimilarity(Element).ToString("0.000")
@@ -80,87 +79,74 @@
                 </tr>
               </tbody>
             </table>
-          }
-        </Column>
-        <Column ColumnSize="ColumnSize.Is2">
-          <Image Source="@PatternCompareImgSrc" Style="height:200px;" />
-        </Column>
-      </Row>
-      <Row Margin="Margin.Is1.OnY">
-      </Row>
+            <div class="container" style="min-width:240px">
+              <div class="row">
+                <div class="col-lg-6" style="min-width:80px">
+                  <Button Color="Color.Light" Clicked="@(async (e)=>{ ElementToCompare=null; })" Block="true">
+                    <Icon Name="IconName.List"></Icon>
+                  </Button>
+                </div>
+                <div class="col-lg-6" style="min-width:140px">
+                  <Button Color="Color.Light" Clicked="@(async (e)=>{ await IdentifyAs(ElementToCompare); })" Block="true">
+                    #@this.ElementToCompare.GetIId()
+                    <Icon Name="IconName.ArrowRight" />
+                    #@this.Element.GetIId()
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </Column>
   }
   <Column>
-    @if (Element != null && Element.HasPhotoData())
-    {
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <img src="api/photos/@Element.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
-        </Column>
-      </Row>
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <a href="javascript:void(0);" @onclick="()=>ElementName_Click(Element)">
-            <strong>@Element.ElementName</strong>
-          </a><br />
-          <Icon Name="IconName.LocationArrow" /> @Element.GetPlaceName()
-          <Icon Name="IconName.Clock" /> @Element.GetIsoDateTime()
-          <b>@Element.Gender</b> @Element.GetHeadBodyLengthNice()
-          <Icon Name="IconName.User" /> @Element.ElementProp.UploadInfo.UserId
-        </Column>
-      </Row>
-      <Row Margin="Margin.Is1.OnY">
-        <Column ColumnSize="ColumnSize.Is2">
+    <Row Margin="Margin.Is1.OnY">
+      <Column>
+        <img src="api/photos/@Element?.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
+      </Column>
+    </Row>
+    <Row Margin="Margin.Is1.OnY">
+      <Column>
+        <a href="javascript:void(0);" @onclick="()=>ElementName_Click(Element)">
+          <strong>@Element?.ElementName</strong>
+        </a><br />
+        <ElementInfo Element="this.Element" />
+      </Column>
+    </Row>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-2">
           <Image Source="@PatternImgSrc" Style="height:200px;" />
-        </Column>
-        <Column ColumnSize="ColumnSize.Is4">
+        </div>
+        <div class="col-lg-5" style="min-width:280px">
+          @if (Element != null && Element.HasPhotoData())
+          {
             @this.Element.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
-        </Column>
-        <Column>
-        </Column>
-      </Row>
-    }
-    <Row Margin="Margin.Is1.OnY">
-      <Column>
-        <UserFilter />
-      </Column>
-    </Row>
-    <Row Margin="Margin.Is1.OnY">
-      <Column>
-      <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
-          <Icon Name="IconName.StepBackward"></Icon>
-      </Button>
-      </Column>
-      <Column>
-      <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
-          <Icon Name="IconName.StepForward"></Icon>
-      </Button>
-      </Column>
-    </Row>
+          }
+        </div>
+        <div class="col-lg-5">
+          <div class="container" style="min-width:240px">
+            <div class="row">
+              <UserFilter />
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                  <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
+                    <Icon Name="IconName.StepBackward"></Icon>
+                  </Button>
+              </div>
+              <div class="col-lg-6">
+                  <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
+                    <Icon Name="IconName.StepForward"></Icon>
+                  </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </Column>
-</Row>
-<Row Margin="Margin.Is1.OnY">
-  @if (ElementToCompare == null)
-  {
-    <Column ColumnSize="ColumnSize.Is7">
-    </Column>
-  }
-  else
-  {
-    <Column ColumnSize="ColumnSize.Is2">
-      <Button Color="Color.Light" Clicked="@(async (e)=>{ ElementToCompare=null; })" Block="true">
-        <Icon Name="IconName.List"></Icon>
-      </Button>
-    </Column>
-    <Column ColumnSize="ColumnSize.Is2">
-      <Button Color="Color.Light" Clicked="@(async (e)=>{ await IdentifyAs(ElementToCompare); })" Block="true">
-        #@this.ElementToCompare.GetIId()
-        <Icon Name="IconName.ArrowRight" />
-        #@this.Element.GetIId()
-        <Icon Name="IconName.Check" />
-      </Button>
-    </Column>
-  }
 </Row>
 
 <PhotoPopup @ref="PhotoPopup1" />
