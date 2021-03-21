@@ -134,7 +134,7 @@
       if (value != _UserAcknowledgeTerms)
       {
         _UserAcknowledgeTerms = value;
-        StateHasChanged();
+        this.StateHasChanged();
       }
     }
   }
@@ -158,7 +158,7 @@
         DS.AddLogEntry(SD, "TAN requested.");
       }
     }
-    StateHasChanged();
+    this.StateHasChanged();
   }
   private async void ConfirmTAN_Clicked()
   {
@@ -175,7 +175,7 @@
         DS.AddLogEntry(SD, "TAN confirmed with " + TAN + ". Level " + SD.CurrentUser.Level + " returned.");
       }
     }
-    StateHasChanged();
+    this.StateHasChanged();
   }
   private User[] AllUsers = new User[0];
   protected override void OnInitialized()
@@ -206,6 +206,6 @@
   private void RefreshData()
   {
     this.AllUsers = DS.GetAllUsers(SD);
-    StateHasChanged();
+    this.StateHasChanged();
   }
 }

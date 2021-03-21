@@ -250,7 +250,7 @@
     await base.OnInitializedAsync();
     SD.CurrentProjectChanged += (sender, e) =>
     {
-      StateHasChanged();
+      this.StateHasChanged();
     };
   }
 }

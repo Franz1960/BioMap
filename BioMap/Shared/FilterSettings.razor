@@ -73,6 +73,6 @@
   private async void AnyValueChanged()
   {
     await this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
-    StateHasChanged();
+    this.StateHasChanged();
   }
 }

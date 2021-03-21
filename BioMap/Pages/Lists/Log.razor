@@ -50,13 +50,13 @@
     SD.Filters.FilterChanged += (sender, ev) =>
     {
       RefreshData();
-      base.InvokeAsync(StateHasChanged);
+      base.InvokeAsync(this.StateHasChanged);
     };
     RefreshData();
   }
   private void RefreshData()
   {
     this.LogEntries = DataService.Instance.GetLogEntries(SD, SD.Filters, "", "log.dt DESC", (uint)(this.LoadAll ? 0 : 200));
-    StateHasChanged();
+    this.StateHasChanged();
   }
 }

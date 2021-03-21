@@ -90,7 +90,7 @@
     SD.Filters.FilterChanged += (sender, ev) =>
     {
       RefreshData();
-      base.InvokeAsync(StateHasChanged);
+      base.InvokeAsync(this.StateHasChanged);
     };
     RefreshData();
   }
@@ -107,7 +107,7 @@
     DS.DeleteElement(SD, el);
     DS.AddLogEntry(SD, "Deleted element " + el.ElementName);
     RefreshData();
-    StateHasChanged();
+    this.StateHasChanged();
   }
   private async void DownloadCsv_Clicked()
   {

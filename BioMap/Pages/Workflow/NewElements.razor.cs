@@ -22,7 +22,7 @@ namespace BioMap.Pages.Workflow
         private int RemainingElements = 0;
         private DateTime? SelectedElementTime = null;
         private PhotoPopup PhotoPopup1;
-        protected Blazor.ImageSurveyor.ImageSurveyor imageSurveyor;
+        protected Blazor.ImageSurveyor.ImageSurveyor ImageSurveyor;
         private Blazor.ImageSurveyor.ImageSurveyor imageSurveyorPrev;
         private string PatternImgSrc = "";
         private bool disableSetImage = false;
@@ -133,19 +133,19 @@ namespace BioMap.Pages.Workflow
                     timer.Enabled = true;
                 }
             }
-            if (this.imageSurveyor != this.imageSurveyorPrev)
+            if (this.ImageSurveyor != this.imageSurveyorPrev)
             {
                 if (this.imageSurveyorPrev != null)
                 {
                     this.imageSurveyorPrev.AfterRender -= this.imageSurveyor_AfterRenderEvent;
                     this.imageSurveyorPrev.MeasureDataChanged -= this.imageSurveyor_MeasureDataChanged;
                 }
-                if (this.imageSurveyor != null)
+                if (this.ImageSurveyor != null)
                 {
-                    this.imageSurveyor.AfterRender += this.imageSurveyor_AfterRenderEvent;
-                    this.imageSurveyor.MeasureDataChanged += this.imageSurveyor_MeasureDataChanged;
+                    this.ImageSurveyor.AfterRender += this.imageSurveyor_AfterRenderEvent;
+                    this.ImageSurveyor.MeasureDataChanged += this.imageSurveyor_MeasureDataChanged;
                 }
-                this.imageSurveyorPrev = this.imageSurveyor;
+                this.imageSurveyorPrev = this.ImageSurveyor;
             }
             else
             {
@@ -271,7 +271,7 @@ namespace BioMap.Pages.Workflow
             }
             this.disableSetImage = false;
             this.elementChanged = true;
-            StateHasChanged();
+            this.StateHasChanged();
         }
         private async Task OnSelectNext(bool bSave)
         {
@@ -294,7 +294,7 @@ namespace BioMap.Pages.Workflow
             }
             this.disableSetImage = false;
             this.elementChanged = true;
-            await this.InvokeAsync(() => { StateHasChanged(); });
+            await this.InvokeAsync(() => { this.StateHasChanged(); });
         }
         private async Task LoadElement()
         {
@@ -351,7 +351,7 @@ namespace BioMap.Pages.Workflow
                             sUrlImage = "data:image/png;base64," + Convert.ToBase64String(bs.ToArray());
                         }
                     }
-                    await this.imageSurveyor.SetImageUrlAsync(sUrlImage, this.Raw, this.Element.MeasureData);
+                    await this.ImageSurveyor.SetImageUrlAsync(sUrlImage, this.Raw, this.Element.MeasureData);
                     this.normImageDirty = false;
                 }
             }
@@ -395,7 +395,7 @@ namespace BioMap.Pages.Workflow
             finally
             {
                 this.PatternImgSrc = sPatternImgSrc;
-                await this.InvokeAsync(() => StateHasChanged());
+                await this.InvokeAsync(() => this.StateHasChanged());
             }
         }
         private async Task ResetPositions_Clicked(Element el)

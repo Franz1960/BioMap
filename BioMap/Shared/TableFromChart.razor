@@ -115,6 +115,6 @@
     }
     ColumnHeaders = lColumnHeaders.ToArray();
     Data = laData.ToArray();
-    this.InvokeAsync(() => StateHasChanged());
+    this.InvokeAsync(() => this.StateHasChanged());
   }
 }

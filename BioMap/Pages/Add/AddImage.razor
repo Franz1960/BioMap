@@ -105,7 +105,7 @@
       {
         var imageFile = files[idxFile];
         progressCompletion = (int)Math.Round(((idxFile + 0.5) * 100) / files.Count);
-        await this.InvokeAsync(() => { StateHasChanged(); });
+        await this.InvokeAsync(() => { this.StateHasChanged(); });
         try
         {
           var imageStream = imageFile.OpenReadStream(20000000);
@@ -145,19 +145,19 @@
         catch (Exception ex)
         {
           messages.Add(ex.ToString());
-          await this.InvokeAsync(() => { StateHasChanged(); });
+          await this.InvokeAsync(() => { this.StateHasChanged(); });
         }
         progressCompletion = (int)Math.Round(((idxFile + 1.0) * 100) / files.Count);
-        await this.InvokeAsync(() => { StateHasChanged(); });
+        await this.InvokeAsync(() => { this.StateHasChanged(); });
       }
       messages.Add(string.Format(Localize["{0} files uploaded."], nUploadedFiles.ToString()));
-      await this.InvokeAsync(() => { StateHasChanged(); });
+      await this.InvokeAsync(() => { this.StateHasChanged(); });
     }
     finally
     {
       if (messages.Count < 1)
       {
-        await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+        await this.InvokeAsync(() => { progressModalRef.Hide(); this.StateHasChanged(); });
       }
     }
   }

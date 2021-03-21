@@ -5,7 +5,7 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<NotePopup @ref="refNotePopup" Changed="(pe)=>{ RefreshData();StateHasChanged(); }" />
+<NotePopup @ref="refNotePopup" Changed="(pe)=>{ RefreshData();this.StateHasChanged(); }" />
 
 <Row>
   <Column>
@@ -64,7 +64,7 @@
     SD.Filters.FilterChanged += (sender, ev) =>
     {
       RefreshData();
-      base.InvokeAsync(StateHasChanged);
+      base.InvokeAsync(this.StateHasChanged);
     };
     RefreshData();
   }

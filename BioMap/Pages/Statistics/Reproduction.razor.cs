@@ -96,7 +96,7 @@ namespace BioMap.Pages.Statistics
             SD.Filters.FilterChanged += (sender, ev) =>
             {
                 RefreshData();
-                StateHasChanged();
+                this.StateHasChanged();
             };
             RefreshData();
         }

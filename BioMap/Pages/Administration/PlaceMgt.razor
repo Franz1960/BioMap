@@ -197,7 +197,7 @@
   private void RefreshData()
   {
     this.AllPlaces = DS.GetPlaces(SD);
-    StateHasChanged();
+    this.StateHasChanged();
   }
   private async Task RecalculatePlaces_Clicked()
   {
@@ -210,13 +210,13 @@
         if (progressCompletion != completion)
         {
           progressCompletion = completion;
-          this.InvokeAsync(() => { StateHasChanged(); });
+          this.InvokeAsync(() => { this.StateHasChanged(); });
         }
       });
     }
     finally
     {
-      await this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+      await this.InvokeAsync(() => { progressModalRef.Hide(); this.StateHasChanged(); });
     }
   }
   private async Task AddPlace_Opened()
@@ -231,7 +231,7 @@
       this.newPlaceErrorMessage = "";
       addPlaceVisible = true;
     }
-    await this.InvokeAsync(() => { StateHasChanged(); });
+    await this.InvokeAsync(() => { this.StateHasChanged(); });
   }
   private async Task AddPlace_Clicked()
   {
@@ -257,7 +257,7 @@
       this.RefreshData();
       await this.LocationEditRef.RefreshPlaces();
     }
-    await this.InvokeAsync(() => { StateHasChanged(); });
+    await this.InvokeAsync(() => { this.StateHasChanged(); });
   }
   private void TraitValueChanged(Place place, int idx, int value)
   {

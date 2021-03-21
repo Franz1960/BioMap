@@ -82,7 +82,7 @@ namespace BioMap.Pages.Diagrams
             SD.Filters.FilterChanged += (sender, ev) =>
             {
                 RefreshData();
-                base.InvokeAsync(StateHasChanged);
+                base.InvokeAsync(this.StateHasChanged);
             };
             RefreshData();
         }
@@ -90,13 +90,13 @@ namespace BioMap.Pages.Diagrams
         {
             SD.SizeTimeChartShowVintageBoundaries = bool.Parse(e.Value.ToString());
             RefreshData();
-            base.InvokeAsync(StateHasChanged);
+            base.InvokeAsync(this.StateHasChanged);
         }
         private void GrowingCurveMode_SelectedValueChanged(string e)
         {
             SD.SizeTimeChartGrowingCurveMode = e;
             RefreshData();
-            base.InvokeAsync(StateHasChanged);
+            base.InvokeAsync(this.StateHasChanged);
         }
         private async Task OnSaveYoBClick()
         {
@@ -112,7 +112,7 @@ namespace BioMap.Pages.Diagrams
                         try
                         {
                             progressCompletion = ((idx + 1) * 100) / aaIndisByIId.Count;
-                            this.InvokeAsync(() => { StateHasChanged(); });
+                            this.InvokeAsync(() => { this.StateHasChanged(); });
                             // Wachstumskurve.
                             DateTime? dtFittedYearOfBirth = null;
                             var lsf = new LeastSquareFit();
@@ -199,11 +199,11 @@ namespace BioMap.Pages.Diagrams
                 }
                 finally
                 {
-                    this.InvokeAsync(() => { progressModalRef.Hide(); StateHasChanged(); });
+                    this.InvokeAsync(() => { progressModalRef.Hide(); this.StateHasChanged(); });
                 }
             });
             RefreshData();
-            await base.InvokeAsync(StateHasChanged);
+            await base.InvokeAsync(this.StateHasChanged);
         }
         private void RefreshData()
         {

@@ -101,7 +101,7 @@ namespace BioMap.Pages.Workflow
             {
                 this.Element = aElements[0];
             }
-            await this.InvokeAsync(() => { StateHasChanged(); });
+            await this.InvokeAsync(() => { this.StateHasChanged(); });
         }
         private async Task OnSelectNext()
         {
@@ -120,7 +120,7 @@ namespace BioMap.Pages.Workflow
             {
                 this.Element = aElements[0];
             }
-            await this.InvokeAsync(() => { StateHasChanged(); });
+            await this.InvokeAsync(() => { this.StateHasChanged(); });
         }
         private async Task SelectElement()
         {
@@ -151,7 +151,7 @@ namespace BioMap.Pages.Workflow
         private async Task IdentifyAs(Element elementToCompare)
         {
             this.Element.ElementProp.IndivData.IId = this.ElementToCompare.ElementProp.IndivData.IId;
-            await this.InvokeAsync(() => { StateHasChanged(); });
+            await this.InvokeAsync(() => { this.StateHasChanged(); });
         }
         private void ElementName_Click(Element el)
         {

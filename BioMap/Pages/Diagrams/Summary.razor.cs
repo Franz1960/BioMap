@@ -74,7 +74,7 @@ namespace BioMap.Pages.Diagrams
             SD.Filters.FilterChanged += (sender, ev) =>
             {
                 RefreshData();
-                base.InvokeAsync(StateHasChanged);
+                base.InvokeAsync(this.StateHasChanged);
             };
             RefreshData();
         }

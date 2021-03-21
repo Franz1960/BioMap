@@ -254,7 +254,7 @@ namespace BioMap.Shared
         public async Task RefreshPlaces()
         {
             this.refreshPlacesReq = true;
-            await this.InvokeAsync(() => StateHasChanged());
+            await this.InvokeAsync(() => this.StateHasChanged());
         }
         private bool refreshPlacesReq = true;
         public virtual async Task FitBounds(bool bConsiderPlaces = true)
@@ -279,7 +279,7 @@ namespace BioMap.Shared
         {
             Utilities.CallDelayed(900, (oaArgs) =>
             {
-                base.InvokeAsync(StateHasChanged).Wait();
+                base.InvokeAsync(this.StateHasChanged).Wait();
             });
         }
     }
