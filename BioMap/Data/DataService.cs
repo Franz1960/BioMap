@@ -1294,7 +1294,7 @@ namespace BioMap
         public Dictionary<int, List<Element>> GetIndividuals(SessionData sd, Filters filters = null, string sAdditionalWhereClause = null)
         {
             var aaIndisByIId = new Dictionary<int, List<Element>>();
-            var sWhereClause = "(elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND indivdata.iid>=1";
+            var sWhereClause = WhereClauses.Is_Individuum;
             sWhereClause = Filters.AddToWhereClause(sWhereClause, sAdditionalWhereClause);
             var aNormedElements = this.GetElements(sd, filters, sWhereClause, "indivdata.iid ASC,elements.creationtime ASC");
             foreach (var el in aNormedElements)

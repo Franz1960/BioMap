@@ -80,7 +80,7 @@ namespace BioMap.Pages.Workflow
         private async Task<Element[]> GetElementsToIdentify()
         {
             var aElements = await DS.GetElementsAsync(SD, null,
-              "(elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND (indivdata.iid IS NULL OR indivdata.iid<1)",
+              WhereClauses.Is_ID_photo+" AND (indivdata.iid IS NULL OR indivdata.iid<1)",
               "elements.creationtime ASC");
             return aElements;
         }
@@ -136,7 +136,7 @@ namespace BioMap.Pages.Workflow
         private async Task RefreshElementsToCompare()
         {
             var els = await DS.GetElementsAsync(SD, null,
-              "(elements.classification LIKE '%\"ClassName\":\"ID photo\"%')",
+              WhereClauses.Is_Individuum,
               "elements.creationtime ASC");
             var lElements = new List<Element>();
             foreach (var el in els)
