@@ -258,7 +258,7 @@ namespace BioMap
         {
             var sb = new System.Text.StringBuilder();
             sb.Append(this.GetPlaceName());
-            if (this.ElementProp.IndivData != null)
+            if (this.ElementProp.IndivData != null && this.Classification.IsIdPhoto())
             {
                 sb.Append(", #");
                 sb.Append(this.GetIId());
