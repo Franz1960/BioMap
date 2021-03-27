@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -88,7 +88,7 @@ namespace BioMap
       "NOT EXISTS (" +
       "SELECT * FROM elements e1" +
       " LEFT JOIN indivdata i1 ON (i1.name=e1.name)" +
-      " WHERE (i1.iid=indivdata.iid AND e1.category=350 AND e1.creationtime<elements.creationtime)" +
+      " WHERE (i1.iid=indivdata.iid AND " + WhereClauses.Is_ID_photo + " AND e1.creationtime<elements.creationtime)" +
       ")";
     public bool OnlyLastIndiFilter {
       get {
@@ -106,7 +106,7 @@ namespace BioMap
       "NOT EXISTS (" +
       "SELECT * FROM elements e1" +
       " LEFT JOIN indivdata i1 ON (i1.name=e1.name)" +
-      " WHERE (i1.iid=indivdata.iid AND e1.category=350 AND e1.creationtime>elements.creationtime)" +
+      " WHERE (i1.iid=indivdata.iid AND " + WhereClauses.Is_ID_photo + " AND e1.creationtime>elements.creationtime)" +
       ")";
     public string UserFilter {
       get {

@@ -262,8 +262,8 @@
     this.OtherData.Clear();
     foreach (var indiSpec in new[] {
     new Tuple<string,string>(Localize["Totals"],""),
-    new Tuple<string,string>(Localize["ID Cards"],"elements.category=350"),
-    new Tuple<string,string>(Localize["Other photos and local news"],"elements.category<>350"),
+    new Tuple<string,string>(Localize["ID Cards"],WhereClauses.Is_ID_photo),
+    new Tuple<string,string>(Localize["Other photos and local news"],"NOT "+WhereClauses.Is_ID_photo),
   })
     {
       var aEls = DS.GetElements(SD, null, indiSpec.Item2);
