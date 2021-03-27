@@ -1294,12 +1294,12 @@ namespace BioMap
         public Dictionary<int, List<Element>> GetIndividuals(SessionData sd, Filters filters = null, string sAdditionalWhereClause = null)
         {
             var aaIndisByIId = new Dictionary<int, List<Element>>();
-            var sWhereClause = "indivdata.iid>=1";
+            var sWhereClause = "(elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND indivdata.iid>=1";
             sWhereClause = Filters.AddToWhereClause(sWhereClause, sAdditionalWhereClause);
             var aNormedElements = this.GetElements(sd, filters, sWhereClause, "indivdata.iid ASC,elements.creationtime ASC");
             foreach (var el in aNormedElements)
             {
-                if (el.ElementProp.MarkerInfo.category == 350 && el.ElementProp.IndivData != null)
+                if (el.ElementProp.IndivData != null)
                 {
                     var idx = el.ElementProp.IndivData.IId;
                     if (!aaIndisByIId.ContainsKey(idx))
