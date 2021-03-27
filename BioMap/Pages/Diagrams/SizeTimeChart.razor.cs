@@ -107,8 +107,10 @@ namespace BioMap.Pages.Diagrams
                 try
                 {
                     var aaIndisByIId = DS.GetIndividuals(SD, SD.Filters);
-                    foreach (var idx in aaIndisByIId.Keys)
+                    int idx = 0;
+                    foreach (var iid in aaIndisByIId.Keys)
                     {
+                        idx++;
                         try
                         {
                             progressCompletion = ((idx + 1) * 100) / aaIndisByIId.Count;
@@ -116,11 +118,11 @@ namespace BioMap.Pages.Diagrams
                             // Wachstumskurve.
                             DateTime? dtFittedYearOfBirth = null;
                             var lsf = new LeastSquareFit();
-                            if (aaIndisByIId[idx].Count >= 1)
+                            if (aaIndisByIId[iid].Count >= 1)
                             {
                                 DateTime? dtDateOfBirth = null;
                                 var ldaPoints = new List<double[]>();
-                                foreach (var el in aaIndisByIId[idx])
+                                foreach (var el in aaIndisByIId[iid])
                                 {
                                     try
                                     {
@@ -180,7 +182,7 @@ namespace BioMap.Pages.Diagrams
                                       LeastSquareFit.Method.Directed);
                                     dtFittedYearOfBirth = Utilities.DateTime_from_Years(daBestParams[0]);
                                     {
-                                        foreach (var el in aaIndisByIId[idx].ToArray())
+                                        foreach (var el in aaIndisByIId[iid].ToArray())
                                         {
                                             try
                                             {

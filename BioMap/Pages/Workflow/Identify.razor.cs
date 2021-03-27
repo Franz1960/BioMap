@@ -151,6 +151,7 @@ namespace BioMap.Pages.Workflow
         private async Task IdentifyAs(Element elementToCompare)
         {
             this.Element.ElementProp.IndivData.IId = this.ElementToCompare.ElementProp.IndivData.IId;
+            this.Element.ElementProp.IndivData.DateOfBirth = this.ElementToCompare.ElementProp.IndivData.DateOfBirth;
             await this.InvokeAsync(() => { this.StateHasChanged(); });
         }
         private void ElementName_Click(Element el)
