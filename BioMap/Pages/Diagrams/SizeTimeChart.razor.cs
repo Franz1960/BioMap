@@ -160,8 +160,8 @@ namespace BioMap.Pages.Diagrams
                                           {
                                               DateOfBirth = Utilities.DateTime_from_Years(dyTimeOfBirth),
                                           };
-                        //System.Diagnostics.Debug.Write(fg.DateOfBirth.ToString()+": ");
-                        double dDevSum = 0;
+                                          //System.Diagnostics.Debug.Write(fg.DateOfBirth.ToString()+": ");
+                                          double dDevSum = 0;
                                           for (int i = 0; i < daaPoints.Length; i++)
                                           {
                                               double dyTime = daaPoints[i][0];
@@ -169,10 +169,10 @@ namespace BioMap.Pages.Diagrams
                                               double lCalc = fg.GetSize(dyTime);
                                               double dDev = lReal - lCalc;
                                               dDevSum += (dDev * dDev);
-                            //System.Diagnostics.Debug.Write(" Dev="+ConvInvar.ToDecimalString(dDev,5));
-                        }
-                        //System.Diagnostics.Debug.WriteLine(" DevSum="+ConvInvar.ToDecimalString(dDevSum,5));
-                        return dDevSum;
+                                              //System.Diagnostics.Debug.Write(" Dev="+ConvInvar.ToDecimalString(dDev,5));
+                                          }
+                                          //System.Diagnostics.Debug.WriteLine(" DevSum="+ConvInvar.ToDecimalString(dDevSum,5));
+                                          return dDevSum;
                                       },
                                       -0.02,
                                       0.0001,
