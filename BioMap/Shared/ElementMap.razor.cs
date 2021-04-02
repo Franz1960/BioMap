@@ -41,6 +41,20 @@ namespace BioMap.Shared
             }
         }
         private ElementMarker[] _ElementMarkers = null;
+        public ElementMarker GetMarkerForElement(Element el)
+        {
+            if (this.ElementMarkers != null)
+            {
+                foreach (var elm in this.ElementMarkers)
+                {
+                    if (elm.Element?.ElementName == el?.ElementName)
+                    {
+                        return elm;
+                    }
+                }
+            }
+            return null;
+        }
         [Parameter]
         public PhotoPopup PhotoPopup { get; set; }
         [Parameter]
@@ -126,7 +140,7 @@ namespace BioMap.Shared
                                 StrokeWeight = 2,
                                 FillColor = elm.Color,
                                 FillOpacity = 0.35f,
-                                ZIndex = 1000000,
+                                ZIndex = elm.ZIndex,
                             };
                             dictCircles[elm.Element.ElementName] = circleOptions;
                             LatLngBoundsLiteral.CreateOrExtend(ref bounds, elm.Position);
@@ -163,26 +177,26 @@ namespace BioMap.Shared
                                 this.PhotoPopup.Show(elm.Element, () =>
                                 {
                                     this.RefreshElementMarkers();
+                                    // Set below lowest Z index.
+                                    int? minZIndex = null;
+                                    foreach (var elm1 in this.ElementMarkers)
+                                    {
+                                        int zIndex = elm1.ZIndex;
+                                        if (!minZIndex.HasValue || zIndex < minZIndex.Value)
+                                        {
+                                            minZIndex = zIndex;
+                                        }
+                                    }
+                                    if (minZIndex.HasValue)
+                                    {
+                                        elm.ZIndex = minZIndex.Value - 1;
+                                        ((Circle)entity).SetOptions(new CircleOptions
+                                        {
+                                            ZIndex = elm.ZIndex,
+                                        });
+                                    }
                                     this.StateHasChanged();
                                 });
-                                // Set below lowest Z index.
-                                int? minZIndex = null;
-                                foreach (var elm1 in this.ElementMarkers)
-                                {
-                                    int zIndex = elm1.ZIndex;
-                                    if (!minZIndex.HasValue || zIndex < minZIndex.Value)
-                                    {
-                                        minZIndex = zIndex;
-                                    }
-                                }
-                                if (minZIndex.HasValue)
-                                {
-                                    elm.ZIndex = minZIndex.Value - 1;
-                                    ((Circle)entity).SetOptions(new CircleOptions
-                                    {
-                                        ZIndex = elm.ZIndex,
-                                    });
-                                }
                             }
                         }
                     });

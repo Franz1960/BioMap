@@ -54,13 +54,23 @@
       {
         var latLng = new LatLngLiteral(el.ElementProp.MarkerInfo.position.lng, el.ElementProp.MarkerInfo.position.lat);
         var symbolProps = el.GetSymbolProperties();
-        var elm = new ElementMarker
+        var elm = base.GetMarkerForElement(el);
+        if (elm == null)
         {
-          Position = latLng,
-          Radius = symbolProps.Radius,
-          Color = symbolProps.BgColor,
-          Element = el,
-        };
+          elm = new ElementMarker
+          {
+            Position = latLng,
+            Radius = symbolProps.Radius,
+            Color = symbolProps.BgColor,
+            Element = el,
+          };
+        }
+        else
+        {
+          elm.Position = latLng;
+          elm.Radius = symbolProps.Radius;
+          elm.Color = symbolProps.BgColor;
+        }
         lElementMarkers.Add(elm);
       }
     }
