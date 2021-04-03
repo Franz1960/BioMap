@@ -408,11 +408,11 @@ namespace BioMap
         }
         public bool HasIndivData()
         {
-            return (this.ElementProp.IndivData != null);
+            return (this.Classification.IsIdPhoto() && this.ElementProp.IndivData != null);
         }
         public bool HasMeasuredData()
         {
-            return (this.ElementProp.IndivData?.MeasuredData != null);
+            return (this.Classification.IsIdPhoto() && this.ElementProp.IndivData?.MeasuredData != null);
         }
         public double GetHeadBodyLengthMm()
         {
