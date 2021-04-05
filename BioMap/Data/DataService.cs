@@ -921,6 +921,7 @@ namespace BioMap
                   "')";
                 command.ExecuteNonQuery();
             });
+            DataService.Instance.AddLogEntry(sd, "Created place " + place.Name + ": " + JsonConvert.SerializeObject(place));
         }
         public void DeletePlace(SessionData sd, string sPlaceName)
         {
@@ -930,20 +931,21 @@ namespace BioMap
                   "DELETE FROM places WHERE name='" + sPlaceName + "'";
                 command.ExecuteNonQuery();
             });
+            DataService.Instance.AddLogEntry(sd, "Deleted place " + sPlaceName);
         }
         public void WritePlace(SessionData sd, Place place)
         {
-            bool bChanged = true;
+            string[] saDiff=null;
             {
                 var prevPlace = this.GetPlaceByName(sd, place.Name);
                 if (prevPlace != null)
                 {
                     var prevJson = JsonConvert.SerializeObject(prevPlace);
                     var actJson = JsonConvert.SerializeObject(place);
-                    bChanged = (string.CompareOrdinal(actJson, prevJson) != 0);
+                    saDiff = Utilities.FindDifferingCoreParts(prevJson, actJson);
                 }
             }
-            if (bChanged)
+            if (saDiff != null)
             {
                 this.OperateOnDb(sd, (command) =>
                 {
@@ -956,6 +958,7 @@ namespace BioMap
                       "traitvalues='" + sTraitJson + "' WHERE name='" + place.Name + "'";
                     command.ExecuteNonQuery();
                 });
+                DataService.Instance.AddLogEntry(sd, "Changed place " + place.Name + ": " + saDiff[0] + " --> " + saDiff[1]);
             }
         }
         #endregion
