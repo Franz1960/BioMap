@@ -552,6 +552,9 @@
   <data name="Monitored species (scientific name)" xml:space="preserve">
     <value>Zu monitorierende Art (wissenschaftlicher Name)</value>
   </data>
+  <data name="Monitoring Calendar" xml:space="preserve">
+    <value>Monitoring-Kalender</value>
+  </data>
   <data name="Month" xml:space="preserve">
     <value>Monat</value>
   </data>
