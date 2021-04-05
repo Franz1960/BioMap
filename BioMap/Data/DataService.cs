@@ -951,6 +951,8 @@ namespace BioMap
                     command.CommandText =
                       "UPDATE places SET " +
                       "radius='" + ConvInvar.ToString(place.Radius) + "'," +
+                      "lat='" + ConvInvar.ToString(place.LatLng.lat) + "'," +
+                      "lng='" + ConvInvar.ToString(place.LatLng.lng) + "'," +
                       "traitvalues='" + sTraitJson + "' WHERE name='" + place.Name + "'";
                     command.ExecuteNonQuery();
                 });
