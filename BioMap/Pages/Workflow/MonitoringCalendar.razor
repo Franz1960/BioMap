@@ -25,7 +25,14 @@
     <tr>
       <th scope="col">@Localize["Place"]</th>
       @foreach (var kw in Enumerable.Range(kwMin,kwMax-kwMin+1)) {
-        <th scope="col">@kw</th>
+        @if (kw==this.kwNow)
+        {
+        <th scope="col" style="background-color:orange">@kw</th>
+        }
+        else
+        {
+          <th scope="col">@kw</th>
+        }
       }
     </tr>
   </thead>
@@ -33,14 +40,32 @@
     @foreach (var sPlacename in this.PlaceNames)
     {
       <tr>
-        <td scope="row">@sPlacename</td>
-        @foreach (var kw in Enumerable.Range(kwMin,kwMax-kwMin+1)) {
-          <td>
-            @if (this.Results[sPlacename].ContainsKey(kw))
-            {
-              @(this.Results[sPlacename][kw].Catches + "/" + this.Results[sPlacename][kw].ReCatches)
-            }
-          </td>
+        <td scope="row"><b>@sPlacename</b></td>
+        @foreach (var kw in Enumerable.Range(kwMin, kwMax - kwMin + 1))
+        {
+          @if (this.Results[sPlacename].Results.ContainsKey(kw))
+          {
+            <td>
+              @(this.Results[sPlacename].Results[kw].Catches + "/" + this.Results[sPlacename].Results[kw].ReCatches)
+            </td>
+          }
+          else if (kw == this.Results[sPlacename].PlannedMonitoring.Week && !string.IsNullOrEmpty(this.Results[sPlacename].PlannedMonitoring.Color))
+          {
+            <td style="background-color:@this.Results[sPlacename].PlannedMonitoring.Color;">
+              <Select TValue="string">
+                <SelectItem TValue="string" Value=@("empty")></SelectItem>
+                <SelectItem TValue="string" Value=@("conditionally")>Übernehme ich, wenn kein Anderer will</SelectItem>
+                <SelectItem TValue="string" Value=@("definitely")>Übernehme ich sicher</SelectItem>
+                <SelectItem TValue="string" Value=@("conditionallyByOther") Disabled="true">Würde @this.Results[sPlacename].PlannedMonitoring.UserId übernehmen</SelectItem>
+                <SelectItem TValue="string" Value=@("definitelyByOther") Disabled="true">Hat @this.Results[sPlacename].PlannedMonitoring.UserId übernommen</SelectItem>
+              </Select>
+            </td>
+          }
+          else
+          {
+            <td>
+            </td>
+          }
         }
       </tr>
     }
@@ -48,76 +73,4 @@
 </table>
 
 @code {
-  const int kwMin= 16;
-  const int kwMax= 44;
-  private int kwNow = 0;
-  private class Result
-  {
-    public int Catches = 0;
-    public int ReCatches = 0;
-  }
-  private Dictionary<string, Dictionary<int, Result>> Results = new Dictionary<string, Dictionary<int, Result>>();
-  private string[] PlaceNames;
-  private int Year
-  {
-    get
-    {
-      return _Year;
-    }
-    set
-    {
-      if (value != _Year)
-      {
-        _Year = value;
-        RefreshData();
-        this.StateHasChanged();
-      }
-    }
-  }
-  private int _Year = (DateTime.Now - TimeSpan.FromDays(100)).Year;
-  //
-  protected override void OnInitialized()
-  {
-    base.OnInitialized();
-    RefreshData();
-  }
-  private void RefreshData()
-  {
-    DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
-    var dtNow = DateTime.Now;
-    this.kwNow = dfi.Calendar.GetWeekOfYear(dtNow, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
-    this.Results.Clear();
-    foreach (var place in DS.GetPlaces(SD))
-    {
-      var dictResults = new Dictionary<int, Result>();
-      foreach (var el in DS.GetElements(SD,null,WhereClauses.Is_FromPlace(place.Name)))
-      {
-        int y = el.ElementProp.CreationTime.Year;
-        int kw = dfi.Calendar.GetWeekOfYear(el.ElementProp.CreationTime, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
-        if (y == this.Year && kw >= kwMin && kw <= kwMax) {
-          if (el.Classification.IsMonitoring())
-          {
-            if (!dictResults.TryGetValue(kw,out Result result))
-            {
-              result = new Result();
-              dictResults[kw] = result;
-            }
-            if (el.Classification.IsIdPhoto())
-            {
-              result.Catches++;
-              var prevCatches = DS.GetElements(SD, null, "indivdata.iid=" + el.GetIId() + " AND elements.creationtime<'" + el.GetIsoDateTime() + "'");
-              if (prevCatches.Length >= 1)
-              {
-                result.ReCatches++;
-              }
-            }
-          }
-        }
-      }
-      this.Results.Add(place.Name, dictResults);
-    }
-    var l = this.Results.Keys.ToList();
-    l.Sort();
-    this.PlaceNames = l.ToArray();
-  }
 }

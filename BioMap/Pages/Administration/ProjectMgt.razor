@@ -150,8 +150,8 @@ else
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
               @{
                 var addAttr = new Dictionary<string, object>(new KeyValuePair<string, object>[] {
-            new KeyValuePair<string,object>("multiple","multiple"),
-            });
+                  new KeyValuePair<string,object>("multiple","multiple"),
+                });
                 <InputFile AdditionalAttributes="addAttr" OnChange="@OnInputFileChange" />
               }
             </FieldBody>
