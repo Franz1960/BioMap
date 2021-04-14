@@ -103,6 +103,12 @@
   @*<script src="~/workaround-gradient.js"></script>*@
 
   <script>
+    window.onload = () => {
+      // Navigate to home page after browser refresh.
+      if (window.location.pathname != "/") {
+        window.location.pathname = "/";
+      }
+    }
     window.onbeforeunload = function () {
       // Return non-null to have a message "Really really leave?" displayed.
       return null;
