@@ -114,8 +114,7 @@ namespace BioMap
         {
             lock (DelayedCallers)
             {
-                DelayedCaller dc = null;
-                if (!DelayedCallers.TryGetValue(action, out dc))
+                if (!DelayedCallers.TryGetValue(action, out DelayedCaller dc))
                 {
                     dc = new DelayedCaller(delayMs, action, oaArgs);
                     DelayedCallers[action] = dc;
