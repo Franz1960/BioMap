@@ -223,16 +223,19 @@
           </Button>
         </Column>
       </Row>
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Length"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-              <TextEdit Disabled="true" Text="@(ConvInvar.ToDecimalString(Element.ElementProp?.IndivData?.MeasuredData?.HeadBodyLength,1))" />
-            </FieldBody>
-          </Field>
-        </Column>
-      </Row>
+      @if (Element.HasIndivData())
+      {
+        <Row Margin="Margin.Is1.OnY">
+          <Column>
+            <Field Horizontal="true">
+              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Length"]</FieldLabel>
+              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+                <TextEdit Disabled="true" Text="@(ConvInvar.ToDecimalString(Element.ElementProp?.IndivData?.MeasuredData?.HeadBodyLength,1))" />
+              </FieldBody>
+            </Field>
+          </Column>
+        </Row>
+      }
       <Divider />
       <Row Margin="Margin.Is1.OnY">
         @if (!string.IsNullOrEmpty(PatternImgSrc))
