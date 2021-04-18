@@ -314,13 +314,10 @@ namespace BioMap
                         "name TEXT PRIMARY KEY NOT NULL," +
                         "value TEXT)";
                         command.ExecuteNonQuery();
-                        command.CommandText = "CREATE TABLE IF NOT EXISTS userprefs (" +
-                        "name TEXT PRIMARY KEY NOT NULL," +
-                        "value TEXT)";
-                        command.ExecuteNonQuery();
-                        command.CommandText = "CREATE TABLE IF NOT EXISTS userprefs (" +
-                        "name TEXT PRIMARY KEY NOT NULL," +
-                        "value TEXT)";
+                        command.CommandText = "DROP TABLE IF EXISTS userprefs; CREATE TABLE IF NOT EXISTS userprops (" +
+                        "userid TEXT NOT NULL," +
+                        "name TEXT NOT NULL," +
+                        "value TEXT NOT NULL,UNIQUE(userid,name))";
                         command.ExecuteNonQuery();
                         try
                         {
@@ -625,7 +622,7 @@ namespace BioMap
             string sValue = sDefaultValue;
             this.OperateOnDb(sd, (command) =>
             {
-                command.CommandText = "SELECT value FROM userprefs WHERE name='" + sPropertyName + "'";
+                command.CommandText = "SELECT value FROM userprops WHERE name='" + sPropertyName + "' AND userid='" + sd.CurrentUser.EMail + "'";
                 var r = command.ExecuteScalar();
                 sValue = command.ExecuteScalar() as string;
             });
@@ -639,10 +636,10 @@ namespace BioMap
             {
                 this.OperateOnDb(sd, (command) =>
                 {
-                    command.CommandText = "REPLACE INTO userprefs (name,value) VALUES ('" + sPropertyName + "','" + sValue + "')";
+                    command.CommandText = "REPLACE INTO userprops (userid,name,value) VALUES ('" + sd.CurrentUser.EMail + "','" + sPropertyName + "','" + sValue + "')";
                     command.ExecuteNonQuery();
                 });
-                //this.AddLogEntry(sd,"User preference \""+sPropertyName+"\" changed: "+saDiff[0]+" --> "+saDiff[1]);
+                this.AddLogEntry(sd,"User preference \""+sPropertyName+"\" changed: "+saDiff[0]+" --> "+saDiff[1]);
             }
         }
         #endregion

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +20,6 @@ namespace BioMap
     public void OnCurrentProjectChanged() {
       Utilities.FireEvent(this.CurrentProjectChanged,this,EventArgs.Empty);
     }
-    public bool ShowCustomMap { get; set; }
     public string SelectedElementName { get; set; }
     public Filters Filters { get; }
     public bool SizeTimeChartShowVintageBoundaries { get; set; } = true;

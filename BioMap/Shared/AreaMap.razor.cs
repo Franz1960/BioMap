@@ -41,11 +41,11 @@ namespace BioMap.Shared
         {
             get
             {
-                return SD.ShowCustomMap;
+                return SD.CurrentUser.Prefs.ShowCustomMap;
             }
             set
             {
-                SD.ShowCustomMap = value;
+                SD.CurrentUser.Prefs.ShowCustomMap = value;
                 this.DelayedStateHasChanged();
             }
         }
@@ -279,6 +279,7 @@ namespace BioMap.Shared
         {
             Utilities.CallDelayed(900, (oaArgs) =>
             {
+                DS.WriteUser(SD, SD.CurrentUser);
                 base.InvokeAsync(this.StateHasChanged).Wait();
             });
         }
