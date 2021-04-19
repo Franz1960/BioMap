@@ -639,7 +639,7 @@ namespace BioMap
                     command.CommandText = "REPLACE INTO userprops (userid,name,value) VALUES ('" + sd.CurrentUser.EMail + "','" + sPropertyName + "','" + sValue + "')";
                     command.ExecuteNonQuery();
                 });
-                this.AddLogEntry(sd,"User preference \""+sPropertyName+"\" changed: "+saDiff[0]+" --> "+saDiff[1]);
+                //this.AddLogEntry(sd,"User preference \""+sPropertyName+"\" changed: "+saDiff[0]+" --> "+saDiff[1]);
             }
         }
         #endregion
@@ -674,7 +674,7 @@ namespace BioMap
                     command.CommandText = "REPLACE INTO project (name,value) VALUES ('" + sPropertyName + "','" + sValue + "')";
                     command.ExecuteNonQuery();
                 });
-                //this.AddLogEntry(sd, "Project property \"" + sPropertyName + "\" changed: " + saDiff[0] + " --> " + saDiff[1]);
+                this.AddLogEntry(sd, "Project property \"" + sPropertyName + "\" changed: " + saDiff[0] + " --> " + saDiff[1]);
             }
         }
         public void LoadProject(SessionData sd, Project project)
