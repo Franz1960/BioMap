@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
@@ -69,6 +69,7 @@ namespace BioMap
           new Species { SciName="Salamandra salamandra",Name_de="Feuersalamander",Name_en="Fire salamender" },
           new Species { SciName="Lissotriton vulgaris",Name_de="Teichmolch",Name_en="Pond newt" },
           new Species { SciName="Ichthyosaura alpestris",Name_de="Bergmolch",Name_en="Alpine newt" },
+          new Species { SciName="Triturus cristatus",Name_de="Kammmolch",Name_en="Northern crested newt" },
           new Species { SciName="Insecta",Name_de="Insekten",Name_en="Insects" },
           new Species { SciName="Nepa cinerea",Name_de="Wasserskorpion",Name_en="Water scorpion" },
           new Species { SciName="Odonata",Name_de="Libellen",Name_en="Dragonflies" },
