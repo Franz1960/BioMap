@@ -80,20 +80,12 @@
               </tbody>
             </table>
             <div class="container" style="min-width:240px">
-              <div class="row">
-                <div class="col-lg-6" style="min-width:80px">
-                  <Button Color="Color.Light" Clicked="@(async (e)=>{ ElementToCompare=null; })" Block="true">
-                    <Icon Name="IconName.List"></Icon>
-                  </Button>
-                </div>
-                <div class="col-lg-6" style="min-width:140px">
-                  <Button Color="Color.Light" Clicked="@(async (e)=>{ await IdentifyAs(ElementToCompare); })" Block="true">
-                    #@this.ElementToCompare.GetIId()
-                    <Icon Name="IconName.ArrowRight" />
-                    #@this.Element.GetIId()
-                  </Button>
-                </div>
-              </div>
+              <Row Margin="Margin.Is2.OnY">
+                <Button Color="Color.Primary" Clicked="@(async (e)=>{ ElementToCompare=null; })" Block="true">
+                  <Icon Name="IconName.List"></Icon>
+                  @Localize["Back to list"]
+                </Button>
+              </Row>
             </div>
           </div>
         </div>
@@ -127,21 +119,35 @@
         </div>
         <div class="col-lg-5">
           <div class="container" style="min-width:240px">
-            <div class="row">
+            <Row Margin="Margin.Is1.OnY">
               <UserFilter />
-            </div>
-            <div class="row">
-              <div class="col-lg-6">
+            </Row>
+            <Row Margin="Margin.Is2.OnY">
+              <Column ColumnSize="ColumnSize.Is6">
                   <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
                     <Icon Name="IconName.StepBackward"></Icon>
                   </Button>
-              </div>
-              <div class="col-lg-6">
+              </Column>
+              <Column ColumnSize="ColumnSize.Is6">
                   <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
                     <Icon Name="IconName.StepForward"></Icon>
                   </Button>
-              </div>
-            </div>
+              </Column>
+            </Row>
+            @if (this.Element != null) {
+              <Row Margin="Margin.Is2.OnY">
+                <Button Color="Color.Primary" Clicked="@(async (e)=>{ await this.CreateNewIId(); })" Block="true">
+                  @(string.Format(Localize["Not found. It's a new individual, create a new IID!"]))<br />
+                </Button>
+              </Row>
+              @if (this.ElementToCompare != null) {
+                <Row Margin="Margin.Is2.OnY">
+                  <Button Color="Color.Primary" Clicked="@(async (e)=>{ await this.IdentifyAs(ElementToCompare); })" Block="true">
+                    @(string.Format(Localize["Match! It's the individual #{0}"],this.ElementToCompare.GetIId()))<br />
+                  </Button>
+                </Row>
+              }
+            }
           </div>
         </div>
       </div>

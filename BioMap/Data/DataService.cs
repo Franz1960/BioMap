@@ -1319,6 +1319,21 @@ namespace BioMap
             }
             return aaIndisByIId;
         }
+        public int GetNextFreeIId(SessionData sd)
+        {
+            int nUsedIId = 0;
+            this.OperateOnDb(sd, (command) =>
+            {
+                command.CommandText = "SELECT iid AS iid1 FROM indivdata WHERE NOT EXISTS (SELECT iid FROM indivdata WHERE (iid=(iid1+1))) ORDER BY iid1 LIMIT 1";
+                var dr = command.ExecuteReader();
+                while (dr.Read())
+                {
+                    nUsedIId = dr.GetInt32(0);
+                }
+                dr.Close();
+            });
+            return nUsedIId + 1;
+        }
         public void AddOrUpdateProtocolEntry(SessionData sd, ProtocolEntry pe)
         {
             this.OperateOnDb(sd, (command) =>

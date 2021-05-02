@@ -198,6 +198,9 @@
   <data name="Author" xml:space="preserve">
     <value>Autor</value>
   </data>
+  <data name="Back to list" xml:space="preserve">
+    <value>Zurück zur Liste</value>
+  </data>
   <data name="Biology" xml:space="preserve">
     <value>Biologie</value>
   </data>
@@ -537,6 +540,9 @@
   <data name="Maps" xml:space="preserve">
     <value>Karten</value>
   </data>
+  <data name="Match! It's the individual #{0}" xml:space="preserve">
+    <value>Treffer! Es das Individuum #{0}</value>
+  </data>
   <data name="Max. allowed elements" xml:space="preserve">
     <value>Max. erlaubte Anzahl von Elementen</value>
   </data>
@@ -584,6 +590,9 @@
   </data>
   <data name="Normalized non-ID photo" xml:space="preserve">
     <value>Normiertes Nicht-Passfoto</value>
+  </data>
+  <data name="Not found. It's a new individual, create a new IID!" xml:space="preserve">
+    <value>Nicht gefunden. Es ist ein neues Individuum, erzeuge einen neuen IId dafür!</value>
   </data>
   <data name="Notes" xml:space="preserve">
     <value>Notizen</value>

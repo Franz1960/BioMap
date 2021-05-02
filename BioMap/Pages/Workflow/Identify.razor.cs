@@ -58,6 +58,15 @@ namespace BioMap.Pages.Workflow
             await this.SelectElement();
             NM.LocationChanged += NM_LocationChanged;
         }
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+            if (firstRender)
+            {
+            }
+            this.HasRendered=true;
+        }
+        private bool HasRendered=false;
         private async void Filters_FilterChanged(object sender, EventArgs e)
         {
             await this.RefreshData();
@@ -69,13 +78,6 @@ namespace BioMap.Pages.Workflow
             NM.LocationChanged -= NM_LocationChanged;
             SD.Filters.FilterChanged -= this.Filters_FilterChanged;
             this.Element = null;
-        }
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            await base.OnAfterRenderAsync(firstRender);
-            if (firstRender)
-            {
-            }
         }
         private async Task<Element[]> GetElementsToIdentify()
         {
@@ -120,7 +122,9 @@ namespace BioMap.Pages.Workflow
             {
                 this.Element = aElements[0];
             }
-            await this.InvokeAsync(() => { this.StateHasChanged(); });
+            if (this.HasRendered) {
+                await this.InvokeAsync(() => { this.StateHasChanged(); });
+            }
         }
         private async Task SelectElement()
         {
@@ -152,6 +156,13 @@ namespace BioMap.Pages.Workflow
         {
             this.Element.ElementProp.IndivData.IId = this.ElementToCompare.ElementProp.IndivData.IId;
             this.Element.ElementProp.IndivData.DateOfBirth = this.ElementToCompare.ElementProp.IndivData.DateOfBirth;
+            DS.WriteElement(SD, this.Element);
+            await this.InvokeAsync(() => { this.StateHasChanged(); });
+        }
+        private async Task CreateNewIId()
+        {
+            this.Element.ElementProp.IndivData.IId = this.DS.GetNextFreeIId(this.SD);
+            DS.WriteElement(SD, this.Element);
             await this.InvokeAsync(() => { this.StateHasChanged(); });
         }
         private void ElementName_Click(Element el)
