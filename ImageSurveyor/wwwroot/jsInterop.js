@@ -145,13 +145,13 @@ class PrepPic_t {
       if (PrepPic.MeasureData.normalizer.NormalizeMethod == "HeadToCloakInPetriDish") {
         let ptHead = PrepPic.MeasureData.measurePoints[2];
         let ptBack = PrepPic.MeasureData.measurePoints[3];
-        PrepPic.drawMarker(ctx, ptHead, MH, 'magenta', 'Kopfspitze');
-        PrepPic.drawMarker(ctx, ptBack, MH, 'brown', 'Kloake');
+        PrepPic.drawMarker(ctx, ptHead, MH, 0, 'magenta', 'Kopfspitze');
+        PrepPic.drawMarker(ctx, ptBack, MH, 0, 'brown', 'Kloake');
       } else if (PrepPic.MeasureData.normalizer.NormalizeMethod == "HeadToCloakIn50mmCuvette") {
         let ptHead = PrepPic.MeasureData.measurePoints[2];
         let ptBack = PrepPic.MeasureData.measurePoints[3];
-        PrepPic.drawMarker(ctx, ptHead, MH, 'magenta', 'Kopfspitze');
-        PrepPic.drawMarker(ctx, ptBack, MH, 'brown', 'Kloake');
+        PrepPic.drawMarker(ctx, ptHead, MH, 0, 'magenta', 'Kopfspitze');
+        PrepPic.drawMarker(ctx, ptBack, MH, 0, 'brown', 'Kloake');
       } else if (PrepPic.MeasureData.normalizer.NormalizeMethod == "CropRectangle") {
       }
     }
