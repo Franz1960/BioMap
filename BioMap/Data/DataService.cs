@@ -696,6 +696,8 @@ namespace BioMap
             project.AoiMaxLng = ConvInvar.ToDouble(this.GetProjectProperty(sd, "AoiMaxLng"));
             project.AoiTolerance = ConvInvar.ToDouble(this.GetProjectProperty(sd, "AoiTolerance"));
             project.SpeciesSciName = this.GetProjectProperty(sd, "SpeciesSciName");
+            project.MaleGenderFeatures = this.GetProjectProperty(sd, "MaleGenderFeatures", "1") !="0";
+            project.FemaleGenderFeatures = this.GetProjectProperty(sd, "FemaleGenderFeatures", "0") != "0";
             project.ImageNormalizer = new Blazor.ImageSurveyor.ImageSurveyorNormalizer(this.GetProjectProperty(sd, "NormalizeMethod","HeadToCloakInPetriDish"));
             project.MinLevelToSeeElements = ConvInvar.ToInt(this.GetProjectProperty(sd, "MinLevelToSeeElements", "200"));
             project.MinLevelToSeeExactLocations = ConvInvar.ToInt(this.GetProjectProperty(sd, "MinLevelToSeeExactLocations", "400"));
@@ -727,6 +729,8 @@ namespace BioMap
             this.SetProjectProperty(sd, "AoiMaxLng", ConvInvar.ToString(project.AoiMaxLng));
             this.SetProjectProperty(sd, "AoiTolerance", ConvInvar.ToString(project.AoiTolerance));
             this.SetProjectProperty(sd, "SpeciesSciName", project.SpeciesSciName);
+            this.SetProjectProperty(sd, "MaleGenderFeatures", project.MaleGenderFeatures ? "1" : "0");
+            this.SetProjectProperty(sd, "FemaleGenderFeatures", project.FemaleGenderFeatures ? "1" : "0");
             this.SetProjectProperty(sd, "NormalizeMethod", project.ImageNormalizer.NormalizeMethod);
             this.SetProjectProperty(sd, "MinLevelToSeeElements", ConvInvar.ToString(project.MinLevelToSeeElements));
             this.SetProjectProperty(sd, "MinLevelToSeeExactLocations", ConvInvar.ToString(project.MinLevelToSeeExactLocations));

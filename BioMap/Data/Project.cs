@@ -41,18 +41,8 @@ namespace BioMap
       return this.Species.Find((s)=>string.CompareOrdinal(s.SciName,sSciName)==0);
     }
     public ImageSurveyorNormalizer ImageNormalizer { get; set; } =new ImageSurveyorNormalizer("HeadToCloakInPetriDish");
-    public bool MaleGenderFeatures {
-      get {
-        // For bombina variegata it's true; ToDo: make configurable for other species.
-        return true;
-      }
-    }
-    public bool FemaleGenderFeatures {
-      get {
-        // For bombina variegata it's false; ToDo: make configurable for other species.
-        return false;
-      }
-    }
+    public bool MaleGenderFeatures { get; set; }
+    public bool FemaleGenderFeatures { get; set; }
     public void InitSpeciesByGroupForYellowBelliedToad() {
       this.Species.Clear();
       {

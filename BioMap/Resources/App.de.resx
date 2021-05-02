@@ -366,6 +366,9 @@
   <data name="Female and other" xml:space="preserve">
     <value>Weiblich und sonstige</value>
   </data>
+  <data name="Female gender features" xml:space="preserve">
+    <value>Weibliche Geschlechtsmerkmale</value>
+  </data>
   <data name="Fire-bellied toad" xml:space="preserve">
     <value>Rotbauchunke</value>
   </data>
@@ -524,6 +527,9 @@
   </data>
   <data name="Male and other" xml:space="preserve">
     <value>Männlich und sonstige</value>
+  </data>
+  <data name="Male gender features" xml:space="preserve">
+    <value>Männliche Geschlechtsmerkmale</value>
   </data>
   <data name="Map" xml:space="preserve">
     <value>Karte</value>

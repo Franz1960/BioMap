@@ -134,6 +134,8 @@ else
               <TextEdit TValue="string" Disabled="@(SD.CurrentUser.Level<700)" @bind-Text="SD.CurrentProject.SpeciesSciName" />
             </FieldBody>
           </Field>
+          <CheckBox @bind-Checked="this.SD.CurrentProject.MaleGenderFeatures" LabelText=@Localize["Male gender features"] />
+          <CheckBox @bind-Checked="this.SD.CurrentProject.FemaleGenderFeatures" LabelText=@Localize["Female gender features"] />
           <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Normalize method"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
