@@ -27,7 +27,7 @@ namespace Blazor.ImageSurveyor
             {
                 this.NormalizeReference = 50;
                 this.NormalizePixelSize = 0.10;
-                this.NormalizedWidthPx = 300;
+                this.NormalizedWidthPx = 400;
                 this.NormalizedHeightPx = 1000;
             }
             else

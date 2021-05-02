@@ -159,13 +159,14 @@ namespace Blazor.ImageSurveyor
         }
         public (int, int) GetPatternSize(int nPatternHeight)
         {
+            float fAspectRatio = ((float)this.normalizer.NormalizedWidthPx) / this.normalizer.NormalizedHeightPx;
             if (string.CompareOrdinal(this.normalizer.NormalizeMethod, "HeadToCloakInPetriDish") == 0)
             {
-                return ((int)((this.PatternRelWidth * nPatternHeight) / this.PatternRelHeight), nPatternHeight);
+                return ((int)(fAspectRatio * (this.PatternRelWidth * nPatternHeight) / this.PatternRelHeight), nPatternHeight);
             }
             else if (string.CompareOrdinal(this.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0)
             {
-                return ((int)((this.PatternRelWidth * nPatternHeight) / this.PatternRelHeight), nPatternHeight);
+                return ((int)(fAspectRatio * (this.PatternRelWidth * nPatternHeight) / this.PatternRelHeight), nPatternHeight);
             }
             else if (string.CompareOrdinal(this.normalizer.NormalizeMethod, "CropRectangle") == 0)
             {

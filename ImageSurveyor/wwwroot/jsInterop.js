@@ -19,21 +19,18 @@ class PrepPic_t {
   init(dotNetImageSurvey) {
     PrepPic.dotNetObject = dotNetImageSurvey;
   }
-  drawMarker(ctx, position, radius, color = "lightcyan", text = "") {
+  drawMarker(ctx, position, radius, rotationRad = 0.0, color = "lightcyan", text = "") {
     let r = radius;
     let rh = r / 2;
     let x = position.X;
     let y = position.Y;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, 2 * Math.PI);
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + rh, y);
-    ctx.moveTo(x - r, y);
-    ctx.lineTo(x - rh, y);
-    ctx.moveTo(x, y + r);
-    ctx.lineTo(x, y + rh);
-    ctx.moveTo(x, y - r);
-    ctx.lineTo(x, y - rh);
+    [0.0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach(rot => {
+      let a = rotationRad + rot;
+      ctx.moveTo(x + r * Math.cos(a), y + r * Math.sin(a));
+      ctx.lineTo(x + rh * Math.cos(a), y + rh * Math.sin(a));
+    });
     ctx.strokeStyle = color;
     ctx.lineWidth = 4 / PrepPic.Zoom;
     ctx.stroke();
@@ -76,9 +73,10 @@ class PrepPic_t {
       if (PrepPic.MeasureData.normalizer.NormalizeMethod == "HeadToCloakInPetriDish") {
         let ptHead = PrepPic.MeasureData.measurePoints[0];
         let ptBack = PrepPic.MeasureData.measurePoints[1];
+        let phi = Math.atan2(ptHead.Y - ptBack.Y, ptHead.X - ptBack.X);
         let ptsOnCircle = PrepPic.MeasureData.normalizePoints;
-        PrepPic.drawMarker(ctx, ptHead, MH, 'magenta', 'Kopfspitze');
-        PrepPic.drawMarker(ctx, ptBack, MH, 'brown', 'Kloake');
+        PrepPic.drawMarker(ctx, ptHead, MH, phi, 'magenta', 'Kopfspitze');
+        PrepPic.drawMarker(ctx, ptBack, MH, phi, 'brown', 'Kloake');
         // Draw circle around Petri dish.
         for (let i = 0; i < ptsOnCircle.length; i++) {
           PrepPic.drawMarker(ctx, ptsOnCircle[i], MH);
@@ -102,19 +100,20 @@ class PrepPic_t {
           X: (ptHead.X + ptBack.X) / 2,
           Y: (ptHead.Y + ptBack.Y) / 2,
         };
-        let phi = Math.atan2(ptHead.Y - ptBack.Y, ptHead.X - ptBack.X);
         ctx.translate(ptBoxCenter.X, ptBoxCenter.Y);
         ctx.rotate(phi);
         ctx.strokeRect(-fBoxSide / 2, -fBoxSide / 2, fBoxSide, fBoxSide);
       } else if (PrepPic.MeasureData.normalizer.NormalizeMethod == "HeadToCloakIn50mmCuvette") {
         let ptHead = PrepPic.MeasureData.measurePoints[0];
         let ptBack = PrepPic.MeasureData.measurePoints[1];
+        let phi = Math.PI / 2 + Math.atan2(ptHead.Y - ptBack.Y, ptHead.X - ptBack.X);
         let ptsNormalize = PrepPic.MeasureData.normalizePoints;
-        PrepPic.drawMarker(ctx, ptHead, MH, 'magenta', 'Kopfspitze');
-        PrepPic.drawMarker(ctx, ptBack, MH, 'brown', 'Kloake');
+        PrepPic.drawMarker(ctx, ptHead, MH, phi, 'magenta', 'Kopfspitze');
+        PrepPic.drawMarker(ctx, ptBack, MH, phi, 'brown', 'Kloake');
         // Draw circle around Petri dish.
+        let rotationBox = Math.atan2(ptsNormalize[1].Y - ptsNormalize[0].Y, ptsNormalize[1].X - ptsNormalize[0].X);
         for (let i = 0; i < ptsNormalize.length; i++) {
-          PrepPic.drawMarker(ctx, ptsNormalize[i], MH);
+          PrepPic.drawMarker(ctx, ptsNormalize[i], MH, rotationBox);
         }
         ctx.beginPath();
         ctx.moveTo(ptsNormalize[0].X, ptsNormalize[0].Y);
@@ -131,7 +130,6 @@ class PrepPic_t {
           X: (ptHead.X + ptBack.X) / 2,
           Y: (ptHead.Y + ptBack.Y) / 2,
         };
-        let phi = Math.PI/2 + Math.atan2(ptHead.Y - ptBack.Y, ptHead.X - ptBack.X);
         ctx.translate(ptBoxCenter.X, ptBoxCenter.Y);
         ctx.rotate(phi);
         ctx.strokeRect(-fBoxWidth / 2, -fBoxHeight / 2, fBoxWidth, fBoxHeight);
