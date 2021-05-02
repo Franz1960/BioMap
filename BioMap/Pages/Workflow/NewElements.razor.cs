@@ -260,6 +260,7 @@ namespace BioMap.Pages.Workflow
         private async Task OnSelectPrev()
         {
             this.Element = null;
+            this.Raw = true;
             await this.RefreshData();
             if (this.SelectedElementTime.HasValue)
             {
@@ -283,6 +284,7 @@ namespace BioMap.Pages.Workflow
                 }
             }
             this.Element = null; // Save implicitely.
+            this.Raw = true;
             await this.RefreshData();
             if (this.SelectedElementTime.HasValue)
             {
