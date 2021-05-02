@@ -243,7 +243,7 @@ namespace BioMap.Pages.Workflow
                           ?
                           SD.CurrentProject.ImageNormalizer
                           :
-                          new Blazor.ImageSurveyor.ImageSurveyorNormalizer() { NormalizeMethod = "CropRectangle", }
+                          new Blazor.ImageSurveyor.ImageSurveyorNormalizer("CropRectangle")
                           ;
                         this.Element.InitMeasureData(SD, false);
                     }
@@ -372,7 +372,11 @@ namespace BioMap.Pages.Workflow
             }
             if (string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakInPetriDish") == 0)
             {
-                el.ElementProp.IndivData.MeasuredData.HeadBodyLength = 0.1f * System.Numerics.Vector2.Distance(md.measurePoints[2], md.measurePoints[3]);
+                el.ElementProp.IndivData.MeasuredData.HeadBodyLength = this.SD.CurrentProject.ImageNormalizer.NormalizePixelSize * System.Numerics.Vector2.Distance(md.measurePoints[2], md.measurePoints[3]);
+            }
+            else if (string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0)
+            {
+                el.ElementProp.IndivData.MeasuredData.HeadBodyLength = this.SD.CurrentProject.ImageNormalizer.NormalizePixelSize * System.Numerics.Vector2.Distance(md.measurePoints[2], md.measurePoints[3]);
             }
             el.MeasureData = md;
             this.normImageDirty = true;
@@ -386,7 +390,7 @@ namespace BioMap.Pages.Workflow
                 var el = this.Element;
                 if (el != null && ElementClassification.IsNormed(el.Classification.ClassName))
                 {
-                    sPatternImgSrc = Utilities.GetPatternImgSource(el, DS, SD);
+                    sPatternImgSrc = Utilities.GetPatternImgSource(el, this.DS, this.SD);
                 }
             }
             catch
@@ -400,7 +404,7 @@ namespace BioMap.Pages.Workflow
         }
         private async Task ResetPositions_Clicked(Element el)
         {
-            var sFilePath = DS.GetFilePathForImage(SD.CurrentUser.Project, el.ElementName, true);
+            var sFilePath = this.DS.GetFilePathForImage(this.SD.CurrentUser.Project, el.ElementName, true);
             if (System.IO.File.Exists(sFilePath))
             {
                 using (var img = Image.Load(sFilePath))
@@ -420,10 +424,7 @@ namespace BioMap.Pages.Workflow
                     }
                     else
                     {
-                        var normalizer = new Blazor.ImageSurveyor.ImageSurveyorNormalizer()
-                        {
-                            NormalizeMethod = "CropRectangle",
-                        };
+                        var normalizer = new Blazor.ImageSurveyor.ImageSurveyorNormalizer("CropRectangle");
                         el.MeasureData = new Blazor.ImageSurveyor.ImageSurveyorMeasureData
                         {
                             normalizer = normalizer,

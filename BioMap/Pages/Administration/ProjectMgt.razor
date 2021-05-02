@@ -134,6 +134,15 @@ else
               <TextEdit TValue="string" Disabled="@(SD.CurrentUser.Level<700)" @bind-Text="SD.CurrentProject.SpeciesSciName" />
             </FieldBody>
           </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Normalize method"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+                <Select TValue="string" @bind-SelectedValue="SD.CurrentProject.ImageNormalizer.NormalizeMethod">
+                  <SelectItem TValue="string" Value="@("HeadToCloakInPetriDish")">HeadToCloakInPetriDish</SelectItem>
+                  <SelectItem TValue="string" Value="@("HeadToCloakIn50mmCuvette")">HeadToCloakIn50mmCuvette</SelectItem>
+                </Select>
+            </FieldBody>
+          </Field>
         </CardBody>
       </Card>
     </Column>
@@ -224,6 +233,18 @@ else
   {
     base.OnInitialized();
     NM.LocationChanged += NM_LocationChanged;
+  }
+  private string NormalizeMethod {
+    get
+    {
+      return SD.CurrentProject.ImageNormalizer.NormalizeMethod;
+    }
+    set
+    {
+      if (value!=SD.CurrentProject.ImageNormalizer.NormalizeMethod) {
+        SD.CurrentProject.ImageNormalizer.NormalizeMethod = value;
+      }
+    }
   }
   private void NM_LocationChanged(object sender, LocationChangedEventArgs e)
   {

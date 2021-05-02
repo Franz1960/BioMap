@@ -573,6 +573,9 @@
   <data name="None" xml:space="preserve">
     <value>Keine</value>
   </data>
+  <data name="Normalize method" xml:space="preserve">
+    <value>Normalisierungsmethode</value>
+  </data>
   <data name="Normalized non-ID photo" xml:space="preserve">
     <value>Normiertes Nicht-Passfoto</value>
   </data>

@@ -40,9 +40,7 @@ namespace BioMap
     public Species GetSpecies(string sSciName) {
       return this.Species.Find((s)=>string.CompareOrdinal(s.SciName,sSciName)==0);
     }
-    public ImageSurveyorNormalizer ImageNormalizer { get; } =new ImageSurveyorNormalizer() {
-      NormalizeMethod="HeadToCloakInPetriDish",
-    };
+    public ImageSurveyorNormalizer ImageNormalizer { get; set; } =new ImageSurveyorNormalizer("HeadToCloakInPetriDish");
     public bool MaleGenderFeatures {
       get {
         // For bombina variegata it's true; ToDo: make configurable for other species.

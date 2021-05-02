@@ -50,6 +50,32 @@ namespace Blazor.ImageSurveyor
                 }
                 catch { }
             }
+            else if (string.CompareOrdinal(this.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0)
+            {
+                try
+                {
+                    var md = this;
+                    float fNormWidthPixels = (
+                        new System.Numerics.Vector2(md.normalizePoints[1].X, md.normalizePoints[1].Y)
+                        -
+                        new System.Numerics.Vector2(md.normalizePoints[0].X, md.normalizePoints[0].Y)
+                        ).Length();
+                    float fScale = fNormWidthPixels / (float)((md.normalizer.NormalizeReference) / md.normalizer.NormalizePixelSize);
+                    var ptBoxCenter = new System.Numerics.Vector2
+                    {
+                        X = (md.measurePoints[0].X + md.measurePoints[1].X) / 2,
+                        Y = (md.measurePoints[0].Y + md.measurePoints[1].Y) / 2,
+                    };
+                    float phi = MathF.Atan2(md.measurePoints[0].Y - md.measurePoints[1].Y, md.measurePoints[0].X - md.measurePoints[1].X);
+                    //
+                    mResult =
+                      System.Numerics.Matrix3x2.CreateTranslation(-ptBoxCenter.X, -ptBoxCenter.Y) *
+                      System.Numerics.Matrix3x2.CreateRotation(-MathF.PI / 2 - phi) *
+                      System.Numerics.Matrix3x2.CreateScale(1 / fScale) *
+                      System.Numerics.Matrix3x2.CreateTranslation(md.normalizer.NormalizedWidthPx / 2, md.normalizer.NormalizedHeightPx / 2);
+                }
+                catch { }
+            }
             else if (string.CompareOrdinal(this.normalizer.NormalizeMethod, "CropRectangle") == 0)
             {
                 try
@@ -74,7 +100,28 @@ namespace Blazor.ImageSurveyor
                 {
                     var vCenter = (md.measurePoints[2] + md.measurePoints[3]) / 2;
                     var fLength = (md.measurePoints[2] - md.measurePoints[3]).Length();
-                    //float fScale=fLength/(float)((md.normalizer.NormalizeReference/2)/md.normalizer.NormalizePixelSize);
+                    float fScale = (fLength * this.PatternRelHeight) / (nPatternHeight);
+                    var ptBoxCenter = new System.Numerics.Vector2
+                    {
+                        X = (md.measurePoints[2].X + md.measurePoints[3].X) / 2,
+                        Y = (md.measurePoints[2].Y + md.measurePoints[3].Y) / 2,
+                    };
+                    float phi = MathF.Atan2(md.measurePoints[2].Y - md.measurePoints[3].Y, md.measurePoints[2].X - md.measurePoints[3].X);
+                    //
+                    mResult =
+                      mResult *
+                      System.Numerics.Matrix3x2.CreateTranslation(-ptBoxCenter.X, -ptBoxCenter.Y) *
+                      System.Numerics.Matrix3x2.CreateRotation(-MathF.PI / 2 - phi) *
+                      System.Numerics.Matrix3x2.CreateScale(1 / fScale) *
+                      System.Numerics.Matrix3x2.CreateTranslation(nWidth / 2, nHeight / 2);
+                }
+                catch { }
+            } else if (string.CompareOrdinal(this.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0)
+            {
+                try
+                {
+                    var vCenter = (md.measurePoints[2] + md.measurePoints[3]) / 2;
+                    var fLength = (md.measurePoints[2] - md.measurePoints[3]).Length();
                     float fScale = (fLength * this.PatternRelHeight) / (nPatternHeight);
                     var ptBoxCenter = new System.Numerics.Vector2
                     {
@@ -100,6 +147,10 @@ namespace Blazor.ImageSurveyor
             {
                 return (this.normalizer.NormalizedWidthPx, this.normalizer.NormalizedHeightPx);
             }
+            else if (string.CompareOrdinal(this.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0)
+            {
+                return (this.normalizer.NormalizedWidthPx, this.normalizer.NormalizedHeightPx);
+            }
             else if (string.CompareOrdinal(this.normalizer.NormalizeMethod, "CropRectangle") == 0)
             {
                 return ((int)(this.normalizePoints[1].X - this.normalizePoints[0].X), (int)(this.normalizePoints[1].Y - this.normalizePoints[0].Y));
@@ -109,6 +160,10 @@ namespace Blazor.ImageSurveyor
         public (int, int) GetPatternSize(int nPatternHeight)
         {
             if (string.CompareOrdinal(this.normalizer.NormalizeMethod, "HeadToCloakInPetriDish") == 0)
+            {
+                return ((int)((this.PatternRelWidth * nPatternHeight) / this.PatternRelHeight), nPatternHeight);
+            }
+            else if (string.CompareOrdinal(this.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0)
             {
                 return ((int)((this.PatternRelWidth * nPatternHeight) / this.PatternRelHeight), nPatternHeight);
             }

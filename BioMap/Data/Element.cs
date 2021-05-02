@@ -181,10 +181,7 @@ namespace BioMap
                         }
                         else
                         {
-                            var normalizer = new Blazor.ImageSurveyor.ImageSurveyorNormalizer()
-                            {
-                                NormalizeMethod = "CropRectangle",
-                            };
+                            var normalizer = new Blazor.ImageSurveyor.ImageSurveyorNormalizer("CropRectangle");
                             this.MeasureData = new Blazor.ImageSurveyor.ImageSurveyorMeasureData
                             {
                                 normalizer = normalizer,

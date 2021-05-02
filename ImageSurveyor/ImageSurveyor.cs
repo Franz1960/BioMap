@@ -85,6 +85,11 @@ namespace Blazor.ImageSurveyor
                     var mNormalize = md.GetNormalizeMatrix();
                     md.measurePoints[2] = System.Numerics.Vector2.Transform(md.measurePoints[0], mNormalize);
                     md.measurePoints[3] = System.Numerics.Vector2.Transform(md.measurePoints[1], mNormalize);
+                } else if (string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0)
+                {
+                    var mNormalize = md.GetNormalizeMatrix();
+                    md.measurePoints[2] = System.Numerics.Vector2.Transform(md.measurePoints[0], mNormalize);
+                    md.measurePoints[3] = System.Numerics.Vector2.Transform(md.measurePoints[1], mNormalize);
                 }
             }
             {
