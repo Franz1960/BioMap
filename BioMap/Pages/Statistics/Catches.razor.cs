@@ -524,12 +524,12 @@ namespace BioMap.Pages.Statistics
                 //
                 int nIndex = 0;
                 foreach (var indiSpec in new[] {
-          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
-          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
-          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
-        })
+                    new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
+                    new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
+                    new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
+                })
                 {
-                    var aCatchCountsHeadBodyLength = new int[30];
+                    var aCatchCountsHeadBodyLength = new int[(int)Math.Ceiling(this.SD.CurrentProject.MaxHeadBodyLength/2)];
                     foreach (var ea in aaIndisByIId.Values)
                     {
                         foreach (var el in ea)
@@ -545,7 +545,7 @@ namespace BioMap.Pages.Statistics
                         Label = indiSpec.Item1,
                         BackgroundColor = this.GetColor(nIndex),
                     };
-                    for (int idx = 6; idx < aCatchCountsHeadBodyLength.Length; idx++)
+                    for (int idx = (int)Math.Floor(this.SD.CurrentProject.MinHeadBodyLength / 2); idx < aCatchCountsHeadBodyLength.Length; idx++)
                     {
                         if (nIndex == 0)
                         {

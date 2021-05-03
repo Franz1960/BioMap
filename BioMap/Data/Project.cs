@@ -54,6 +54,8 @@ namespace BioMap
         public ImageSurveyorNormalizer ImageNormalizer { get; set; } = new ImageSurveyorNormalizer("HeadToCloakInPetriDish");
         public bool MaleGenderFeatures { get; set; }
         public bool FemaleGenderFeatures { get; set; }
+        public double MinHeadBodyLength { get; set; }
+        public double MaxHeadBodyLength { get; set; }
         public void InitSpeciesByGroupForYellowBelliedToad()
         {
             this.Species.Clear();
