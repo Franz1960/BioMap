@@ -186,7 +186,7 @@ namespace BioMap.Shared
                         var bounds = JsonConvert.DeserializeObject<LatLngLiteral[]>(sJson);
                         customMapOverlay = await GroundOverlay.CreateAsync(
                           googleMap.JsRuntime,
-                          "data/conf/MapImage.jpg",
+                          "/api/conf/MapImage.jpg?Project=" + SD.CurrentUser.Project,
                           new LatLngBoundsLiteral(bounds[0], bounds[1]),
                           new GroundOverlayOptions
                           {

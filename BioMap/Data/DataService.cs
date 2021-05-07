@@ -58,6 +58,16 @@ namespace BioMap
             string sFilePath = System.IO.Path.Combine(sDir, "temp");
             return sFilePath;
         }
+        public string GetConfDir(string sProject)
+        {
+            var sDir = this.GetDataDir(sProject);
+            string sFilePath = System.IO.Path.Combine(sDir, "conf");
+            if (!System.IO.Directory.Exists(sFilePath))
+            {
+                System.IO.Directory.CreateDirectory(sFilePath);
+            }
+            return sFilePath;
+        }
         public string GetDocsDir(string sProject)
         {
             var sDir = this.GetDataDir(sProject);
