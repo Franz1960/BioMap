@@ -12,8 +12,8 @@
     <CheckBox Checked="ShowCustomMap" CheckedChanged="@((e)=>{ ShowCustomMap=e; })" LabelText=@Localize["Show custom map"] />
   </Column>
   <Column>
-    <CheckBox Checked="ShowPlaces" CheckedChanged="@((e)=>{ ShowPlaces=e; })" LabelText=@Localize["Show places"] />
-  </Column>
+@*    <CheckBox Checked="ShowPlaces" CheckedChanged="@((e)=>{ ShowPlaces=e; })" LabelText=@Localize["Show places"] />
+*@  </Column>
   <Column>
     <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Clear_Clicked(); })"><Blazorise.Icon Name="IconName.Clear" /> @Localize["Clear"]</Button>
   </Column>

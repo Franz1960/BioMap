@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
@@ -20,7 +20,7 @@ namespace BioMap
     public class Preferences {
       public string MaptypeId;
       public bool ShowCustomMap;
-      public bool ShowPlaces;
+      public int ShowPlaces;
       public bool DynaZoomed;
       public bool DisplayConnectors;
     }

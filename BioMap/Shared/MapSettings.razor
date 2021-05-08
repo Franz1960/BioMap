@@ -1,0 +1,59 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Row>
+  @if (this.AreaMap != null)
+  {
+    <span style="margin-right: 12px;">
+      <Button Size="Blazorise.Size.Small" Color="Color.Primary" Clicked="async ()=>await this.AreaMap.FitBounds()">@Localize["Fit visible area"]</Button>
+    </span>
+    <span style="margin-right: 12px;">
+      <CheckBox Checked="this.AreaMap.ShowCustomMap" CheckedChanged="@((e)=>{ this.AreaMap.ShowCustomMap=e; })" LabelText=@Localize["Show custom map"] />
+    </span>
+    <span style="margin-right: 5px;">
+      @Localize["Places"]:
+    </span>
+    <span style="margin-right: 12px;">
+      <RadioGroup TValue="int" @bind-CheckedValue="this.AreaMap.ShowPlaces">
+        <Radio TValue="int" Value="@(0)">@Localize["No"]</Radio>
+        <Radio TValue="int" Value="@(1)">@Localize["Yes"]</Radio>
+        <Radio TValue="int" Value="@(2)">@Localize["Monitoring"]</Radio>
+      </RadioGroup>
+    </span>
+    @if (this.ElementMap != null)
+    {
+      <span style="margin-right: 12px;">
+        <CheckBox Checked="this.ElementMap.DynaZoomed" CheckedChanged="(e)=>this.ElementMap.DynaZoomed=e" LabelText=@Localize["Dyn. zoom"] />
+      </span>
+    }
+    @if (this.ShowConnectorSwitch)
+    {
+      <span style="margin-right: 0px;">
+        <CheckBox Checked="SD.CurrentUser.Prefs.DisplayConnectors" CheckedChanged="(e)=>{ SD.CurrentUser.Prefs.DisplayConnectors=e; SD.DS.WriteUser(SD,SD.CurrentUser); }" LabelText=@Localize["Show movements"] />
+      </span>
+    }
+  }
+  </Row>
+
+@code {
+  [Parameter]
+  public AreaMap AreaMap
+  {
+    get => this._AreaMap;
+    set
+    {
+      if (value != this._AreaMap)
+      {
+        this._AreaMap = value;
+        this.ElementMap = value as ElementMap;
+      }
+    }
+  }
+  private AreaMap _AreaMap = null;
+  private ElementMap ElementMap { get; set; }
+  [Parameter]
+  public bool ShowConnectorSwitch { get; set; } = false;
+}

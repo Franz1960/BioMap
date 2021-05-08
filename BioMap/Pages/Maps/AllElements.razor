@@ -10,18 +10,7 @@
   </Column>
 </Row>
 <Row>
-  <Column>
-    <Button Color="Color.Primary" Clicked="async ()=>await FitBounds()">@Localize["Fit visible area"]</Button>
-  </Column>
-  <Column>
-    <CheckBox Checked="ShowCustomMap" CheckedChanged="@((e)=>{ ShowCustomMap=e; })" LabelText=@Localize["Show custom map"] />
-  </Column>
-  <Column>
-    <CheckBox Checked="ShowPlaces" CheckedChanged="@((e)=>{ ShowPlaces=e; })" LabelText=@Localize["Show places"] />
-  </Column>
-  <Column>
-    <CheckBox Checked="DynaZoomed" CheckedChanged="(e)=>DynaZoomed=e" LabelText=@Localize["Dyn. zoom"] />
-  </Column>
+  <MapSettings AreaMap="this"/>
 </Row>
 <PhotoPopup @ref="PhotoPopup1" />
 <GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>

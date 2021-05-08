@@ -14,7 +14,7 @@
     <Field Horizontal="true">
       <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Year"]</FieldLabel>
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-        <NumericEdit @bind-Value="Year" />
+        <NumericEdit @bind-Value="mt.Year" />
       </FieldBody>
     </Field>
   </Column>
@@ -24,8 +24,8 @@
   <thead>
     <tr>
       <th scope="col">@Localize["Place"]</th>
-      @foreach (var kw in Enumerable.Range(kwMin,kwMax-kwMin+1)) {
-        @if (kw==this.kwNow)
+      @foreach (var kw in Enumerable.Range(mt.kwMin,mt.kwMax-mt.kwMin+1)) {
+        @if (kw==mt.kwNow)
         {
         <th scope="col" style="background-color:orange">@kw</th>
         }
@@ -37,27 +37,27 @@
     </tr>
   </thead>
   <tbody>
-    @foreach (var sPlacename in this.PlaceNames)
+    @foreach (var sPlacename in mt.PlaceNames)
     {
       <tr>
         <td scope="row"><b>@sPlacename</b></td>
-        @foreach (var kw in Enumerable.Range(kwMin, kwMax - kwMin + 1))
+        @foreach (var kw in Enumerable.Range(mt.kwMin, mt.kwMax - mt.kwMin + 1))
         {
-          @if (this.Results[sPlacename].Results.ContainsKey(kw))
+          @if (mt.Results[sPlacename].Results.ContainsKey(kw))
           {
             <td>
-              @(this.Results[sPlacename].Results[kw].Catches + "/" + this.Results[sPlacename].Results[kw].ReCatches)
+              @(mt.Results[sPlacename].Results[kw].Catches + "/" + mt.Results[sPlacename].Results[kw].ReCatches)
             </td>
           }
-          else if (kw == this.Results[sPlacename].PlannedMonitoring.Week && !string.IsNullOrEmpty(this.Results[sPlacename].PlannedMonitoring.Color))
+          else if (kw == mt.Results[sPlacename].PlannedMonitoring.Week && !string.IsNullOrEmpty(mt.Results[sPlacename].PlannedMonitoring.Color))
           {
-            <td style="background-color:@this.Results[sPlacename].PlannedMonitoring.Color;">
+            <td style="background-color:@mt.Results[sPlacename].PlannedMonitoring.Color;">
               <Select TValue="string">
                 <SelectItem TValue="string" Value=@("empty")></SelectItem>
                 <SelectItem TValue="string" Value=@("conditionally")>Übernehme ich, wenn kein Anderer will</SelectItem>
                 <SelectItem TValue="string" Value=@("definitely")>Übernehme ich sicher</SelectItem>
-                <SelectItem TValue="string" Value=@("conditionallyByOther") Disabled="true">Würde @this.Results[sPlacename].PlannedMonitoring.UserId übernehmen</SelectItem>
-                <SelectItem TValue="string" Value=@("definitelyByOther") Disabled="true">Hat @this.Results[sPlacename].PlannedMonitoring.UserId übernommen</SelectItem>
+                <SelectItem TValue="string" Value=@("conditionallyByOther") Disabled="true">Würde @mt.Results[sPlacename].PlannedMonitoring.UserId übernehmen</SelectItem>
+                <SelectItem TValue="string" Value=@("definitelyByOther") Disabled="true">Hat @mt.Results[sPlacename].PlannedMonitoring.UserId übernommen</SelectItem>
               </Select>
             </td>
           }

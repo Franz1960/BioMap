@@ -575,7 +575,7 @@ namespace BioMap
             this.LoadProject(sd, sd.CurrentProject);
             user.Prefs.MaptypeId = this.GetUserProperty(sd, "MaptypeId", "");
             user.Prefs.ShowCustomMap = (ConvInvar.ToInt(this.GetUserProperty(sd, "ShowCustomMap", "0")) != 0);
-            user.Prefs.ShowPlaces = (ConvInvar.ToInt(this.GetUserProperty(sd, "ShowPlaces", "1")) != 0);
+            user.Prefs.ShowPlaces = ConvInvar.ToInt(this.GetUserProperty(sd, "ShowPlaces", "1"));
             user.Prefs.DynaZoomed = (ConvInvar.ToInt(this.GetUserProperty(sd, "DynaZoomed", "0")) != 0);
             user.Prefs.DisplayConnectors = (ConvInvar.ToInt(this.GetUserProperty(sd, "DisplayConnectors", "0")) != 0);
         }
@@ -623,7 +623,7 @@ namespace BioMap
             });
             this.SetUserProperty(sd, "MaptypeId", user.Prefs.MaptypeId);
             this.SetUserProperty(sd, "ShowCustomMap", user.Prefs.ShowCustomMap ? "1" : "0");
-            this.SetUserProperty(sd, "ShowPlaces", user.Prefs.ShowPlaces ? "1" : "0");
+            this.SetUserProperty(sd, "ShowPlaces", ConvInvar.ToString(user.Prefs.ShowPlaces));
             this.SetUserProperty(sd, "DynaZoomed", user.Prefs.DynaZoomed ? "1" : "0");
             this.SetUserProperty(sd, "DisplayConnectors", user.Prefs.DisplayConnectors ? "1" : "0");
         }

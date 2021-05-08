@@ -22,7 +22,7 @@ namespace BioMap.Shared
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
         [Parameter]
-        public bool ShowPlaces
+        public int ShowPlaces
         {
             get
             {
@@ -35,7 +35,7 @@ namespace BioMap.Shared
                 this.DelayedStateHasChanged();
             }
         }
-        private bool? PrevShowPlaces = null;
+        private int? PrevShowPlaces = null;
         [Parameter]
         public bool ShowCustomMap
         {
@@ -104,6 +104,8 @@ namespace BioMap.Shared
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+            this.mt = new Monitoring(this.SD);
+            this.mt.RefreshData();
             mapOptions = new MapOptions()
             {
                 Zoom = 12,
@@ -125,6 +127,8 @@ namespace BioMap.Shared
                 mapOptions.Zoom = 8;
             }
         }
+        //
+        private Monitoring mt { get; set; }
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             await base.OnAfterRenderAsync(firstRender);
@@ -203,27 +207,31 @@ namespace BioMap.Shared
             }
             #region Add places.
             {
-                bool bShowPlaces = (this.ShowPlaces && SD.CurrentUser.Level >= 0);
-                if (!this.PrevShowPlaces.HasValue || bShowPlaces != this.PrevShowPlaces || this.refreshPlacesReq)
+                if (!this.PrevShowPlaces.HasValue || this.ShowPlaces != this.PrevShowPlaces || this.refreshPlacesReq)
                 {
                     this.refreshPlacesReq = false;
                     LatLngBoundsLiteral bounds = null;
-                    this.PrevShowPlaces = bShowPlaces;
+                    this.PrevShowPlaces = this.ShowPlaces;
                     var dictPlaceCircles = new Dictionary<string, CircleOptions>();
                     var dictPlaceMarkers = new Dictionary<string, MarkerOptions>();
-                    if (bShowPlaces)
+                    if (this.ShowPlaces >= 1)
                     {
                         foreach (var place in DS.GetPlaces(SD))
                         {
+                            var mtColor = (this.ShowPlaces == 1) ? "Orange" : this.mt.Results?[place.Name]?.PlannedMonitoring?.Color;
+                            if (string.IsNullOrEmpty(mtColor))
+                            {
+                                mtColor = "Grey";
+                            }
                             var circleOptions = new CircleOptions
                             {
                                 Map = googleMap.InteropObject,
                                 Center = new LatLngLiteral(place.LatLng.lng, place.LatLng.lat),
                                 Radius = place.Radius,
-                                StrokeColor = "Orange",
+                                StrokeColor = mtColor,
                                 StrokeOpacity = 0.8f,
                                 StrokeWeight = 3,
-                                FillColor = "Orange",
+                                FillColor = mtColor,
                                 FillOpacity = 0.02f,
                             };
                             dictPlaceCircles[place.Name] = circleOptions;
@@ -236,9 +244,9 @@ namespace BioMap.Shared
                                     Text = place.Name,
                                     FontSize = "18px",
                                     FontWeight = "bold",
-                                    Color = "DarkOrange",
+                                    Color = mtColor,
                                 },
-                                Icon = new Symbol { Path = "M -15,10 L 15,10 z", StrokeColor = "DarkOrange", },
+                                Icon = new Symbol { Path = "M -15,10 L 15,10 z", StrokeColor = mtColor, },
                             };
                             dictPlaceMarkers[place.Name] = markerOptions;
                             LatLngBoundsLiteral.CreateOrExtend(ref bounds, new LatLngLiteral(place.LatLng.lng, place.LatLng.lat));
