@@ -32,7 +32,7 @@
     @if (this.ShowConnectorSwitch)
     {
       <span style="margin-right: 0px;">
-        <CheckBox Checked="SD.CurrentUser.Prefs.DisplayConnectors" CheckedChanged="(e)=>{ SD.CurrentUser.Prefs.DisplayConnectors=e; SD.DS.WriteUser(SD,SD.CurrentUser); }" LabelText=@Localize["Show movements"] />
+        <CheckBox Checked="SD.CurrentUser.Prefs.DisplayConnectors" CheckedChanged="(e)=>{ SD.CurrentUser.Prefs.DisplayConnectors=e; SD.DS.WriteUser(SD,SD.CurrentUser); this.AreaMap.Invalidate(); }" LabelText=@Localize["Show movements"] />
       </span>
     }
   }

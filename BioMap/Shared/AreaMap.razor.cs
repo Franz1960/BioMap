@@ -259,6 +259,10 @@ namespace BioMap.Shared
             }
             #endregion
         }
+        public void Invalidate()
+        {
+            this.DelayedStateHasChanged();
+        }
         public async Task RefreshPlaces()
         {
             this.refreshPlacesReq = true;
