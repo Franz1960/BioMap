@@ -5,10 +5,14 @@
 @using BioMap
 
 <Row>
+  <span style="padding-left: 40px;"></span>
   @if (this.AreaMap != null)
   {
     <span style="margin-right: 12px;">
-      <Button Size="Blazorise.Size.Small" Color="Color.Primary" Clicked="async ()=>await this.AreaMap.FitBounds()">@Localize["Fit visible area"]</Button>
+      <Button Size="Blazorise.Size.Small" Color="Color.Primary" Clicked="async ()=>await this.AreaMap.FitBounds()">
+        <Icon Name="IconName.Expand"></Icon>
+        @Localize["Fit visible area"]
+      </Button>
     </span>
     <span style="margin-right: 12px;">
       <CheckBox Checked="this.AreaMap.ShowCustomMap" CheckedChanged="@((e)=>{ this.AreaMap.ShowCustomMap=e; })" LabelText=@Localize["Show custom map"] />
@@ -36,7 +40,7 @@
       </span>
     }
   }
-  </Row>
+</Row>
 
 @code {
   [Parameter]

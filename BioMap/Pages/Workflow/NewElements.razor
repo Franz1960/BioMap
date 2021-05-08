@@ -26,18 +26,18 @@
     </Row>
     <Row Margin="Margin.Is1.OnY">
       <Column>
-        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
+        <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
           <Icon Name="IconName.StepBackward"></Icon>
         </Button>
       </Column>
       <Column>
-        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(true); })" Block="true" Disabled=@(Element!=null && Element.Classification.IsIdPhoto() && string.IsNullOrEmpty(Element?.GenderFeature))>
+        <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectNext(true); })" Block="true" Disabled=@(Element!=null && Element.Classification.IsIdPhoto() && string.IsNullOrEmpty(Element?.GenderFeature))>
           <Icon Name="IconName.Save" />
           <Icon Name="IconName.StepForward" />
         </Button>
       </Column>
       <Column>
-        <Button Color="Color.Light" Clicked="@(async (e)=>{ await OnSelectNext(false); })" Block="true">
+        <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectNext(false); })" Block="true">
           <Icon Name="IconName.StepForward"></Icon>
         </Button>
       </Column>

@@ -28,7 +28,7 @@
           <Collapse Visible="@(addPlaceVisible)">
             <CollapseHeader>
               <Heading Size="HeadingSize.Is2">
-                <Button Color="Color.Light" Clicked="@(async ()=>{ await AddPlace_Opened(); })"><Icon Name="IconName.Add" /> @Localize["Add place"]</Button>
+                <Button Color="Color.Primary" Clicked="@(async ()=>{ await AddPlace_Opened(); })"><Icon Name="IconName.Add" /> @Localize["Add place"]</Button>
               </Heading>
             </CollapseHeader>
             <CollapseBody>
