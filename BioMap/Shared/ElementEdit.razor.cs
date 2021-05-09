@@ -77,6 +77,7 @@ namespace BioMap.Shared
             if (this.Element.ElementProp.MarkerInfo.PlaceName != sPlaceName) {
                 this.DS.AddLogEntry(this.SD, $"Changed place of element \"{this.Element.ElementName}\" from \"{this.Element.ElementProp.MarkerInfo.PlaceName}\" to \"{sPlaceName}\".");
                 this.Element.ElementProp.MarkerInfo.PlaceName = sPlaceName;
+                this.Element.ElementProp.MarkerInfo.position = this.DS.GetPlaceByName(this.SD, sPlaceName)?.LatLng;
             }
         }
         public string[] EditingChangedContent()
