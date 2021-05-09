@@ -162,7 +162,7 @@
           SelectedValueChanged="(value)=>this.SetPlace(value)"
           Disabled="this.Edit && !this.SD.CurrentUser.MayChangeElementPlace(this.Element)"
           >
-          @foreach (var sPlaceName in this.DS.GetPlaces(this.SD).Select(p=>p.Name))
+          @foreach (var sPlaceName in this.DS.GetPlaces(this.SD).Select(p=>p.Name).Append(""))
           {
             <SelectItem TValue="string" Value="sPlaceName">@sPlaceName</SelectItem>
           }
