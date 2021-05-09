@@ -403,6 +403,10 @@ namespace BioMap
         {
             return (!string.IsNullOrEmpty(this.ElementProp.ExifData?.Make) || !string.IsNullOrEmpty(this.ElementProp.ExifData?.Model));
         }
+        public bool HasGeoLocation()
+        {
+            return (this.ElementProp.MarkerInfo?.position != null);
+        }
         public bool HasIndivData()
         {
             return (this.Classification.IsIdPhoto() && this.ElementProp.IndivData != null);

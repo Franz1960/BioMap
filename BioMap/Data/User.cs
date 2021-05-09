@@ -32,6 +32,13 @@ namespace BioMap
     public bool MaySeeOtherUsers { get => Level>=500 || IsOwner; }
     public bool MayChangeOtherUsers { get => Level>=600 || IsOwner; }
     public bool MayChangeElements { get => Level>=500; }
+    public bool MayChangeElementPlace(Element el) {
+            if (Level >= 600 || (Level >= 500 && string.CompareOrdinal(el.ElementProp.UploadInfo.UserId, this.EMail) == 0))
+            {
+                return true;
+            }
+            return false;
+        }
     public bool MayUploadElements { get => Level>=300; }
     public bool MayDeleteElement(Element el) {
       if (Level>=500 || string.CompareOrdinal(el.ElementProp.UploadInfo.UserId,EMail)==0) {

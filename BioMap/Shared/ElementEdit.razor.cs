@@ -53,7 +53,6 @@ namespace BioMap.Shared
                                 this.Properties.Add(new[] { Localize["Migration"], ConvInvar.ToDecimalString(dDistance, 0) + " m" });
                             }
                         }
-                        this.Properties.Add(new[] { Localize["Place"], el.GetPlaceName() });
                         this.Properties.Add(new[] { "File name", el.ElementName });
                         if (hasPhoto)
                         {
@@ -73,6 +72,13 @@ namespace BioMap.Shared
         private Element _Element = null;
         private List<string[]> Properties { get; set; } = new List<string[]>();
         private string OrigJson = null;
+        private void SetPlace(string sPlaceName)
+        {
+            if (this.Element.ElementProp.MarkerInfo.PlaceName != sPlaceName) {
+                this.DS.AddLogEntry(this.SD, $"Changed place of element \"{this.Element.ElementName}\" from \"{this.Element.ElementProp.MarkerInfo.PlaceName}\" to \"{sPlaceName}\".");
+                this.Element.ElementProp.MarkerInfo.PlaceName = sPlaceName;
+            }
+        }
         public string[] EditingChangedContent()
         {
             if (this.Element != null && this.OrigJson != null)
