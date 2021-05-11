@@ -696,6 +696,9 @@
   <data name="Select" xml:space="preserve">
     <value>Auswählen</value>
   </data>
+  <data name="Select a project, then you can register for it." xml:space="preserve">
+    <value>Wählen Sie ein Projekt, dann können Sie sich dafür registrieren.</value>
+  </data>
   <data name="Select one or more. Negate by switch." xml:space="preserve">
     <value>Einen oder mehrere auswählen. Mit Schalter Auswahl umkehren.</value>
   </data>
