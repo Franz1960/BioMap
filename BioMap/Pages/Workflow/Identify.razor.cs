@@ -23,6 +23,7 @@ namespace BioMap.Pages.Workflow
         private string PatternImgSrc = "";
         private string PatternCompareImgSrc = "";
         private PhotoPopup PhotoPopup1;
+        private Blazorise.Alert Alert1;
         private Element Element
         {
             get => this._Element;
@@ -103,6 +104,7 @@ namespace BioMap.Pages.Workflow
             {
                 this.Element = aElements[0];
             }
+            this.Alert1.Hide();
             await this.InvokeAsync(() => { this.StateHasChanged(); });
         }
         private async Task OnSelectNext()
@@ -122,6 +124,7 @@ namespace BioMap.Pages.Workflow
             {
                 this.Element = aElements[0];
             }
+            this.Alert1.Hide();
             if (this.HasRendered) {
                 await this.InvokeAsync(() => { this.StateHasChanged(); });
             }
@@ -156,12 +159,21 @@ namespace BioMap.Pages.Workflow
         {
             this.Element.ElementProp.IndivData.IId = this.ElementToCompare.ElementProp.IndivData.IId;
             this.Element.ElementProp.IndivData.DateOfBirth = this.ElementToCompare.ElementProp.IndivData.DateOfBirth;
+            var aPrevElements = DS.GetElements(SD, null, WhereClauses.Is_Iid(this.Element.ElementProp.IndivData.IId));
+            bool bGenderConsistent = this.Element.TryDetermineGender(this.SD, aPrevElements, out string sGender);
+            this.Element.Gender = sGender;
             DS.WriteElement(SD, this.Element);
+            if (!bGenderConsistent)
+            {
+                this.Alert1.Show();
+            }
             await this.InvokeAsync(() => { this.StateHasChanged(); });
         }
         private async Task CreateNewIId()
         {
             this.Element.ElementProp.IndivData.IId = this.DS.GetNextFreeIId(this.SD);
+            this.Element.TryDetermineGender(this.SD,null,out string sGender);
+            this.Element.Gender = sGender;
             DS.WriteElement(SD, this.Element);
             await this.InvokeAsync(() => { this.StateHasChanged(); });
         }

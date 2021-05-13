@@ -399,6 +399,54 @@ namespace BioMap
                 }
             }
         }
+        public bool TryDetermineGender(SessionData sd, Element[] prevElements, out string sGender)
+        {
+            if (sd.CurrentProject.MaleGenderFeatures && this.GenderFeature == "m")
+            {
+                sGender = "m";
+            }
+            else if (sd.CurrentProject.FemaleGenderFeatures && this.GenderFeature == "f")
+            {
+                sGender = "f";
+            }
+            else if (!sd.CurrentProject.FemaleGenderFeatures && this.GenderFeature == "-")
+            {
+                if (this.GetHeadBodyLengthMm() < sd.CurrentProject.AdultMinLength)
+                {
+                    sGender = "j";
+                }
+                else
+                {
+                    sGender = "f";
+                }
+            }
+            else if (!sd.CurrentProject.MaleGenderFeatures && this.GenderFeature == "-")
+            {
+                if (this.GetHeadBodyLengthMm() < sd.CurrentProject.AdultMinLength)
+                {
+                    sGender = "j";
+                }
+                else
+                {
+                    sGender = "m";
+                }
+            }
+            else
+            {
+                sGender = "";
+            }
+            if (prevElements != null)
+            {
+                foreach (var el in prevElements)
+                {
+                    if (!(el.Gender == sGender || el.Gender == "j"))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
         public bool HasPhotoData()
         {
             return (!string.IsNullOrEmpty(this.ElementProp.ExifData?.Make) || !string.IsNullOrEmpty(this.ElementProp.ExifData?.Model));

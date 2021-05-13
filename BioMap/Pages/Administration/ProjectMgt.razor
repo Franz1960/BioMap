@@ -137,6 +137,12 @@ else
           <CheckBox @bind-Checked="this.SD.CurrentProject.MaleGenderFeatures" LabelText=@Localize["Male gender features"] />
           <CheckBox @bind-Checked="this.SD.CurrentProject.FemaleGenderFeatures" LabelText=@Localize["Female gender features"] />
           <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Adult minimum length"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <NumericEdit TValue="double" Disabled="@(SD.CurrentUser.Level<500)" @bind-Value="SD.CurrentProject.AdultMinLength" Min="12" Max="20000" />
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Minimum head body length"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
               <NumericEdit TValue="double" Disabled="@(SD.CurrentUser.Level<500)" @bind-Value="SD.CurrentProject.MinHeadBodyLength" Min="12" Max="20000" />

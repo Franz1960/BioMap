@@ -16,5 +16,9 @@ namespace BioMap
         {
             return "elements.place='" + sPlaceName + "'";
         }
+        public static string Is_Iid(int iid)
+        {
+            return Is_ID_photo + $" AND indivdata.iid={iid}";
+        }
     }
 }

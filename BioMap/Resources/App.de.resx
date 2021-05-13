@@ -159,6 +159,9 @@
   <data name="Administration" xml:space="preserve">
     <value>Verwaltung</value>
   </data>
+  <data name="Adult minimum length" xml:space="preserve">
+    <value>Mindestlänge Adulti</value>
+  </data>
   <data name="Adults" xml:space="preserve">
     <value>Adulti</value>
   </data>
@@ -245,6 +248,9 @@
   </data>
   <data name="Category filter" xml:space="preserve">
     <value>Kategorie-Filter</value>
+  </data>
+  <data name="Check the list of individuals and correct the sex." xml:space="preserve">
+    <value>Kontrollieren Sie die Liste der Individuen und korrigieren Sie das Geschlecht.</value>
   </data>
   <data name="Classification" xml:space="preserve">
     <value>Klassifizierung</value>
@@ -546,6 +552,9 @@
   <data name="Max. allowed elements" xml:space="preserve">
     <value>Max. erlaubte Anzahl von Elementen</value>
   </data>
+  <data name="Maximum head body length" xml:space="preserve">
+    <value>Maximale Kopf-Rumpf-Länge</value>
+  </data>
   <data name="Measure#To_measure_length" xml:space="preserve">
     <value>Vermessen</value>
   </data>
@@ -557,6 +566,9 @@
   </data>
   <data name="Migration distances" xml:space="preserve">
     <value>Wanderdistanzen</value>
+  </data>
+  <data name="Minimum head body length" xml:space="preserve">
+    <value>Minimale Kopf-Rumpf-Länge</value>
   </data>
   <data name="Missed individuals" xml:space="preserve">
     <value>Vermisste Individuen</value>
@@ -755,6 +767,9 @@
   </data>
   <data name="The frequency distribution of head-torso lengths of all catches, broken down by age (overwintering) of the individuals caught." xml:space="preserve">
     <value>Die Häufigkeitsverteilung der Kopf-Rumpf-Längen aller Fänge, aufgeschlüsselt nach dem Alter (Überwinterungen) der gefangenen Individuen.</value>
+  </data>
+  <data name="The gender selections of this individual are not consistent." xml:space="preserve">
+    <value>Die Auswahl des Geschlechts dieses Individuums ist nicht konsistent.</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>Zeit</value>
