@@ -7,14 +7,12 @@
 
 <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
 
-<h1>@Localize["All Images"]</h1>
-
 <PhotoPopup @ref="PhotoPopup1" />
 
 @foreach (var sPlace in ElementsByPlaces.Keys)
 {
   <div class="row">
-    <h2>@sPlace</h2>
+    <h2>@(string.IsNullOrEmpty(sPlace) ? Localize["Outside defined places"] : sPlace)</h2>
   </div>
   <div class="row">
     @foreach (var el in ElementsByPlaces[sPlace])

@@ -639,6 +639,9 @@
   <data name="Other photos and local news" xml:space="preserve">
     <value>Sonstige Fotos und Ortsmeldungen</value>
   </data>
+  <data name="Outside defined places" xml:space="preserve">
+    <value>Außerhalb definierter Orte</value>
+  </data>
   <data name="Over time" xml:space="preserve">
     <value>Über der Zeit</value>
   </data>
