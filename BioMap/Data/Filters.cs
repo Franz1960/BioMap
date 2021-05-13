@@ -356,7 +356,11 @@ namespace BioMap
             }
             return sb.ToString();
         }
-
+        public bool IsEmpty()
+        {
+            string sResult = this.AddAllFiltersToWhereClause("");
+            return string.IsNullOrEmpty(sResult);
+        }
         public string AddAllFiltersToWhereClause(string sBasicWhereClause)
         {
             string sResult = sBasicWhereClause;

@@ -1326,7 +1326,7 @@ namespace BioMap
             var sWhereClause = WhereClauses.Is_Individuum;
             sWhereClause = Filters.AddToWhereClause(sWhereClause, sAdditionalWhereClause);
             var aNormedElements = this.GetElements(sd, filters, sWhereClause, "indivdata.iid ASC,elements.creationtime ASC");
-            if (bIncludeAllPhotosOfIndivuals) {
+            if (bIncludeAllPhotosOfIndivuals && !(filters == null || filters.IsEmpty())) {
                 var lIndivs = new List<Element>();
                 foreach (var iid in aNormedElements.Select(e => e.GetIIdAsInt()).Distinct().Where(iid => iid.HasValue).Select(iid => iid.Value))
                 {
