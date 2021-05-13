@@ -10,7 +10,7 @@
   </Column>
 </Row>
 <Row>
-  <MapSettings AreaMap="this" ShowConnectorSwitch="true"/>
+  <MapSettings AreaMap="this" ShowConnectorSwitch="true" DisplayConnectorsChanged="@((value) => { this.RefreshElementMarkers(); })"/>
 </Row>
 <PhotoPopup @ref="PhotoPopup1" />
 <GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
