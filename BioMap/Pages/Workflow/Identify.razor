@@ -93,65 +93,77 @@
     </Column>
   }
   <Column>
-    <Row Margin="Margin.Is1.OnY">
-      <Column>
-        <img src="api/photos/@Element?.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
-      </Column>
-    </Row>
-    <Row Margin="Margin.Is1.OnY">
-      <Column>
-        <a href="javascript:void(0);" @onclick="()=>ElementName_Click(Element)">
-          <strong>@Element?.ElementName</strong>
-        </a><br />
-        <ElementInfo Element="this.Element" />
-      </Column>
-    </Row>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-2">
-          <Image Source="@PatternImgSrc" Style="height:200px;" />
-        </div>
-        <div class="col-lg-5" style="min-width:280px">
-          @if (Element != null && Element.HasPhotoData())
-          {
-            @this.Element.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
-          }
-        </div>
-        <div class="col-lg-5">
-          <div class="container" style="min-width:240px">
-            <Row Margin="Margin.Is1.OnY">
-              <UserFilter />
-            </Row>
-            <Row Margin="Margin.Is2.OnY">
-              <Column ColumnSize="ColumnSize.Is6">
-                  <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
-                    <Icon Name="IconName.StepBackward"></Icon>
-                  </Button>
-              </Column>
-              <Column ColumnSize="ColumnSize.Is6">
-                  <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
-                    <Icon Name="IconName.StepForward"></Icon>
-                  </Button>
-              </Column>
-            </Row>
-            @if (this.Element != null) {
-              <Row Margin="Margin.Is2.OnY">
-                <Button Color="Color.Primary" Clicked="@(async (e)=>{ await this.CreateNewIId(); })" Block="true">
-                  @(string.Format(Localize["Not found. It's a new individual, create a new IID!"]))<br />
-                </Button>
+    @if (Element != null) {
+      <Row Margin="Margin.Is1.OnY">
+        <Column>
+          <img src="api/photos/@Element?.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
+        </Column>
+      </Row>
+      <Row Margin="Margin.Is1.OnY">
+        <Column>
+          <a href="javascript:void(0);" @onclick="()=>ElementName_Click(Element)">
+            <strong>@Element?.ElementName</strong>
+          </a><br />
+          <ElementInfo Element="this.Element" />
+        </Column>
+      </Row>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2">
+            <Image Source="@PatternImgSrc" Style="height:200px;" />
+          </div>
+          <div class="col-lg-5" style="min-width:280px">
+            @if (Element != null && Element.HasPhotoData())
+            {
+              @this.Element.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
+            }
+          </div>
+          <div class="col-lg-5">
+            <div class="container" style="min-width:240px">
+              <Row Margin="Margin.Is1.OnY">
+                <UserFilter />
               </Row>
-              @if (this.ElementToCompare != null) {
+              <Row Margin="Margin.Is2.OnY">
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
+                      <Icon Name="IconName.StepBackward"></Icon>
+                    </Button>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
+                      <Icon Name="IconName.StepForward"></Icon>
+                    </Button>
+                </Column>
+              </Row>
+              @if (this.Element != null) {
                 <Row Margin="Margin.Is2.OnY">
-                  <Button Color="Color.Primary" Clicked="@(async (e)=>{ await this.IdentifyAs(ElementToCompare); })" Block="true">
-                    @(string.Format(Localize["Match! It's the individual #{0}"],this.ElementToCompare.GetIId()))<br />
+                  <Button Color="Color.Primary" Clicked="@(async (e)=>{ await this.CreateNewIId(); })" Block="true">
+                    @(string.Format(Localize["Not found. It's a new individual, create a new IID!"]))<br />
                   </Button>
                 </Row>
+                @if (this.ElementToCompare != null) {
+                  <Row Margin="Margin.Is2.OnY">
+                    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await this.IdentifyAs(ElementToCompare); })" Block="true">
+                      @(string.Format(Localize["Match! It's the individual #{0}"],this.ElementToCompare.GetIId()))<br />
+                    </Button>
+                  </Row>
+                }
               }
-            }
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    }
+    else
+    {
+      <Row Margin="Margin.Is1.OnY">
+        <Column>
+          <Alert Color="Color.Warning" Visible="true">
+            @Localize["No more individuals to identify. If you want to process an individual element, select it in \"Lists / All Individuals\" and return to this page."]
+          </Alert>
+        </Column>
+      </Row>
+    }
   </Column>
 </Row>
 

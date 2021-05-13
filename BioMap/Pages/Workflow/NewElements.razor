@@ -249,6 +249,16 @@
         }
       </Row>
     }
+    else
+    {
+      <Row Margin="Margin.Is1.OnY">
+        <Column>
+          <Alert Color="Color.Warning" Visible="true">
+            @Localize["No more new elements. If you want to process an existing element, select it in \"Lists / All Elements\" and return to this page."]
+          </Alert>
+        </Column>
+      </Row>
+    }
   </Column>
 </Row>
 

@@ -594,6 +594,12 @@
   <data name="New individuals" xml:space="preserve">
     <value>Neue Individuen</value>
   </data>
+  <data name="No more individuals to identify. If you want to process an individual element, select it in &quot;Lists / All Individuals&quot; and return to this page." xml:space="preserve">
+    <value>Es müssen keine weiteren Individuen identifiziert werden. Wenn Sie ein einzelnes Element bearbeiten möchten, wählen Sie es in "Listen / Alle Individuen" aus und kehren Sie zu dieser Seite zurück.</value>
+  </data>
+  <data name="No more new elements. If you want to process an existing element, select it in &quot;Lists / All Elements&quot; and return to this page." xml:space="preserve">
+    <value>Keine neuen Elemente mehr. Wenn Sie ein vorhandenes Element bearbeiten wollen, wählen Sie es in "Listen / Alle Elemente" aus und kehren Sie auf diese Seite zurück.</value>
+  </data>
   <data name="None" xml:space="preserve">
     <value>Keine</value>
   </data>
