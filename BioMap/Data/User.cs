@@ -29,8 +29,8 @@ namespace BioMap
     public bool IsSuperAdmin { get => DataService.Instance.GetSuperAdmins().Contains(this.EMail); }
     public bool MaySeeProject { get => Level>=200; }
     public bool MayChangeLocations { get => Level>=500; }
-    public bool MaySeeOtherUsers { get => Level>=500 || IsOwner; }
-    public bool MayChangeOtherUsers { get => Level>=600 || IsOwner; }
+    public bool MaySeeOtherUsers { get => Level>=500; }
+    public bool MayChangeOtherUsers { get => Level>=600; }
     public bool MayChangeElements { get => Level>=500; }
     public bool MayChangeElementPlace(Element el) {
             if (Level >= 600 || (Level >= 500 && string.CompareOrdinal(el.ElementProp.UploadInfo.UserId, this.EMail) == 0))
