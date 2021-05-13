@@ -76,7 +76,7 @@
   }
   private void RefreshData()
   {
-    this.Individuals = DataService.Instance.GetIndividuals(SD, SD.Filters);
+    this.Individuals = DataService.Instance.GetIndividuals(SD, SD.Filters, null, true);
   }
   private string GetForElements(int iid, Func<Element, string> func, bool bAddYoBWarning = false)
   {
@@ -187,7 +187,7 @@
     var sep = "\t";
     var csv = new System.Text.StringBuilder();
     csv.Append("IId" + sep + "TimeStamp" + sep + "GpsLat" + sep + "GpsLng" + sep + "Gender" + sep + "Length" + sep + "Traits" + sep + "Distance" + sep + "Place" + sep + "ElementName" + "\n");
-    foreach (var aIndis in DS.GetIndividuals(SD, SD.Filters))
+    foreach (var aIndis in DS.GetIndividuals(SD, SD.Filters, null, true))
     {
       for (int idxEl = 0; idxEl < aIndis.Value.Count; idxEl++)
       {

@@ -1318,12 +1318,22 @@ namespace BioMap
                 return lElements.ToArray();
             }
         }
-        public Dictionary<int, List<Element>> GetIndividuals(SessionData sd, Filters filters = null, string sAdditionalWhereClause = null)
+        public Dictionary<int, List<Element>> GetIndividuals(SessionData sd, Filters filters = null, string sAdditionalWhereClause = null, bool bIncludeAllPhotosOfIndivuals = false)
         {
             var aaIndisByIId = new Dictionary<int, List<Element>>();
             var sWhereClause = WhereClauses.Is_Individuum;
             sWhereClause = Filters.AddToWhereClause(sWhereClause, sAdditionalWhereClause);
             var aNormedElements = this.GetElements(sd, filters, sWhereClause, "indivdata.iid ASC,elements.creationtime ASC");
+            if (bIncludeAllPhotosOfIndivuals) {
+                var lIndivs = new List<Element>();
+                foreach (var iid in aNormedElements.Select(e => e.GetIIdAsInt()).Distinct().Where(iid => iid.HasValue).Select(iid => iid.Value))
+                {
+                    var sWhereClause1 = WhereClauses.Is_Individuum;
+                    sWhereClause1 = Filters.AddToWhereClause(sWhereClause1, $"indivdata.iid={iid}");
+                    lIndivs.AddRange(this.GetElements(sd, null, sWhereClause1, "indivdata.iid ASC,elements.creationtime ASC"));
+                }
+                aNormedElements=lIndivs.ToArray();
+            }
             foreach (var el in aNormedElements)
             {
                 if (el.ElementProp.IndivData != null)

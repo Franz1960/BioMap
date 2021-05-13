@@ -78,7 +78,7 @@
   }
   private void RefreshData()
   {
-    this.Individuals = DataService.Instance.GetIndividuals(SD, SD.Filters);
+    this.Individuals = DataService.Instance.GetIndividuals(SD, SD.Filters, null, true);
     var lIIds = new List<int>(this.Individuals.Keys);
     lIIds.Sort((a, b) =>
     {

@@ -106,7 +106,7 @@ namespace BioMap.Pages.Diagrams
             {
                 try
                 {
-                    var aaIndisByIId = DS.GetIndividuals(SD, SD.Filters);
+                    var aaIndisByIId = DS.GetIndividuals(SD, SD.Filters, null, true);
                     int idx = 0;
                     foreach (var iid in aaIndisByIId.Keys)
                     {
@@ -210,7 +210,7 @@ namespace BioMap.Pages.Diagrams
         private void RefreshData()
         {
             var dtProjectStart = SD.CurrentProject.StartDate.Value;
-            var aaIndisByIId = DS.GetIndividuals(SD, SD.Filters);
+            var aaIndisByIId = DS.GetIndividuals(SD, SD.Filters, null, true);
             _config.Data.Datasets.Clear();
             // Ideale Wachstumskurven hinzufügen.
             if (SD.SizeTimeChartShowVintageBoundaries)

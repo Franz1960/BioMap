@@ -39,7 +39,7 @@ namespace BioMap.Pages.Maps
             var lElementMarkers = new List<ElementMarker>();
             if (SD.CurrentUser.Level >= 0)
             {
-                var dictIndividuals = DataService.Instance.GetIndividuals(SD, SD.Filters);
+                var dictIndividuals = DataService.Instance.GetIndividuals(SD, SD.Filters, null, this.DisplayConnectors);
                 foreach (var iid in dictIndividuals.Keys)
                 {
                     ElementMarker prevMarker = null;
