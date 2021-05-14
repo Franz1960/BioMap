@@ -471,6 +471,9 @@
   <data name="Insert TAN" xml:space="preserve">
     <value>TAN eingeben</value>
   </data>
+  <data name="Interval" xml:space="preserve">
+    <value>Intervall</value>
+  </data>
   <data name="Intro1" xml:space="preserve">
     <value>BioMap ist ein Web-App, die für ein Projekt zum Monitoring von Gelbbauchunken entwickelt wurde (und weiterhin wird). Durch die individuelle Erkennung, Längenvermessung und Standorterfassung können Populationsgröße, Altersstruktur, Geschlechterverhältnis, Wandertätigkeit, örtliche Verteilung und Fortpflanzungsaktivität ermittelt werden.</value>
   </data>

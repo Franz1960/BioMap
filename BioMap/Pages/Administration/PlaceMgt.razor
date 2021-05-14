@@ -80,6 +80,7 @@
                 <th scope="col">@Localize["Longitude"]</th>
               }
               <th scope="col">@Localize["Radius"]</th>
+              <th scope="col">@Localize["Interval"]</th>
               @foreach (var trait in Places.Traits)
               {
                 <th scope="col">@trait.Name</th>
@@ -107,6 +108,9 @@
                 }
                 <td>
                   <NumericEdit TValue="double" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.Radius" @onfocusout="(e)=>ChangeByUser(place)" />
+                </td>
+                <td>
+                  <NumericEdit TValue="int" Disabled="!SD.CurrentUser.MayChangeLocations" @bind-Value="place.MonitoringIntervalWeeks" @onfocusout="(e)=>ChangeByUser(place)" />
                 </td>
                 @foreach (var idx in Enumerable.Range(0, Places.Traits.Length))
                 {

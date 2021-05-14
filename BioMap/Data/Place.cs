@@ -14,6 +14,7 @@ namespace BioMap
         public string Name;
         public double Radius = 150;
         public LatLng LatLng;
+        public int MonitoringIntervalWeeks = 4;
         //
         public static Place GetNearestPlace(SessionData sd, LatLng latLng, float fDistanceTolerance = 0.20f)
         {

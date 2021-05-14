@@ -377,6 +377,12 @@ namespace BioMap
                             command.ExecuteNonQuery();
                         }
                         catch { }
+                        try
+                        {
+                            command.CommandText = "ALTER TABLE places ADD COLUMN monitoringintervalweeks INT";
+                            command.ExecuteNonQuery();
+                        }
+                        catch { }
                     }
                     #endregion
                     this.AccessedDbs.Add(sProject);
@@ -897,7 +903,7 @@ namespace BioMap
             var lPlaces = new List<Place>();
             this.OperateOnDb(sd, (command) =>
             {
-                command.CommandText = "SELECT name,radius,lat,lng,traitvalues" +
+                command.CommandText = "SELECT name,radius,lat,lng,monitoringintervalweeks,traitvalues" +
                   " FROM places" +
                   ((sWhereClause == null) ? "" : (" WHERE (" + sWhereClause + ")")) +
                   " ORDER BY name" +
@@ -914,8 +920,9 @@ namespace BioMap
                             lat = dr.GetDouble(2),
                             lng = dr.GetDouble(3),
                         },
+                        MonitoringIntervalWeeks = dr.IsDBNull(4) ? 4 : dr.GetInt32(4),
                     };
-                    var sTraitsJson = dr.GetValue(4) as string;
+                    var sTraitsJson = dr.GetValue(5) as string;
                     if (!string.IsNullOrEmpty(sTraitsJson))
                     {
                         var naTraitValues = JsonConvert.DeserializeObject<int[]>(sTraitsJson);
@@ -941,6 +948,7 @@ namespace BioMap
                   "'" + ConvInvar.ToString(place.Radius) +
                   "','" + ConvInvar.ToString(place.LatLng.lat) +
                   "','" + ConvInvar.ToString(place.LatLng.lng) +
+                  "','" + ConvInvar.ToString(place.MonitoringIntervalWeeks) +
                   "','" + sTraitJson +
                   "')";
                 command.ExecuteNonQuery();
@@ -979,6 +987,7 @@ namespace BioMap
                       "radius='" + ConvInvar.ToString(place.Radius) + "'," +
                       "lat='" + ConvInvar.ToString(place.LatLng.lat) + "'," +
                       "lng='" + ConvInvar.ToString(place.LatLng.lng) + "'," +
+                      "monitoringintervalweeks='" + ConvInvar.ToString(place.MonitoringIntervalWeeks) + "'," +
                       "traitvalues='" + sTraitJson + "' WHERE name='" + place.Name + "'";
                     command.ExecuteNonQuery();
                 });

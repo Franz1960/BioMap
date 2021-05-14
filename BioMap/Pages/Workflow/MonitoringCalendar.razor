@@ -49,6 +49,12 @@
               @(mt.Results[sPlacename].Results[kw].Catches + "/" + mt.Results[sPlacename].Results[kw].ReCatches)
             </td>
           }
+          else if (mt.Results[sPlacename].PlannedMonitoring == null)
+          {
+            <td>
+              
+            </td>
+          }
           else if (kw == mt.Results[sPlacename].PlannedMonitoring.Week && !string.IsNullOrEmpty(mt.Results[sPlacename].PlannedMonitoring.Color))
           {
             <td style="background-color:@mt.Results[sPlacename].PlannedMonitoring.Color;">

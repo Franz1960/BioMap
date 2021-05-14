@@ -12,7 +12,6 @@ namespace BioMap
             this.SD = sd;
         }
         private SessionData SD { get; }
-        public readonly int Interval = 4;
         public readonly int kwMin = 16;
         public readonly int kwMax = 44;
         public int kwNow { get; private set; } = 0;
@@ -78,10 +77,13 @@ namespace BioMap
                         }
                     }
                 }
-                var pm = new PlannedMonitoring {
-                    Week = Math.Max(this.kwNow,kw_MostRecent + Interval),
-                };
-                pm.Color = (pm.Week == this.kwNow) ? "orange" : (pm.Week == this.kwNow + 1) ? "green" : string.Empty;
+                PlannedMonitoring pm = null;
+                if (place.MonitoringIntervalWeeks>=1) {
+                    pm = new PlannedMonitoring {
+                        Week = Math.Max(this.kwNow,kw_MostRecent + place.MonitoringIntervalWeeks),
+                    };
+                    pm.Color = (pm.Week == this.kwNow) ? "orange" : (pm.Week == this.kwNow + 1) ? "green" : string.Empty;
+                }
                 var rop = new ResultOfPlace {
                     Results = dictResults,
                     PlannedMonitoring = pm,
