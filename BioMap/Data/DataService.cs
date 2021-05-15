@@ -623,20 +623,22 @@ namespace BioMap
         }
         public void WriteUser(SessionData sd, User user)
         {
-            this.OperateOnDb(sd, (command) =>
-            {
-                command.CommandText =
-                  "UPDATE users SET " +
-                  "level='" + ConvInvar.ToString(user.Level) + "'," +
-                  "level='" + ConvInvar.ToString(user.Level) + "'," +
-                  "fullname='" + user.FullName + "' WHERE emailaddr='" + user.EMail + "'";
-                command.ExecuteNonQuery();
-            });
-            this.SetUserProperty(sd, "MaptypeId", user.Prefs.MaptypeId);
-            this.SetUserProperty(sd, "ShowCustomMap", user.Prefs.ShowCustomMap ? "1" : "0");
-            this.SetUserProperty(sd, "ShowPlaces", ConvInvar.ToString(user.Prefs.ShowPlaces));
-            this.SetUserProperty(sd, "DynaZoomed", user.Prefs.DynaZoomed ? "1" : "0");
-            this.SetUserProperty(sd, "DisplayConnectors", user.Prefs.DisplayConnectors ? "1" : "0");
+            if (user.Level>=1) {
+                this.OperateOnDb(sd, (command) =>
+                {
+                    command.CommandText =
+                      "UPDATE users SET " +
+                      "level='" + ConvInvar.ToString(user.Level) + "'," +
+                      "level='" + ConvInvar.ToString(user.Level) + "'," +
+                      "fullname='" + user.FullName + "' WHERE emailaddr='" + user.EMail + "'";
+                    command.ExecuteNonQuery();
+                });
+                this.SetUserProperty(sd, "MaptypeId", user.Prefs.MaptypeId);
+                this.SetUserProperty(sd, "ShowCustomMap", user.Prefs.ShowCustomMap ? "1" : "0");
+                this.SetUserProperty(sd, "ShowPlaces", ConvInvar.ToString(user.Prefs.ShowPlaces));
+                this.SetUserProperty(sd, "DynaZoomed", user.Prefs.DynaZoomed ? "1" : "0");
+                this.SetUserProperty(sd, "DisplayConnectors", user.Prefs.DisplayConnectors ? "1" : "0");
+            }
         }
         public string GetUserProperty(SessionData sd, string sPropertyName, string sDefaultValue = "")
         {
