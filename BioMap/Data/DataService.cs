@@ -1189,11 +1189,16 @@ namespace BioMap
                     {
                         bool bDirty = false;
                         var sElementName = dr.GetString(0);
-                        DateTime dtDateTimeOriginal = dr.GetDateTime(4);
-                        var oDateTimeOriginal = dr.GetValue(9);
-                        if (oDateTimeOriginal is string sDateTimeOriginal)
+                        DateTime dtDateTimeOriginal = DateTime.MinValue;
+                        try
                         {
-                            DateTime.TryParse(sDateTimeOriginal, out dtDateTimeOriginal);
+                            dtDateTimeOriginal = dr.GetDateTime(9);
+                        } catch {
+                            try
+                            {
+                                dtDateTimeOriginal = dr.GetDateTime(4);
+                            }
+                            catch { }
                         }
                         var sJsonClassification = dr.GetValue(35) as string;
                         var ec = new ElementClassification();
@@ -1217,16 +1222,16 @@ namespace BioMap
                             md = new Blazor.ImageSurveyor.ImageSurveyorMeasureData
                             {
                                 normalizePoints = new[] {
-                  new System.Numerics.Vector2 { X=dr.GetFloat(27),Y=dr.GetFloat(28) },
-                  new System.Numerics.Vector2 { X=dr.GetFloat(29),Y=dr.GetFloat(30) },
-                  new System.Numerics.Vector2 { X=dr.GetFloat(31),Y=dr.GetFloat(32) },
-                },
+                                  new System.Numerics.Vector2 { X=dr.GetFloat(27),Y=dr.GetFloat(28) },
+                                  new System.Numerics.Vector2 { X=dr.GetFloat(29),Y=dr.GetFloat(30) },
+                                  new System.Numerics.Vector2 { X=dr.GetFloat(31),Y=dr.GetFloat(32) },
+                                },
                                 measurePoints = new[] {
-                  new System.Numerics.Vector2 { X=dr.GetFloat(19),Y=dr.GetFloat(20) },
-                  new System.Numerics.Vector2 { X=dr.GetFloat(21),Y=dr.GetFloat(22) },
-                  new System.Numerics.Vector2 { X=dr.GetFloat(23),Y=dr.GetFloat(24) },
-                  new System.Numerics.Vector2 { X=dr.GetFloat(25),Y=dr.GetFloat(26) },
-                },
+                                  new System.Numerics.Vector2 { X=dr.GetFloat(19),Y=dr.GetFloat(20) },
+                                  new System.Numerics.Vector2 { X=dr.GetFloat(21),Y=dr.GetFloat(22) },
+                                  new System.Numerics.Vector2 { X=dr.GetFloat(23),Y=dr.GetFloat(24) },
+                                  new System.Numerics.Vector2 { X=dr.GetFloat(25),Y=dr.GetFloat(26) },
+                                },
                             };
                             bDirty = true;
                         }

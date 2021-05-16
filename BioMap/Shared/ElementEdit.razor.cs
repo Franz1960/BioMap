@@ -37,7 +37,7 @@ namespace BioMap.Shared
                     {
                         SD.SelectedElementName = el.ElementName;
                         this.OrigJson = JsonConvert.SerializeObject(el);
-                        this.hasPhoto = el.HasPhotoData();
+                        this.hasPhoto = !string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project, el.ElementName));
                         this.Properties.Clear();
                         if (el.HasIndivData() && el.HasMeasuredData())
                         {
