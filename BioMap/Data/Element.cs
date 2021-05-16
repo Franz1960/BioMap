@@ -361,7 +361,7 @@ namespace BioMap
         public string GetPlaceName()
         {
             var sPlaceName = this.ElementProp.MarkerInfo.PlaceName;
-            return sPlaceName;
+            return (sPlaceName == null) ? "" : sPlaceName;
         }
         public string Gender
         {

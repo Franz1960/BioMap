@@ -623,6 +623,7 @@ namespace BioMap
         }
         public void WriteUser(SessionData sd, User user)
         {
+            //System.Diagnostics.Debug.WriteLine($"WriteUser({user.EMail},Level={user.Level})");
             if (user.Level>=1) {
                 this.OperateOnDb(sd, (command) =>
                 {

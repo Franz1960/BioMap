@@ -1,0 +1,71 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<Row>
+  <span style="padding-left: 40px;"></span>
+  <span style="margin-right: 12px;">
+    <Button Size="Blazorise.Size.Small" Color="Color.Primary" Clicked="() => { this.SortDown^=true; }">
+      <Icon Name="IconName.Clock" Style="padding-right: 10px;" />
+      @if (this.SortDown)
+      {
+        <Icon Name="IconName.ArrowDown" />
+      }
+      else
+      {
+        <Icon Name="IconName.ArrowUp" />
+      }
+    </Button>
+  </span>
+  <span style="margin-right: 12px;">
+    <CheckBox @bind-Checked="this.GroupByPlace" LabelText=@Localize["Group by Places"] />
+  </span>
+</Row>
+
+@code {
+  [Parameter]
+  public string Context {
+    get => this._Context;
+    set
+    {
+      if (value != this._Context)
+      {
+        this._Context = value;
+        this.StateHasChanged();
+      }
+    }
+  }
+  private string _Context = null;
+  [Parameter]
+  public bool SortDown {
+    get => this._SortDown;
+    set
+    {
+      if (value != this._SortDown)
+      {
+        this._SortDown = value;
+        this.StateHasChanged();
+        this.AnyChanged.InvokeAsync();
+      }
+    }
+  }
+  private bool _SortDown = false;
+  [Parameter]
+  public bool GroupByPlace {
+    get => this._GroupByPlace;
+    set
+    {
+      if (value != this._GroupByPlace)
+      {
+        this._GroupByPlace = value;
+        this.StateHasChanged();
+        this.AnyChanged.InvokeAsync();
+      }
+    }
+  }
+  private bool _GroupByPlace = false;
+  [Parameter]
+  public EventCallback AnyChanged { get; set; }
+}
