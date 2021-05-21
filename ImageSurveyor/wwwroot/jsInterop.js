@@ -110,8 +110,13 @@ class PrepPic_t {
         let ptsNormalize = PrepPic.MeasureData.normalizePoints;
         PrepPic.drawMarker(ctx, ptHead, MH, phi, 'magenta', 'Kopfspitze');
         PrepPic.drawMarker(ctx, ptBack, MH, phi, 'brown', 'Kloake');
-        // Draw circle around Petri dish.
-        let rotationBox = Math.atan2(ptsNormalize[1].Y - ptsNormalize[0].Y, ptsNormalize[1].X - ptsNormalize[0].X);
+        // Draw markers on cuvette edges.
+        let distX = ptsNormalize[1].X - ptsNormalize[0].X;
+        let distY = ptsNormalize[1].Y - ptsNormalize[0].Y;
+        let rotationBox = Math.atan2(distY, distX);
+        let dist = Math.sqrt(distX * distX + distY * distY);
+        let deltaX = 0.5 * dist * Math.cos(rotationBox + Math.PI / 2);
+        let deltaY = 0.5 * dist * Math.sin(rotationBox + Math.PI / 2);
         for (let i = 0; i < ptsNormalize.length; i++) {
           PrepPic.drawMarker(ctx, ptsNormalize[i], MH, rotationBox);
         }
@@ -120,7 +125,14 @@ class PrepPic_t {
         ctx.lineTo(ptsNormalize[1].X, ptsNormalize[1].Y);
         ctx.lineWidth = 4 / PrepPic.Zoom;
         ctx.stroke();
-        //
+        ctx.beginPath();
+        ctx.moveTo(ptsNormalize[0].X - deltaX, ptsNormalize[0].Y - deltaY);
+        ctx.lineTo(ptsNormalize[0].X + deltaX, ptsNormalize[0].Y + deltaY);
+        ctx.moveTo(ptsNormalize[1].X - deltaX, ptsNormalize[1].Y - deltaY);
+        ctx.lineTo(ptsNormalize[1].X + deltaX, ptsNormalize[1].Y + deltaY);
+        ctx.lineWidth = 2 / PrepPic.Zoom;
+        ctx.stroke();
+        // Draw box.
         let fNormDistance = PrepPic_t.calcDistance(ptsNormalize[1], ptsNormalize[0]);
         let fScale = fNormDistance / 500;
         let fBoxWidth = fScale * 500;
@@ -132,6 +144,7 @@ class PrepPic_t {
         };
         ctx.translate(ptBoxCenter.X, ptBoxCenter.Y);
         ctx.rotate(phi);
+        ctx.lineWidth = 4 / PrepPic.Zoom;
         ctx.strokeRect(-fBoxWidth / 2, -fBoxHeight / 2, fBoxWidth, fBoxHeight);
       } else if (PrepPic.MeasureData.normalizer.NormalizeMethod == "CropRectangle") {
         let ptA = PrepPic.MeasureData.normalizePoints[0];
