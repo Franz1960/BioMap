@@ -33,12 +33,13 @@
       if (value != this._Context)
       {
         this._Context = value;
+        this._SortDown = ConvInvar.ToInt(this.SD.DS.GetUserProperty(this.SD, $"SnGS.{this.Context}.SortDown", "0")) != 0;
+        this._GroupByPlace = ConvInvar.ToInt(this.SD.DS.GetUserProperty(this.SD, $"SnGS.{this.Context}.GroupByPlace", "0")) != 0;
         this.StateHasChanged();
       }
     }
   }
   private string _Context = null;
-  [Parameter]
   public bool SortDown {
     get => this._SortDown;
     set
@@ -46,13 +47,16 @@
       if (value != this._SortDown)
       {
         this._SortDown = value;
+        if (this.Context != null)
+        {
+          this.SD.DS.SetUserProperty(this.SD, $"SnGS.{this.Context}.SortDown", this.SortDown ? "1" : "0");
+        }
         this.StateHasChanged();
         this.AnyChanged.InvokeAsync();
       }
     }
   }
   private bool _SortDown = false;
-  [Parameter]
   public bool GroupByPlace {
     get => this._GroupByPlace;
     set
@@ -60,6 +64,10 @@
       if (value != this._GroupByPlace)
       {
         this._GroupByPlace = value;
+        if (this.Context != null)
+        {
+          this.SD.DS.SetUserProperty(this.SD, $"SnGS.{this.Context}.GroupByPlace", this.GroupByPlace ? "1" : "0");
+        }
         this.StateHasChanged();
         this.AnyChanged.InvokeAsync();
       }
