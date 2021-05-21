@@ -58,12 +58,14 @@
           else if (kw == mt.Results[sPlacename].PlannedMonitoring.Week && !string.IsNullOrEmpty(mt.Results[sPlacename].PlannedMonitoring.Color))
           {
             <td style="background-color:@mt.Results[sPlacename].PlannedMonitoring.Color;">
-              <Select TValue="string">
+              <Select TValue="string" SelectedValue="@mt.Results[sPlacename].PlannedMonitoring.GetState(this.SD)" SelectedValueChanged="@(async (e)=>{ mt.SetPlannedMonitoring(this.SD,sPlacename,kw,e); })">
                 <SelectItem TValue="string" Value=@("empty")></SelectItem>
                 <SelectItem TValue="string" Value=@("conditionally")>Übernehme ich, wenn kein Anderer will</SelectItem>
                 <SelectItem TValue="string" Value=@("definitely")>Übernehme ich sicher</SelectItem>
-                <SelectItem TValue="string" Value=@("conditionallyByOther") Disabled="true">Würde @mt.Results[sPlacename].PlannedMonitoring.UserId übernehmen</SelectItem>
-                <SelectItem TValue="string" Value=@("definitelyByOther") Disabled="true">Hat @mt.Results[sPlacename].PlannedMonitoring.UserId übernommen</SelectItem>
+                @if (!string.IsNullOrEmpty(mt.Results[sPlacename].PlannedMonitoring.UserId)) {
+                  <SelectItem TValue="string" Value=@("conditionallyByOther") Disabled="true">Würde @mt.Results[sPlacename].PlannedMonitoring.UserId übernehmen</SelectItem>
+                  <SelectItem TValue="string" Value=@("definitelyByOther") Disabled="true">Hat @mt.Results[sPlacename].PlannedMonitoring.UserId übernommen</SelectItem>
+                }
               </Select>
             </td>
           }

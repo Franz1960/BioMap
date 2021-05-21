@@ -26,6 +26,21 @@ namespace BioMap
             public string Color;
             public string UserId;
             public bool Definitely;
+            //
+            public string GetState(SessionData sd)
+            {
+                if (string.IsNullOrEmpty(this.UserId))
+                {
+                    return "empty";
+                } else if (this.UserId == sd.CurrentUser.EMail)
+                {
+                    return this.Definitely ? "definitely" : "conditionally";
+                }
+                else
+                {
+                    return this.Definitely ? "definitelyByOther" : "conditionallyByOther";
+                }
+            }
         }
         public class ResultOfPlace
         {
@@ -83,6 +98,15 @@ namespace BioMap
                         Week = Math.Max(this.kwNow,kw_MostRecent + place.MonitoringIntervalWeeks),
                     };
                     pm.Color = (pm.Week == this.kwNow) ? "orange" : (pm.Week == this.kwNow + 1) ? "green" : string.Empty;
+                    if (!string.IsNullOrEmpty(pm.Color))
+                    {
+                        (int kw, string user, string value) = this.SD.DS.GetPlannedMonitoring(this.SD, place.Name);
+                        if (!string.IsNullOrEmpty(user) && (kw == pm.Week))
+                        {
+                            pm.UserId = user;
+                            pm.Definitely = (value == "definitely");
+                        }
+                    }
                 }
                 var rop = new ResultOfPlace {
                     Results = dictResults,
@@ -94,6 +118,19 @@ namespace BioMap
             var l = this.Results.Keys.ToList();
             l.Sort();
             this.PlaceNames = l.ToArray();
+        }
+        public void SetPlannedMonitoring(SessionData sd, string sPlaceName, int kw, string sValue)
+        {
+            this.Results.TryGetValue(sPlaceName, out ResultOfPlace resultOfPlace);
+            PlannedMonitoring pm = resultOfPlace?.PlannedMonitoring;
+            if (pm == null)
+            {
+                pm = new PlannedMonitoring();
+            }
+            pm.Week = kw;
+            pm.Definitely = (sValue == "definitely");
+            pm.UserId = (sValue == "empty") ? "" : sd.CurrentUser.EMail;
+            sd.DS.SetPlannedMonitoring(sd,sPlaceName,kw,pm.UserId,sValue);
         }
     }
 }

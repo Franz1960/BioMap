@@ -244,12 +244,6 @@ namespace BioMap
                             "lat REAL," +
                             "lng REAL)";
                             command.ExecuteNonQuery();
-                            command.CommandText = "CREATE TABLE IF NOT EXISTS monitoringevents (" +
-                            "place TEXT," +
-                            "kw INT," +
-                            "user TEXT," +
-                            "value TEXT)";
-                            command.ExecuteNonQuery();
                             command.CommandText = "CREATE TABLE IF NOT EXISTS notes (" +
                             "dt DATETIME NOT NULL," +
                             "author TEXT," +
@@ -328,6 +322,12 @@ namespace BioMap
                         "userid TEXT NOT NULL," +
                         "name TEXT NOT NULL," +
                         "value TEXT NOT NULL,UNIQUE(userid,name))";
+                        command.ExecuteNonQuery();
+                        command.CommandText = "DROP TABLE IF EXISTS monitoringevents; CREATE TABLE IF NOT EXISTS plannedmonitorings (" +
+                        "place TEXT PRIMARY KEY NOT NULL," +
+                        "kw INT," +
+                        "user TEXT," +
+                        "value TEXT)";
                         command.ExecuteNonQuery();
                         try
                         {
@@ -996,6 +996,44 @@ namespace BioMap
                 });
                 DataService.Instance.AddLogEntry(sd, "Changed place " + place.Name + ": " + saDiff[0] + " --> " + saDiff[1]);
             }
+        }
+        #endregion
+        #region Monitoring.
+        public (int, string, string) GetPlannedMonitoring(SessionData sd, string sPlaceName)
+        {
+            int kw = -1;
+            string user = null;
+            string value = null;
+            this.OperateOnDb(sd, (command) =>
+            {
+                command.CommandText =
+                    "SELECT kw,user,value FROM plannedmonitorings WHERE place='" + sPlaceName + "'";
+                var dr = command.ExecuteReader();
+                try {
+                    while (dr.Read())
+                    {
+                        kw = dr.GetInt32(0);
+                        user = dr.GetString(1);
+                        value = dr.GetString(2);
+                        break;
+                    }
+                } finally
+                {
+                    dr.Close();
+                }
+            });
+            return (kw, user, value);
+        }
+        public void SetPlannedMonitoring(SessionData sd, string sPlaceName, int kw, string user, string value)
+        {
+            this.OperateOnDb(sd, (command) =>
+            {
+                command.CommandText =
+                  "REPLACE INTO plannedmonitorings (place,kw,user,value) " +
+                  $"VALUES ('{sPlaceName}','{kw}','{user}','{value}')";
+                command.ExecuteNonQuery();
+            });
+            DataService.Instance.AddLogEntry(sd, $"SetPlannedMonitoring({sPlaceName},{kw},{user},{value})");
         }
         #endregion
         public void WriteElement(SessionData sd, Element el)
