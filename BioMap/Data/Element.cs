@@ -306,14 +306,14 @@ namespace BioMap
         }
         public string GetClassOrIId()
         {
-            var sIId = this.GetIId();
-            if (string.IsNullOrEmpty(sIId))
+            int? nIId = GetIIdAsInt();
+            if (nIId.HasValue && nIId.Value >= 1)
             {
-                return this.GetClassName();
+                return "#" + nIId.Value;
             }
             else
             {
-                return "#" + sIId;
+                return this.GetClassName();
             }
         }
         public string GetClassColor()
