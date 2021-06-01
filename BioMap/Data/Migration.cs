@@ -256,6 +256,19 @@ namespace BioMap
                           sOldGender.StartsWith("m") ? "m" :
                           sOldGender.StartsWith("j") ? "j" :
                           "";
+                        string sOldGenderFeature = el.ElementProp?.IndivData?.GenderFeature;
+                        if (string.IsNullOrEmpty(sOldGenderFeature))
+                        {
+                            var sGender = el.ElementProp.IndivData.Gender;
+                            if (sGender == "m")
+                            {
+                                el.ElementProp.IndivData.GenderFeature = "m";
+                            }
+                            else
+                            {
+                                el.ElementProp.IndivData.GenderFeature = "-";
+                            }
+                        }
                         ds.WriteElement(sd, el);
                     }
                 }
