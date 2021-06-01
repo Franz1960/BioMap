@@ -27,26 +27,29 @@ namespace Blazor.ImageSurveyor
                 try
                 {
                     var md = this;
-                    var circle = GetCircleFrom3Points(
-                      md.normalizePoints[0].X,
-                      md.normalizePoints[0].Y,
-                      md.normalizePoints[1].X,
-                      md.normalizePoints[1].Y,
-                      md.normalizePoints[2].X,
-                      md.normalizePoints[2].Y);
-                    float fScale = circle.Radius / (float)((md.normalizer.NormalizeReference / 2) / md.normalizer.NormalizePixelSize);
-                    var ptBoxCenter = new System.Numerics.Vector2
-                    {
-                        X = (md.measurePoints[0].X + md.measurePoints[1].X) / 2,
-                        Y = (md.measurePoints[0].Y + md.measurePoints[1].Y) / 2,
-                    };
-                    float phi = MathF.Atan2(md.measurePoints[0].Y - md.measurePoints[1].Y, md.measurePoints[0].X - md.measurePoints[1].X);
-                    //
-                    mResult =
-                      System.Numerics.Matrix3x2.CreateTranslation(-ptBoxCenter.X, -ptBoxCenter.Y) *
-                      System.Numerics.Matrix3x2.CreateRotation(-MathF.PI / 2 - phi) *
-                      System.Numerics.Matrix3x2.CreateScale(1 / fScale) *
-                      System.Numerics.Matrix3x2.CreateTranslation(md.normalizer.NormalizedWidthPx / 2, md.normalizer.NormalizedHeightPx / 2);
+                    mResult = System.Numerics.Matrix3x2.Identity;
+                    if (md.normalizePoints!=null && md.normalizePoints.Length>=3) {
+                        var circle = GetCircleFrom3Points(
+                          md.normalizePoints[0].X,
+                          md.normalizePoints[0].Y,
+                          md.normalizePoints[1].X,
+                          md.normalizePoints[1].Y,
+                          md.normalizePoints[2].X,
+                          md.normalizePoints[2].Y);
+                        float fScale = circle.Radius / (float)((md.normalizer.NormalizeReference / 2) / md.normalizer.NormalizePixelSize);
+                        var ptBoxCenter = new System.Numerics.Vector2
+                        {
+                            X = (md.measurePoints[0].X + md.measurePoints[1].X) / 2,
+                            Y = (md.measurePoints[0].Y + md.measurePoints[1].Y) / 2,
+                        };
+                        float phi = MathF.Atan2(md.measurePoints[0].Y - md.measurePoints[1].Y, md.measurePoints[0].X - md.measurePoints[1].X);
+                        //
+                        mResult =
+                          System.Numerics.Matrix3x2.CreateTranslation(-ptBoxCenter.X, -ptBoxCenter.Y) *
+                          System.Numerics.Matrix3x2.CreateRotation(-MathF.PI / 2 - phi) *
+                          System.Numerics.Matrix3x2.CreateScale(1 / fScale) *
+                          System.Numerics.Matrix3x2.CreateTranslation(md.normalizer.NormalizedWidthPx / 2, md.normalizer.NormalizedHeightPx / 2);
+                    }
                 }
                 catch { }
             }
