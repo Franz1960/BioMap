@@ -72,16 +72,6 @@ namespace BioMap.Shared
         private Element _Element = null;
         private List<string[]> Properties { get; set; } = new List<string[]>();
         private string OrigJson = null;
-        private void SetPlace(string sPlaceName)
-        {
-            if (this.Element.ElementProp.MarkerInfo.PlaceName != sPlaceName) {
-                this.DS.AddLogEntry(this.SD, $"Changed place of element \"{this.Element.ElementName}\" from \"{this.Element.ElementProp.MarkerInfo.PlaceName}\" to \"{sPlaceName}\".");
-                this.Element.ElementProp.MarkerInfo.PlaceName = sPlaceName;
-                if (!string.IsNullOrEmpty(sPlaceName)) {
-                    this.Element.ElementProp.MarkerInfo.position = this.DS.GetPlaceByName(this.SD, sPlaceName)?.LatLng;
-                }
-            }
-        }
         public string[] EditingChangedContent()
         {
             if (this.Element != null && this.OrigJson != null)

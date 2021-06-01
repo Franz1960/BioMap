@@ -43,5 +43,17 @@ namespace BioMap
                 return (CurrentUser.Level >= CurrentProject.MinLevelToSeeExactLocations && !AlienateLocations);
             }
         }
+        public void SetPlace(Element el, string sPlaceName)
+        {
+            if (el.ElementProp.MarkerInfo.PlaceName != sPlaceName)
+            {
+                this.DS.AddLogEntry(this, $"Changed place of element \"{el.ElementName}\" from \"{el.ElementProp.MarkerInfo.PlaceName}\" to \"{sPlaceName}\".");
+                el.ElementProp.MarkerInfo.PlaceName = sPlaceName;
+                if (!string.IsNullOrEmpty(sPlaceName))
+                {
+                    el.ElementProp.MarkerInfo.position = this.DS.GetPlaceByName(this, sPlaceName)?.LatLng;
+                }
+            }
+        }
     }
 }

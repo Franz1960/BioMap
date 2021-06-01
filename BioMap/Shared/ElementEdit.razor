@@ -159,7 +159,7 @@
         <Select
           TValue="string"
           SelectedValue="this.Element.GetPlaceName()"
-          SelectedValueChanged="(value)=>this.SetPlace(value)"
+          SelectedValueChanged="(value)=>this.SD.SetPlace(this.Element, value)"
           Disabled="this.Edit && !this.SD.CurrentUser.MayChangeElementPlace(this.Element)"
           >
           @foreach (var sPlaceName in this.DS.GetPlaces(this.SD).Select(p=>p.Name).Append(""))
