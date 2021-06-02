@@ -79,6 +79,8 @@ namespace BioMap.Pages.Diagrams
                     }
                 },
             };
+            GrowthFunc.HatchSize = SD.CurrentProject.MinHeadBodyLength;
+            GrowthFunc.FullSize = SD.CurrentProject.MaxHeadBodyLength;
             SD.Filters.FilterChanged += (sender, ev) =>
             {
                 RefreshData();
