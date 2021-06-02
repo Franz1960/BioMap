@@ -57,21 +57,21 @@ namespace BioMap.Pages.Diagrams
                     Scales = new Scales
                     {
                         XAxes = new List<CartesianAxis>
-            {
-            new TimeAxis
-            {
-              ScaleLabel = new ScaleLabel
-              {
-                LabelString = Localize["Time"]
-              },
-              Time = new TimeOptions
-              {
-                Unit = TimeMeasurement.Month,
-                Round = TimeMeasurement.Day,
-                TooltipFormat = "DD.MM.YYYY",
-              },
-            }
-          },
+                        {
+                        new TimeAxis
+                        {
+                          ScaleLabel = new ScaleLabel
+                          {
+                            LabelString = Localize["Time"]
+                          },
+                          Time = new TimeOptions
+                          {
+                            Unit = TimeMeasurement.Month,
+                            Round = TimeMeasurement.Day,
+                            TooltipFormat = "DD.MM.YYYY",
+                          },
+                        }
+                      },
                     },
                     Tooltips = new Tooltips
                     {
