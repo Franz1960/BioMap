@@ -18,7 +18,15 @@
               <div class="row">
                 @foreach (var el in ElementsToCompare)
                 {
-                  <div class="card" style="width: 240px;">
+@*				  <Card @ref=this.dictElementCards[el] Style="width: 240px;">
+                    <a href="javascript:void(0);" @onclick="()=>{ ElementFromList_Clicked(el); }">
+                      <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
+                    </a>
+                    <div class="card-footer">
+                      <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName()) @el.CalcSimilarity(Element).ToString("0.000")</small>
+                    </div>
+				  </Card>
+*@                  <div @ref=this.dictElementCards[el] class="card" style="width: 240px;">
                     <a href="javascript:void(0);" @onclick="()=>{ ElementFromList_Clicked(el); }">
                       <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
                     </a>
@@ -81,7 +89,7 @@
             </table>
             <div class="container" style="min-width:240px">
               <Row Margin="Margin.Is2.OnY">
-                <Button Color="Color.Primary" Clicked="@(async (e)=>{ ElementToCompare=null; })" Block="true">
+                <Button Color="Color.Primary" Clicked="@(async (e)=>{ PrevElementToCompare=ElementToCompare; ElementToCompare=null; })" Block="true">
                   <Icon Name="IconName.List"></Icon>
                   @Localize["Back to list"]
                 </Button>

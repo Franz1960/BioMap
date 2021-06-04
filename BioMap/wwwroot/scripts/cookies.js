@@ -1,4 +1,4 @@
-﻿
+
 function setCookie(cname, cvalue, exdays = 400) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -19,4 +19,12 @@ function getCookie(cname) {
         }
     }
     return "";
+}
+function scrollToElement(element) {
+  //var element = document.getElementById(element);
+  if (element) {
+    element.scrollIntoView({
+      behavior: 'smooth'
+    });
+  }
 }

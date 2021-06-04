@@ -20,8 +20,10 @@ namespace BioMap.Pages.Workflow
     {
         private Element[] ElementsToCompare = new Element[0];
         private Element ElementToCompare = null;
+        private Element PrevElementToCompare = null;
         private string PatternImgSrc = "";
         private string PatternCompareImgSrc = "";
+        private readonly Dictionary<Element, ElementReference> dictElementCards = new Dictionary<Element, ElementReference>();
         private PhotoPopup PhotoPopup1;
         private Blazorise.Alert Alert1;
         private Element Element
@@ -65,7 +67,17 @@ namespace BioMap.Pages.Workflow
             if (firstRender)
             {
             }
-            this.HasRendered=true;
+            if (this.PrevElementToCompare != null)
+            {
+                if (this.dictElementCards.TryGetValue(this.PrevElementToCompare, out ElementReference prevCard))
+                {
+                    Utilities.CallDelayed(1500,async (oaArgs)=> {
+                        await this.JSRuntime.InvokeVoidAsync("scrollToElement", prevCard);
+                    });
+                }
+                this.PrevElementToCompare = null;
+            }
+            this.HasRendered = true;
         }
         private bool HasRendered=false;
         private async void Filters_FilterChanged(object sender, EventArgs e)
