@@ -946,7 +946,7 @@ namespace BioMap
             {
                 var sTraitJson = JsonConvert.SerializeObject(place.TraitValues);
                 command.CommandText =
-                  "REPLACE INTO places (name,radius,lat,lng,traitvalues)" +
+                  "REPLACE INTO places (name,radius,lat,lng,monitoringintervalweeks,traitvalues)" +
                   "VALUES ('" + place.Name + "'," +
                   "'" + ConvInvar.ToString(place.Radius) +
                   "','" + ConvInvar.ToString(place.LatLng.lat) +
