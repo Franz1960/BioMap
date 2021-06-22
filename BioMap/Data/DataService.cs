@@ -868,7 +868,9 @@ namespace BioMap
         /// <summary>
         /// Orte zurückliefern; je nach Zugriffsrecht werden die Orte exakt oder verfremdet zurückgeliefert.
         /// </summary>
-        /// <param name="sd"></param>
+        /// <param name="sd">
+        /// SessionData.
+        /// </param>
         /// <param name="sWhereClause"></param>
         /// <returns></returns>
         public Place[] GetPlaces(SessionData sd, string sWhereClause = null)
