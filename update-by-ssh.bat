@@ -1,1 +1,1 @@
-ssh itools.de -l fh "cd \"/var/www/docker/BioMap\" && sudo git pull && sudo chmod +x *.sh && sudo ./build-and-run.sh"
+ssh itools.de -l fh "cd \"/var/www/docker/BioMap\" && sudo git pull && sudo chmod +x *.sh && sudo ./build-and-run.sh && docker rmi $(docker images --filter "dangling=true" -q --no-trunc)"

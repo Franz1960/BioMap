@@ -865,6 +865,12 @@ namespace BioMap
                 lng = vRes.X,
             };
         }
+        /// <summary>
+        /// Orte zurückliefern; je nach Zugriffsrecht werden die Orte exakt oder verfremdet zurückgeliefert.
+        /// </summary>
+        /// <param name="sd"></param>
+        /// <param name="sWhereClause"></param>
+        /// <returns></returns>
         public Place[] GetPlaces(SessionData sd, string sWhereClause = null)
         {
             if (this.IsMigrationInProcess || (sd != null && sd.MaySeeRealLocations))
