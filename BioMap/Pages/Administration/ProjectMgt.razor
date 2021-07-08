@@ -301,7 +301,7 @@ else
 	  {
 		  if (el.HasPhotoData())
 		  {
-			  el.ElementProp.CreationTime -= TimeSpan.FromHours(2);
+			  el.AdjustTimeFromPhoto(this.SD);
 			  this.DS.WriteElement(this.SD, el);
 		  }
 	  }

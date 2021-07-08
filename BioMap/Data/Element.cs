@@ -148,7 +148,7 @@ namespace BioMap
             {
                 el.ElementProp.ExifData.DateTimeOriginal = dateTime;
                 var sTimeZone = subIfdDirectory.GetString(ExifDirectoryBase.TagTimeZoneOriginal);
-                if (!string.IsNullOrEmpty(sTimeZone) && TimeSpan.TryParse(sTimeZone.Replace("+",""),out var tsOffset))
+                if (!string.IsNullOrEmpty(sTimeZone) && TimeSpan.TryParse(sTimeZone.Replace("+", ""), out var tsOffset))
                 {
                     el.ElementProp.ExifData.DateTimeOriginal -= tsOffset;
                 }
@@ -160,6 +160,30 @@ namespace BioMap
             }
             el.ElementProp.CreationTime = ((el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? el.ElementProp.ExifData.DateTimeOriginal.Value : el.ElementProp.UploadInfo.Timestamp);
             return el;
+        }
+        public void AdjustTimeFromPhoto(SessionData sd)
+        {
+            if (this.HasPhotoData())
+            {
+                var sFilePath = PhotoController.GetFilePathForExistingImage(sd.CurrentUser.Project, this.ElementName, true);
+                if (System.IO.File.Exists(sFilePath))
+                {
+                    var sImageStream = new System.IO.FileStream(sFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                    var metaData = ImageMetadataReader.ReadMetadata(sImageStream);
+                    var subIfdDirectory = metaData.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+                    var el = this;
+                    if (subIfdDirectory != null && subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out var dateTime))
+                    {
+                        el.ElementProp.ExifData.DateTimeOriginal = dateTime;
+                        var sTimeZone = subIfdDirectory.GetString(ExifDirectoryBase.TagTimeZoneOriginal);
+                        if (!string.IsNullOrEmpty(sTimeZone) && TimeSpan.TryParse(sTimeZone.Replace("+", ""), out var tsOffset))
+                        {
+                            el.ElementProp.ExifData.DateTimeOriginal -= tsOffset;
+                        }
+                        el.ElementProp.CreationTime = el.ElementProp.ExifData.DateTimeOriginal.Value;
+                    }
+                }
+            }
         }
         public void InitMeasureData(SessionData sd, bool bOnlyIfNotCompatible)
         {
