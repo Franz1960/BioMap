@@ -81,6 +81,12 @@ else
             </FieldBody>
           </Field>
           <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Adjust wrong photo times"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<700)" Clicked="@(async (e)=>{ await MigratePhotoTimes_Clicked(); })">@Localize["Start"]</Button>
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Migrate categories"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
               <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<7000)" Clicked="@(async (e)=>{ await MigrateCategories_Clicked(); })">@Localize["Start"]</Button>
@@ -245,7 +251,7 @@ else
 </Modal>
 
 @code {
-  private Modal progressModalRef;
+	private Modal progressModalRef;
   private int progressCompletion = 0;
   private List<string> messages = new List<string>();
   //
@@ -287,6 +293,18 @@ else
     {
       await this.InvokeAsync(() => { progressModalRef.Hide(); this.StateHasChanged(); });
     }
+  }
+  private async Task MigratePhotoTimes_Clicked()
+  {
+	  var els = this.DS.GetElements(this.SD);
+	  foreach (var el in els.ToArray())
+	  {
+		  if (el.HasPhotoData())
+		  {
+			  el.ElementProp.CreationTime -= TimeSpan.FromHours(2);
+			  this.DS.WriteElement(this.SD, el);
+		  }
+	  }
   }
   private async Task MigrateCategories_Clicked()
   {

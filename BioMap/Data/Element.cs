@@ -147,6 +147,11 @@ namespace BioMap
             if (subIfdDirectory != null && subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out var dateTime))
             {
                 el.ElementProp.ExifData.DateTimeOriginal = dateTime;
+                var sTimeZone = subIfdDirectory.GetString(ExifDirectoryBase.TagTimeZoneOriginal);
+                if (!string.IsNullOrEmpty(sTimeZone) && TimeSpan.TryParse(sTimeZone.Replace("+",""),out var tsOffset))
+                {
+                    el.ElementProp.ExifData.DateTimeOriginal -= tsOffset;
+                }
             }
             if (ifd0Directory != null)
             {
