@@ -17,6 +17,10 @@ namespace BioMap
         public static DataService Instance { get; private set; }
         private readonly string dataBaseDir = "../../../data/";
         private readonly string baseProject = "biomap";
+        private static string GetEscapedSql(string sInput)
+        {
+            return sInput?.Replace("'", "''");
+        }
         public string[] GetAllProjects()
         {
             var lProjects = new List<string>();
@@ -1438,7 +1442,7 @@ namespace BioMap
                 }
                 else
                 {
-                    command.CommandText = "REPLACE INTO notes (dt,author,text) VALUES ('" + ConvInvar.ToString(pe.CreationTime) + "','" + pe.Author + "','" + pe.Text + "')";
+                    command.CommandText = "REPLACE INTO notes (dt,author,text) VALUES ('" + ConvInvar.ToString(pe.CreationTime) + "','" + pe.Author + "','" + GetEscapedSql(pe.Text) + "')";
                 }
                 command.ExecuteNonQuery();
             });
