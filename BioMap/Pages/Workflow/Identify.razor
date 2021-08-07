@@ -18,17 +18,9 @@
               <div class="row">
                 @foreach (var el in ElementsToCompare)
                 {
-@*				  <Card @ref=this.dictElementCards[el] Style="width: 240px;">
+                  <div @ref=this.dictElementCards[el] class="card" style="width: 240px;">
                     <a href="javascript:void(0);" @onclick="()=>{ ElementFromList_Clicked(el); }">
-                      <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
-                    </a>
-                    <div class="card-footer">
-                      <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName()) @el.CalcSimilarity(Element).ToString("0.000")</small>
-                    </div>
-				  </Card>
-*@                  <div @ref=this.dictElementCards[el] class="card" style="width: 240px;">
-                    <a href="javascript:void(0);" @onclick="()=>{ ElementFromList_Clicked(el); }">
-                      <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
+                      <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&zoom=@SD.GetIdPhotoZoomString(el)&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
                     </a>
                     <div class="card-footer">
                       <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName()) @el.CalcSimilarity(Element).ToString("0.000")</small>
@@ -47,7 +39,7 @@
     <Column>
       <Row Margin="Margin.Is1.OnY">
         <Column>
-          <img src="api/photos/@ElementToCompare.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
+          <img src="api/photos/@ElementToCompare.ElementName?zoom=@SD.GetIdPhotoZoomString(@ElementToCompare)&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
         </Column>
       </Row>
       <Row Margin="Margin.Is1.OnY">
@@ -104,7 +96,7 @@
     @if (Element != null) {
       <Row Margin="Margin.Is1.OnY">
         <Column>
-          <img src="api/photos/@Element?.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
+          <img src="api/photos/@Element?.ElementName?zoom=@SD.GetIdPhotoZoomString(@Element)&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
         </Column>
       </Row>
       <Row Margin="Margin.Is1.OnY">

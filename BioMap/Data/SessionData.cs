@@ -55,5 +55,20 @@ namespace BioMap
                 }
             }
         }
+        public double GetIdPhotoZoom(Element element)
+        {
+            if (element?.Classification!=null && element.Classification.IsIdPhoto()) {
+                return 0.80 * this.CurrentProject.MaxHeadBodyLength / Math.Max(this.CurrentProject.MinHeadBodyLength, element.GetHeadBodyLengthMm());
+            }
+            return 0;
+        }
+        public string GetIdPhotoZoomString(Element element)
+        {
+            double dZoom = this.GetIdPhotoZoom(element);
+            if (dZoom!=0) {
+                return ConvInvar.ToDecimalString(dZoom,4);
+            }
+            return "0";
+        }
     }
 }
