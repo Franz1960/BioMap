@@ -233,7 +233,7 @@ class PrepPic_t {
           }
         }
       } else {
-        if (p != PrepPic.DragPos && PrepPic.DraggedPos) {
+        if (p != PrepPic.DragPos && PrepPic.DraggedPos && PrepPic.Raw) {
           PrepPic.DraggedPos.X += (p.X - PrepPic.DragPos.X);
           PrepPic.DraggedPos.Y += (p.Y - PrepPic.DragPos.Y);
           PrepPic.DraggedPos.X = Math.max(0, Math.min(PrepPic.Image.width, PrepPic.DraggedPos.X));
