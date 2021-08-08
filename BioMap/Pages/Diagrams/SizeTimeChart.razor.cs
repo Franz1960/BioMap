@@ -217,7 +217,7 @@ namespace BioMap.Pages.Diagrams
             // Ideale Wachstumskurven hinzufügen.
             if (SD.SizeTimeChartShowVintageBoundaries)
             {
-                for (int nYoB = 2012; nYoB < 2021; nYoB++)
+                for (int nYoB = 2012; nYoB <= DateTime.Now.Year; nYoB++)
                 {
                     string sYobColor = Element.GetColorForYearOfBirth(nYoB);
                     var lineSet = new LineDataset<TimePoint>
