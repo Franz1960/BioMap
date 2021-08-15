@@ -9,6 +9,17 @@
   @if (hasPhoto)
   {
     <img src="api/photos/@Element.ElementName?Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
+    <table class="table table-sm">
+      <tbody>
+        <tr>
+          <td>@Localize["Time"]</td>
+          <td>@ConvInvar.ToString(Element.ElementProp.CreationTime)</td>
+          <td>
+            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<600)" Clicked="@((e)=>{ Element.AdjustTimeFromPhoto(SD); })">@Localize["Adjust"]</Button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   }
   else
   {

@@ -144,20 +144,7 @@ namespace BioMap
                 el.ElementProp.MarkerInfo.PlaceName = Place.GetNearestPlace(sd, el.ElementProp.MarkerInfo.position)?.Name;
             }
             el.ElementProp.ExifData = new ExifData_t();
-            if (subIfdDirectory != null && subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out var dateTime))
-            {
-                el.ElementProp.ExifData.DateTimeOriginal = dateTime;
-                var sTimeZone = subIfdDirectory.GetString(ExifDirectoryBase.TagTimeZoneOriginal);
-                if (!string.IsNullOrEmpty(sTimeZone) && TimeSpan.TryParse(sTimeZone.Replace("+", ""), out var tsOffset))
-                {
-                    el.ElementProp.ExifData.DateTimeOriginal -= tsOffset;
-                }
-            }
-            if (ifd0Directory != null)
-            {
-                el.ElementProp.ExifData.Make = ifd0Directory.GetString(ExifDirectoryBase.TagMake);
-                el.ElementProp.ExifData.Model = ifd0Directory.GetString(ExifDirectoryBase.TagModel);
-            }
+            el.TryExtractOriginalTimeFromExif(subIfdDirectory);
             el.ElementProp.CreationTime = ((el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? el.ElementProp.ExifData.DateTimeOriginal.Value : el.ElementProp.UploadInfo.Timestamp);
             return el;
         }
@@ -168,22 +155,54 @@ namespace BioMap
                 var sFilePath = PhotoController.GetFilePathForExistingImage(sd.CurrentUser.Project, this.ElementName, true);
                 if (System.IO.File.Exists(sFilePath))
                 {
-                    var sImageStream = new System.IO.FileStream(sFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-                    var metaData = ImageMetadataReader.ReadMetadata(sImageStream);
-                    var subIfdDirectory = metaData.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-                    var el = this;
-                    if (subIfdDirectory != null && subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out var dateTime))
+                    System.IO.FileStream sImageStream = null;
+                    try
                     {
-                        el.ElementProp.ExifData.DateTimeOriginal = dateTime;
-                        var sTimeZone = subIfdDirectory.GetString(ExifDirectoryBase.TagTimeZoneOriginal);
-                        if (!string.IsNullOrEmpty(sTimeZone) && TimeSpan.TryParse(sTimeZone.Replace("+", ""), out var tsOffset))
+                        sImageStream = new System.IO.FileStream(sFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                        var metaData = ImageMetadataReader.ReadMetadata(sImageStream);
+                        var subIfdDirectory = metaData.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+                        var el = this;
+                        if (this.TryExtractOriginalTimeFromExif(subIfdDirectory))
                         {
-                            el.ElementProp.ExifData.DateTimeOriginal -= tsOffset;
+                            el.ElementProp.CreationTime = el.ElementProp.ExifData.DateTimeOriginal.Value;
                         }
-                        el.ElementProp.CreationTime = el.ElementProp.ExifData.DateTimeOriginal.Value;
+                    }
+                    catch
+                    {
+                    }
+                    finally
+                    {
+                        if (sImageStream!=null)
+                        {
+                            sImageStream.Close();
+                        }
                     }
                 }
             }
+        }
+        private bool TryExtractOriginalTimeFromExif(ExifSubIfdDirectory subIfdDirectory)
+        {
+            if (subIfdDirectory != null && subIfdDirectory.ContainsTag(ExifDirectoryBase.TagDateTimeOriginal))
+            {
+                var sDateTimeOriginal = subIfdDirectory.GetString(ExifDirectoryBase.TagDateTimeOriginal);
+                if (sDateTimeOriginal != null && sDateTimeOriginal.Length >= 19)
+                {
+                    sDateTimeOriginal = sDateTimeOriginal.Substring(0, 10).Replace(":", "-") + sDateTimeOriginal.Substring(10);
+                    if (DateTimeOffset.TryParse(sDateTimeOriginal, out var dateTimeOffset))
+                    {
+                        if (dateTimeOffset.Offset.TotalSeconds == 0)
+                        {
+                            var sTimeZone = subIfdDirectory.GetString(ExifDirectoryBase.TagTimeZoneOriginal);
+                            if (!string.IsNullOrEmpty(sTimeZone) && TimeSpan.TryParse(sTimeZone.Replace("+", ""), out var tsOffset))
+                            {
+                                dateTimeOffset = new DateTimeOffset(dateTimeOffset.DateTime, tsOffset);
+                            }
+                        }
+                        this.ElementProp.ExifData.DateTimeOriginal = dateTimeOffset.LocalDateTime;
+                    }
+                }
+            }
+            return false;
         }
         public void InitMeasureData(SessionData sd, bool bOnlyIfNotCompatible)
         {
