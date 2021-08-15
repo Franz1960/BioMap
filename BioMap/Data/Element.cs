@@ -146,6 +146,11 @@ namespace BioMap
             el.ElementProp.ExifData = new ExifData_t();
             el.TryExtractOriginalTimeFromExif(subIfdDirectory);
             el.ElementProp.CreationTime = ((el.ElementProp.ExifData.DateTimeOriginal.HasValue) ? el.ElementProp.ExifData.DateTimeOriginal.Value : el.ElementProp.UploadInfo.Timestamp);
+            if (ifd0Directory != null)
+            {
+                el.ElementProp.ExifData.Make = ifd0Directory.GetString(ExifDirectoryBase.TagMake);
+                el.ElementProp.ExifData.Model = ifd0Directory.GetString(ExifDirectoryBase.TagModel);
+            }
             return el;
         }
         public void AdjustTimeFromPhoto(SessionData sd)
