@@ -195,7 +195,7 @@ namespace BioMap
                     sDateTimeOriginal = sDateTimeOriginal.Substring(0, 10).Replace(":", "-") + sDateTimeOriginal.Substring(10);
                     if (DateTimeOffset.TryParse(sDateTimeOriginal, out var dateTimeOffset))
                     {
-                        if (dateTimeOffset.Offset.TotalSeconds == 0)
+                        //if (dateTimeOffset.Offset.TotalSeconds == 0)
                         {
                             var sTimeZone = subIfdDirectory.GetString(ExifDirectoryBase.TagTimeZoneOriginal);
                             if (!string.IsNullOrEmpty(sTimeZone) && TimeSpan.TryParse(sTimeZone.Replace("+", ""), out var tsOffset))
