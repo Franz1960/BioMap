@@ -204,6 +204,7 @@ namespace BioMap
                         //    }
                         //}
                         this.ElementProp.ExifData.DateTimeOriginal = dateTimeOffset.LocalDateTime;
+                        return true;
                     }
                 }
             }
