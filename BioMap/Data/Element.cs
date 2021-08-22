@@ -187,22 +187,29 @@ namespace BioMap
         }
         private bool TryExtractOriginalTimeFromExif(ExifSubIfdDirectory subIfdDirectory)
         {
+            System.Diagnostics.Debug.WriteLine("TryExtractOriginalTimeFromExif()");
             if (subIfdDirectory != null && subIfdDirectory.ContainsTag(ExifDirectoryBase.TagDateTimeOriginal))
             {
                 var sDateTimeOriginal = subIfdDirectory.GetString(ExifDirectoryBase.TagDateTimeOriginal);
+                System.Diagnostics.Debug.WriteLine("  sDateTimeOriginal="+sDateTimeOriginal);
                 if (sDateTimeOriginal != null && sDateTimeOriginal.Length >= 19)
                 {
                     sDateTimeOriginal = sDateTimeOriginal.Substring(0, 10).Replace(":", "-") + sDateTimeOriginal.Substring(10);
                     if (DateTimeOffset.TryParse(sDateTimeOriginal, out var dateTimeOffset))
                     {
+                        System.Diagnostics.Debug.WriteLine("  dateTimeOffset=" + dateTimeOffset.ToString());
                         //if (dateTimeOffset.Offset.TotalSeconds == 0)
                         {
                             var sTimeZone = subIfdDirectory.GetString(ExifDirectoryBase.TagTimeZoneOriginal);
+                            System.Diagnostics.Debug.WriteLine("  TagTimeZoneOriginal=" + sTimeZone);
                             if (!string.IsNullOrEmpty(sTimeZone) && TimeSpan.TryParse(sTimeZone.Replace("+", ""), out var tsOffset))
                             {
+                                System.Diagnostics.Debug.WriteLine("  TagTimeZoneOriginal=" + sTimeZone);
                                 dateTimeOffset = new DateTimeOffset(dateTimeOffset.DateTime, tsOffset);
                             }
                         }
+                        System.Diagnostics.Debug.WriteLine("  dateTimeOffset=" + dateTimeOffset.ToString());
+                        System.Diagnostics.Debug.WriteLine("  dateTimeOffset.LocalDateTime=" + dateTimeOffset.LocalDateTime.ToString());
                         this.ElementProp.ExifData.DateTimeOriginal = dateTimeOffset.LocalDateTime;
                     }
                 }
