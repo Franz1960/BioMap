@@ -34,7 +34,7 @@ namespace BioMap.Pages.Diagrams
         {
             base.OnInitialized();
             ProjectYearBegin = SD.CurrentProject.StartDate.Value.Year;
-            ProjectYearEnd = Math.Max(2024, DateTime.Now.Year);
+            ProjectYearEnd = Math.Max(ProjectYearBegin+1, (DateTime.Now-TimeSpan.FromDays(90)).Year);
             _config = new BarConfig
             {
                 Options = new BarOptions
@@ -55,19 +55,19 @@ namespace BioMap.Pages.Diagrams
                     Scales = new BarScales
                     {
                         XAxes = new List<CartesianAxis>
-            {
-              new BarCategoryAxis
-              {
-                  Stacked = true
-              }
-          },
+                        {
+                            new BarCategoryAxis
+                            {
+                                Stacked = true
+                            }
+                        },
                         YAxes = new List<CartesianAxis>
-            {
-              new BarLinearCartesianAxis
-              {
-                  Stacked = true
-              }
-          }
+                        {
+                            new BarLinearCartesianAxis
+                            {
+                                Stacked = true
+                            }
+                        }
                     },
                 },
             };
