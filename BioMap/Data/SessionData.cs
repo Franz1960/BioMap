@@ -29,6 +29,20 @@ namespace BioMap
         public bool SizeTimeChartShowVintageBoundaries { get; set; } = true;
         public string SizeTimeChartGrowingCurveMode { get; set; } = "GrowingCurve";
         public bool AlienateLocations { get; set; } = false;
+        public double GetSeasonizedTime(DateTime dt)
+        {
+            const int DaysBeforeSeason = 90;
+            const int DaysInSeason = 183;
+            var dtYearBegin = new DateTime(dt.Year,1,1);
+            var nDaysInYear = (dt - dtYearBegin).Days;
+            var nDaysInSeason = (int)(Math.Min(DaysInSeason,Math.Max(0,nDaysInYear-DaysBeforeSeason)));
+            var nDaysAfterSeason = (int)Math.Max(0,nDaysInYear-(DaysBeforeSeason+DaysInSeason));
+            double dResult = dt.Year;
+            dResult += (0.05 * Math.Min(nDaysInYear,DaysBeforeSeason)) / DaysBeforeSeason;
+            dResult += (0.90 * nDaysInSeason) / DaysInSeason;
+            dResult += (0.05 * nDaysAfterSeason) / (DaysBeforeSeason + DaysInSeason);
+            return dResult;
+        }
         public bool MaySeeElements
         {
             get

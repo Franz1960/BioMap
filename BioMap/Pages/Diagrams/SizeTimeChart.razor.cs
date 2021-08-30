@@ -58,20 +58,23 @@ namespace BioMap.Pages.Diagrams
                     {
                         XAxes = new List<CartesianAxis>
                         {
-                        new TimeAxis
-                        {
-                          ScaleLabel = new ScaleLabel
-                          {
-                            LabelString = Localize["Time"]
-                          },
-                          Time = new TimeOptions
-                          {
-                            Unit = TimeMeasurement.Month,
-                            Round = TimeMeasurement.Day,
-                            TooltipFormat = "DD.MM.YYYY",
-                          },
-                        }
-                      },
+                            new LinearCartesianAxis
+                            {
+                                ScaleLabel = new ScaleLabel
+                                {
+                                    LabelString = Localize["Time"]
+                                },
+                                GridLines = new GridLines
+                                {
+                                    Display = false
+                                },
+                                Ticks = new LinearCartesianTicks
+                                {
+                                    StepSize=1,
+                                    Precision=0,
+                                }
+                            }
+                        },
                     },
                     Tooltips = new Tooltips
                     {
@@ -220,7 +223,7 @@ namespace BioMap.Pages.Diagrams
                 for (int nYoB = 2012; nYoB <= DateTime.Now.Year; nYoB++)
                 {
                     string sYobColor = Element.GetColorForYearOfBirth(nYoB);
-                    var lineSet = new LineDataset<TimePoint>
+                    var lineSet = new LineDataset<Point>
                     {
                         BackgroundColor = ColorUtil.FromDrawingColor(System.Drawing.Color.White),
                         BorderWidth = 4,
@@ -243,7 +246,7 @@ namespace BioMap.Pages.Diagrams
                             var l = fg.GetSize(dt);
                             if (l > 10)
                             {
-                                lineSet.Add(new TimePoint(dt, l));
+                                lineSet.Add(new Point(SD.GetSeasonizedTime(dt), l));
                             }
                         }
                         catch { }
@@ -321,7 +324,7 @@ if (lineSet.Data.Count>=2) {
                                     DateOfBirth = dtDateOfBirth.Value,
                                 };
                                 string sYobColor = Element.GetColorForYearOfBirth(growthFunc.DateOfBirth.Year);
-                                var lineSetCurve = new LineDataset<TimePoint>
+                                var lineSetCurve = new LineDataset<Point>
                                 {
                                     BackgroundColor = sYobColor,
                                     BorderWidth = 2,
@@ -349,7 +352,7 @@ if (lineSet.Data.Count>=2) {
                                             var l = growthFunc.GetSize(dt);
                                             if (l > 10)
                                             {
-                                                lineSetCurve.Add(new TimePoint(dt, l));
+                                                lineSetCurve.Add(new Point(SD.GetSeasonizedTime(dt), l));
                                             }
                                         }
                                         catch { }
@@ -365,7 +368,7 @@ if (lineSet.Data.Count>=2) {
                         // Datenpunkte.
                         {
                             string sYobColor = Element.GetColorForYearOfBirth(dtFittedYearOfBirth.HasValue ? dtFittedYearOfBirth.Value.Year : aaIndisByIId[idx][0].ElementProp.IndivData?.DateOfBirth.Year);
-                            var lineSetPoints = new LineDataset<TimePoint>
+                            var lineSetPoints = new LineDataset<Point>
                             {
                                 BackgroundColor = sYobColor,
                                 BorderWidth = 0,
@@ -382,7 +385,7 @@ if (lineSet.Data.Count>=2) {
                                     var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
                                     if (l > 0)
                                     {
-                                        lineSetPoints.Add(new TimePoint(el.ElementProp.CreationTime, l));
+                                        lineSetPoints.Add(new Point(SD.GetSeasonizedTime(el.ElementProp.CreationTime), l));
                                     }
                                 }
                                 catch { }
@@ -397,7 +400,7 @@ if (lineSet.Data.Count>=2) {
                     {
                         // Interpolation durch Datenpunkte.
                         string sYobColor = "rgba(100,100,100,0.5)";
-                        var lineSet = new LineDataset<TimePoint>
+                        var lineSet = new LineDataset<Point>
                         {
                             BackgroundColor = sYobColor,
                             BorderWidth = 2,
@@ -423,7 +426,7 @@ if (lineSet.Data.Count>=2) {
                                 var l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
                                 if (l != 0)
                                 {
-                                    lineSet.Add(new TimePoint(el.ElementProp.CreationTime, l));
+                                    lineSet.Add(new Point(SD.GetSeasonizedTime(el.ElementProp.CreationTime), l));
                                 }
                             }
                             catch { }

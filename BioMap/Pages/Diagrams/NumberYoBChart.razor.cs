@@ -53,24 +53,24 @@ namespace BioMap.Pages.Diagrams
                     Scales = new Scales
                     {
                         XAxes = new List<CartesianAxis>
-          {
-            new LinearCartesianAxis
-            {
-              ScaleLabel = new ScaleLabel
-              {
-                LabelString = Localize["Time"]
-              },
-              GridLines = new GridLines
-              {
-                Display = false
-              },
-              Ticks = new LinearCartesianTicks
-              {
-                StepSize=1,
-                Precision=0,
-              }
-            }
-          },
+                        {
+                            new LinearCartesianAxis
+                            {
+                                ScaleLabel = new ScaleLabel
+                                {
+                                    LabelString = Localize["Time"]
+                                },
+                                GridLines = new GridLines
+                                {
+                                    Display = false
+                                },
+                                Ticks = new LinearCartesianTicks
+                                {
+                                    StepSize=1,
+                                    Precision=0,
+                                }
+                            }
+                        },
                     },
                 },
             };

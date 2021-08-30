@@ -53,27 +53,30 @@ namespace BioMap.Pages.Diagrams
                     Scales = new Scales
                     {
                         XAxes = new List<CartesianAxis>
-            {
-            new TimeAxis
-            {
-              ScaleLabel = new ScaleLabel
-              {
-                LabelString = Localize["Time"]
-              },
-              Time = new TimeOptions
-              {
-                Unit = TimeMeasurement.Month,
-                Round = TimeMeasurement.Day,
-                TooltipFormat = "DD.MM.YYYY",
-              },
-            }
-          },
+                        {
+                            new LinearCartesianAxis
+                            {
+                                ScaleLabel = new ScaleLabel
+                                {
+                                    LabelString = Localize["Time"]
+                                },
+                                GridLines = new GridLines
+                                {
+                                    Display = false
+                                },
+                                Ticks = new LinearCartesianTicks
+                                {
+                                    StepSize=1,
+                                    Precision=0,
+                                }
+                            }
+                        },
                         YAxes = new List<CartesianAxis>
-            {
-            new CategoryAxis
-            {
-            }
-          },
+                        {
+                            new CategoryAxis
+                            {
+                            }
+                        },
                     },
                 }
             };
@@ -117,7 +120,7 @@ namespace BioMap.Pages.Diagrams
                 foreach (var date in lDates)
                 {
                     int nRadius = (int)Math.Round(2 * Math.Sqrt(countByPlaceAndDate[sPlace][date]));
-                    var lineSetCurve = new LineDataset<TimePoint>
+                    var lineSetCurve = new LineDataset<Point>
                     {
                         BackgroundColor = "rgba(239,209,0,0.8)",
                         BorderWidth = 1,
@@ -129,7 +132,7 @@ namespace BioMap.Pages.Diagrams
                         ShowLine = false,
                     };
                     lineSetCurve.Label = sPlace + " " + ConvInvar.ToString(countByPlaceAndDate[sPlace][date]) + " " + Localize["Individuals"];
-                    lineSetCurve.Add(new TimePoint(date, idxPlace));
+                    lineSetCurve.Add(new Point(SD.GetSeasonizedTime(date), idxPlace));
                     if (lineSetCurve.Data.Count >= 1)
                     {
                         _config.Data.Datasets.Add(lineSetCurve);
