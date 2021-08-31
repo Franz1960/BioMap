@@ -66,7 +66,7 @@ namespace BioMap.Pages.Diagrams
                                 },
                                 GridLines = new GridLines
                                 {
-                                    Display = false
+                                    Display = true,
                                 },
                                 Ticks = new LinearCartesianTicks
                                 {

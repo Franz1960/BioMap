@@ -62,13 +62,13 @@ namespace BioMap.Pages.Diagrams
                                 },
                                 GridLines = new GridLines
                                 {
-                                    Display = false
+                                    Display = true,
                                 },
                                 Ticks = new LinearCartesianTicks
                                 {
                                     StepSize=1,
                                     Precision=0,
-                                }
+                                },
                             }
                         },
                         YAxes = new List<CartesianAxis>
