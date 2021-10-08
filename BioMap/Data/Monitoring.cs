@@ -13,7 +13,7 @@ namespace BioMap
         }
         private SessionData SD { get; }
         public readonly int kwMin = 16;
-        public readonly int kwMax = 44;
+        public readonly int kwMax = 39;
         public int kwNow { get; private set; } = 0;
         public class Result
         {
