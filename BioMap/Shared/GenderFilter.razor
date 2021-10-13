@@ -11,7 +11,7 @@
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
         <Select TValue="string" @bind-SelectedValue="SD.Filters.GenderFilter">
           <SelectItem TValue="string" Value="@("*")">@Localize["All"]</SelectItem>
-          <SelectItem TValue="string" Value="@("j")">@Localize["Other"]</SelectItem>
+          <SelectItem TValue="string" Value="@("^m,f")">@Localize["Other"]</SelectItem>
           <SelectItem TValue="string" Value="@("f")">@Localize["Female"]</SelectItem>
           <SelectItem TValue="string" Value="@("m")">@Localize["Male"]</SelectItem>
           <SelectItem TValue="string" Value="@("fm")">@Localize["Weiblich und männlich"]</SelectItem>

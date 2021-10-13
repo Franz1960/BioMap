@@ -214,23 +214,25 @@ namespace BioMap
         int nLoopCnt = 0;
         foreach (var el in aElements) {
           callbackCompletion(((nLoopCnt++) * 100) / aElements.Length);
-          var sOldGender = el.ElementProp?.IndivData?.Gender;
-          if (sOldGender != null) {
-            el.ElementProp.IndivData.Gender =
-              sOldGender.StartsWith("f") ? "f" :
-              sOldGender.StartsWith("m") ? "m" :
-              sOldGender.StartsWith("j") ? "j" :
-              "";
-            string sOldGenderFeature = el.ElementProp?.IndivData?.GenderFeature;
-            if (string.IsNullOrEmpty(sOldGenderFeature)) {
-              var sGender = el.ElementProp.IndivData.Gender;
-              if (sGender == "m") {
-                el.ElementProp.IndivData.GenderFeature = "m";
-              } else {
-                el.ElementProp.IndivData.GenderFeature = "-";
+          if (el.HasIndivData()) {
+            var sOldGender = el.ElementProp?.IndivData?.Gender;
+            if (sOldGender != null) {
+              el.ElementProp.IndivData.Gender =
+                sOldGender.StartsWith("f") ? "f" :
+                sOldGender.StartsWith("m") ? "m" :
+                sOldGender.StartsWith("j") ? "j" :
+                "";
+              string sOldGenderFeature = el.ElementProp?.IndivData?.GenderFeature;
+              if (string.IsNullOrEmpty(sOldGenderFeature)) {
+                var sGender = el.ElementProp.IndivData.Gender;
+                if (sGender == "m") {
+                  el.ElementProp.IndivData.GenderFeature = "m";
+                } else {
+                  el.ElementProp.IndivData.GenderFeature = "-";
+                }
               }
-            }
-            ds.WriteElement(sd, el);
+              ds.WriteElement(sd, el);
+              }
           }
         }
       });

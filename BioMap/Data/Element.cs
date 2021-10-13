@@ -342,6 +342,27 @@ namespace BioMap
       var sPlaceName = this.ElementProp.MarkerInfo.PlaceName;
       return (sPlaceName == null) ? "" : sPlaceName;
     }
+    /// <summary>
+    /// The gender 'f', 'm' or 'j', optionally followed by the gender feature 'm', 'f' or '-' in parantheses if gender and feature don't match.
+    /// </summary>
+    public string GetGenderFull(SessionData sd) {
+      if (this.ElementProp.IndivData != null) {
+        string sGender = this.ElementProp.IndivData.Gender;
+        string sResult = sGender;
+        string sFeature = this.ElementProp.IndivData.GenderFeature;
+        if (sGender != sFeature && !(sGender == "j" && sFeature == "-")) {
+          if (
+            (sd.CurrentProject.FemaleGenderFeatures && sGender == "f")
+            ||
+            (sd.CurrentProject.MaleGenderFeatures && sGender == "m")
+            ) {
+            sResult += "(" + sFeature + ")";
+          }
+        }
+        return sResult;
+      }
+      return "";
+    }
     public string Gender {
       get {
         if (this.ElementProp.IndivData != null) {

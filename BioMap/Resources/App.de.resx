@@ -273,6 +273,9 @@
   <data name="Confirm TAN" xml:space="preserve">
     <value>TAN bestätigen</value>
   </data>
+  <data name="Consolidate genders" xml:space="preserve">
+    <value>Geschlecht konsolidieren</value>
+  </data>
   <data name="Counted are all the different individuals who fulfill the conditions at least once in the respective period." xml:space="preserve">
     <value>Gezählt werden alle verschiedenen Individuen,die im jeweiligen Zeitraum mindestens einmal die Bedingungen erfüllen.</value>
   </data>

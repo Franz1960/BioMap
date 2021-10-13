@@ -369,7 +369,11 @@ namespace BioMap
       if (sFilter == "-" || sFilter == "*") {
         return "";
       } else {
-        var sResult = "";
+        bool bNegate = (sFilter.IndexOfAny(Filters.NegateChars) == 0);
+        if (bNegate) {
+          sFilter = sFilter.Substring(1);
+        }
+        var sResult = bNegate ? "^" : "";
         if (sFilter.Contains("j")) {
           sResult += "j ";
         }
