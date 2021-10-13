@@ -1,10 +1,10 @@
+using System.Numerics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.ColorSpaces.Conversion;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors;
-using System.Numerics;
 
 namespace BioMap.ImageProc
 {
@@ -45,8 +45,8 @@ namespace BioMap.ImageProc
     public AnalyseData_t AnalyseData = new AnalyseData_t();
 
     /// <inheritdoc />
-    public IImageProcessor<TPixel> CreatePixelSpecificProcessor<TPixel>(Configuration configuration,Image<TPixel> source,Rectangle sourceRectangle)
+    public IImageProcessor<TPixel> CreatePixelSpecificProcessor<TPixel>(Configuration configuration, Image<TPixel> source, Rectangle sourceRectangle)
         where TPixel : unmanaged, IPixel<TPixel>
-        => new AnalyseProcessor<TPixel>(configuration,this,source,sourceRectangle);
+        => new AnalyseProcessor<TPixel>(configuration, this, source, sourceRectangle);
   }
 }

@@ -1,8 +1,8 @@
 
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using System;
 using System.Numerics;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace BioMap.ImageProc
 {
@@ -20,7 +20,7 @@ namespace BioMap.ImageProc
     /// <param name="width">The width of the cropped image.</param>
     /// <param name="height">The height of the cropped image.</param>
     /// <returns>The <see cref="IImageProcessingContext"/> to allow chaining of operations.</returns>
-    public static IImageProcessingContext SafeCrop(this IImageProcessingContext source,int width,int height) {
+    public static IImageProcessingContext SafeCrop(this IImageProcessingContext source, int width, int height) {
       var sz = source.GetCurrentSize();
       if (width > sz.Width || height > sz.Height) {
         source.Resize(new ResizeOptions {
@@ -28,7 +28,7 @@ namespace BioMap.ImageProc
           TargetRectangle = new Rectangle(0, 0, sz.Width, sz.Height),
         });
       }
-      return source.Crop(width,height);
+      return source.Crop(width, height);
     }
   }
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
@@ -12,7 +13,6 @@ using SixLabors.ImageSharp.ColorSpaces.Conversion;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors;
-using System.Numerics;
 
 namespace BioMap.ImageProc
 {
@@ -34,26 +34,26 @@ namespace BioMap.ImageProc
     /// <param name="definition">The <see cref="BinaryThresholdProcessor"/> defining the processor parameters.</param>
     /// <param name="source">The source <see cref="Image{TPixel}"/> for the current processor instance.</param>
     /// <param name="sourceRectangle">The source area to process for the current processor instance.</param>
-    public AnalyseProcessor(Configuration configuration,AnalyseProcessor definition,Image<TPixel> source,Rectangle sourceRectangle)
-        : base(configuration,source,sourceRectangle) {
+    public AnalyseProcessor(Configuration configuration, AnalyseProcessor definition, Image<TPixel> source, Rectangle sourceRectangle)
+        : base(configuration, source, sourceRectangle) {
       this.definition = definition;
     }
 
     protected override void BeforeImageApply() {
       base.BeforeImageApply();
-      this.data.BlackPixelCntPerRow=new double[this.SourceRectangle.Height];
+      this.data.BlackPixelCntPerRow = new double[this.SourceRectangle.Height];
     }
 
     protected override void AfterImageApply() {
       base.AfterImageApply();
       int yLength = this.data.BlackPixelCntPerRow.Length;
       int yCenter = yLength / 2;
-      double fBlackTotal=0;
-      double mom1Sum=0;
-      double mom2Sum=0;
-      double fPixelArea=this.SourceRectangle.Width * this.SourceRectangle.Height;
+      double fBlackTotal = 0;
+      double mom1Sum = 0;
+      double mom2Sum = 0;
+      double fPixelArea = this.SourceRectangle.Width * this.SourceRectangle.Height;
       var lVerticalProfile = new List<double>();
-      for (int y = 0;y<yLength;y++) {
+      for (int y = 0; y < yLength; y++) {
         int yd = y - yCenter;
         double a = this.data.BlackPixelCntPerRow[y];
         lVerticalProfile.Add(this.data.BlackPixelCntPerRow[y] / fPixelArea);
@@ -74,9 +74,9 @@ namespace BioMap.ImageProc
       Rectangle sourceRectangle = this.SourceRectangle;
       Configuration configuration = this.Configuration;
 
-      var interest = Rectangle.Intersect(sourceRectangle,source.Bounds());
+      var interest = Rectangle.Intersect(sourceRectangle, source.Bounds());
 
-      var operation = new RowOperation(interest,source,this.data);
+      var operation = new RowOperation(interest, source, this.data);
       ParallelRowIterator.IterateRows(
           configuration,
           interest,
@@ -117,8 +117,8 @@ namespace BioMap.ImageProc
 
         {
           float fBlackPixelCnt = 0;
-          for (int x = this.minX;x < this.maxX;x++) {
-            ref TPixel color = ref Unsafe.Add(ref rowRef,x);
+          for (int x = this.minX; x < this.maxX; x++) {
+            ref TPixel color = ref Unsafe.Add(ref rowRef, x);
             color.ToRgba32(ref rgba);
 
             if (rgba == (Rgba32)Color.Black) {

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
@@ -11,7 +12,6 @@ using SixLabors.ImageSharp.ColorSpaces.Conversion;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors;
-using System.Numerics;
 
 namespace BioMap.ImageProc
 {
@@ -31,8 +31,8 @@ namespace BioMap.ImageProc
     /// <param name="definition">The <see cref="BinaryThresholdProcessor"/> defining the processor parameters.</param>
     /// <param name="source">The source <see cref="Image{TPixel}"/> for the current processor instance.</param>
     /// <param name="sourceRectangle">The source area to process for the current processor instance.</param>
-    public MaxChromaProcessor(Configuration configuration,MaxChromaProcessor definition,Image<TPixel> source,Rectangle sourceRectangle)
-        : base(configuration,source,sourceRectangle) {
+    public MaxChromaProcessor(Configuration configuration, MaxChromaProcessor definition, Image<TPixel> source, Rectangle sourceRectangle)
+        : base(configuration, source, sourceRectangle) {
       this.definition = definition;
     }
 
@@ -45,10 +45,10 @@ namespace BioMap.ImageProc
       Rectangle sourceRectangle = this.SourceRectangle;
       Configuration configuration = this.Configuration;
 
-      var interest = Rectangle.Intersect(sourceRectangle,source.Bounds());
+      var interest = Rectangle.Intersect(sourceRectangle, source.Bounds());
       bool isAlphaOnly = typeof(TPixel) == typeof(A8);
 
-      var operation = new RowOperation(interest,source,upper,lower,threshold,this.definition.HueIntervals);
+      var operation = new RowOperation(interest, source, upper, lower, threshold, this.definition.HueIntervals);
       ParallelRowIterator.IterateRows(
           configuration,
           interest,
@@ -94,15 +94,15 @@ namespace BioMap.ImageProc
         float YCbCr_Achromatic_Cb = 127.5F;
         float YCbCr_Achromatic_Cr = 127.5F;
 
-        if (this.hueIntervals==null) {
+        if (this.hueIntervals == null) {
           float fThreshold = this.threshold / 2F;
-          for (int x = this.minX;x < this.maxX;x++) {
-            ref TPixel color = ref Unsafe.Add(ref rowRef,x);
+          for (int x = this.minX; x < this.maxX; x++) {
+            ref TPixel color = ref Unsafe.Add(ref rowRef, x);
             color.ToRgba32(ref rgba);
 
             // Calculate YCbCr value and compare to threshold.
             var yCbCr = this.colorSpaceConverter.ToYCbCr(rgba);
-            if (MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr_Achromatic_Cb),MathF.Abs(yCbCr.Cr - YCbCr_Achromatic_Cr)) >= fThreshold) {
+            if (MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr_Achromatic_Cb), MathF.Abs(yCbCr.Cr - YCbCr_Achromatic_Cr)) >= fThreshold) {
               color = this.upper;
             } else {
               color = this.lower;
@@ -110,8 +110,8 @@ namespace BioMap.ImageProc
           }
         } else {
           float fThreshold = this.threshold / 2F;
-          for (int x = this.minX;x < this.maxX;x++) {
-            ref TPixel color = ref Unsafe.Add(ref rowRef,x);
+          for (int x = this.minX; x < this.maxX; x++) {
+            ref TPixel color = ref Unsafe.Add(ref rowRef, x);
             color.ToRgba32(ref rgba);
 
             // Calculate HSL hue value and compare to intervals.
@@ -120,7 +120,7 @@ namespace BioMap.ImageProc
             foreach (var iv in this.hueIntervals) {
               if (iv.Y < iv.X) {
                 if (hue >= iv.X || hue <= iv.Y) {
-                  bHueOk=true;
+                  bHueOk = true;
                   break;
                 }
               } else {
@@ -133,17 +133,17 @@ namespace BioMap.ImageProc
             if (bHueOk) {
               // Calculate YCbCr value and compare to threshold.
               var yCbCr = this.colorSpaceConverter.ToYCbCr(rgba);
-              #if true
-              if (MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr_Achromatic_Cb),MathF.Abs(yCbCr.Cr - YCbCr_Achromatic_Cr)) >= fThreshold) {
+#if true
+              if (MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr_Achromatic_Cb), MathF.Abs(yCbCr.Cr - YCbCr_Achromatic_Cr)) >= fThreshold) {
                 color = this.upper;
               } else {
                 color = this.lower;
               }
-              #else
+#else
               // Grauwertbild erzeugen.
               float l = MathF.Max(MathF.Abs(yCbCr.Cb - YCbCr_Achromatic_Cb),MathF.Abs(yCbCr.Cr - YCbCr_Achromatic_Cr));
               color.FromL8(new L8((byte)(l*2)));
-              #endif
+#endif
             } else {
               color = this.lower;
             }
