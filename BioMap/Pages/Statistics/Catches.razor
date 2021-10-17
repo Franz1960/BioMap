@@ -23,6 +23,7 @@
     <Tab Name="PerMonth">@Localize["Catch numbers per month"]</Tab>
     <Tab Name="HeadBodyLength">@Localize["Head-body-length of all catches"]</Tab>
     <Tab Name="GenderRatio">@Localize["Gender"]</Tab>
+    <Tab Name="GenderRatioPerAnno">@Localize["Gender per anno"]</Tab>
     <Tab Name="MigrationDistances">@Localize["Migration distances"]</Tab>
   </Items>
   <Content>
@@ -80,7 +81,7 @@
     <TabPanel Name="GenderRatio">
       <Row>
         <Column>
-          @Localize["Catch numbers per month summed over all years, broken down by sex of individuals caught. Only individuals with the sex information 'f' or 'm' are counted. If the total is less than 10, the percentage value is set to 50% to avoid outliers."]
+          @Localize["Catch numbers per month summed over all years. Only individuals with the sex information 'f' or 'm' and 1+ hibernations are counted. If the total is less than 10, the percentage value is set to 50% to avoid outliers."]
         </Column>
       </Row>
       <Row>
@@ -91,6 +92,23 @@
       <Row>
         <Column>
           <TableFromChart @ref="_tableFromChartGenderRatio" RowLabel="@(Localize["Month"])" _config="@_configGenderRatio" />
+        </Column>
+      </Row>
+    </TabPanel>
+    <TabPanel Name="GenderRatioPerAnno">
+      <Row>
+        <Column>
+          @Localize["Catch numbers per year. Only individuals with the sex information 'f' or 'm' and 1+ hibernations are counted."]
+        </Column>
+      </Row>
+      <Row>
+        <Column>
+          <Chart @ref="_chartJsGenderRatioPerAnno" Config="@_configGenderRatioPerAnno" Width="600" Height="300" />
+        </Column>
+      </Row>
+      <Row>
+        <Column>
+          <TableFromChart @ref="_tableFromChartGenderRatioPerAnno" RowLabel="@(Localize["Month"])" _config="@_configGenderRatioPerAnno" />
         </Column>
       </Row>
     </TabPanel>

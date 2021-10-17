@@ -42,6 +42,10 @@ namespace BioMap.Pages.Statistics
     private Chart _chartJsGenderRatio;
     private TableFromChart _tableFromChartGenderRatio;
     private BarLinearCartesianAxis _yAxisGenderRatioCnt;
+    private BarConfig _configGenderRatioPerAnno;
+    private Chart _chartJsGenderRatioPerAnno;
+    private TableFromChart _tableFromChartGenderRatioPerAnno;
+    private BarLinearCartesianAxis _yAxisGenderRatioPerAnnoCnt;
     private BarConfig _configMigrationDistances;
     private Chart _chartJsMigrationDistances;
     private TableFromChart _tableFromChartMigrationDistances;
@@ -231,6 +235,49 @@ namespace BioMap.Pages.Statistics
           },
         },
       };
+      _yAxisGenderRatioPerAnnoCnt = new BarLinearCartesianAxis {
+        ID = "cnt",
+        ScaleLabel = new ScaleLabel {
+          Display = true,
+        },
+        Stacked = true
+      };
+      _configGenderRatioPerAnno = new BarConfig {
+        Options = new BarOptions {
+          Animation = new Animation {
+            Duration = 0,
+          },
+          Title = new OptionsTitle {
+            Text = "XXX",
+            Display = false,
+          },
+          Legend = new Legend {
+            Display = true,
+          },
+          Scales = new BarScales {
+            XAxes = new List<CartesianAxis> {
+                new BarCategoryAxis {
+                    Stacked = true
+                },
+            },
+            YAxes = new List<CartesianAxis> {
+                _yAxisGenderRatioPerAnnoCnt,
+                new LinearCartesianAxis {
+                  ID="ratio",
+                  ScaleLabel=new ScaleLabel {
+                    LabelString="%",
+                    Display=true,
+                  },
+                  Position = Position.Right,
+                  Ticks= new LinearCartesianTicks {
+                    Min=0,
+                    Max=100,
+                  },
+                },
+            }
+          },
+        },
+      };
       _configMigrationDistances = new BarConfig {
         Options = new BarOptions {
           Animation = new Animation {
@@ -278,6 +325,7 @@ namespace BioMap.Pages.Statistics
       _tableFromChartPerMonth.RefreshData();
       _tableFromChartHeadBodyLength.RefreshData();
       _tableFromChartGenderRatio.RefreshData();
+      _tableFromChartGenderRatioPerAnno.RefreshData();
       _tableFromChartMigrationDistances.RefreshData();
     }
     private void RefreshData() {
@@ -492,10 +540,12 @@ namespace BioMap.Pages.Statistics
           foreach (var ea in aaIndisByIId.Values) {
             foreach (var el in ea) {
               string sGender = el.Gender;
-              if (sGender.StartsWith("f")) {
-                aFemaleCount[el.ElementProp.CreationTime.Month - 1]++;
-              } else if (sGender.StartsWith("m")) {
-                aMaleCount[el.ElementProp.CreationTime.Month - 1]++;
+              if (el.GetWinters() >= 1) {
+                if (sGender.StartsWith("f")) {
+                  aFemaleCount[el.ElementProp.CreationTime.Month - 1]++;
+                } else if (sGender.StartsWith("m")) {
+                  aMaleCount[el.ElementProp.CreationTime.Month - 1]++;
+                }
               }
             }
           }
@@ -531,6 +581,67 @@ namespace BioMap.Pages.Statistics
           _configGenderRatio.Data.Datasets.Add(dsFemale);
           _configGenderRatio.Data.Datasets.Add(dsMale);
           _configGenderRatio.Data.Datasets.Add(dsRatio);
+        }
+      }
+      {
+        _configGenderRatioPerAnno.Data.Labels.Clear();
+        _configGenderRatioPerAnno.Data.Datasets.Clear();
+        //
+        {
+          var dictFemaleCount = new Dictionary<int,int>();
+          var dictMaleCount = new Dictionary<int,int>();
+          foreach (var ea in aaIndisByIId.Values) {
+            foreach (var el in ea) {
+              string sGender = el.Gender;
+              if (el.GetWinters() >= 1) {
+                if (sGender.StartsWith("f")) {
+                  if (!dictFemaleCount.ContainsKey(el.ElementProp.CreationTime.Year)) {
+                    dictFemaleCount[el.ElementProp.CreationTime.Year] = 0;
+                  }
+                  dictFemaleCount[el.ElementProp.CreationTime.Year]++;
+                } else if (sGender.StartsWith("m")) {
+                  if (!dictMaleCount.ContainsKey(el.ElementProp.CreationTime.Year)) {
+                    dictMaleCount[el.ElementProp.CreationTime.Year] = 0;
+                  }
+                  dictMaleCount[el.ElementProp.CreationTime.Year]++;
+                }
+              }
+            }
+          }
+          int nYearBegin = Math.Min(dictFemaleCount.Keys.Min(), dictMaleCount.Keys.Min());
+          int nYearEnd = Math.Max(dictFemaleCount.Keys.Max(), dictMaleCount.Keys.Max());
+          var dsFemale = new BarDataset<int>() {
+            Label = Localize["Female"],
+            BackgroundColor = ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200, System.Drawing.Color.Red)),
+          };
+          var dsMale = new BarDataset<int>() {
+            Label = Localize["Male"],
+            BackgroundColor = ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200, System.Drawing.Color.Blue)),
+          };
+          var dsRatio = new LineDataset<double>() {
+            Label = Localize["Male"] + " %",
+            BackgroundColor = "rgba(0,0,0,0)",
+            BorderWidth = 2,
+            PointHoverBorderWidth = 0,
+            BorderColor = "Green",
+            PointRadius = 3,
+            YAxisId = "ratio",
+          };
+          for (int year = nYearBegin; year <= nYearEnd; year++) {
+            _configGenderRatioPerAnno.Data.Labels.Add(year.ToString("0000"));
+            dsFemale.Add(-dictFemaleCount[year]);
+            dsMale.Add(dictMaleCount[year]);
+            int nSum = dictFemaleCount[year] + dictMaleCount[year];
+            dsRatio.Add(nSum < 10 ? 50 : ((dictMaleCount[year] * 100.0) / nSum));
+          }
+          var nMaxCnt = Math.Max(-dsFemale.Min(), dsMale.Max());
+          _yAxisGenderRatioPerAnnoCnt.Ticks = new LinearCartesianTicks {
+            Min = -nMaxCnt,
+            Max = nMaxCnt,
+          };
+          _configGenderRatioPerAnno.Data.Datasets.Add(dsFemale);
+          _configGenderRatioPerAnno.Data.Datasets.Add(dsMale);
+          _configGenderRatioPerAnno.Data.Datasets.Add(dsRatio);
         }
       }
       {

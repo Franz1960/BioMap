@@ -237,8 +237,11 @@
   <data name="Catch numbers per month summed over all years, broken down by age (overwintering) of individuals caught. In addition, monthly mean values of temperature and precipitation are given." xml:space="preserve">
     <value>Die Fangzahlen pro Monat summiert über alle Jahre, aufgeschlüsselt nach dem Alter (Überwinterungen) der gefangenen Individuen. Zusätzlich sind Monatsmittelwerte von Temperatur und Niederschlagsmenge angegeben.</value>
   </data>
-  <data name="Catch numbers per month summed over all years, broken down by sex of individuals caught. Only individuals with the sex information 'f' or 'm' are counted. If the total is less than 10, the percentage value is set to 50% to avoid outliers." xml:space="preserve">
-    <value>Die Fangzahlen pro Monat summiert über alle Jahre, aufgeschlüsselt nach dem Geschlecht der gefangenen Individuen. Es zählen nur Individuen mit den Geschlechtsangaben 'f' oder 'm'. Wenn die Summe weniger als 10 beträgt, wird der Prozentwert auf 50% gesetzt, um Ausreißer zu vermeiden.</value>
+  <data name="Catch numbers per month summed over all years. Only individuals with the sex information 'f' or 'm' and 1+ hibernations are counted. If the total is less than 10, the percentage value is set to 50% to avoid outliers." xml:space="preserve">
+    <value>Die Fangzahlen pro Monat summiert über alle Jahre. Es zählen nur Individuen mit den Geschlechtsangaben 'f' oder 'm' und 1+ Überwinterungen. Wenn die Summe weniger als 10 beträgt, wird der Prozentwert auf 50% gesetzt, um Ausreißer zu vermeiden.</value>
+  </data>
+  <data name="Catch numbers per year. Only individuals with the sex information 'f' or 'm' and 1+ hibernations are counted." xml:space="preserve">
+    <value>Die Fangzahlen pro Jahr. Es zählen nur Individuen mit den Geschlechtsangaben 'f' oder 'm' und 1+ Überwinterungen.</value>
   </data>
   <data name="Catches" xml:space="preserve">
     <value>Fänge</value>
@@ -410,6 +413,9 @@
   </data>
   <data name="Gender features" xml:space="preserve">
     <value>Geschlechtsmerkmale</value>
+  </data>
+  <data name="Gender per anno" xml:space="preserve">
+    <value>Geschlecht pro Jahr</value>
   </data>
   <data name="Granularity" xml:space="preserve">
     <value>Granularität</value>
