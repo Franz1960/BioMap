@@ -31,7 +31,7 @@ namespace BioMap
         var sr = new System.IO.StreamReader(sFilePath);
         try {
           var sLine = sr.ReadLine();
-          lHeaders.AddRange(sLine.Split(',', StringSplitOptions.None));
+          lHeaders.AddRange(sLine.Split(new char[] { ',','\t' }, StringSplitOptions.None));
           while (true) {
             sLine = sr.ReadLine();
             if (string.IsNullOrEmpty(sLine)) {
@@ -39,7 +39,7 @@ namespace BioMap
             } else {
               DateTime? dt = null;
               var lRowColumns = new List<double>();
-              foreach (var sCol in sLine.Split(',')) {
+              foreach (var sCol in sLine.Split(',','\t')) {
                 if (!dt.HasValue) {
                   dt = DateTime.Parse(sCol);
                 } else {
