@@ -131,6 +131,7 @@ namespace BioMap.Pages.Statistics
                 foreach (var el in aIndis) {
                   if (cond(el)) {
                     nResult++;
+                    break;
                   }
                 }
               }
