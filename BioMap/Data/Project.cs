@@ -37,6 +37,7 @@ namespace BioMap
     }
     //
     public readonly List<Species> Species = new List<Species>();
+    public readonly SpeciesTree SpeciesTree = new SpeciesTree();
     public Species GetSpecies(string sSciName) {
       return this.Species.Find((s) => string.CompareOrdinal(s.SciName, sSciName) == 0);
     }
@@ -50,10 +51,20 @@ namespace BioMap
       this.Species.Clear();
       {
         this.Species.AddRange(new[] {
-                    new Species { SciName="Anura",Name_de="Froschlurche",Name_en="Frogs" },
-                    new Species { SciName="Bombina variegata",Name_de="Gelbbauchunke",Name_en="Yellow-bellied toad" },
-                    new Species { SciName="Bombina bombina",Name_de="Rotbauchunke",Name_en="Fire-bellied toad" },
-                    new Species { SciName="Bufo bufo",Name_de="Erdkröte",Name_en="Common toad" },
+                    new Species { ParentSciName="",SciName="Bilateria",Name_de="Bilateria",Name_en="Bilateria" },
+                    new Species { ParentSciName="Bilateria",SciName="Deuterostomia",Name_de="Neumünder",Name_en="Deuterostome" },
+                    new Species { ParentSciName="Deuterostomia",SciName="Chordata",Name_de="Chordatiere",Name_en="Chordate" },
+                    new Species { ParentSciName="Chordata",SciName="Vertebrata",Name_de="Wirbeltiere",Name_en="Vertebrate" },
+                    new Species { ParentSciName="Vertebrata",SciName="Gnathostomata",Name_de="Kiefermäuler",Name_en="Gnathostomata" },
+                    new Species { ParentSciName="Gnathostomata",SciName="Tetrapoda",Name_de="Landwirbeltiere",Name_en="Tetrapod" },
+                    new Species { ParentSciName="Tetrapoda",SciName="Amphibia",Name_de="Amphibien",Name_en="Amphibia" },
+                    new Species { ParentSciName="Amphibia",SciName="Anura",Name_de="Froschlurche",Name_en="Frogs" },
+                    new Species { ParentSciName="Anura",SciName="Bombinatoridae",Name_de="Unken und Barbourfrösche",Name_en="Frogs" },
+                    new Species { ParentSciName="Bombinatoridae",SciName="Bombina variegata",Name_de="Gelbbauchunke",Name_en="Yellow-bellied toad" },
+                    new Species { ParentSciName="Bombinatoridae",SciName="Bombina bombina",Name_de="Rotbauchunke",Name_en="Fire-bellied toad" },
+                    new Species { ParentSciName="Anura",SciName="Bufonidae",Name_de="Kröten",Name_en="Toads" },
+                    new Species { ParentSciName="Bufonidae",SciName="Bufo",Name_de="Echte Kröten",Name_en="True toads" },
+                    new Species { ParentSciName="Bufo",SciName="Bufo bufo",Name_de="Erdkröte",Name_en="Common toad" },
                     new Species { SciName="Rana temporaria",Name_de="Grasfrosch",Name_en="Grass frog" },
                     new Species { SciName="Pelophylax",Name_de="Grünfrosch",Name_en="Green frog" },
                     new Species { SciName="Caudata",Name_de="Schwanzlurche",Name_en="Caudate amphibians" },

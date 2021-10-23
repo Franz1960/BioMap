@@ -54,23 +54,24 @@ The web app has been developed for a nature protection project in Germany. The p
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BlazorGoogleMaps" Version="1.0.12" />
-    <PackageReference Include="Blazorise" Version="0.9.3" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3" />
-    <PackageReference Include="Blazorise.Sidebar" Version="0.9.3" />
+    <PackageReference Include="BlazorGoogleMaps" Version="1.2.1" />
+    <PackageReference Include="Blazorise" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Sidebar" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.TreeView" Version="0.9.4.7" />
     <PackageReference Include="ChartJs.Blazor.Fork" Version="2.0.2" />
     <PackageReference Include="Geo" Version="1.0.0" />
-    <PackageReference Include="MetadataExtractor" Version="2.4.3" />
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="5.0.3" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.2.3">
+    <PackageReference Include="MetadataExtractor" Version="2.7.1" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="5.0.11" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.4.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MimeMapping" Version="1.0.1.37" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.113.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.115" />
   </ItemGroup>
 
   <ItemGroup>

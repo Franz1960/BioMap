@@ -1,0 +1,87 @@
+@page "/Administration/Taxa"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject IJSRuntime JSRuntime
+@using BioMap
+@using BioMap.Shared
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.BarChart.Axes
+
+<h1>@Localize["Taxa"]</h1>
+
+<Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
+  <Items>
+    <Tab Name="Tree">@Localize["Tree view"]</Tab>
+    <Tab Name="Table">@Localize["Table view"]</Tab>
+  </Items>
+  <Content>
+    <TabPanel Name="Tree">
+      <Row>
+        @if (SelectedNode!=null) {
+        <Column>
+          <Field Horizontal="false">
+            <FieldLabel>@Localize["Parent's scientific name"]</FieldLabel>
+            <FieldBody>
+              <TextEdit @bind-Text="SelectedNode.Species.ParentSciName">
+              </TextEdit>
+            </FieldBody>
+          </Field>
+        </Column>
+        <Column>
+          <Field Horizontal="false">
+            <FieldLabel>@Localize["Scientific name"]</FieldLabel>
+            <FieldBody>
+              <TextEdit @bind-Text="SelectedNode.Species.SciName">
+              </TextEdit>
+            </FieldBody>
+          </Field>
+        </Column>
+        <Column>
+          <Field Horizontal="false">
+            <FieldLabel>@Localize["English name"]</FieldLabel>
+            <FieldBody>
+              <TextEdit @bind-Text="SelectedNode.Species.Name_en">
+              </TextEdit>
+            </FieldBody>
+          </Field>
+        </Column>
+        <Column>
+          <Field Horizontal="false">
+            <FieldLabel>@Localize["German name"]</FieldLabel>
+            <FieldBody>
+              <TextEdit @bind-Text="SelectedNode.Species.Name_de">
+              </TextEdit>
+            </FieldBody>
+          </Field>
+        </Column>
+        }
+      </Row>
+      <Row>
+        <Column>
+          <TreeView @ref="treeView" Nodes="SD.CurrentProject.SpeciesTree.RootNodes"
+                    GetChildNodes="@(node => node.Children)"
+                    HasChildNodes="@(node => node.HasChildren)"
+                    @bind-SelectedNode="SelectedNode"
+                    @bind-ExpandedNodes="ExpandedNodes">
+            <NodeContent>
+              <Icon Name="@(context.HasChildren ? IconName.Folder : string.IsNullOrEmpty(context.Species.SciName) ? IconName.Star : IconName.Dog)" />
+              @context.Species.SciName
+            </NodeContent>
+          </TreeView>
+        </Column>
+      </Row>
+    </TabPanel>
+    <TabPanel Name="Table">
+      <Row>
+        <Column>
+        </Column>
+      </Row>
+    </TabPanel>
+  </Content>
+</Tabs>

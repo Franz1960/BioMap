@@ -610,6 +610,7 @@ namespace BioMap
           project.InitSpeciesByGroupForYellowBelliedToad();
           this.WriteProject(sd, project);
         }
+        project.SpeciesTree.Init(project.Species);
       }
     }
     public void WriteProject(SessionData sd, Project project) {
@@ -633,7 +634,7 @@ namespace BioMap
       this.SetProjectProperty(sd, "MinLevelToSeeExactLocations", ConvInvar.ToString(project.MinLevelToSeeExactLocations));
       //
       {
-        var sJson = JsonConvert.SerializeObject(project.Species);
+        var sJson = JsonConvert.SerializeObject(project.SpeciesTree.ToSpeciesList().Select(sn => sn.Species));
         this.SetProjectProperty(sd, "Species", sJson);
       }
     }
