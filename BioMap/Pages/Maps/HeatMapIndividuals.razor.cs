@@ -35,6 +35,7 @@ namespace BioMap.Pages.Maps
         Map = googleMap.InteropObject,
         Dissipating = true,
         Radius = 50,
+        MaxIntesity = 60,
       });
       await RefreshHeatMap();
     }
