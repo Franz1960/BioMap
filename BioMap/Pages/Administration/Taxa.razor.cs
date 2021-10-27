@@ -68,7 +68,11 @@ namespace BioMap.Pages.Administration
         return "(null)";
       } else {
         string sLocalName = taxon.GetLocalizedName(SD.CurrentCultureName);
-        return taxon.InvariantName + (string.IsNullOrEmpty(sLocalName) ? "" : (" (" + sLocalName + ")"));
+        if (sLocalName == taxon.InvariantName || string.IsNullOrEmpty(sLocalName)) {
+          return taxon.InvariantName;
+        } else {
+          return taxon.InvariantName + " (" + sLocalName + ")";
+        }
       }
     }
     private void EnsureSelectedVisible() {
