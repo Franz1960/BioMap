@@ -10,20 +10,30 @@ namespace BioMap
   /// <typeparam name="T">
   /// The type.
   /// </typeparam>
+  [System.Diagnostics.DebuggerDisplay("{ToString()}")]
   public class TreeNode
   {
     public TreeNode(ITreeNodeData data) {
       this.Data = data;
     }
-    public readonly ITreeNodeData Data;
+    public override string ToString() {
+      return "TreeNode(" + this.Data?.InvariantName + ") + " + this.Children.Count+ " children";
+    }
+    public TreeNode Clone() {
+      var clone = new TreeNode(this.Data) {
+        Children = this.Children
+      };
+      return clone;
+    }
+    public ITreeNodeData Data { get; private set; }
     public TreeNode Parent = null;
-    public TreeNode[] Children { get; private set; } = new TreeNode[0];
+    public IReadOnlyList<TreeNode> Children { get; private set; } = new List<TreeNode>();
     public bool HasChildren => this.Children.Count() >= 1;
     public void Clear() {
-      this.Children = new TreeNode[0];
+      ((List<TreeNode>)this.Children).Clear();
     }
     public void Add(TreeNode childNode) {
-      this.Children = this.Children.Append(childNode).ToArray();
+      ((List<TreeNode>)this.Children).Add(childNode);
     }
     public TreeNode[] Ancestors {
       get {
@@ -40,17 +50,24 @@ namespace BioMap
         return lNodes.ToArray();
       }
     }
-    public TreeNode Find(string sInvariantName) {
+    public TreeNode[] Find(string sInvariantName) {
+      var lResult = new List<TreeNode>();
       if (this.Data?.InvariantName == sInvariantName) {
-        return this;
+        lResult.Add(this);
       }
       foreach (var child in this.Children) {
         var result = child.Find(sInvariantName);
-        if (result != null) {
-          return result;
-        }
+        lResult.AddRange(result);
       }
-      return null;
+      return lResult.ToArray();
+    }
+    public TreeNode FindFirst(string sInvariantName) {
+      var aResult = this.Find(sInvariantName);
+      if (aResult.Length >= 1) {
+        return aResult[0];
+      } else {
+        return null;
+      }
     }
     public IEnumerable<TreeNode> GetChildrenFlatList() {
       var flatList = new List<TreeNode>();

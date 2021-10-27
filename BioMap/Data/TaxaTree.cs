@@ -16,6 +16,7 @@ namespace BioMap
     public void FromTaxaList(IEnumerable<Taxon> taxaList) {
       this.RootNode.Clear();
       var flatNodeList = taxaList.Select(taxon => new TreeNode(taxon)).ToArray();
+      var lSciNamesInUse = new List<string>();
       foreach (var node in flatNodeList.ToArray()) {
         var taxon = node.Data as Taxon;
         if (taxon.ParentSciNameArray.Length == 0) {
@@ -24,8 +25,15 @@ namespace BioMap
           foreach (var sParentSciName in taxon.ParentSciNameArray) {
             foreach (var parentNode in flatNodeList.ToArray()) {
               if (string.CompareOrdinal(sParentSciName, parentNode.Data.InvariantName) == 0) {
-                node.Parent = parentNode;
-                parentNode.Add(node);
+                if (!lSciNamesInUse.Contains(taxon.SciName)) {
+                  node.Parent = parentNode;
+                  parentNode.Add(node);
+                  lSciNamesInUse.Add(taxon.SciName);
+                } else {
+                  var newNode = new TreeNode(node.Data);
+                  newNode.Parent = parentNode;
+                  parentNode.Add(newNode);
+                }
                 break;
               }
             }
@@ -42,21 +50,6 @@ namespace BioMap
       result = result.Distinct();
       result = result.ToArray();
       return result;
-    }
-    private void AddTaxon(Taxon taxon) {
-      if (taxon.ParentSciNameArray.Length == 0) {
-        this.RootNode.Add(new TreeNode(taxon));
-      } else {
-        foreach (var sParentSciName in taxon.ParentSciNameArray) {
-          var parentNode = this.RootNode.Find(sParentSciName);
-          if (parentNode == null) {
-            throw new ArgumentException("Cannot add species to tree: the parent species is not null but also not known.");
-          } else {
-            var node = new TreeNode(taxon) { Parent = parentNode };
-            parentNode.Add(node);
-          }
-        }
-      }
     }
   }
 }

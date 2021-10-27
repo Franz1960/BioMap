@@ -38,7 +38,7 @@ namespace BioMap
     //
     public readonly TaxaTree TaxaTree = new TaxaTree();
     public Taxon GetSpecies(string sSciName) {
-      return this.TaxaTree.RootNode.Find(sSciName)?.Data as Taxon;
+      return this.TaxaTree.RootNode.FindFirst(sSciName)?.Data as Taxon;
     }
     public ImageSurveyorNormalizer ImageNormalizer { get; set; } = new ImageSurveyorNormalizer("HeadToCloakInPetriDish");
     public bool MaleGenderFeatures { get; set; }

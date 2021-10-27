@@ -13,8 +13,12 @@ namespace BioMap
   /// or more parent taxons.
   /// </summary>
   [JsonObject(MemberSerialization.Fields)]
+  [System.Diagnostics.DebuggerDisplay("{ToString()}")]
   public class Taxon : ITreeNodeData
   {
+    public override string ToString() {
+      return "Taxon(" + this.SciName + ") <-- " + this.ParentSciNames;
+    }
     public override bool Equals(object obj) {
       var other = obj as Taxon;
       return (string.CompareOrdinal(this.SciName,other.SciName) == 0);
@@ -47,8 +51,28 @@ namespace BioMap
         }
       }
     }
+    public static Taxon Clone(Taxon other) {
+      var taxon = new Taxon();
+      taxon.CopyFrom(other);
+      return taxon;
+    }
+    public void CopyFrom(Taxon other) {
+      if (other == null) {
+        this.ParentSciNames = "";
+        this.SciName = "";
+        this.Name_en = "";
+        this.Name_de = "";
+      } else {
+        this.ParentSciNames = other.ParentSciNames;
+        this.SciName = other.SciName;
+        this.Name_en = other.Name_en;
+        this.Name_de = other.Name_de;
+      }
+    }
+    /// <summary>
+    /// ITreeNodeData interface implementation.
+    /// </summary>
     public string InvariantName => this.SciName;
-
     /// <summary>
     /// Common name in given language.
     /// </summary>

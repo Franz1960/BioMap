@@ -23,12 +23,12 @@
   <Content>
     <TabPanel Name="Tree">
       <Row>
-        @if (SelectedNode!=null) {
+        @if (this.EditedTaxon!=null) {
         <Column>
           <Field Horizontal="false">
             <FieldLabel>@Localize["Parent's scientific name"]</FieldLabel>
             <FieldBody>
-              <TextEdit @bind-Text="((Taxon)SelectedNode.Data).ParentSciNames">
+              <TextEdit @bind-Text="this.EditedTaxon.ParentSciNames">
               </TextEdit>
             </FieldBody>
           </Field>
@@ -37,7 +37,7 @@
           <Field Horizontal="false">
             <FieldLabel>@Localize["Scientific name"]</FieldLabel>
             <FieldBody>
-              <TextEdit @bind-Text="((Taxon)SelectedNode.Data).SciName">
+              <TextEdit @bind-Text="this.EditedTaxon.SciName">
               </TextEdit>
             </FieldBody>
           </Field>
@@ -46,7 +46,7 @@
           <Field Horizontal="false">
             <FieldLabel>@Localize["English name"]</FieldLabel>
             <FieldBody>
-              <TextEdit @bind-Text="((Taxon)SelectedNode.Data).Name_en">
+              <TextEdit @bind-Text="this.EditedTaxon.Name_en">
               </TextEdit>
             </FieldBody>
           </Field>
@@ -55,17 +55,22 @@
           <Field Horizontal="false">
             <FieldLabel>@Localize["German name"]</FieldLabel>
             <FieldBody>
-              <TextEdit @bind-Text="((Taxon)SelectedNode.Data).Name_de">
+              <TextEdit @bind-Text="this.EditedTaxon.Name_de">
               </TextEdit>
             </FieldBody>
           </Field>
         </Column>
-        <Column>
-          <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Update_Clicked(); })">@Localize["Update"]</Button>
-        </Column>
         }
       </Row>
       <Row>
+        <Column>
+          <Row Margin="Margin.Is2">
+            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Save_Clicked(); })">@Localize["Save"]</Button>
+          </Row>
+          <Row Margin="Margin.Is2">
+            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await NewTaxon_Clicked(); })">@Localize["New taxon"]</Button>
+          </Row>
+        </Column>
         <Column>
           <TreeView @ref="treeView" Nodes="SD.CurrentProject.TaxaTree.RootNode.Children"
                     GetChildNodes="@(node => node.Children)"
