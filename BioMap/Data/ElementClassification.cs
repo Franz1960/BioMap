@@ -39,7 +39,7 @@ namespace BioMap
     }
     public class LivingBeing_t
     {
-      public Species Species;
+      public Taxon Taxon;
       public Stadium Stadium = Stadium.Adults;
       public int Count = 1;
     }
@@ -70,117 +70,5 @@ namespace BioMap
     public string ClassName = "New";
     public LivingBeing_t LivingBeing;
     public Habitat_t Habitat;
-  }
-  [JsonObject(MemberSerialization.Fields)]
-  public class Species
-  {
-    public string ParentSciName;
-    public string SciName;
-    public string Name_de;
-    public string Name_en;
-    public string GetLocalizedName(string sCultureName) {
-      if (sCultureName.StartsWith("de") && !string.IsNullOrEmpty(this.Name_de)) {
-        return this.Name_de;
-      } else if (sCultureName.StartsWith("en") && !string.IsNullOrEmpty(this.Name_en)) {
-        return this.Name_en;
-      } else {
-        return this.SciName;
-      }
-    }
-  }
-  public class SpeciesNode
-  {
-    public Species Species;
-    public SpeciesNode Parent;
-    public SpeciesNode[] Children = new SpeciesNode[0];
-    public bool HasChildren => this.Children.Count()>=1;
-    public SpeciesNode[] Ancestors {
-      get {
-        var lNodes = new List<SpeciesNode>();
-        var node = this;
-        while (true) {
-          node = node.Parent;
-          if (node != null) {
-            lNodes.Insert(0,node);
-          } else {
-            break;
-          }
-        }
-        return lNodes.ToArray();
-      }
-    }
-    public SpeciesNode Find(string sSciName) {
-      if (this.Species.SciName==sSciName) {
-        return this;
-      }
-      foreach (var child in this.Children) {
-        var result = child.Find(sSciName);
-        if (result != null) {
-          return result;
-        }
-      }
-      return null;
-    }
-    public IEnumerable<SpeciesNode> GetFlatList() {
-      var speciesList = new List<SpeciesNode>();
-      speciesList.Add(this);
-      foreach (var childNode in this.Children) {
-        speciesList.AddRange(childNode.GetFlatList());
-      }
-      return speciesList;
-    }
-  }
-  public class SpeciesTree
-  {
-    public SpeciesNode[] RootNodes;
-    public void Init(IEnumerable<Species> speciesList) {
-      var flatNodes = speciesList.Select(sp => new SpeciesNode { Species = sp, Children = new SpeciesNode[0], Parent = null }).ToArray();
-      var rootNodes = new List<SpeciesNode>();
-      foreach (var speciesNode in flatNodes.ToArray()) {
-        if (string.IsNullOrEmpty(speciesNode.Species.ParentSciName)) {
-          rootNodes.Add(speciesNode);
-        } else {
-          foreach (var parentNode in flatNodes.ToArray()) {
-            if (string.CompareOrdinal(speciesNode.Species.ParentSciName, parentNode.Species.SciName) == 0) {
-              speciesNode.Parent = parentNode;
-              parentNode.Children = parentNode.Children.Append(speciesNode).ToArray();
-              break;
-            }
-          }
-        }
-      }
-      // Leeren Knoten zur Eingabe eines neuen anfügen.
-      rootNodes.Add(new SpeciesNode { Species = new Species { SciName = "" }});
-      this.RootNodes = rootNodes.ToArray();
-    }
-    public IEnumerable<SpeciesNode> ToSpeciesList() {
-      var speciesList = new List<SpeciesNode>();
-      foreach (var childNode in this.RootNodes) {
-        speciesList.AddRange(childNode.GetFlatList());
-      }
-      return speciesList.Where(sn => !string.IsNullOrEmpty(sn.Species.SciName));
-    }
-    public SpeciesNode Find(string sSciName) {
-      foreach (var child in this.RootNodes) {
-        var result = child.Find(sSciName);
-        if (result != null) {
-          return result;
-        }
-      }
-      return null;
-    }
-    private void AddSpecies(List<SpeciesNode> rootNodes, Species species) {
-      if (string.IsNullOrEmpty(species.ParentSciName)) {
-        rootNodes.Add(new SpeciesNode { Species = species, Parent = null, Children = new SpeciesNode[0] });
-      } else {
-        var parentNode = this.RootNodes.FirstOrDefault(sn => string.CompareOrdinal(sn.Species.SciName, species.ParentSciName) == 0);
-        if (parentNode == null) {
-          throw new ArgumentException("Cannot add species to tree: the parent species is not null but also not known.");
-        } else {
-          var speciesNode = new SpeciesNode { Species = species, Parent = parentNode, Children = new SpeciesNode[0] };
-          parentNode.Children = parentNode.Children.Append(speciesNode).ToArray();
-        }
-      }
-    }
   }
 }

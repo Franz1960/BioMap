@@ -98,26 +98,26 @@
             {
               <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
                 <DropdownToggle Color="Color.Primary">
-                  @if (string.IsNullOrEmpty(Element.Classification.LivingBeing?.Species?.SciName))
+                  @if (string.IsNullOrEmpty(Element.Classification.LivingBeing?.Taxon?.SciName))
                   {
                     @Localize["(select)"]
                   }
                   else
                   {
-                    @Element.Classification.LivingBeing?.Species?.GetLocalizedName(SD.CurrentCultureName)
+                    @Element.Classification.LivingBeing?.Taxon?.GetLocalizedName(SD.CurrentCultureName)
                   }
                 </DropdownToggle>
                 <DropdownMenu>
-                  @foreach (var species in SD.CurrentProject.Species)
+                  @foreach (var taxon in SD.CurrentProject.TaxaTree.RootNode.GetChildrenFlatList().Select(node => ((Taxon)node.Data)))
                   {
-                    <DropdownItem Active="(string.CompareOrdinal(Element.Classification.LivingBeing?.Species?.SciName,species.SciName)==0)"
-                            Clicked="@((e)=>Element.Classification.LivingBeing=new ElementClassification.LivingBeing_t { Species=SD.CurrentProject.GetSpecies(species.SciName) })">
-                      @species.GetLocalizedName(SD.CurrentCultureName)
+                    <DropdownItem Active="(string.CompareOrdinal(Element.Classification.LivingBeing?.Taxon?.SciName,taxon.SciName)==0)"
+                            Clicked="@((e)=>Element.Classification.LivingBeing=new ElementClassification.LivingBeing_t { Taxon=SD.CurrentProject.GetSpecies(taxon.SciName) })">
+                      @taxon.GetLocalizedName(SD.CurrentCultureName)
                     </DropdownItem>
                   }
                 </DropdownMenu>
               </Dropdown>
-              @if (!string.IsNullOrEmpty(Element.Classification?.LivingBeing?.Species?.SciName))
+              @if (!string.IsNullOrEmpty(Element.Classification?.LivingBeing?.Taxon?.SciName))
               {
                 <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
                   <DropdownToggle Color="Color.Primary">

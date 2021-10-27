@@ -22,8 +22,8 @@ namespace BioMap.Pages.Administration
     //
     private string selectedTab = "Tree";
     //
-    private Blazorise.TreeView.TreeView<SpeciesNode> treeView;
-    private SpeciesNode SelectedNode {
+    private Blazorise.TreeView.TreeView<TreeNode> treeView;
+    private TreeNode SelectedNode {
       get => this._SelectedNode;
       set {
         if (value != this._SelectedNode) {
@@ -32,8 +32,8 @@ namespace BioMap.Pages.Administration
         }
       }
     }
-    private SpeciesNode _SelectedNode = null;
-    private IList<SpeciesNode> ExpandedNodes { get; set; } = new List<SpeciesNode>();
+    private TreeNode _SelectedNode = null;
+    private IList<TreeNode> ExpandedNodes { get; set; } = new List<TreeNode>();
     //
     private void OnSelectedTabChanged(string name) {
       this.selectedTab = name;
@@ -48,7 +48,7 @@ namespace BioMap.Pages.Administration
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
         if (this.SelectedNode == null) {
-          this.treeView.SelectNode(SD.CurrentProject.SpeciesTree.Find(SD.CurrentProject.SpeciesSciName));
+          this.treeView.SelectNode(SD.CurrentProject.TaxaTree.RootNode.Find(SD.CurrentProject.SpeciesSciName));
           if (this.treeView.ExpandedNodes.Count == 0) {
             foreach (var node in this.SelectedNode.Ancestors) {
               this.treeView.ExpandedNodes.Add(node);
@@ -63,6 +63,19 @@ namespace BioMap.Pages.Administration
       DS.WriteProject(SD, SD.CurrentProject);
     }
     private void RefreshData() {
+    }
+    private async Task Update_Clicked() {
+      string sSelectedSciName = this.SelectedNode?.Data?.InvariantName;
+      SD.CurrentProject.TaxaTree.FromTaxaList(SD.CurrentProject.TaxaTree.ToTaxaList());
+      DS.WriteProject(SD,SD.CurrentProject);
+      this.SelectedNode = SD.CurrentProject.TaxaTree.RootNode.Find(sSelectedSciName);
+      if (this.SelectedNode != null) {
+        this.treeView.ExpandedNodes.Clear();
+        foreach (var node in this.SelectedNode.Ancestors) {
+          this.treeView.ExpandedNodes.Add(node);
+        }
+      }
+      this.StateHasChanged();
     }
   }
 }

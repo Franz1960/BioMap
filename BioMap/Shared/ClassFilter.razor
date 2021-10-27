@@ -33,30 +33,28 @@
           {
             <Dropdown>
               <DropdownToggle Color="Color.Primary">
-                @if (string.IsNullOrEmpty(Classification.LivingBeing?.Species?.SciName))
+                @if (string.IsNullOrEmpty(Classification.LivingBeing?.Taxon?.SciName))
                 {
                   @Localize["(select)"]
                 }
                 else
                 {
-                  @Classification.LivingBeing?.Species?.GetLocalizedName(SD.CurrentCultureName)
+                  @Classification.LivingBeing?.Taxon?.GetLocalizedName(SD.CurrentCultureName)
                 }
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem Active="(string.IsNullOrEmpty(Classification.LivingBeing?.Species?.SciName))"
-                            Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Species=new Species() };Update(); })">
+                <DropdownItem Active="(string.IsNullOrEmpty(Classification.LivingBeing?.Taxon?.SciName))"
+                              Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Taxon=new Taxon() };Update(); })">
                   @Localize["(select)"]
                 </DropdownItem>
-                @foreach (var species in SD.CurrentProject.Species)
-                {
-                  <DropdownItem Active="(string.CompareOrdinal(Classification.LivingBeing?.Species?.SciName,species.SciName)==0)"
-                            Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Species=SD.CurrentProject.GetSpecies(species.SciName),Stadium=ElementClassification.Stadium.None };Update(); })">
-                    @species.GetLocalizedName(SD.CurrentCultureName)
-                  </DropdownItem>
-                }
+                @foreach (var taxon in SD.CurrentProject.TaxaTree.RootNode.GetChildrenFlatList().Select(node => ((Taxon)node.Data))) {
+                <DropdownItem Active="(string.CompareOrdinal(Classification.LivingBeing?.Taxon?.SciName,taxon.SciName)==0)"
+                            Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Taxon=SD.CurrentProject.GetSpecies(taxon.SciName),Stadium=ElementClassification.Stadium.None };Update(); })">
+                @taxon.GetLocalizedName(SD.CurrentCultureName)
+              </DropdownItem>}
               </DropdownMenu>
             </Dropdown>
-            @if (!string.IsNullOrEmpty(Classification?.LivingBeing?.Species?.SciName))
+            @if (!string.IsNullOrEmpty(Classification?.LivingBeing?.Taxon?.SciName))
             {
               <Dropdown>
                 <DropdownToggle Color="Color.Primary">

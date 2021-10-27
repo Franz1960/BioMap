@@ -309,8 +309,8 @@ namespace BioMap
           if (!string.IsNullOrEmpty(classification.ClassName)) {
             sResult = AddToWhereClause(sResult, "elements.classification LIKE '%\"ClassName\":\"" + classification.ClassName + "\"%'");
             if (string.CompareOrdinal(classification.ClassName, "Living being") == 0) {
-              if (!string.IsNullOrEmpty(classification.LivingBeing?.Species?.SciName)) {
-                sResult = AddToWhereClause(sResult, "elements.classification LIKE '%\"SciName\":\"" + classification.LivingBeing.Species.SciName + "\"%'");
+              if (!string.IsNullOrEmpty(classification.LivingBeing?.Taxon?.SciName)) {
+                sResult = AddToWhereClause(sResult, "elements.classification LIKE '%\"SciName\":\"" + classification.LivingBeing.Taxon.SciName + "\"%'");
               }
               if (classification.LivingBeing != null && classification.LivingBeing.Stadium != ElementClassification.Stadium.None) {
                 sResult = AddToWhereClause(sResult, "elements.classification LIKE '%\"Stadium\":" + ((int)classification.LivingBeing.Stadium) + ",%'");

@@ -53,85 +53,85 @@ namespace BioMap
             case 140:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Anura") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Anura") },
               };
               break;
             case 141:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Bufo bufo") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Bufo bufo") },
               };
               break;
             case 150:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Anura") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Anura") },
               };
               break;
             case 151:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Rana temporaria") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Rana temporaria") },
               };
               break;
             case 152:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Anura") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Anura") },
               };
               break;
             case 153:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Pelophylax") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Pelophylax") },
               };
               break;
             case 160:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Caudata") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Caudata") },
               };
               break;
             case 161:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Lissotriton vulgaris") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Lissotriton vulgaris") },
               };
               break;
             case 162:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Ichthyosaura alpestris") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Ichthyosaura alpestris") },
               };
               break;
             case 163:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Caudata") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Caudata") },
               };
               break;
             case 164:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Salamandra salamandra") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Salamandra salamandra") },
               };
               break;
             case 170:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Insecta") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Insecta") },
               };
               break;
             case 173:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Nepa cinerea") },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Nepa cinerea") },
               };
               break;
             case 174:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Odonata"), Stadium = ElementClassification.Stadium.Larvae },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Odonata"), Stadium = ElementClassification.Stadium.Larvae },
               };
               break;
             case 210:
@@ -152,14 +152,14 @@ namespace BioMap
             case 342:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = ElementClassification.Stadium.Eggs },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = ElementClassification.Stadium.Eggs },
               };
               break;
             case 244:
             case 344:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = ElementClassification.Stadium.Larvae },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = ElementClassification.Stadium.Larvae },
               };
               break;
             case 320:
@@ -178,25 +178,25 @@ namespace BioMap
             case 340:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = ElementClassification.Stadium.Adults },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = ElementClassification.Stadium.Adults },
               };
               break;
             case 346:
               el.Classification = new ElementClassification {
                 ClassName = "Living being",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = ElementClassification.Stadium.Deads },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = ElementClassification.Stadium.Deads },
               };
               break;
             case 350:
               el.Classification = new ElementClassification {
                 ClassName = "ID photo",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = el.GetWinters() < 2 ? ElementClassification.Stadium.Juveniles : ElementClassification.Stadium.Adults },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = el.GetWinters() < 2 ? ElementClassification.Stadium.Juveniles : ElementClassification.Stadium.Adults },
               };
               break;
             case 351:
               el.Classification = new ElementClassification {
                 ClassName = "Normalized non-ID photo",
-                LivingBeing = new ElementClassification.LivingBeing_t { Species = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = ElementClassification.Stadium.Adults },
+                LivingBeing = new ElementClassification.LivingBeing_t { Taxon = sd.CurrentProject.GetSpecies("Bombina variegata"), Stadium = ElementClassification.Stadium.Adults },
               };
               break;
             default:

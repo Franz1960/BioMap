@@ -599,18 +599,16 @@ namespace BioMap
       project.MinLevelToSeeElements = ConvInvar.ToInt(this.GetProjectProperty(sd, "MinLevelToSeeElements", "200"));
       project.MinLevelToSeeExactLocations = ConvInvar.ToInt(this.GetProjectProperty(sd, "MinLevelToSeeExactLocations", "400"));
       //
-      project.Species.Clear();
       {
-        var sJson = this.GetProjectProperty(sd, "Species", "");
-        if (!string.IsNullOrEmpty(sJson)) {
-          var species = JsonConvert.DeserializeObject<List<Species>>(sJson);
-          project.Species.AddRange(species);
-        }
-        if (project.Species.Count < 1) {
-          project.InitSpeciesByGroupForYellowBelliedToad();
+        var sJson = this.GetProjectProperty(sd, "Taxa", "");
+        if (string.IsNullOrEmpty(sJson)) {
+          // No taxa save in project --> initialise.
+          project.InitTaxaForYellowBelliedToad();
           this.WriteProject(sd, project);
+        } else {
+          var taxaList = JsonConvert.DeserializeObject<IEnumerable<Taxon>>(sJson);
+          project.TaxaTree.FromTaxaList(taxaList);
         }
-        project.SpeciesTree.Init(project.Species);
       }
     }
     public void WriteProject(SessionData sd, Project project) {
@@ -634,8 +632,8 @@ namespace BioMap
       this.SetProjectProperty(sd, "MinLevelToSeeExactLocations", ConvInvar.ToString(project.MinLevelToSeeExactLocations));
       //
       {
-        var sJson = JsonConvert.SerializeObject(project.SpeciesTree.ToSpeciesList().Select(sn => sn.Species));
-        this.SetProjectProperty(sd, "Species", sJson);
+        var sJson = JsonConvert.SerializeObject(project.TaxaTree.ToTaxaList());
+        this.SetProjectProperty(sd, "Taxa", sJson);
       }
     }
     public IEnumerable<GoogleMapsComponents.Maps.LatLngLiteral> GetAoi(SessionData sd) {

@@ -28,7 +28,7 @@
           <Field Horizontal="false">
             <FieldLabel>@Localize["Parent's scientific name"]</FieldLabel>
             <FieldBody>
-              <TextEdit @bind-Text="SelectedNode.Species.ParentSciName">
+              <TextEdit @bind-Text="((Taxon)SelectedNode.Data).ParentSciNames">
               </TextEdit>
             </FieldBody>
           </Field>
@@ -37,7 +37,7 @@
           <Field Horizontal="false">
             <FieldLabel>@Localize["Scientific name"]</FieldLabel>
             <FieldBody>
-              <TextEdit @bind-Text="SelectedNode.Species.SciName">
+              <TextEdit @bind-Text="((Taxon)SelectedNode.Data).SciName">
               </TextEdit>
             </FieldBody>
           </Field>
@@ -46,7 +46,7 @@
           <Field Horizontal="false">
             <FieldLabel>@Localize["English name"]</FieldLabel>
             <FieldBody>
-              <TextEdit @bind-Text="SelectedNode.Species.Name_en">
+              <TextEdit @bind-Text="((Taxon)SelectedNode.Data).Name_en">
               </TextEdit>
             </FieldBody>
           </Field>
@@ -55,23 +55,26 @@
           <Field Horizontal="false">
             <FieldLabel>@Localize["German name"]</FieldLabel>
             <FieldBody>
-              <TextEdit @bind-Text="SelectedNode.Species.Name_de">
+              <TextEdit @bind-Text="((Taxon)SelectedNode.Data).Name_de">
               </TextEdit>
             </FieldBody>
           </Field>
+        </Column>
+        <Column>
+          <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Update_Clicked(); })">@Localize["Update"]</Button>
         </Column>
         }
       </Row>
       <Row>
         <Column>
-          <TreeView @ref="treeView" Nodes="SD.CurrentProject.SpeciesTree.RootNodes"
+          <TreeView @ref="treeView" Nodes="SD.CurrentProject.TaxaTree.RootNode.Children"
                     GetChildNodes="@(node => node.Children)"
                     HasChildNodes="@(node => node.HasChildren)"
                     @bind-SelectedNode="SelectedNode"
                     @bind-ExpandedNodes="ExpandedNodes">
             <NodeContent>
-              <Icon Name="@(context.HasChildren ? IconName.Folder : string.IsNullOrEmpty(context.Species.SciName) ? IconName.Star : IconName.Dog)" />
-              @context.Species.SciName
+              <Icon Name="@(context.HasChildren ? IconName.Folder : string.IsNullOrEmpty(((Taxon)context.Data).SciName) ? IconName.Star : IconName.Dog)" />
+              @context.Data.InvariantName
             </NodeContent>
           </TreeView>
         </Column>
