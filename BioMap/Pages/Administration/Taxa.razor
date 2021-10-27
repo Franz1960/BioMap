@@ -79,7 +79,7 @@
                     @bind-ExpandedNodes="ExpandedNodes">
             <NodeContent>
               <Icon Name="@(context.HasChildren ? IconName.Folder : string.IsNullOrEmpty(((Taxon)context.Data).SciName) ? IconName.Star : IconName.Dog)" />
-              @context.Data.InvariantName
+              @this.GetNiceNodeName(context)
             </NodeContent>
           </TreeView>
         </Column>

@@ -62,6 +62,15 @@ namespace BioMap.Pages.Administration
     }
     private void RefreshData() {
     }
+    private string GetNiceNodeName(TreeNode node) {
+      var taxon = node?.Data as Taxon;
+      if (taxon == null) {
+        return "(null)";
+      } else {
+        string sLocalName = taxon.GetLocalizedName(SD.CurrentCultureName);
+        return taxon.InvariantName + (string.IsNullOrEmpty(sLocalName) ? "" : (" (" + sLocalName + ")"));
+      }
+    }
     private void EnsureSelectedVisible() {
       this.treeView.ExpandedNodes.Clear();
       var nodes = SD.CurrentProject.TaxaTree.RootNode.Find(this.SelectedNode?.Data?.InvariantName);
