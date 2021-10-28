@@ -1044,6 +1044,9 @@ namespace BioMap
             var ec = new ElementClassification();
             if (!string.IsNullOrEmpty(sJsonClassification)) {
               ec = JsonConvert.DeserializeObject<ElementClassification>(sJsonClassification);
+              if (!string.IsNullOrEmpty(ec.LivingBeing?.Species?.SciName)) {
+                ec.LivingBeing.Taxon = sd.CurrentProject.GetTaxon(ec.LivingBeing.Species.SciName);
+              }
             }
             var sJsonMeasureData = dr.IsDBNull(36) ? null : dr.GetValue(36) as string;
             Blazor.ImageSurveyor.ImageSurveyorMeasureData? md = null;

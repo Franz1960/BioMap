@@ -37,8 +37,16 @@ namespace BioMap
       Adults,
       Deads,
     }
+    [JsonObject(MemberSerialization.Fields)]
+    public class Species
+    {
+      public string SciName;
+      public string Name_de;
+      public string Name_en;
+    }
     public class LivingBeing_t
     {
+      public Species Species;
       public Taxon Taxon;
       public Stadium Stadium = Stadium.Adults;
       public int Count = 1;

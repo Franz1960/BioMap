@@ -17,6 +17,8 @@ namespace BioMap.Shared
   public partial class TaxonDropDown : ComponentBase
   {
     [Parameter]
+    public bool Disabled { get; set; }
+    [Parameter]
     public bool IncludeCollections { get; set; }
     [Parameter]
     public EventCallback SelectedTaxonChanged { get; set; }

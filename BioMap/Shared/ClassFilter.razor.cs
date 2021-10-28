@@ -30,7 +30,7 @@ namespace BioMap.Shared
     }
     private void TaxonDropDown_SelectedTaxonChanged() {
       this.Classification.LivingBeing = new ElementClassification.LivingBeing_t {
-        Taxon = this.SD.CurrentProject.GetTaxon(this.taxonDropDown.SelectedTaxon?.InvariantName),
+        Taxon = this.taxonDropDown.SelectedTaxon,
         Stadium = ElementClassification.Stadium.None,
       };
     }

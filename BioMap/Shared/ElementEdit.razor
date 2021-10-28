@@ -39,99 +39,59 @@
             @Localize[Element.Classification.ClassName]
           </DropdownToggle>
           <DropdownMenu>
-            @foreach (var sClassName in ElementClassification.ClassNames)
-            {
-              <DropdownItem Clicked="@((e)=>{ Element.Classification.ClassName=sClassName; })">
-                @Localize[sClassName]
-              </DropdownItem>
-            }
+            @foreach (var sClassName in ElementClassification.ClassNames) {
+      <DropdownItem Clicked="@((e)=>{ Element.Classification.ClassName=sClassName; })">
+        @Localize[sClassName]
+      </DropdownItem>}
           </DropdownMenu>
         </Dropdown>
-        @if (string.CompareOrdinal(Element.Classification.ClassName, "Living being") == 0)
-        {
-          <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
-            <DropdownToggle Color="Color.Primary">
-              @if (string.IsNullOrEmpty(Element.Classification.LivingBeing?.Taxon?.SciName))
-              {
-                @Localize["(select)"]
-              }
-              else
-              {
-                @Element.Classification.LivingBeing?.Taxon?.GetLocalizedName(SD.CurrentCultureName)
-              }
-            </DropdownToggle>
-            <DropdownMenu>
-              @foreach (var taxon in SD.CurrentProject.TaxaTree.RootNode.GetChildrenFlatList().Select(node => ((Taxon)node.Data))) {
-                <DropdownItem Active="(string.CompareOrdinal(Element.Classification.LivingBeing?.Taxon?.SciName,taxon.SciName)==0)"
-                          Clicked="@((e)=>Element.Classification.LivingBeing=new ElementClassification.LivingBeing_t { Taxon=SD.CurrentProject.GetTaxon(taxon.SciName) })">
-              @taxon.GetLocalizedName(SD.CurrentCultureName)
-            </DropdownItem> }
-            </DropdownMenu>
-          </Dropdown>
-          @if (!string.IsNullOrEmpty(Element.Classification?.LivingBeing?.Taxon?.SciName))
-          {
-            <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
-              <DropdownToggle Color="Color.Primary">
-                @Localize[Element.Classification.LivingBeing.Count.ToString()]
-              </DropdownToggle>
-              <DropdownMenu>
-                @foreach (var nCount in new int[] { 1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 100, 150, 200, 500, 1000 })
-                {
-                  <DropdownItem Active="(Element.Classification.LivingBeing.Count==nCount)"
-                        Clicked="@((e)=>{ Element.Classification.LivingBeing.Count=nCount; })">
-                    @nCount.ToString()
-                  </DropdownItem>
-                }
-              </DropdownMenu>
-            </Dropdown>
-            <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
-              <DropdownToggle Color="Color.Primary">
-                @if (Element.Classification.LivingBeing.Stadium == (ElementClassification.Stadium)0)
-                {
-                  @Localize["(select)"]
-                }
-                else
-                {
-                  @Localize[Element.Classification.LivingBeing.Stadium.ToString()]
-                }
-              </DropdownToggle>
-              <DropdownMenu>
-                @foreach (var enStadium in Enum.GetValues<ElementClassification.Stadium>())
-                {
-                  <DropdownItem Active="(Element.Classification.LivingBeing.Stadium==enStadium)"
-                        Clicked="@((e)=>{ Element.Classification.LivingBeing.Stadium=enStadium; })">
-                    @Localize[enStadium.ToString()]
-                  </DropdownItem>
-                }
-              </DropdownMenu>
-            </Dropdown>
-          }
-        }
-        @if (string.CompareOrdinal(Element.Classification.ClassName, "Habitat") == 0)
-        {
-          @if (Element.Classification.Habitat == null)
-          {
-            Element.Classification.Habitat = new ElementClassification.Habitat_t();
-          }
-          <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
-            <DropdownToggle Color="Color.Primary">
-              @Element.Classification.Habitat.GetQualityAsSymbols()
-            </DropdownToggle>
-            <DropdownMenu>
-              @foreach (var nQuality in new int[] { 1, 2, 3, 4, 5 })
-              {
-                <DropdownItem Active="(Element.Classification.Habitat.Quality==nQuality)"
-                        Clicked="@((e)=>{ Element.Classification.Habitat.Quality=nQuality; })">
-                  @ElementClassification.Habitat_t.GetQualityAsSymbols(nQuality)
-                </DropdownItem>
-              }
-            </DropdownMenu>
-          </Dropdown>
-          @if (SD.CurrentUser.MayChangeElements)
-          {
-            <CheckBox @bind-Checked="Element.Classification.Habitat.Monitoring" LabelText=@Localize["Monitoring"] />
-          }
-        }
+        @if (string.CompareOrdinal(Element.Classification.ClassName,"Living being") == 0) {
+          <TaxonDropDown @ref="this.taxonDropDown" IncludeCollections="@false" SelectedTaxonChanged="this.TaxonDropDown_SelectedTaxonChanged" Disabled="!SD.CurrentUser.MayChangeElements" />
+          @if (!string.IsNullOrEmpty(Element.Classification?.LivingBeing?.Taxon?.SciName)) {
+                      <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
+                        <DropdownToggle Color="Color.Primary">
+                          @Localize[Element.Classification.LivingBeing.Count.ToString()]
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          @foreach (var nCount in new int[] { 1,2,3,4,5,10,15,20,30,40,50,100,150,200,500,1000 }) {
+      <DropdownItem Active="(Element.Classification.LivingBeing.Count==nCount)"
+                    Clicked="@((e)=>{ Element.Classification.LivingBeing.Count=nCount; })">
+        @nCount.ToString()
+      </DropdownItem>}
+                        </DropdownMenu>
+                      </Dropdown>
+                                        <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
+                                          <DropdownToggle Color="Color.Primary">
+                                            @if (Element.Classification.LivingBeing.Stadium == (ElementClassification.Stadium)0) {
+                      @Localize["(select)"] } else {
+                      @Localize[Element.Classification.LivingBeing.Stadium.ToString()]}
+                                          </DropdownToggle>
+                                          <DropdownMenu>
+                                            @foreach (var enStadium in Enum.GetValues<ElementClassification.Stadium>()) {
+                      <DropdownItem Active="(Element.Classification.LivingBeing.Stadium==enStadium)"
+                                    Clicked="@((e)=>{ Element.Classification.LivingBeing.Stadium=enStadium; })">
+                        @Localize[enStadium.ToString()]
+                      </DropdownItem>}
+                                          </DropdownMenu>
+                                        </Dropdown>}}
+        @if (string.CompareOrdinal(Element.Classification.ClassName,"Habitat") == 0) {
+      @if (Element.Classification.Habitat == null) {
+        Element.Classification.Habitat = new ElementClassification.Habitat_t();
+      }
+                      <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
+                        <DropdownToggle Color="Color.Primary">
+                          @Element.Classification.Habitat.GetQualityAsSymbols()
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          @foreach (var nQuality in new int[] { 1,2,3,4,5 }) {
+      <DropdownItem Active="(Element.Classification.Habitat.Quality==nQuality)"
+                    Clicked="@((e)=>{ Element.Classification.Habitat.Quality=nQuality; })">
+        @ElementClassification.Habitat_t.GetQualityAsSymbols(nQuality)
+      </DropdownItem>}
+                        </DropdownMenu>
+                      </Dropdown>
+                                      @if (SD.CurrentUser.MayChangeElements) {
+                      <CheckBox @bind-Checked="Element.Classification.Habitat.Monitoring" LabelText=@Localize["Monitoring"] />}}
       </Buttons>
     </FieldBody>
   </Field>

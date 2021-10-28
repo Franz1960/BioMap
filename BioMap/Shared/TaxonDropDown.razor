@@ -7,7 +7,7 @@
 @using Newtonsoft.Json.Linq
 @using BioMap
 
-<Dropdown>
+<Dropdown Disabled="@this.Disabled">
   <DropdownToggle Color="Color.Primary">
     @if (string.IsNullOrEmpty(this.SelectedTaxon?.SciName)) {
 @Localize["(select)"] } else {
