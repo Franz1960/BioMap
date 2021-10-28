@@ -1,0 +1,29 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using BioMap
+
+<Dropdown>
+  <DropdownToggle Color="Color.Primary">
+    @if (string.IsNullOrEmpty(this.SelectedTaxon?.SciName)) {
+@Localize["(select)"] } else {
+@this.SelectedTaxon?.GetLocalizedName(SD.CurrentCultureName)}
+  </DropdownToggle>
+  <DropdownMenu>
+    <DropdownItem Active="(string.IsNullOrEmpty(this.SelectedTaxon?.SciName))"
+                  Clicked="@((e)=>{ this.SelectedTaxon=new Taxon(); this.Update(); })">
+      @Localize["(select)"]
+    </DropdownItem>
+    @foreach (var treeNode in SD.CurrentProject.TaxaTree.RootNode.Children) {
+@if (treeNode?.Data?.InvariantName != null && !treeNode.Data.InvariantName.StartsWith("(")) {
+@this.CreateTaxonDropDownItem(treeNode,true)}}
+    @foreach (var treeNode in SD.CurrentProject.TaxaTree.RootNode.Children) {
+@if (treeNode?.Data?.InvariantName != null && treeNode.Data.InvariantName.StartsWith("(") && treeNode.HasChildren) {
+@foreach (var treeNode2 in treeNode.Children) {
+@this.CreateTaxonDropDownItem(treeNode2,false)}}}
+  </DropdownMenu>
+</Dropdown>
