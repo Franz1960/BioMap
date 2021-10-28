@@ -14,6 +14,21 @@
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
         <Buttons>
           <Dropdown>
+            <DropdownToggle>Down</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem>Item 1</DropdownItem>
+              <DropdownItem>
+                <Dropdown Direction="Direction.Right">
+                  <DropdownToggle>Right</DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem>Item 1</DropdownItem>
+                    <DropdownItem>Item 2</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <Dropdown>
             <DropdownToggle Color="Color.Primary">
               @Localize[string.IsNullOrEmpty(Classification.ClassName) ? "(select)" : Classification.ClassName]
             </DropdownToggle>
@@ -40,11 +55,8 @@
                           Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Taxon=new Taxon() };Update(); })">
               @Localize["(select)"]
             </DropdownItem>
-            @foreach (var taxon in SD.CurrentProject.TaxaTree.RootNode.GetChildrenFlatList().Select(node => ((Taxon)node.Data))) {
-        <DropdownItem Active="(string.CompareOrdinal(Classification.LivingBeing?.Taxon?.SciName,taxon.SciName)==0)"
-                      Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Taxon=SD.CurrentProject.GetTaxon(taxon.SciName),Stadium=ElementClassification.Stadium.None };Update(); })">
-          @taxon.GetLocalizedName(SD.CurrentCultureName)
-        </DropdownItem>}
+            @foreach (var treeNode in SD.CurrentProject.TaxaTree.RootNode.Children) {
+        @this.CreateTreeNodeMenuItem(treeNode)}
           </DropdownMenu>
         </Dropdown>
                           @if (!string.IsNullOrEmpty(Classification?.LivingBeing?.Taxon?.SciName)) {
