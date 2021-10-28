@@ -27,14 +27,13 @@ namespace BioMap.Shared
     private void Update() {
       SD.Filters.ClassFilter = JsonConvert.SerializeObject(this.Classification);
     }
-    private RenderFragment CreateTreeNodeMenuItem(TreeNode treeNode) {
+    private RenderFragment CreateTreeNodeMenuItem(TreeNode treeNode, bool bRecursive) {
       return builder => {
         var taxon = treeNode.Data as Taxon;
-        if (treeNode.HasChildren) {
+        if (treeNode.HasChildren && bRecursive) {
           builder.OpenComponent<Blazorise.DropdownItem>();
           builder.Attribute("ChildContent", (RenderFragment)((builder2) => {
             builder2.OpenComponent<Blazorise.Dropdown>();
-            //builder2.Attribute("Direction", Direction.Right);
             builder2.Attribute("ChildContent", (RenderFragment)((builder3) => {
               builder3.OpenComponent<Blazorise.Button>();
               builder3.Attribute("Color", (string.CompareOrdinal(this.Classification.LivingBeing?.Taxon?.SciName, taxon.InvariantName) == 0) ? Color.Primary : Color.None);
@@ -55,7 +54,7 @@ namespace BioMap.Shared
               builder3.OpenComponent<Blazorise.DropdownMenu>();
               builder3.Attribute("ChildContent", (RenderFragment)((builder4) => {
                 foreach (var childNode in treeNode.Children) {
-                  builder4.Content(this.CreateTreeNodeMenuItem(childNode));
+                  builder4.Content(this.CreateTreeNodeMenuItem(childNode, bRecursive));
                 }
               }));
               builder3.CloseComponent();

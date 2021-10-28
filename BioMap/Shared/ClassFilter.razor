@@ -14,21 +14,6 @@
       <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
         <Buttons>
           <Dropdown>
-            <DropdownToggle>Down</DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem>Item 1</DropdownItem>
-              <DropdownItem>
-                <Dropdown Direction="Direction.Right">
-                  <DropdownToggle>Right</DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem>Item 1</DropdownItem>
-                    <DropdownItem>Item 2</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-          <Dropdown>
             <DropdownToggle Color="Color.Primary">
               @Localize[string.IsNullOrEmpty(Classification.ClassName) ? "(select)" : Classification.ClassName]
             </DropdownToggle>
@@ -44,20 +29,25 @@
           </Dropdown>
           @if (string.CompareOrdinal(Classification.ClassName,"Living being") == 0) {
         <Dropdown>
-          <Button Color="Color.Primary">
+          <DropdownToggle Color="Color.Primary">
             @if (string.IsNullOrEmpty(Classification.LivingBeing?.Taxon?.SciName)) {
-        @Localize["(select)"] } else {
-        @Classification.LivingBeing?.Taxon?.GetLocalizedName(SD.CurrentCultureName)}
-          </Button>
-          <DropdownToggle Color="Color.Primary" Split="true" />
+          @Localize["(select)"] } else {
+          @Classification.LivingBeing?.Taxon?.GetLocalizedName(SD.CurrentCultureName)}
+          </DropdownToggle>
           <DropdownMenu>
             <DropdownItem Active="(string.IsNullOrEmpty(Classification.LivingBeing?.Taxon?.SciName))"
                           Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Taxon=new Taxon() };Update(); })">
               @Localize["(select)"]
             </DropdownItem>
             @foreach (var treeNode in SD.CurrentProject.TaxaTree.RootNode.Children) {
-        @this.CreateTreeNodeMenuItem(treeNode)}
-          </DropdownMenu>
+          @if (treeNode?.Data?.InvariantName != null && !treeNode.Data.InvariantName.StartsWith("(")) {
+          @this.CreateTreeNodeMenuItem(treeNode, true)}}
+            @foreach (var treeNode in SD.CurrentProject.TaxaTree.RootNode.Children) {
+          @if (treeNode?.Data?.InvariantName != null && treeNode.Data.InvariantName.StartsWith("(") && treeNode.HasChildren) {
+          @foreach (var treeNode2 in treeNode.Children) {
+          @this.CreateTreeNodeMenuItem(treeNode2, false)}}
+            }
+                                </DropdownMenu>
         </Dropdown>
                           @if (!string.IsNullOrEmpty(Classification?.LivingBeing?.Taxon?.SciName)) {
         <Dropdown>
