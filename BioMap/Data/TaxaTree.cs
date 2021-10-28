@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace BioMap
 {
@@ -46,10 +47,14 @@ namespace BioMap
     public IEnumerable<Taxon> ToTaxaList() {
       var taxaList = new List<Taxon>();
       taxaList.AddRange(this.RootNode.GetChildrenFlatList().Select(node => node.Data as Taxon));
-      var result = taxaList.Where(taxon => !string.IsNullOrEmpty(taxon.SciName));
-      result = result.Distinct();
-      result = result.ToArray();
+      var result = taxaList.Where(taxon => !string.IsNullOrEmpty(taxon.SciName))
+        .Distinct()
+        .ToArray();
       return result;
+    }
+    public string ToJSON() {
+      var sJson = JsonConvert.SerializeObject(this.ToTaxaList());
+      return sJson;
     }
   }
 }

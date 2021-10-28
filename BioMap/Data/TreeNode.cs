@@ -35,6 +35,9 @@ namespace BioMap
     public void Add(TreeNode childNode) {
       ((List<TreeNode>)this.Children).Add(childNode);
     }
+    public bool Remove(TreeNode childNode) {
+      return ((List<TreeNode>)this.Children).Remove(childNode);
+    }
     public TreeNode[] Ancestors {
       get {
         var lNodes = new List<TreeNode>();
@@ -52,12 +55,14 @@ namespace BioMap
     }
     public TreeNode[] Find(string sInvariantName) {
       var lResult = new List<TreeNode>();
-      if (this.Data?.InvariantName == sInvariantName) {
-        lResult.Add(this);
-      }
-      foreach (var child in this.Children) {
-        var result = child.Find(sInvariantName);
-        lResult.AddRange(result);
+      if (sInvariantName != null) {
+          if (this.Data?.InvariantName == sInvariantName) {
+          lResult.Add(this);
+        }
+        foreach (var child in this.Children) {
+          var result = child.Find(sInvariantName);
+          lResult.AddRange(result);
+        }
       }
       return lResult.ToArray();
     }

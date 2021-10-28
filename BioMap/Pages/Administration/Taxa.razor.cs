@@ -22,6 +22,7 @@ namespace BioMap.Pages.Administration
     //
     private string selectedTab = "Tree";
     //
+    private string TaxaJSON { get; set; } = "";
     private readonly Taxon EditedTaxon = new Taxon();
     private Blazorise.TreeView.TreeView<TreeNode> treeView;
     private TreeNode SelectedNode {
@@ -108,6 +109,35 @@ namespace BioMap.Pages.Administration
         this.EditedTaxon.ParentSciNames = selectedTaxon.SciName;
       }
       this.StateHasChanged();
+    }
+    private async Task Delete_Clicked() {
+      var taxaTree = SD.CurrentProject.TaxaTree;
+      string sSelectedSciName = this.SelectedNode?.Parent?.Data?.InvariantName;
+      taxaTree.RootNode.Remove(this.SelectedNode);
+      taxaTree.FromTaxaList(taxaTree.ToTaxaList());
+      DS.WriteProject(SD,SD.CurrentProject);
+      this.SelectedNode = taxaTree.RootNode.FindFirst(sSelectedSciName);
+      this.EnsureSelectedVisible();
+      this.StateHasChanged();
+    }
+    private async Task Expand_Clicked() {
+      this.treeView.ExpandedNodes.Clear();
+      foreach (var node in SD.CurrentProject.TaxaTree.RootNode.GetChildrenFlatList()) {
+        if (node.HasChildren) {
+          this.treeView.ExpandedNodes.Add(node);
+        }
+      }
+      this.StateHasChanged();
+    }
+    private async Task SaveJSON_Clicked() {
+      var taxaTree = SD.CurrentProject.TaxaTree;
+      try {
+        string sJson = this.TaxaJSON;
+        var taxaList = JsonConvert.DeserializeObject<IEnumerable<Taxon>>(sJson);
+        taxaTree.FromTaxaList(taxaList);
+        DS.WriteProject(SD, SD.CurrentProject);
+      } catch {
+      }
     }
   }
 }

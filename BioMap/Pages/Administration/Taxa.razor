@@ -18,10 +18,10 @@
 <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
   <Items>
     <Tab Name="Tree">@Localize["Tree view"]</Tab>
-    <Tab Name="Table">@Localize["Table view"]</Tab>
+    <Tab Name="JSON" Clicked="() => { this.TaxaJSON = SD.CurrentProject.TaxaTree.ToJSON(); }">JSON</Tab>
   </Items>
   <Content>
-    <TabPanel Name="Tree">
+    <TabPanel Name="Tree" Border="Border.Light">
       <Row>
         @if (this.EditedTaxon!=null) {
         <Column>
@@ -60,15 +60,35 @@
             </FieldBody>
           </Field>
         </Column>
+        <Column ColumnSize="ColumnSize.Is2">
+          <Row Margin="Margin.Is2">
+            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Save_Clicked(); })">
+              <Icon Name="IconName.Save" />
+              @Localize["Save"]
+            </Button>
+          </Row>
+        </Column>
         }
       </Row>
       <Row>
-        <Column>
+        <Column ColumnSize="ColumnSize.Is4">
           <Row Margin="Margin.Is2">
-            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Save_Clicked(); })">@Localize["Save"]</Button>
+            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await NewTaxon_Clicked(); })">
+              <Icon Name="IconName.Star" />
+              @Localize["New taxon"]
+            </Button>
           </Row>
           <Row Margin="Margin.Is2">
-            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await NewTaxon_Clicked(); })">@Localize["New taxon"]</Button>
+            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Delete_Clicked(); })">
+              <Icon Name="IconName.Delete" />
+              @Localize["Delete"]
+            </Button>
+          </Row>
+          <Row Margin="Margin.Is2">
+            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Expand_Clicked(); })">
+              <Icon Name="IconName.Expand" />
+              @Localize["Expand"]
+            </Button>
           </Row>
         </Column>
         <Column>
@@ -85,9 +105,24 @@
         </Column>
       </Row>
     </TabPanel>
-    <TabPanel Name="Table">
+    <TabPanel Name="JSON">
       <Row>
         <Column>
+        </Column>
+      </Row>
+      <Row>
+        <Column>
+          <MemoEdit @bind-Text="this.TaxaJSON" Style="min-height:80vh"></MemoEdit>
+        </Column>
+      </Row>
+      <Row>
+        <Column ColumnSize="ColumnSize.Is4">
+          <Row Margin="Margin.Is2">
+            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await SaveJSON_Clicked(); })">
+              <Icon Name="IconName.Save" />
+              @Localize["Save"]
+            </Button>
+          </Row>
         </Column>
       </Row>
     </TabPanel>

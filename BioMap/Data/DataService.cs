@@ -630,11 +630,7 @@ namespace BioMap
       this.SetProjectProperty(sd, "NormalizeMethod", project.ImageNormalizer.NormalizeMethod);
       this.SetProjectProperty(sd, "MinLevelToSeeElements", ConvInvar.ToString(project.MinLevelToSeeElements));
       this.SetProjectProperty(sd, "MinLevelToSeeExactLocations", ConvInvar.ToString(project.MinLevelToSeeExactLocations));
-      //
-      {
-        var sJson = JsonConvert.SerializeObject(project.TaxaTree.ToTaxaList());
-        this.SetProjectProperty(sd, "Taxa", sJson);
-      }
+      this.SetProjectProperty(sd, "Taxa", project.TaxaTree.ToJSON());
     }
     public IEnumerable<GoogleMapsComponents.Maps.LatLngLiteral> GetAoi(SessionData sd) {
       string sJson = this.GetProjectProperty(sd, "aoi");

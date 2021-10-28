@@ -49,7 +49,7 @@
                 </DropdownItem>
                 @foreach (var taxon in SD.CurrentProject.TaxaTree.RootNode.GetChildrenFlatList().Select(node => ((Taxon)node.Data))) {
                 <DropdownItem Active="(string.CompareOrdinal(Classification.LivingBeing?.Taxon?.SciName,taxon.SciName)==0)"
-                            Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Taxon=SD.CurrentProject.GetSpecies(taxon.SciName),Stadium=ElementClassification.Stadium.None };Update(); })">
+                            Clicked="@((e)=>{ Classification.LivingBeing=new ElementClassification.LivingBeing_t { Taxon=SD.CurrentProject.GetTaxon(taxon.SciName),Stadium=ElementClassification.Stadium.None };Update(); })">
                 @taxon.GetLocalizedName(SD.CurrentCultureName)
               </DropdownItem>}
               </DropdownMenu>
