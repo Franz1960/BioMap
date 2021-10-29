@@ -11,13 +11,42 @@ namespace BioMap
   /// The type.
   /// </typeparam>
   [System.Diagnostics.DebuggerDisplay("{ToString()}")]
-  public class TreeNode
+  public class TreeNode : IComparable
   {
     public TreeNode(ITreeNodeData data) {
       this.Data = data;
     }
     public override string ToString() {
       return "TreeNode(" + this.Data?.InvariantName + ") + " + this.Children.Count+ " children";
+    }
+    public int CompareTo(object obj) {
+      string a = this.Data?.InvariantName;
+      string b = (obj as TreeNode)?.Data?.InvariantName;
+      if (a == null) {
+        if (b == null) {
+          return 0;
+        } else {
+          return -1;
+        }
+      } else {
+        if (b == null) {
+          return 1;
+        } else {
+          if (a.StartsWith("(")) {
+            if (b.StartsWith("(")) {
+              return a.Substring(1).CompareTo(b.Substring(1));
+            } else {
+              return 1;
+            }
+          } else {
+            if (b.StartsWith("(")) {
+              return -1;
+            } else {
+              return a.CompareTo(b);
+            }
+          }
+        }
+      }
     }
     public TreeNode Clone() {
       var clone = new TreeNode(this.Data) {
@@ -29,11 +58,14 @@ namespace BioMap
     public TreeNode Parent = null;
     public IReadOnlyList<TreeNode> Children { get; private set; } = new List<TreeNode>();
     public bool HasChildren => this.Children.Count() >= 1;
+    public bool IsCollection => (this.Parent?.Data?.InvariantName != null && this.Parent.Data.InvariantName.StartsWith("("));
     public void Clear() {
       ((List<TreeNode>)this.Children).Clear();
     }
     public void Add(TreeNode childNode) {
-      ((List<TreeNode>)this.Children).Add(childNode);
+      var l = ((List<TreeNode>)this.Children);
+      l.Add(childNode);
+      l.Sort();
     }
     public bool Remove(TreeNode childNode) {
       return ((List<TreeNode>)this.Children).Remove(childNode);
