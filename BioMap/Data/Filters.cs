@@ -280,11 +280,11 @@ namespace BioMap
       }
       return sb.ToString();
     }
-    public bool IsEmpty() {
-      string sResult = this.AddAllFiltersToWhereClause("");
+    public bool IsEmpty(Project project) {
+      string sResult = this.AddAllFiltersToWhereClause("", project);
       return string.IsNullOrEmpty(sResult);
     }
-    public string AddAllFiltersToWhereClause(string sBasicWhereClause) {
+    public string AddAllFiltersToWhereClause(string sBasicWhereClause, Project project) {
       string sResult = sBasicWhereClause;
       if (this.FilteringTarget == FilteringTargetEnum.Individuals) {
         sResult = Filters.AddToWhereClause(sResult, this.GetDateFilterWhereClause());
@@ -307,21 +307,27 @@ namespace BioMap
         if (!string.IsNullOrEmpty(this.ClassFilter)) {
           var classification = JsonConvert.DeserializeObject<ElementClassification>(this.ClassFilter);
           if (!string.IsNullOrEmpty(classification.ClassName)) {
-            sResult = AddToWhereClause(sResult, "elements.classification LIKE '%\"ClassName\":\"" + classification.ClassName + "\"%'");
+            sResult = AddToWhereClause(sResult, "elements.classname='" + classification.ClassName + "'");
             if (string.CompareOrdinal(classification.ClassName, "Living being") == 0) {
               if (!string.IsNullOrEmpty(classification.LivingBeing?.Taxon?.SciName)) {
-                sResult = AddToWhereClause(sResult, "elements.classification LIKE '%\"SciName\":\"" + classification.LivingBeing.Taxon.SciName + "\"%'");
+                string[] aSciNames = project.TaxaTree.GetSciNamesOfSubTree(classification.LivingBeing.Taxon.SciName);
+                if (aSciNames.Length >=1) {
+                  string sSciNameList = aSciNames
+                    .Select(sSciName => ("'" + sSciName + "'"))
+                    .Aggregate((sList, sSciName) => (sList + ((sList == "") ? "" : ",") + sSciName));
+                  sResult = AddToWhereClause(sResult, "elements.lbsciname IN (" + sSciNameList + ")");
+                }
               }
               if (classification.LivingBeing != null && classification.LivingBeing.Stadium != ElementClassification.Stadium.None) {
-                sResult = AddToWhereClause(sResult, "elements.classification LIKE '%\"Stadium\":" + ((int)classification.LivingBeing.Stadium) + ",%'");
+                sResult = AddToWhereClause(sResult, "elements.lbstadium='" + ConvInvar.ToString((int)classification.LivingBeing.Stadium) + "'");
               }
             }
             if (string.CompareOrdinal(classification.ClassName, "Habitat") == 0) {
               if (classification.Habitat != null && classification.Habitat.Quality != 0) {
-                sResult = AddToWhereClause(sResult, "elements.classification LIKE '%\"Quality\":" + classification.Habitat.Quality + "%'");
+                sResult = AddToWhereClause(sResult, "elements.habquality='" + ConvInvar.ToString(classification.Habitat.Quality) + "'");
               }
               if (classification.Habitat != null && classification.Habitat.Monitoring) {
-                sResult = AddToWhereClause(sResult, "elements.classification LIKE '%\"Monitoring\":true%'");
+                sResult = AddToWhereClause(sResult, "elements.habmonitoring='" + (classification.Habitat.Monitoring ? "1" : "0") + "'");
               }
             }
           }

@@ -33,6 +33,7 @@ namespace BioMap.Shared
         Taxon = this.taxonDropDown.SelectedTaxon,
         Stadium = ElementClassification.Stadium.None,
       };
+      this.Update();
     }
   }
 }

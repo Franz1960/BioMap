@@ -49,7 +49,6 @@ namespace BioMap
       public Species Species;
       public Stadium Stadium = Stadium.Adults;
       public int Count = 1;
-      [JsonIgnore]
       public Taxon Taxon;
     }
     public class Habitat_t

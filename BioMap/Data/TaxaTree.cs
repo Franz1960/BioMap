@@ -56,5 +56,41 @@ namespace BioMap
       var sJson = JsonConvert.SerializeObject(this.ToTaxaList());
       return sJson;
     }
+    public string[] GetSciNamesOfSubTree(string sSubTreeSciName) {
+      TreeNode subTreeRootNode = this.RootNode.FindFirst(sSubTreeSciName);
+      var lSciNames = new List<string>();
+      if (subTreeRootNode != null) {
+        if (!string.IsNullOrEmpty(subTreeRootNode.Parent?.Data?.InvariantName) && subTreeRootNode.Parent.Data.InvariantName.StartsWith("(")) {
+          // Sammelgruppe.
+          string[][] aaLists = this.RootNode.GetChildrenFlatList()
+            .Where(node => {
+              if (node?.Data is Taxon taxon) {
+                if (taxon.ParentSciNameArray.Any(s => string.CompareOrdinal(s, sSubTreeSciName) == 0)) {
+                  return true;
+                }
+              }
+              return false;
+            })
+            .Select(node => this.GetSciNamesOfSubTree(node.Data?.InvariantName))
+            .ToArray();
+          var l1 = new List<string>();
+          foreach (string[] aList in aaLists) {
+            l1.AddRange(aList);
+          }
+          lSciNames.Add(subTreeRootNode.Data?.InvariantName);
+          lSciNames.AddRange(l1.Distinct());
+        } else {
+          // Systematisches Taxon.
+          lSciNames.Add(subTreeRootNode.Data?.InvariantName);
+          lSciNames.AddRange(
+            subTreeRootNode.GetChildrenFlatList()
+            .Select(node => node.Data?.InvariantName)
+            .Distinct()
+            .Where(s => !string.IsNullOrEmpty(s))
+            );
+        }
+      }
+      return lSciNames.ToArray();
+    }
   }
 }

@@ -989,7 +989,7 @@ namespace BioMap
         return Array.Empty<Element>();
       }
       if (filters != null) {
-        sSqlCondition = filters.AddAllFiltersToWhereClause(sSqlCondition);
+        sSqlCondition = filters.AddAllFiltersToWhereClause(sSqlCondition, sd.CurrentProject);
       }
       var lElements = new List<Element>();
       var lDirtyElements = new List<Element>();
@@ -1200,7 +1200,7 @@ namespace BioMap
       var sWhereClause = WhereClauses.Is_Individuum;
       sWhereClause = Filters.AddToWhereClause(sWhereClause, sAdditionalWhereClause);
       var aNormedElements = this.GetElements(sd, filters, sWhereClause, "indivdata.iid ASC,elements.creationtime ASC");
-      if (bIncludeAllPhotosOfIndivuals && !(filters == null || filters.IsEmpty())) {
+      if (bIncludeAllPhotosOfIndivuals && !(filters == null || filters.IsEmpty(sd.CurrentProject))) {
         var lIndivs = new List<Element>();
         foreach (var iid in aNormedElements.Select(e => e.GetIIdAsInt()).Distinct().Where(iid => iid.HasValue).Select(iid => iid.Value)) {
           var sWhereClause1 = WhereClauses.Is_Individuum;
@@ -1244,7 +1244,7 @@ namespace BioMap
     }
     public ProtocolEntry[] GetProtocolEntries(SessionData sd, Filters filters = null, string sSqlCondition = "", string sSqlOrderBy = "notes.dt", uint nLimit = 0) {
       if (filters != null) {
-        sSqlCondition = filters.AddAllFiltersToWhereClause(sSqlCondition);
+        sSqlCondition = filters.AddAllFiltersToWhereClause(sSqlCondition, sd.CurrentProject);
       }
       var lProtocolEntries = new List<ProtocolEntry>();
       this.OperateOnDb(sd, (command) => {
@@ -1272,7 +1272,7 @@ namespace BioMap
       return lProtocolEntries.ToArray();
     }
     public string[] GetProtocolAuthors(SessionData sd, Filters filters = null) {
-      string sSqlCondition = filters.AddAllFiltersToWhereClause("");
+      string sSqlCondition = filters.AddAllFiltersToWhereClause("", sd.CurrentProject);
       var lProtocolAuthors = new List<string>();
       this.OperateOnDb(sd, (command) => {
         command.CommandText = "SELECT DISTINCT author FROM notes" +
@@ -1297,7 +1297,7 @@ namespace BioMap
     }
     public LogEntry[] GetLogEntries(SessionData sd, Filters filters = null, string sSqlCondition = "", string sSqlOrderBy = "log.dt", uint nLimit = 0) {
       if (filters != null) {
-        sSqlCondition = filters.AddAllFiltersToWhereClause(sSqlCondition);
+        sSqlCondition = filters.AddAllFiltersToWhereClause(sSqlCondition, sd.CurrentProject);
       }
       var lLogEntries = new List<LogEntry>();
       this.OperateOnDb(sd, (command) => {
@@ -1322,7 +1322,7 @@ namespace BioMap
       return lLogEntries.ToArray();
     }
     public string[] GetLogUsers(SessionData sd, Filters filters = null) {
-      string sSqlCondition = filters.AddAllFiltersToWhereClause("");
+      string sSqlCondition = filters.AddAllFiltersToWhereClause("", sd.CurrentProject);
       var lLogUsers = new List<string>();
       this.OperateOnDb(sd, (command) => {
         command.CommandText = "SELECT DISTINCT user FROM log" +
