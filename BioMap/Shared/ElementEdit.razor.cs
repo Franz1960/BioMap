@@ -32,6 +32,9 @@ namespace BioMap.Shared
           if (el == null) {
             throw new ArgumentException("Element must not be null.");
           } else {
+
+            System.Diagnostics.Debug.WriteLine($"ElementEdit.Element({el.ElementName}).Stadium={el.Classification.LivingBeing?.Stadium}");
+
             SD.SelectedElementName = el.ElementName;
             this.OrigJson = JsonConvert.SerializeObject(el);
             this.hasPhoto = !string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project, el.ElementName));
@@ -72,6 +75,7 @@ namespace BioMap.Shared
       if (this.taxonDropDown != null && this._ElementPending) {
         this.taxonDropDown.SelectedTaxon = this.Element?.Classification?.LivingBeing?.Taxon;
         this._ElementPending = false;
+        this.StateHasChanged();
       }
     }
     private List<string[]> Properties { get; set; } = new List<string[]>();
@@ -85,10 +89,14 @@ namespace BioMap.Shared
       return null;
     }
     private void TaxonDropDown_SelectedTaxonChanged() {
-      this.Element.Classification.LivingBeing = new ElementClassification.LivingBeing_t {
-        Taxon = this.taxonDropDown.SelectedTaxon,
-        Stadium = ElementClassification.Stadium.None,
-      };
+      if (this.Element.Classification.LivingBeing == null) {
+        this.Element.Classification.LivingBeing = new ElementClassification.LivingBeing_t {
+          Taxon = this.taxonDropDown.SelectedTaxon,
+          Stadium = ElementClassification.Stadium.None,
+        };
+      } else {
+        this.Element.Classification.LivingBeing.Taxon = this.taxonDropDown.SelectedTaxon;
+      }
     }
   }
 }

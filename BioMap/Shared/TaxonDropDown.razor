@@ -21,9 +21,10 @@
     @foreach (var treeNode in SD.CurrentProject.TaxaTree.RootNode.Children) {
 @if (treeNode?.Data?.InvariantName != null && !treeNode.Data.InvariantName.StartsWith("(")) {
 @this.CreateTaxonDropDownItem(treeNode,true)}}
+@if (this.IncludeCollections) {
     @foreach (var treeNode in SD.CurrentProject.TaxaTree.RootNode.Children) {
 @if (treeNode?.Data?.InvariantName != null && treeNode.Data.InvariantName.StartsWith("(") && treeNode.HasChildren) {
 @foreach (var treeNode2 in treeNode.Children) {
-@this.CreateTaxonDropDownItem(treeNode2,false)}}}
+@this.CreateTaxonDropDownItem(treeNode2,false)}}}}
   </DropdownMenu>
 </Dropdown>

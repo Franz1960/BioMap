@@ -30,7 +30,7 @@ namespace BioMap
     });
     public enum Stadium
     {
-      None,
+      None = 0,
       Eggs = 1,
       Larvae,
       Juveniles,
@@ -47,9 +47,10 @@ namespace BioMap
     public class LivingBeing_t
     {
       public Species Species;
-      public Taxon Taxon;
       public Stadium Stadium = Stadium.Adults;
       public int Count = 1;
+      [JsonIgnore]
+      public Taxon Taxon;
     }
     public class Habitat_t
     {
@@ -71,6 +72,12 @@ namespace BioMap
     }
     public bool IsIdPhoto() {
       return (string.CompareOrdinal(this.ClassName, "ID photo") == 0);
+    }
+    public bool IsLivingBeing() {
+      return (string.CompareOrdinal(this.ClassName, "Living being") == 0);
+    }
+    public bool IsHabitat() {
+      return (string.CompareOrdinal(this.ClassName, "Habitat") == 0);
     }
     public bool IsMonitoring() {
       return (this.IsIdPhoto() || (this.Habitat != null && this.Habitat.Monitoring));

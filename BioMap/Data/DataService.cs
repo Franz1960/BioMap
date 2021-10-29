@@ -288,8 +288,17 @@ namespace BioMap
               command.ExecuteNonQuery();
             } catch { }
             try {
-              command.CommandText = "ALTER TABLE indivdata ADD COLUMN genderfeature TEXT";
+              command.CommandText = "ALTER TABLE elements ADD COLUMN classname TEXT;";
+              command.CommandText += "ALTER TABLE elements ADD COLUMN lbsciname TEXT;";
+              command.CommandText += "ALTER TABLE elements ADD COLUMN lbstadium INT;";
+              command.CommandText += "ALTER TABLE elements ADD COLUMN lbcount INT;";
+              command.CommandText += "ALTER TABLE elements ADD COLUMN habquality INT;";
+              command.CommandText += "ALTER TABLE elements ADD COLUMN habmonitoring INT;";
               command.ExecuteNonQuery();
+            } catch { }
+            try {
+              command.CommandText = "ALTER TABLE indivdata ADD COLUMN genderfeature TEXT";
+                  command.ExecuteNonQuery();
             } catch { }
             try {
               command.CommandText = "ALTER TABLE indivdata ADD COLUMN shareofblack REAL";
@@ -868,10 +877,17 @@ namespace BioMap
       this.OperateOnDb(sProject, (command) => {
         string sJsonClassification = JsonConvert.SerializeObject(el.Classification);
         string sJsonMeasureData = JsonConvert.SerializeObject(el.MeasureData);
-        command.CommandText =
-          "REPLACE INTO elements (name,classification,croppingconfirmed,measuredata,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
-          "VALUES ('" + el.ElementName + "'," +
-          "'" + sJsonClassification +
+      command.CommandText =
+          "REPLACE INTO elements (name," +
+          "classification,classname,habquality,habmonitoring,lbsciname,lbstadium,lbcount,croppingconfirmed,measuredata,category,markerposlat,markerposlng,place,comment,uploadtime,uploader,creationtime) " +
+          "VALUES ('" + el.ElementName +
+          "','" +
+          "','" + el.Classification.ClassName +
+          "','" + ConvInvar.ToString((el.Classification.Habitat != null) ? el.Classification.Habitat.Quality : 0) +
+          "','" + ((el.Classification.Habitat !=null && el.Classification.Habitat.Monitoring) ? "1" : "0") +
+          "','" + ((el.Classification.LivingBeing?.Taxon != null) ? el.Classification.LivingBeing.Taxon.SciName : "") +
+          "','" + ConvInvar.ToString((el.Classification.LivingBeing != null) ? ((int)el.Classification.LivingBeing.Stadium) : 0) +
+          "','" + ConvInvar.ToString((el.Classification.LivingBeing != null) ? el.Classification.LivingBeing.Count : 0) +
           "','" + (el.CroppingConfirmed ? "1" : "0") +
           "','" + sJsonMeasureData +
           "','" + ConvInvar.ToString(el.ElementProp.MarkerInfo.category) +
@@ -1021,6 +1037,12 @@ namespace BioMap
           ",indivdata.centerofmass" +
           ",indivdata.stddeviation" +
           ",indivdata.entropy" +
+          ",elements.classname" +
+          ",elements.habquality" +
+          ",elements.habmonitoring" +
+          ",elements.lbsciname" +
+          ",elements.lbstadium" +
+          ",elements.lbcount" +
           " FROM elements" +
           " LEFT JOIN indivdata ON (indivdata.name=elements.name)" +
           " LEFT JOIN photos ON (photos.name=elements.name)" +
@@ -1040,14 +1062,35 @@ namespace BioMap
                 dtDateTimeOriginal = dr.GetDateTime(4);
               } catch { }
             }
-            var sJsonClassification = dr.GetValue(35) as string;
+            #region ElementClassification.
             var ec = new ElementClassification();
-            if (!string.IsNullOrEmpty(sJsonClassification)) {
-              ec = JsonConvert.DeserializeObject<ElementClassification>(sJsonClassification);
-              if (!string.IsNullOrEmpty(ec.LivingBeing?.Species?.SciName)) {
-                ec.LivingBeing.Taxon = sd.CurrentProject.GetTaxon(ec.LivingBeing.Species.SciName);
+            if (dr.IsDBNull(43)) {
+              // Has been written in old format (JSON).
+              var sJsonClassification = dr.GetValue(35) as string;
+              if (!string.IsNullOrEmpty(sJsonClassification)) {
+                ec = JsonConvert.DeserializeObject<ElementClassification>(sJsonClassification);
+                if (!string.IsNullOrEmpty(ec.LivingBeing?.Species?.SciName)) {
+                  ec.LivingBeing.Taxon = sd.CurrentProject.GetTaxon(ec.LivingBeing.Species.SciName);
+                }
+              }
+              bDirty = true;
+            } else {
+              // Has been written in new format.
+              ec.ClassName = dr.GetString(43);
+              if (ec.ClassName == "Habitat") {
+                ec.Habitat = new ElementClassification.Habitat_t {
+                  Quality = dr.GetInt32(44),
+                  Monitoring = (dr.GetInt32(45) != 0),
+                };
+              } else if (ec.ClassName == "Living being") {
+                ec.LivingBeing = new ElementClassification.LivingBeing_t {
+                  Taxon = sd.CurrentProject.GetTaxon(dr.GetString(46)),
+                  Stadium = (ElementClassification.Stadium)dr.GetInt32(47),
+                  Count = dr.GetInt32(48),
+                };
               }
             }
+            #endregion
             var sJsonMeasureData = dr.IsDBNull(36) ? null : dr.GetValue(36) as string;
             Blazor.ImageSurveyor.ImageSurveyorMeasureData? md = null;
             if (!string.IsNullOrEmpty(sJsonMeasureData) && sJsonMeasureData != "null") {

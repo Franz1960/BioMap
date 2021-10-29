@@ -62,7 +62,7 @@
                       </Dropdown>
                                         <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
                                           <DropdownToggle Color="Color.Primary">
-                                            @if (Element.Classification.LivingBeing.Stadium == (ElementClassification.Stadium)0) {
+                                            @if (Element.Classification.LivingBeing.Stadium == ElementClassification.Stadium.None) {
                       @Localize["(select)"] } else {
                       @Localize[Element.Classification.LivingBeing.Stadium.ToString()]}
                                           </DropdownToggle>
