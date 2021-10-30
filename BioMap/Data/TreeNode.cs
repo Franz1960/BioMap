@@ -64,11 +64,16 @@ namespace BioMap
     }
     public void Add(TreeNode childNode) {
       var l = ((List<TreeNode>)this.Children);
+      childNode.Parent=this;
       l.Add(childNode);
       l.Sort();
     }
     public bool Remove(TreeNode childNode) {
-      return ((List<TreeNode>)this.Children).Remove(childNode);
+      if (((List<TreeNode>)this.Children).Remove(childNode)) {
+        childNode.Parent = null;
+        return true;
+      }
+      return false;
     }
     public TreeNode[] Ancestors {
       get {

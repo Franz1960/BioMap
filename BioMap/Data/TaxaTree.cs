@@ -16,27 +16,39 @@ namespace BioMap
     public readonly TreeNode RootNode = new TreeNode(null);
     public void FromTaxaList(IEnumerable<Taxon> taxaList) {
       this.RootNode.Clear();
-      var flatNodeList = taxaList.Select(taxon => new TreeNode(taxon)).ToArray();
+      TreeNode[] flatNodeList = taxaList.Select(taxon => new TreeNode(taxon)).ToArray();
       var lSciNamesInUse = new List<string>();
-      foreach (var node in flatNodeList.ToArray()) {
+      // Build tree.
+      foreach (TreeNode node in flatNodeList.ToArray()) {
         var taxon = node.Data as Taxon;
         if (taxon.ParentSciNameArray.Length == 0) {
           this.RootNode.Add(node);
         } else {
           foreach (var sParentSciName in taxon.ParentSciNameArray) {
-            foreach (var parentNode in flatNodeList.ToArray()) {
+            foreach (TreeNode parentNode in flatNodeList.ToArray()) {
               if (string.CompareOrdinal(sParentSciName, parentNode.Data.InvariantName) == 0) {
                 if (!lSciNamesInUse.Contains(taxon.SciName)) {
-                  node.Parent = parentNode;
                   parentNode.Add(node);
                   lSciNamesInUse.Add(taxon.SciName);
                 } else {
                   var newNode = new TreeNode(node.Data);
-                  newNode.Parent = parentNode;
                   parentNode.Add(newNode);
                 }
                 break;
               }
+            }
+          }
+        }
+      }
+      // Modify tree so nodes which are solely in collections are made root nodes too.
+      foreach (TreeNode collectionRootNode in this.RootNode.Children.ToArray().Where(node => node.Data.InvariantName.StartsWith("("))) {
+        foreach (TreeNode collectionNode in collectionRootNode.Children.ToArray()) {
+          foreach (TreeNode node in collectionNode.Children.ToArray()) {
+            if (!this.RootNode.Find(node.Data.InvariantName).Any(n => !n.Parent.IsCollection)) {
+              collectionNode.Remove(node);
+              this.RootNode.Add(node);
+              var newNode = new TreeNode(node.Data);
+              collectionNode.Add(newNode);
             }
           }
         }
@@ -47,7 +59,7 @@ namespace BioMap
     public IEnumerable<Taxon> ToTaxaList() {
       var taxaList = new List<Taxon>();
       taxaList.AddRange(this.RootNode.GetChildrenFlatList().Select(node => node.Data as Taxon));
-      var result = taxaList.Where(taxon => !string.IsNullOrEmpty(taxon.SciName))
+      Taxon[] result = taxaList.Where(taxon => !string.IsNullOrEmpty(taxon.SciName))
         .Distinct()
         .ToArray();
       return result;
