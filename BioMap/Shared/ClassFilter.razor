@@ -28,7 +28,7 @@
             </DropdownMenu>
           </Dropdown>
           @if (string.CompareOrdinal(Classification.ClassName,"Living being") == 0) {
-        <TaxonDropDown @ref="this.taxonDropDown" IncludeCollections="@true" SelectedTaxonChanged="this.TaxonDropDown_SelectedTaxonChanged" />
+        <TaxonDropDown @ref="this.taxonDropDown" IncludeCollections="@true" SelectedTaxon="Classification.LivingBeing?.Taxon" SelectedTaxonChanged="this.TaxonDropDown_SelectedTaxonChanged" />
                           @if (!string.IsNullOrEmpty(Classification?.LivingBeing?.Taxon?.SciName)) {
         <Dropdown>
           <DropdownToggle Color="Color.Primary">

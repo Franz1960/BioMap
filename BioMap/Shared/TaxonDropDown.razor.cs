@@ -23,6 +23,7 @@ namespace BioMap.Shared
     [Parameter]
     public EventCallback SelectedTaxonChanged { get; set; }
     //
+    [Parameter]
     public Taxon SelectedTaxon {
       get => this._SelectedTaxon;
       set {
