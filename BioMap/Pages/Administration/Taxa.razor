@@ -17,8 +17,8 @@
 
 <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
   <Items>
-    <Tab Name="Tree">@Localize["Tree view"]</Tab>
-    <Tab Name="JSON" Clicked="() => { this.TaxaJSON = SD.CurrentProject.TaxaTree.ToJSON(); }">JSON</Tab>
+    <Tab Name="Tree"><Icon Name="IconName.Tree" /> @Localize["Tree view"]</Tab>
+    <Tab Name="JSON" Clicked="() => { this.TaxaJSON = SD.CurrentProject.TaxaTree.ToJSON(); }"><Icon Name="IconName.Code" /> JSON</Tab>
   </Items>
   <Content>
     <TabPanel Name="Tree" Border="Border.Light">

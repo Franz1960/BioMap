@@ -333,6 +333,9 @@
   <data name="Default value" xml:space="preserve">
     <value>Standardwert</value>
   </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
   <data name="Details" xml:space="preserve">
     <value>Details</value>
   </data>
@@ -366,11 +369,17 @@
   <data name="EMail address" xml:space="preserve">
     <value>EMail-Adresse</value>
   </data>
+  <data name="English name" xml:space="preserve">
+    <value>Englischer Name</value>
+  </data>
   <data name="Entropy" xml:space="preserve">
     <value>Entropie</value>
   </data>
   <data name="Exclude fresh born" xml:space="preserve">
     <value>Ohne Hüpferlinge</value>
+  </data>
+  <data name="Expand" xml:space="preserve">
+    <value>Erweitern</value>
   </data>
   <data name="Female" xml:space="preserve">
     <value>Weiblich</value>
@@ -416,6 +425,9 @@
   </data>
   <data name="Gender per anno" xml:space="preserve">
     <value>Geschlecht pro Jahr</value>
+  </data>
+  <data name="German name" xml:space="preserve">
+    <value>Deutscher Name</value>
   </data>
   <data name="Granularity" xml:space="preserve">
     <value>Granularität</value>
@@ -606,6 +618,9 @@
   <data name="New individuals" xml:space="preserve">
     <value>Neue Individuen</value>
   </data>
+  <data name="New taxon" xml:space="preserve">
+    <value>Neues Taxon</value>
+  </data>
   <data name="No more individuals to identify. If you want to process an individual element, select it in &quot;Lists / All Individuals&quot; and return to this page." xml:space="preserve">
     <value>Es müssen keine weiteren Individuen identifiziert werden. Wenn Sie ein einzelnes Element bearbeiten möchten, wählen Sie es in "Listen / Alle Individuen" aus und kehren Sie zu dieser Seite zurück.</value>
   </data>
@@ -659,6 +674,9 @@
   </data>
   <data name="Owner" xml:space="preserve">
     <value>Besitzer</value>
+  </data>
+  <data name="Parent's scientific name" xml:space="preserve">
+    <value>Eltern-Taxon (wiss. Name)</value>
   </data>
   <data name="Pictures" xml:space="preserve">
     <value>Bilder</value>
@@ -725,6 +743,9 @@
   </data>
   <data name="Save" xml:space="preserve">
     <value>Speichern</value>
+  </data>
+  <data name="Scientific name" xml:space="preserve">
+    <value>Wissenschaftlicher Name</value>
   </data>
   <data name="Select" xml:space="preserve">
     <value>Auswählen</value>
@@ -800,6 +821,9 @@
   </data>
   <data name="Totals" xml:space="preserve">
     <value>Gesamtzahlen</value>
+  </data>
+  <data name="Tree view" xml:space="preserve">
+    <value>Baumansicht</value>
   </data>
   <data name="Unknown" xml:space="preserve">
     <value>Unbekannt</value>
