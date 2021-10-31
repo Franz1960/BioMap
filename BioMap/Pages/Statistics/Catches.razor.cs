@@ -608,40 +608,42 @@ namespace BioMap.Pages.Statistics
               }
             }
           }
-          int nYearBegin = Math.Min(dictFemaleCount.Keys.Min(), dictMaleCount.Keys.Min());
-          int nYearEnd = Math.Max(dictFemaleCount.Keys.Max(), dictMaleCount.Keys.Max());
-          var dsFemale = new BarDataset<int>() {
-            Label = Localize["Female"],
-            BackgroundColor = ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200, System.Drawing.Color.Red)),
-          };
-          var dsMale = new BarDataset<int>() {
-            Label = Localize["Male"],
-            BackgroundColor = ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200, System.Drawing.Color.Blue)),
-          };
-          var dsRatio = new LineDataset<double>() {
-            Label = Localize["Male"] + " %",
-            BackgroundColor = "rgba(0,0,0,0)",
-            BorderWidth = 2,
-            PointHoverBorderWidth = 0,
-            BorderColor = "Green",
-            PointRadius = 3,
-            YAxisId = "ratio",
-          };
-          for (int year = nYearBegin; year <= nYearEnd; year++) {
-            _configGenderRatioPerAnno.Data.Labels.Add(year.ToString("0000"));
-            dsFemale.Add(-dictFemaleCount[year]);
-            dsMale.Add(dictMaleCount[year]);
-            int nSum = dictFemaleCount[year] + dictMaleCount[year];
-            dsRatio.Add(nSum < 10 ? 50 : ((dictMaleCount[year] * 100.0) / nSum));
+          if (dictFemaleCount.Count >= 2 && dictMaleCount.Count >= 2) {
+            int nYearBegin = Math.Min(dictFemaleCount.Keys.Min(), dictMaleCount.Keys.Min());
+            int nYearEnd = Math.Max(dictFemaleCount.Keys.Max(), dictMaleCount.Keys.Max());
+            var dsFemale = new BarDataset<int>() {
+              Label = Localize["Female"],
+              BackgroundColor = ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200, System.Drawing.Color.Red)),
+            };
+            var dsMale = new BarDataset<int>() {
+              Label = Localize["Male"],
+              BackgroundColor = ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200, System.Drawing.Color.Blue)),
+            };
+            var dsRatio = new LineDataset<double>() {
+              Label = Localize["Male"] + " %",
+              BackgroundColor = "rgba(0,0,0,0)",
+              BorderWidth = 2,
+              PointHoverBorderWidth = 0,
+              BorderColor = "Green",
+              PointRadius = 3,
+              YAxisId = "ratio",
+            };
+            for (int year = nYearBegin; year <= nYearEnd; year++) {
+              _configGenderRatioPerAnno.Data.Labels.Add(year.ToString("0000"));
+              dsFemale.Add(-dictFemaleCount[year]);
+              dsMale.Add(dictMaleCount[year]);
+              int nSum = dictFemaleCount[year] + dictMaleCount[year];
+              dsRatio.Add(nSum < 10 ? 50 : ((dictMaleCount[year] * 100.0) / nSum));
+            }
+            var nMaxCnt = Math.Max(-dsFemale.Min(), dsMale.Max());
+            _yAxisGenderRatioPerAnnoCnt.Ticks = new LinearCartesianTicks {
+              Min = -nMaxCnt,
+              Max = nMaxCnt,
+            };
+            _configGenderRatioPerAnno.Data.Datasets.Add(dsFemale);
+            _configGenderRatioPerAnno.Data.Datasets.Add(dsMale);
+            _configGenderRatioPerAnno.Data.Datasets.Add(dsRatio);
           }
-          var nMaxCnt = Math.Max(-dsFemale.Min(), dsMale.Max());
-          _yAxisGenderRatioPerAnnoCnt.Ticks = new LinearCartesianTicks {
-            Min = -nMaxCnt,
-            Max = nMaxCnt,
-          };
-          _configGenderRatioPerAnno.Data.Datasets.Add(dsFemale);
-          _configGenderRatioPerAnno.Data.Datasets.Add(dsMale);
-          _configGenderRatioPerAnno.Data.Datasets.Add(dsRatio);
         }
       }
       {
