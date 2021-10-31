@@ -267,6 +267,9 @@
   <data name="Close without saving" xml:space="preserve">
     <value>Schließen ohne speichern</value>
   </data>
+  <data name="Color" xml:space="preserve">
+    <value>Farbe</value>
+  </data>
   <data name="Comment" xml:space="preserve">
     <value>Kommentar</value>
   </data>

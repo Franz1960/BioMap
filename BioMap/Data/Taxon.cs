@@ -42,6 +42,10 @@ namespace BioMap
     /// English common name.
     /// </summary>
     public string Name_en;
+    /// <summary>
+    /// Associated color, e.g. in map views.
+    /// </summary>
+    public string Color;
     public string[] ParentSciNameArray {
       get {
         if (this.ParentSciNames == null) {
@@ -62,11 +66,13 @@ namespace BioMap
         this.SciName = "";
         this.Name_en = "";
         this.Name_de = "";
+        this.Color = "";
       } else {
         this.ParentSciNames = other.ParentSciNames;
         this.SciName = other.SciName;
         this.Name_en = other.Name_en;
         this.Name_de = other.Name_de;
+        this.Color = other.Color;
       }
     }
     /// <summary>

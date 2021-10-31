@@ -60,6 +60,15 @@
             </FieldBody>
           </Field>
         </Column>
+        <Column ColumnSize="ColumnSize.Is1">
+          <Field Horizontal="false">
+            <FieldLabel>@Localize["Color"]</FieldLabel>
+            <FieldBody>
+              <ColorEdit @bind-Color="this.EditedTaxon.Color">
+              </ColorEdit>
+            </FieldBody>
+          </Field>
+        </Column>
         <Column ColumnSize="ColumnSize.Is2">
           <Row Margin="Margin.Is2">
             <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Save_Clicked(); })">
