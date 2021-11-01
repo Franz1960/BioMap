@@ -384,6 +384,9 @@
   <data name="Expand" xml:space="preserve">
     <value>Erweitern</value>
   </data>
+  <data name="Export whole database" xml:space="preserve">
+    <value>Ganze Datenbank exportieren</value>
+  </data>
   <data name="Female" xml:space="preserve">
     <value>Weiblich</value>
   </data>

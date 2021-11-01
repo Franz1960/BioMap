@@ -154,18 +154,22 @@ namespace BioMap
         } catch { }
       }
     }
+    public string GetDbFilePath(string sProject) {
+      var sDbFilePath = System.IO.Path.Combine(this.GetDataDir(sProject), "biomap.sqlite");
+      return sDbFilePath;
+    }
     //
     private readonly List<string> AccessedDbs = new List<string>();
     public void OperateOnDb(SessionData sd, Action<IDbCommand> dbAction) {
       this.OperateOnDb(sd.CurrentUser.Project, dbAction);
     }
-    private void OperateOnDb(string sProject, Action<IDbCommand> dbAction) {
+    public void OperateOnDb(string sProject, Action<IDbCommand> dbAction) {
       try {
         var sDataDir = this.GetDataDir(sProject);
         if (!System.IO.Directory.Exists(sDataDir)) {
           System.IO.Directory.CreateDirectory(sDataDir);
         }
-        var sDbFilePath = System.IO.Path.Combine(this.GetDataDir(sProject), "biomap.sqlite");
+        var sDbFilePath = this.GetDbFilePath(sProject);
         var dbConnection = new SQLiteConnection();
         dbConnection.ConnectionString = "Data Source=" + sDbFilePath;
         bool bDbFileExisted = System.IO.File.Exists(sDbFilePath);
