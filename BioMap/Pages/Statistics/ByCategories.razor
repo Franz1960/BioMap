@@ -73,7 +73,7 @@
     this.OtherData.Clear();
     foreach (var sClassName in ElementClassification.ClassNames)
     {
-      var aEls = DS.GetElements(SD, null, "elements.classification LIKE '%\"ClassName\":\"" + sClassName + "\"%'");
+      var aEls = DS.GetElements(SD, null, "elements.classname='" + sClassName + "'");
       int nAllYears = 0;
       var aByYears = new int[ProjectYearEnd + 1 - ProjectYearBegin];
       foreach (var el in aEls)
