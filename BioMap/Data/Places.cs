@@ -73,7 +73,7 @@ namespace BioMap
         Description="Gravierende Änderungen Habitat im Verlauf der Saison oder über zwei Saisonen",
         ValueNames=new [] {
           "",
-          "Störung während Saison (Harvester)",
+          "Störung während Saison (z.B. Harvester)",
           "Austrocknung während Saison",
           "Wesentliche Änderung von einer zur nächsten Saison",
         },
