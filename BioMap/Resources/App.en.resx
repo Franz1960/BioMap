@@ -138,6 +138,9 @@
   <data name="DataUsage.ProjectMembers.Notice01" xml:space="preserve">
     <value>Anyone can become a project participant who registers and verifies that they can receive an email at the specified address. With the registration he receives the lowest access level 100, with which only general information can be retrieved. Project participants with appropriate authorization can change the access level of the new participant.</value>
   </data>
+  <data name="Description Numbers / Year of Birth Chart" xml:space="preserve">
+    <value>The number of individuals caught at least once in a year, by year class (YoB, Year of Birth).</value>
+  </data>
   <data name="ImpressumNotice01" xml:space="preserve">
     <value>This website is not commercial. It exclusively serves the workflows in nature conservation projects such as "Yellow-bellied toads in the Donaustaufer and Kreuther Forst".</value>
   </data>

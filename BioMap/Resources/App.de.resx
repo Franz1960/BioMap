@@ -339,6 +339,9 @@
   <data name="Delete" xml:space="preserve">
     <value>Löschen</value>
   </data>
+  <data name="Description Numbers / Year of Birth Chart" xml:space="preserve">
+    <value>Die Anzahl von Individuen, die in einem Jahr mindestens einmal gefangen wurden, aufgeschlüsselt nach Jahrgängen (YoB, Year of Birth).</value>
+  </data>
   <data name="Details" xml:space="preserve">
     <value>Details</value>
   </data>

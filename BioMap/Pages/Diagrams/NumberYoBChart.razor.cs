@@ -116,6 +116,7 @@ namespace BioMap.Pages.Diagrams
           BorderColor = sYobColor,
           PointRadius = 3,
           Label = "YoB: " + nYoB,
+          Fill = FillingMode.Disabled,
         };
         {
           foreach (int nYear in lYears) {
