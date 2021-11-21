@@ -26,8 +26,6 @@ namespace BioMap
       public bool DisplayConnectors;
     }
     public readonly Preferences Prefs = new Preferences();
-    public bool IsOwner { get => (!string.IsNullOrWhiteSpace(this.EMail) && string.CompareOrdinal(DataService.Instance.GetProjectProperty(this.Project, "Owner", ""), this.EMail) == 0); }
-    public bool IsSuperAdmin { get => DataService.Instance.GetSuperAdmins().Contains(this.EMail); }
     public bool MaySeeProject { get => Level >= 200; }
     public bool MayChangeLocations { get => Level >= 500; }
     public bool MaySeeOtherUsers { get => Level >= 500; }

@@ -16,6 +16,8 @@ namespace BioMap
     }
     public DataService DS { get; }
     public string CurrentCultureName => System.Globalization.CultureInfo.CurrentCulture.Name;
+    public bool IsOwner { get => (!string.IsNullOrWhiteSpace(this.CurrentUser?.EMail) && string.CompareOrdinal(this.DS.GetProjectProperty(this.CurrentUser.Project, "Owner", ""), this.CurrentUser.EMail) == 0); }
+    public bool IsSuperAdmin { get => this.DS.GetSuperAdmins().Contains(this.CurrentUser?.EMail); }
     public User CurrentUser { get; } = new User();
     public Project CurrentProject { get; } = new Project();
     public event EventHandler CurrentProjectChanged;

@@ -11,9 +11,7 @@ namespace BioMap
   public class DataService
   {
     public DataService() {
-      DataService.Instance = this;
     }
-    public static DataService Instance { get; private set; }
     private readonly string dataBaseDir = "../../../data/";
     private readonly string baseProject = "biomap";
     private static string GetEscapedSql(string sInput) {
@@ -80,7 +78,7 @@ namespace BioMap
     }
     public void DeleteDoc(string sProject, string sFilename) {
       try {
-        var sFilepath = DocumentController.GetFilePathForExistingDocument(sProject, sFilename);
+        var sFilepath = DocumentController.GetFilePathForExistingDocument(this, sProject, sFilename);
         if (System.IO.File.Exists(sFilepath)) {
           System.IO.File.Delete(sFilepath);
         }
@@ -106,7 +104,7 @@ namespace BioMap
       return "";
     }
     public string GetFilePathForImage(string sProject, string id, bool bOrig) {
-      var ds = DataService.Instance;
+      var ds = this;
       var sDataDir = ds.GetDataDir(sProject);
       string sFilePath = System.IO.Path.Combine(sDataDir, bOrig ? "images_orig" : "images");
       sFilePath = System.IO.Path.Combine(sFilePath, id);
@@ -806,7 +804,7 @@ namespace BioMap
           "')";
         command.ExecuteNonQuery();
       });
-      DataService.Instance.AddLogEntry(sd, "Created place " + place.Name + ": " + JsonConvert.SerializeObject(place));
+      this.AddLogEntry(sd, "Created place " + place.Name + ": " + JsonConvert.SerializeObject(place));
     }
     public void DeletePlace(SessionData sd, string sPlaceName) {
       this.OperateOnDb(sd, (command) => {
@@ -814,7 +812,7 @@ namespace BioMap
           "DELETE FROM places WHERE name='" + sPlaceName + "'";
         command.ExecuteNonQuery();
       });
-      DataService.Instance.AddLogEntry(sd, "Deleted place " + sPlaceName);
+      this.AddLogEntry(sd, "Deleted place " + sPlaceName);
     }
     public void WritePlace(SessionData sd, Place place) {
       string[] saDiff = null;
@@ -838,7 +836,7 @@ namespace BioMap
             "traitvalues='" + sTraitJson + "' WHERE name='" + place.Name + "'";
           command.ExecuteNonQuery();
         });
-        DataService.Instance.AddLogEntry(sd, "Changed place " + place.Name + ": " + saDiff[0] + " --> " + saDiff[1]);
+        this.AddLogEntry(sd, "Changed place " + place.Name + ": " + saDiff[0] + " --> " + saDiff[1]);
       }
     }
     #endregion
@@ -871,7 +869,7 @@ namespace BioMap
           $"VALUES ('{sPlaceName}','{kw}','{user}','{value}')";
         command.ExecuteNonQuery();
       });
-      DataService.Instance.AddLogEntry(sd, $"SetPlannedMonitoring({sPlaceName},{kw},{user},{value})");
+      this.AddLogEntry(sd, $"SetPlannedMonitoring({sPlaceName},{kw},{user},{value})");
     }
     #endregion
     public void WriteElement(SessionData sd, Element el) {
@@ -1250,8 +1248,11 @@ namespace BioMap
       if (filters != null) {
         sSqlCondition = filters.AddAllFiltersToWhereClause(sSqlCondition, sd.CurrentProject);
       }
+      return this.GetProtocolEntries(sd.CurrentUser.Project, sSqlCondition, sSqlOrderBy, nLimit);
+    }
+    public ProtocolEntry[] GetProtocolEntries(string sProject, string sSqlCondition = "", string sSqlOrderBy = "notes.dt", uint nLimit = 0) {
       var lProtocolEntries = new List<ProtocolEntry>();
-      this.OperateOnDb(sd, (command) => {
+      this.OperateOnDb(sProject, (command) => {
         command.CommandText = "SELECT notes.dt" +
           ",notes.author" +
           ",notes.text" +

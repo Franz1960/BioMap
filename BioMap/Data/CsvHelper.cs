@@ -23,7 +23,7 @@ namespace BioMap
     }
     //
     public CsvContent ReadCsv(SessionData sd, string sFileName) {
-      var ds = DataService.Instance;
+      var ds = sd.DS;
       var lHeaders = new List<string>();
       var laRows = new List<CsvContent.Row>();
       var sFilePath = ds.GetDataDir(sd) + "conf/" + sFileName;

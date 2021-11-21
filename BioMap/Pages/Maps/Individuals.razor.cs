@@ -33,7 +33,7 @@ namespace BioMap.Pages.Maps
     protected override void RefreshElementMarkers() {
       var lElementMarkers = new List<ElementMarker>();
       if (SD.CurrentUser.Level >= 0) {
-        var dictIndividuals = DataService.Instance.GetIndividuals(SD, SD.Filters, null, this.DisplayConnectors);
+        var dictIndividuals = DS.GetIndividuals(SD, SD.Filters, null, this.DisplayConnectors);
         foreach (var iid in dictIndividuals.Keys) {
           ElementMarker prevMarker = null;
           foreach (var el in dictIndividuals[iid]) {

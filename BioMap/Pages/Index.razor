@@ -41,11 +41,11 @@
         <CardBody>
           <CardText>
             <p>@Localize["You can look around the website without registration. However, you will only see alienated location coordinates. If you want to see unaltered data and participate in the project, you are welcome to register."]</p>
-            @if (string.IsNullOrEmpty(this.SD.CurrentUser.Project) && !this.SD.CurrentUser.IsSuperAdmin) {
+            @if (string.IsNullOrEmpty(this.SD.CurrentUser.Project) && !this.SD.IsSuperAdmin) {
               <p style="font-weight: bold; color: darkgreen;">@Localize["Select a project, then you can register for it."]</p>
             }
           </CardText>
-          <Button Disabled="string.IsNullOrEmpty(this.SD.CurrentUser.Project) && !this.SD.CurrentUser.IsSuperAdmin" Color="Color.Primary" Clicked="@((e) => NavigationManager.NavigateTo("/Administration/UserMgt"))">@Localize["Register"]</Button>
+          <Button Disabled="string.IsNullOrEmpty(this.SD.CurrentUser.Project) && !this.SD.IsSuperAdmin" Color="Color.Primary" Clicked="@((e) => NavigationManager.NavigateTo("/Administration/UserMgt"))">@Localize["Register"]</Button>
         </CardBody>
       </Card>
     </Column>

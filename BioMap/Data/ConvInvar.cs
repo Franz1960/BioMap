@@ -51,5 +51,8 @@ namespace BioMap
         return value.ToString("yyyy-MM-dd");
       }
     }
+    public static string ToIsoDateTime(DateTime dt) {
+      return dt.ToString("yyyy-MM-dd HH:mm:ss");
+    }
   }
 }

@@ -34,13 +34,13 @@ else
           <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Start date"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-              <DateEdit TValue="DateTime?" Disabled="!SD.CurrentUser.IsOwner" @bind-Date="SD.CurrentProject.StartDate"></DateEdit>
+              <DateEdit TValue="DateTime?" Disabled="!SD.IsOwner" @bind-Date="SD.CurrentProject.StartDate"></DateEdit>
             </FieldBody>
           </Field>
           <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Max. allowed elements"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-              <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsSuperAdmin" @bind-Value="SD.CurrentProject.MaxAllowedElements" />
+              <NumericEdit TValue="int" Disabled="!SD.IsSuperAdmin" @bind-Value="SD.CurrentProject.MaxAllowedElements" />
             </FieldBody>
           </Field>
           <Field Horizontal="true">
@@ -52,14 +52,14 @@ else
           <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Level to see elements"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-              <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsOwner" @bind-Value="SD.CurrentProject.MinLevelToSeeElements" />
+              <NumericEdit TValue="int" Disabled="!SD.IsOwner" @bind-Value="SD.CurrentProject.MinLevelToSeeElements" />
               <FieldHelp>@Localize["Default value"]: 200</FieldHelp>
             </FieldBody>
           </Field>
           <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Level to see exact locations"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-              <NumericEdit TValue="int" Disabled="!SD.CurrentUser.IsOwner" @bind-Value="SD.CurrentProject.MinLevelToSeeExactLocations" />
+              <NumericEdit TValue="int" Disabled="!SD.IsOwner" @bind-Value="SD.CurrentProject.MinLevelToSeeExactLocations" />
               <FieldHelp>@Localize["Default value"]: 400</FieldHelp>
             </FieldBody>
           </Field>

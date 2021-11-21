@@ -78,7 +78,7 @@ namespace BioMap
     public bool CroppingConfirmed = false;
     public Blazor.ImageSurveyor.ImageSurveyorMeasureData? MeasureData = null;
     public bool HasImageButNoOrigImage(SessionData sd) {
-      var ds = DataService.Instance;
+      var ds = sd.DS;
       if (
         System.IO.File.Exists(ds.GetFilePathForImage(sd.CurrentUser.Project, this.ElementName, false))
         &&
@@ -89,7 +89,7 @@ namespace BioMap
       return false;
     }
     public bool HasOrigImageButNoImage(SessionData sd) {
-      var ds = DataService.Instance;
+      var ds = sd.DS;
       if (
         !System.IO.File.Exists(ds.GetFilePathForImage(sd.CurrentUser.Project, this.ElementName, false))
         &&
@@ -143,7 +143,7 @@ namespace BioMap
     }
     public void AdjustTimeFromPhoto(SessionData sd) {
       if (this.HasPhotoData()) {
-        var sFilePath = PhotoController.GetFilePathForExistingImage(sd.CurrentUser.Project, this.ElementName, true);
+        var sFilePath = PhotoController.GetFilePathForExistingImage(sd.DS, sd.CurrentUser.Project, this.ElementName, true);
         if (System.IO.File.Exists(sFilePath)) {
           System.IO.FileStream sImageStream = null;
           try {
@@ -185,7 +185,7 @@ namespace BioMap
       return false;
     }
     public void InitMeasureData(SessionData sd, bool bOnlyIfNotCompatible) {
-      var DS = DataService.Instance;
+      var DS = sd.DS;
       bool bPrevNormed = ElementClassification.IsNormed(this?.Classification?.ClassName);
       bool bNewNormed = (string.CompareOrdinal(this.MeasureData?.normalizer?.NormalizeMethod, sd.CurrentProject.ImageNormalizer.NormalizeMethod) == 0);
       if (!bOnlyIfNotCompatible || bNewNormed != bPrevNormed) {

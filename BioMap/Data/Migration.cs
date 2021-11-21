@@ -32,7 +32,7 @@ namespace BioMap
     }
     public static async Task MigrateCategories(SessionData sd, Action<int> callbackCompletion) {
       await Task.Run(() => {
-        var ds = DataService.Instance;
+        var ds = sd.DS;
         var aElements = ds.GetElements(sd);
         int nLoopCnt = 0;
         foreach (var el in aElements) {
@@ -209,7 +209,7 @@ namespace BioMap
     }
     public static async Task MigrateGenders(SessionData sd, Action<int> callbackCompletion) {
       await Task.Run(() => {
-        var ds = DataService.Instance;
+        var ds = sd.DS;
         var aElements = ds.GetElements(sd);
         int nLoopCnt = 0;
         foreach (var el in aElements) {
@@ -239,7 +239,7 @@ namespace BioMap
     }
     public static async Task MigrateGenderFeatures(SessionData sd, Action<int> callbackCompletion) {
       await Task.Run(() => {
-        var ds = DataService.Instance;
+        var ds = sd.DS;
         var aElements = ds.GetElements(sd);
         int nLoopCnt = 0;
         foreach (var el in aElements) {
@@ -254,7 +254,7 @@ namespace BioMap
     }
     public static async Task MigrateImageSize(SessionData sd, Action<int> callbackCompletion) {
       await Task.Run(() => {
-        var ds = DataService.Instance;
+        var ds = sd.DS;
         var sDataDir = ds.GetDataDir(sd);
         ds.AddLogEntry(sd, "Migrating data");
         var sMigSrcDir = System.IO.Path.Combine(sDataDir, "migration_source");
@@ -291,7 +291,7 @@ namespace BioMap
     }
     public static async Task MigrateData(SessionData sd, Action<int> callbackCompletion) {
       await Task.Run(() => {
-        var ds = DataService.Instance;
+        var ds = sd.DS;
         var sDataDir = ds.GetDataDir(sd);
         ds.AddLogEntry(sd, "Migrating data");
         var sMigSrcDir = System.IO.Path.Combine(sDataDir, "migration_source");
@@ -537,7 +537,7 @@ namespace BioMap
             }
             #region Jahrgang aller Wiederfänge auf den zuerst ermittelten Jahrgang setzen.
             {
-              Dictionary<int, List<Element>> Individuals = DataService.Instance.GetIndividuals(sd);
+              Dictionary<int, List<Element>> Individuals = sd.DS.GetIndividuals(sd);
               foreach (var iid in Individuals.Keys) {
                 int? nYoB = null;
                 foreach (var el in Individuals[iid]) {
@@ -546,7 +546,7 @@ namespace BioMap
                     nYoB = el.GetYearOfBirth();
                   } else if (!nElYoB.HasValue || nElYoB.Value != nYoB.Value) {
                     el.ElementProp.IndivData.DateOfBirth = new DateTime(nYoB.Value, 7, 1);
-                    DataService.Instance.WriteElement(sd, el);
+                    sd.DS.WriteElement(sd, el);
                   }
                 }
               }
@@ -554,10 +554,10 @@ namespace BioMap
             #endregion
             #region Orte bestimmen und schreiben.
             {
-              Element[] elements = DataService.Instance.GetElements(sd);
+              Element[] elements = sd.DS.GetElements(sd);
               foreach (var el in elements) {
                 el.ElementProp.MarkerInfo.PlaceName = Place.GetNearestPlace(sd, el.ElementProp.MarkerInfo.position).Name;
-                DataService.Instance.WriteElement(sd, el);
+                sd.DS.WriteElement(sd, el);
               }
             }
             #endregion

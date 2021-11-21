@@ -37,7 +37,7 @@ namespace BioMap.Shared
 
             SD.SelectedElementName = el.ElementName;
             this.OrigJson = JsonConvert.SerializeObject(el);
-            this.hasPhoto = !string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project, el.ElementName));
+            this.hasPhoto = !string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName));
             this.Properties.Clear();
             if (el.HasIndivData() && el.HasMeasuredData()) {
               this.Properties.Add(new[] { Localize["Head-body-length"], el.GetHeadBodyLengthNice() });

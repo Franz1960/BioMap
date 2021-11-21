@@ -134,7 +134,7 @@ namespace BioMap.Pages.Workflow
         "elements.creationtime ASC");
       var lElements = new List<Element>();
       foreach (var el in els) {
-        if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project, el.ElementName))) {
+        if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName))) {
           lElements.Add(el);
         }
       }

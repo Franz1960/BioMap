@@ -70,7 +70,7 @@
     RefreshData();
   }
   private void RefreshData() {
-    this.Individuals = DataService.Instance.GetIndividuals(SD,SD.Filters,null,true);
+    this.Individuals = DS.GetIndividuals(SD,SD.Filters,null,true);
   }
   private string GetForElements(int iid,Func<Element,string> func,bool bAddYoBWarning = false) {
     var sb = new System.Text.StringBuilder();

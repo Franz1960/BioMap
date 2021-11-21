@@ -154,7 +154,7 @@ namespace BioMap.Pages.Workflow
           "(((elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND ifnull(indivdata.stddeviation,0)=0))",
           "elements.creationtime ASC");
         foreach (var el in els) {
-          if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project, el.ElementName))) {
+          if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName))) {
             lElements.Add(el);
           }
         }
@@ -163,7 +163,7 @@ namespace BioMap.Pages.Workflow
           "((elements.classification LIKE '%\"ClassName\":\"New\"%') OR (elements.croppingconfirmed<>1) OR (elements.croppingconfirmed IS NULL))",
           "elements.creationtime ASC");
         foreach (var el in els) {
-          if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project, el.ElementName))) {
+          if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName))) {
             lElements.Add(el);
           }
         }
@@ -172,7 +172,7 @@ namespace BioMap.Pages.Workflow
             "(((elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND ifnull(indivdata.genderfeature,'')=''))",
             "elements.creationtime ASC");
           foreach (var el in els) {
-            if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project, el.ElementName))) {
+            if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName))) {
               lElements.Add(el);
             }
           }

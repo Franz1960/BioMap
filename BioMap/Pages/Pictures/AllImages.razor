@@ -58,8 +58,8 @@
     if (this.SortAndGroupSettings1 != null)
     {
       var els =
-        DataService.Instance.GetElements(SD, SD.Filters, "", "elements.creationtime " + (this.SortAndGroupSettings1.SortDown ? "DESC" : "ASC"))
-        .Where(el => !string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(SD.CurrentUser.Project, el.ElementName)));
+        DS.GetElements(SD, SD.Filters, "", "elements.creationtime " + (this.SortAndGroupSettings1.SortDown ? "DESC" : "ASC"))
+        .Where(el => !string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName)));
       this.ElementsByPlaceName.Clear();
       if (this.SortAndGroupSettings1.GroupByPlace)
       {

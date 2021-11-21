@@ -18,7 +18,7 @@ namespace BioMap
     public static Place GetNearestPlace(SessionData sd, LatLng latLng, float fDistanceTolerance = 0.20f) {
       Place nearestPlace = null;
       double minDistance = double.MaxValue;
-      foreach (var p in DataService.Instance.GetPlaces(sd)) {
+      foreach (var p in sd.DS.GetPlaces(sd)) {
         var d = GeoCalculator.GetDistance(p.LatLng, latLng);
         if (nearestPlace == null || d < minDistance) {
           if (d <= p.Radius * (1 + fDistanceTolerance)) {

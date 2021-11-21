@@ -78,7 +78,7 @@
   }
   private void RefreshData()
   {
-    this.Individuals = DataService.Instance.GetIndividuals(SD, SD.Filters, null, true);
+    this.Individuals = DS.GetIndividuals(SD, SD.Filters, null, true);
     var lIIds = new List<int>(this.Individuals.Keys);
     lIIds.Sort((a, b) =>
     {
@@ -199,7 +199,7 @@
     foreach (var el in this.Individuals[iid])
     {
       el.ElementProp.IndivData.DateOfBirth = new DateTime(nYoB, 7, 1);
-      DataService.Instance.WriteElement(SD, el);
+      DS.WriteElement(SD, el);
     }
   }
   private int oldIid = 0;

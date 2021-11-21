@@ -60,7 +60,7 @@
     {
       string sOrder = this.SortAndGroupSettings1.SortDown ? "DESC" : "ASC";
       var els =
-        DataService.Instance.GetElements(SD, SD.Filters, WhereClauses.Is_Individuum, $"indivdata.iid {sOrder},elements.creationtime {sOrder}");
+        DS.GetElements(SD, SD.Filters, WhereClauses.Is_Individuum, $"indivdata.iid {sOrder},elements.creationtime {sOrder}");
       this.ElementsByPlaceName.Clear();
       if (this.SortAndGroupSettings1.GroupByPlace)
       {

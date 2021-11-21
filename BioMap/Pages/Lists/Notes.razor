@@ -1,7 +1,5 @@
 @page "/Lists/Notes"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
-@inject DataService DS
-@inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
 
@@ -13,11 +11,18 @@
   </Column>
 </Row>
 <Row>
-  <Column>
+  <Column ColumnSize="ColumnSize.Is8">
     <h1>
       @Localize["Notes"]
-      <Button Float="Float.Right" Color="Color.Primary" Clicked="@((e)=>{ AddProtocolEntry(); })"><Icon Name="IconName.PlusCircle"></Icon></Button>
     </h1>
+  </Column>
+  <Column>
+    <a href="/api/print/notes?Project=@SD.CurrentUser.Project" target="_blank">
+      <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<400)"><Icon Name="IconName.Print"></Icon></Button>
+    </a>
+  </Column>
+  <Column>
+    <Button Float="Float.Right" Color="Color.Primary" Clicked="@((e)=>{ AddProtocolEntry(); })"><Icon Name="IconName.PlusCircle"></Icon></Button>
   </Column>
 </Row>
 <Row>
@@ -56,30 +61,4 @@
 </Row>
 
 @code {
-  private NotePopup refNotePopup;
-  private ProtocolEntry[] ProtocolEntries = new ProtocolEntry[0];
-  protected override void OnInitialized()
-  {
-    base.OnInitialized();
-    SD.Filters.FilterChanged += (sender, ev) =>
-    {
-      RefreshData();
-      base.InvokeAsync(this.StateHasChanged);
-    };
-    RefreshData();
-  }
-  private void RefreshData()
-  {
-    this.ProtocolEntries = DataService.Instance.GetProtocolEntries(SD, SD.Filters, "", "notes.dt DESC");
-  }
-  private void AddProtocolEntry()
-  {
-    var pe = new ProtocolEntry
-    {
-      CreationTime = DateTime.Now,
-      Author = SD.CurrentUser.EMail,
-      Text = "",
-    };
-    refNotePopup.Show(pe);
-  }
 }

@@ -11,8 +11,11 @@ namespace BioMap
   [ApiController]
   public class ConfFileController : ControllerBase
   {
-    public static string GetFilePathForConfFile(string sProject, string id) {
-      var ds = DataService.Instance;
+    public ConfFileController(DataService ds) {
+      this.DS = ds;
+    }
+    private readonly DataService DS;
+    public static string GetFilePathForConfFile(DataService ds, string sProject, string id) {
       var sConfDir = ds.GetConfDir(sProject);
       string sFilePath = System.IO.Path.Combine(sConfDir, id);
       if (System.IO.File.Exists(sFilePath)) {
@@ -22,13 +25,13 @@ namespace BioMap
     }
     [HttpGet("{id}")]
     public IActionResult GetFile(string id) {
-      var ds = DataService.Instance;
+      var ds = this.DS;
       try {
         string sProject = "";
         if (Request.Query.ContainsKey("Project")) {
           sProject = Request.Query["Project"];
         }
-        string sFilePath = GetFilePathForConfFile(sProject, id);
+        string sFilePath = GetFilePathForConfFile(ds, sProject, id);
         if (System.IO.File.Exists(sFilePath)) {
           byte[] b = System.IO.File.ReadAllBytes(sFilePath);
           string sContentType = MimeMapping.MimeUtility.GetMimeMapping(sFilePath);

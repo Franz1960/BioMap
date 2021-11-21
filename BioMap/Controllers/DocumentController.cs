@@ -11,8 +11,11 @@ namespace BioMap
   [ApiController]
   public class DocumentController : ControllerBase
   {
-    public static string GetFilePathForExistingDocument(string sProject, string id) {
-      var ds = DataService.Instance;
+    public DocumentController(DataService ds) {
+      this.DS = ds;
+    }
+    private readonly DataService DS;
+    public static string GetFilePathForExistingDocument(DataService ds, string sProject, string id) {
       var sDocsDir = ds.GetDocsDir(sProject);
       string sFilePath = System.IO.Path.Combine(sDocsDir, id);
       if (System.IO.File.Exists(sFilePath)) {
@@ -22,7 +25,7 @@ namespace BioMap
     }
     [HttpGet("{id}")]
     public IActionResult GetDocument(string id) {
-      var ds = DataService.Instance;
+      var ds = this.DS;
       try {
         string sProject = "";
         if (Request.Query.ContainsKey("Project")) {

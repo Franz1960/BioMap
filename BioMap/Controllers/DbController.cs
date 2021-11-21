@@ -11,9 +11,13 @@ namespace BioMap
   [ApiController]
   public class DbController : ControllerBase
   {
+    public DbController(DataService ds) {
+      this.DS = ds;
+    }
+    private readonly DataService DS;
     [HttpGet("{id}")]
     public IActionResult GetDb(string id) {
-      var ds = DataService.Instance;
+      var ds = this.DS;
       try {
         if (string.CompareOrdinal(id, "biomap.sqlite") == 0) {
           string sProject = "";
