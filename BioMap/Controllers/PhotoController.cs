@@ -37,6 +37,7 @@ namespace BioMap
         string sFilePath = GetFilePathForExistingImage(this.DS, sProject, id, bForceOrig);
         if (!string.IsNullOrEmpty(sFilePath)) {
           try {
+            float fRotateAngleDeg = (float)this.GetRequestDoubleParam("rotate", 0);
             double dZoom = this.GetRequestDoubleParam("zoom", 0);
             int nReqWidth = this.GetRequestIntParam("width", 0);
             int nMaxDim = this.GetRequestIntParam("maxdim", 0);
@@ -44,6 +45,9 @@ namespace BioMap
               using (var image = Image.Load(sFilePath)) {
                 var bs = new MemoryStream();
                 image.Mutate(x => x.AutoOrient());
+                if (fRotateAngleDeg != 0) {
+                  image.Mutate(x => x.Rotate(fRotateAngleDeg));
+                }
                 int nOrigWidth = image.Width;
                 int nOrigHeight = image.Height;
                 //
