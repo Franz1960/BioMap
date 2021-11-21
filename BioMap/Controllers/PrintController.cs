@@ -83,7 +83,7 @@ namespace BioMap
       tw.WriteLine("<h2>ID Photos</h2>");
       foreach (var el in els) {
         tw.WriteLine($"<p>");
-        tw.WriteLine($"<img src=\"{sUrlBase}api/photos/{el.ElementName}?zoom=1&Project={sd.CurrentUser.Project}\" style=\"margin-top:1px;\"/>");
+        tw.WriteLine($"<img src=\"../../api/photos/{el.ElementName}?zoom=1&Project={sd.CurrentUser.Project}\" style=\"margin-top:1px;\"/>");
         tw.WriteLine("<br/><b>#" + el.GetIId() + "</b> (" + el.GetIsoDate() + " / " + el.GetHeadBodyLengthNice() + " / " + el.GetGenderFull(sd) + " / " + el.GetPlaceName() + ")");
         tw.WriteLine($"</p>");
       }
