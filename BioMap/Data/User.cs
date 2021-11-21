@@ -16,6 +16,7 @@ namespace BioMap
     public string FullName;
     public int Level;
     public string Project;
+    public string PermTicket;
     //
     public class Preferences
     {
