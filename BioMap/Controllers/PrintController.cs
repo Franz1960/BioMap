@@ -19,22 +19,7 @@ namespace BioMap
     public IActionResult Print(string id) {
       var ds = this.DS;
       try {
-        string sProject = "";
-        if (this.Request.Query.ContainsKey("Project")) {
-          sProject = this.Request.Query["Project"];
-        }
-        string sUser= "";
-        if (this.Request.Query.ContainsKey("User")) {
-          sUser = this.Request.Query["User"];
-        }
-        string sPermTicket = "";
-        if (this.Request.Query.ContainsKey("PermTicket")) {
-          sPermTicket = this.Request.Query["PermTicket"];
-        }
-        var sd = new SessionData(ds);
-        sd.CurrentUser.EMail = sUser;
-        sd.CurrentUser.Project = sProject;
-        ds.LoadUser(sd, sPermTicket, sd.CurrentUser);
+        var sd = ControllerHelper.CreateSessionData(this,ds);
         try {
           string sTempFileName = System.IO.Path.GetTempFileName();
           var fs = new System.IO.StreamWriter(sTempFileName, false, System.Text.Encoding.UTF8);
