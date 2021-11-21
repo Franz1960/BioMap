@@ -6,75 +6,67 @@
 @using BioMap
 
 <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
-<SortAndGroupSettings @ref="this.SortAndGroupSettings1" Context="IdCards" AnyChanged="async () => { this.RefreshData(); }" />
+<Row>
+  <Column ColumnSize="ColumnSize.Is8">
+    <SortAndGroupSettings @ref="this.SortAndGroupSettings1" Context="IdCards" AnyChanged="async () => { this.RefreshData(); }" />
+  </Column>
+  <Column>
+    <a href="/api/print/id-photos?Project=@SD.CurrentUser.Project&User=@SD.CurrentUser.EMail&PermTicket=@SD.CurrentUser.PermTicket" target="_blank">
+      <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<400)"><Icon Name="IconName.Print"></Icon></Button>
+    </a>
+  </Column>
+</Row>
 <PhotoPopup @ref="PhotoPopup1" />
 
-@foreach (var group in this.ElementsByPlaceName)
-{
-  @if (this.SortAndGroupSettings1.GroupByPlace)
-  {
-    <div class="row">
-    <h2>@(string.IsNullOrEmpty(group.Key) ? Localize["Outside defined places"] : group.Key)</h2>
+@foreach (var group in this.ElementsByPlaceName) {
+@if (this.SortAndGroupSettings1.GroupByPlace) {
+<div class="row">
+  <h2>@(string.IsNullOrEmpty(group.Key) ? Localize["Outside defined places"] : group.Key)</h2>
+</div>}
+        <div class="row">
+          @foreach (var el in group) {
+  <div class="card" style="width: 240px;">
+    <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">
+      <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
+    </a>
+    <div class="card-footer">
+      <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName())</small>
     </div>
-  }
-  <div class="row">
-    @foreach (var el in group)
-    {
-      <div class="card" style="width: 240px;">
-        <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">
-          <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
-        </a>
-        <div class="card-footer">
-          <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName())</small>
-        </div>
-      </div>
-    }
-  </div>
-}
+  </div>}
+        </div>}
 
 @code {
-  private List<IGrouping<string, Element>> ElementsByPlaceName { get; } = new List<IGrouping<string, Element>>();
+  private List<IGrouping<string,Element>> ElementsByPlaceName { get; } = new List<IGrouping<string,Element>>();
   private SortAndGroupSettings SortAndGroupSettings1;
   private PhotoPopup PhotoPopup1;
-  protected override void OnInitialized()
-  {
+  protected override void OnInitialized() {
     base.OnInitialized();
-    SD.Filters.FilterChanged += (sender, ev) =>
-    {
+    SD.Filters.FilterChanged += (sender,ev) => {
       RefreshData();
       base.InvokeAsync(this.StateHasChanged);
     };
     RefreshData();
   }
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
-    if (firstRender)
-    {
+    if (firstRender) {
       RefreshData();
     }
   }
-  private void RefreshData()
-  {
-    if (this.SortAndGroupSettings1 != null)
-    {
+  private void RefreshData() {
+    if (this.SortAndGroupSettings1 != null) {
       string sOrder = this.SortAndGroupSettings1.SortDown ? "DESC" : "ASC";
       var els =
-        DS.GetElements(SD, SD.Filters, WhereClauses.Is_Individuum, $"indivdata.iid {sOrder},elements.creationtime {sOrder}");
+        DS.GetElements(SD,SD.Filters,WhereClauses.Is_Individuum,$"indivdata.iid {sOrder},elements.creationtime {sOrder}");
       this.ElementsByPlaceName.Clear();
-      if (this.SortAndGroupSettings1.GroupByPlace)
-      {
+      if (this.SortAndGroupSettings1.GroupByPlace) {
         this.ElementsByPlaceName.AddRange((els.GroupBy(el => el.GetPlaceName()).OrderBy(group => group.Key)));
-      }
-      else
-      {
+      } else {
         this.ElementsByPlaceName.AddRange((els.GroupBy(el => "")));
       }
       this.StateHasChanged();
     }
   }
-  private void OnSelectClick(Element el)
-  {
+  private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);
-  }
-}
+  } }

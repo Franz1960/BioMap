@@ -487,6 +487,7 @@ namespace BioMap
       });
       user.Level = nLevel;
       user.EMail = sd.CurrentUser.EMail;
+      user.PermTicket = sPermTicket;
       this.LoadProject(sd, sd.CurrentProject);
       user.Prefs.MaptypeId = this.GetUserProperty(sd, "MaptypeId", "");
       user.Prefs.ShowCustomMap = (ConvInvar.ToInt(this.GetUserProperty(sd, "ShowCustomMap", "0")) != 0);

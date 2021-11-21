@@ -17,7 +17,7 @@
     </h1>
   </Column>
   <Column>
-    <a href="/api/print/notes?Project=@SD.CurrentUser.Project" target="_blank">
+    <a href="/api/print/notes?Project=@SD.CurrentUser.Project&User=@SD.CurrentUser.EMail&PermTicket=@SD.CurrentUser.PermTicket" target="_blank">
       <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<400)"><Icon Name="IconName.Print"></Icon></Button>
     </a>
   </Column>
