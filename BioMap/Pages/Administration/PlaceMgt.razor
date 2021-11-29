@@ -8,7 +8,7 @@
 
 <Row Margin="Margin.Is1.OnY">
   <Column>
-    <CheckBox @bind-Checked="SD.AlienateLocations" LabelText=@Localize["Alienate locations"] />
+    <CheckBox Checked="SD.AlienateLocations" CheckedChanged="CheckBoxAlienateLocations_Changed" LabelText=@Localize["Alienate locations"] />
   </Column>
   <Column>
     <Button Color="Color.Primary" Clicked="@(async (e)=>{ await RecalculatePlaces_Clicked(); })">
@@ -263,8 +263,14 @@
     }
     await this.InvokeAsync(() => { this.StateHasChanged(); });
   }
+  private void CheckBoxAlienateLocations_Changed(bool bChecked) {
+    this.SD.AlienateLocations = bChecked;
+    if (!bChecked) {
+      this.AllPlaces = this.DS.GetPlaces(this.SD);
+    }
+  }
   private void TraitValueChanged(Place place, int idx, int value)
-  {
+{
     place.TraitValues[idx] = value;
     this.ChangeByUser(place);
   }
