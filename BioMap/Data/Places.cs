@@ -63,9 +63,9 @@ namespace BioMap
           "1 Gewässer",
           "2-3 Gewässer",
           "4-5 Gewässer, homogen",
-          "5+ Gewässer homogen",
+          "6+ Gewässer homogen",
           "4-5 Gewässer heterogen",
-          "5+ Gewässer heterogen",
+          "6+ Gewässer heterogen",
         },
       },
       new Trait {
