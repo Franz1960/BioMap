@@ -17,6 +17,9 @@
           <td>
             <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<600)" Clicked="@((e)=>{ Element.AdjustTimeFromPhoto(SD); })">@Localize["Adjust"]</Button>
           </td>
+          <td>
+            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<600 || this.ElementDeleted == null)" Clicked="@((e)=>{ this.DeleteElement(this.Element); })"><Icon Name="IconName.Delete"></Icon></Button>
+          </td>
         </tr>
       </tbody>
     </table>

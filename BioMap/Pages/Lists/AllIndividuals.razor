@@ -9,7 +9,7 @@
 
 <p>Anzahl Individuen: @Individuals.Count</p>
 
-<PhotoPopup @ref="PhotoPopup1" />
+<PhotoPopup @ref="PhotoPopup1" ElementDeleted="@(() => this.OnElementDeleted())" />
 
 <table class="table table-striped table-sm">
   <thead>
@@ -193,8 +193,8 @@
         }
       }
       if (sGender==null) {
-          sGender="j";
-        }
+        sGender="j";
+      }
       for (int idxEl = 0;idxEl < aIndis.Value.Count; idxEl++) {
         var el = aIndis.Value[idxEl];
         if (el.Gender != sGender) {
@@ -203,5 +203,9 @@
         }
       }
     }
+  }
+  public void OnElementDeleted() {
+    this.RefreshData();
+    this.StateHasChanged();
   }
 }

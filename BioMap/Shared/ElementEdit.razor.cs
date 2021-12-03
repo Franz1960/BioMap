@@ -16,6 +16,8 @@ namespace BioMap.Shared
   {
     [Parameter]
     public bool Edit { get; set; } = false;
+    [Parameter]
+    public Action ElementDeleted { get; set; }
     //
     private TaxonDropDown taxonDropDown;
     private bool hasPhoto = false;
@@ -33,7 +35,7 @@ namespace BioMap.Shared
             throw new ArgumentException("Element must not be null.");
           } else {
 
-            System.Diagnostics.Debug.WriteLine($"ElementEdit.Element({el.ElementName}).Stadium={el.Classification.LivingBeing?.Stadium}");
+            //System.Diagnostics.Debug.WriteLine($"ElementEdit.Element({el.ElementName}).Stadium={el.Classification.LivingBeing?.Stadium}");
 
             SD.SelectedElementName = el.ElementName;
             this.OrigJson = JsonConvert.SerializeObject(el);
@@ -97,6 +99,12 @@ namespace BioMap.Shared
       } else {
         this.Element.Classification.LivingBeing.Taxon = this.taxonDropDown.SelectedTaxon;
       }
+    }
+    private void DeleteElement(Element el) {
+      DS.DeleteElement(SD, el);
+      DS.AddLogEntry(SD, "Deleted element " + el.ElementName);
+      this.ElementDeleted?.Invoke();
+      this.StateHasChanged();
     }
   }
 }

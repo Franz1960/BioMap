@@ -16,7 +16,7 @@
     </a>
   </Column>
 </Row>
-<PhotoPopup @ref="PhotoPopup1" />
+<PhotoPopup @ref="PhotoPopup1" ElementDeleted="@(() => this.OnElementDeleted())" />
 
 @foreach (var group in this.ElementsByPlaceName) {
 @if (this.SortAndGroupSettings1.GroupByPlace) {
@@ -69,4 +69,9 @@
   }
   private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);
-  } }
+  }
+  public void OnElementDeleted() {
+    this.RefreshData();
+    this.StateHasChanged();
+  }
+}

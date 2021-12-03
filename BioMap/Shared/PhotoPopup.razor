@@ -19,7 +19,7 @@
       </Buttons>
     </ModalHeader>
     <ModalBody MaxHeight="@maxHeight">
-      <ElementEdit @ref="ElementEditRef" Edit="@(SD.CurrentUser.Level>=500)" />
+      <ElementEdit @ref="ElementEditRef" Edit="@(SD.CurrentUser.Level>=500)" ElementDeleted="@(() => OnElementDeleted())" />
     </ModalBody>
     <ModalFooter>
       @*<Buttons Role="ButtonsRole.Toolbar">
@@ -40,6 +40,8 @@
 </Modal>
 
 @code{
+  [Parameter]
+  public Action ElementDeleted { get; set; }
   //
   private Modal modalRef;
   private Action callbackOnClosed = null;
@@ -59,8 +61,12 @@
     this.StateHasChanged();
     this.modalRef.Show();
   }
-  public void Hide()
+  public void OnElementDeleted()
   {
+    this.ElementDeleted?.Invoke();
+    this.Hide();
+  }
+  public void Hide() {
     this.modalRef.Hide();
   }
   private void sizeButtonClicked()

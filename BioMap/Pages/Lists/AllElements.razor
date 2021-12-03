@@ -79,7 +79,7 @@
   </Column>
 </Row>
 
-<PhotoPopup @ref="PhotoPopup1" />
+<PhotoPopup @ref="PhotoPopup1" ElementDeleted="@(() => this.OnElementDeleted())" />
 
 @code {
   private Element[] Elements = new Element[0];
@@ -126,5 +126,9 @@
       csv.Append('\n');
     }
     await JSRuntime.InvokeVoidAsync("DownloadTextFile", "AllElements.csv", csv.ToString());
+  }
+  public void OnElementDeleted() {
+    this.RefreshData();
+    this.StateHasChanged();
   }
 }

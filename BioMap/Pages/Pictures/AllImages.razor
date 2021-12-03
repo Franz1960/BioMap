@@ -7,7 +7,7 @@
 
 <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
 <SortAndGroupSettings @ref="this.SortAndGroupSettings1" Context="AllImages" AnyChanged="async () => { this.RefreshData(); }" />
-<PhotoPopup @ref="this.PhotoPopup1" />
+<PhotoPopup @ref="this.PhotoPopup1" ElementDeleted="@(() => this.OnElementDeleted())" />
 
 @foreach (var group in this.ElementsByPlaceName)
 {
@@ -75,5 +75,9 @@
   private void OnSelectClick(Element el)
   {
     this.PhotoPopup1.Show(el);
+  }
+  public void OnElementDeleted() {
+    this.RefreshData();
+    this.StateHasChanged();
   }
 }
