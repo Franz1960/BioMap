@@ -63,7 +63,7 @@ namespace BioMap
     }
     public double GetIdPhotoZoom(Element element) {
       if (element?.Classification != null && element.Classification.IsIdPhoto()) {
-        return 0.80 * this.CurrentProject.MaxHeadBodyLength / Math.Max(this.CurrentProject.MinHeadBodyLength, element.GetHeadBodyLengthMm());
+        return Math.Max(1.0, 0.80 * this.CurrentProject.MaxHeadBodyLength / Math.Max(this.CurrentProject.MinHeadBodyLength, element.GetHeadBodyLengthMm()));
       }
       return 0;
     }
