@@ -216,7 +216,7 @@ namespace BioMap
       }
     }
     private string _NotesTextFilter = "";
-    public static char[] NegateChars { get; } = new char[] { '-', '!', '^' };
+    public static char[] NegateChars { get; } = new char[] { '!', '^' };
     public static char[] SeparateChars { get; } = new char[] { ' ', ',', ';', '|', '+' };
     private static string GetFilterTermForWhereInClause(string sFilter) {
       string sFilterTerm = null;
@@ -407,7 +407,7 @@ namespace BioMap
       return sResult;
     }
     private static string ExpandPlaceFilter(string sFilter) {
-      return sFilter.ToUpperInvariant();
+      return sFilter;
     }
     private static string ExpandFilter(string sFilter, Func<string, string, string> funcExpand) {
       var sbExp = new System.Text.StringBuilder();
