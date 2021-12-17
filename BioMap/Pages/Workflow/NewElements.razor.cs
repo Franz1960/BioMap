@@ -245,7 +245,7 @@ namespace BioMap.Pages.Workflow
           } else if (this.Element.HasImageButNoOrigImage(SD)) {
             this.Element.MeasureData.normalizePoints = null;
           }
-          this.Element.InitMeasureData(SD, true);
+          //this.Element.InitMeasureData(SD, true);
           bool bHasImageButNoOrigImage = (this.Element.MeasureData?.normalizePoints == null);
           if (bHasImageButNoOrigImage) {
             this.Raw = false;

@@ -477,6 +477,12 @@
   <data name="ID photo" xml:space="preserve">
     <value>Passbild</value>
   </data>
+  <data name="ID photo height / px" xml:space="preserve">
+    <value>Passfoto Höhe / px</value>
+  </data>
+  <data name="ID photo width / px" xml:space="preserve">
+    <value>Passfoto Breite / px</value>
+  </data>
   <data name="Identify" xml:space="preserve">
     <value>Identifizieren</value>
   </data>
@@ -707,6 +713,9 @@
   </data>
   <data name="Precipitation" xml:space="preserve">
     <value>Niederschlag</value>
+  </data>
+  <data name="Presetting for dish diameter" xml:space="preserve">
+    <value>Vorbesetzung für Durchmesser der Petrischale</value>
   </data>
   <data name="Project" xml:space="preserve">
     <value>Projekt</value>

@@ -607,7 +607,11 @@ namespace BioMap
       project.AdultMinLength = ConvInvar.ToDouble(this.GetProjectProperty(sd, "AdultMinLength", "36"));
       project.MinHeadBodyLength = ConvInvar.ToDouble(this.GetProjectProperty(sd, "MinHeadBodyLength", "12"));
       project.MaxHeadBodyLength = ConvInvar.ToDouble(this.GetProjectProperty(sd, "MaxHeadBodyLength", "60"));
-      project.ImageNormalizer = new Blazor.ImageSurveyor.ImageSurveyorNormalizer(this.GetProjectProperty(sd, "NormalizeMethod", "HeadToCloakInPetriDish"));
+      project.ImageNormalizer = new Blazor.ImageSurveyor.ImageSurveyorNormalizer(this.GetProjectProperty(sd, "NormalizeMethod", "HeadToCloakInPetriDish")) {
+        NormalizeReference = ConvInvar.ToDouble(this.GetProjectProperty(sd, "NormalizeReference", "100")),
+        NormalizedWidthPx = ConvInvar.ToInt(this.GetProjectProperty(sd, "NormalizedWidthPx", "600")),
+        NormalizedHeightPx = ConvInvar.ToInt(this.GetProjectProperty(sd, "NormalizedHeightPx", "600"))
+      };
       project.MinLevelToSeeElements = ConvInvar.ToInt(this.GetProjectProperty(sd, "MinLevelToSeeElements", "200"));
       project.MinLevelToSeeExactLocations = ConvInvar.ToInt(this.GetProjectProperty(sd, "MinLevelToSeeExactLocations", "400"));
       //
@@ -640,6 +644,9 @@ namespace BioMap
       this.SetProjectProperty(sd, "MinHeadBodyLength", ConvInvar.ToString(project.MinHeadBodyLength));
       this.SetProjectProperty(sd, "MaxHeadBodyLength", ConvInvar.ToString(project.MaxHeadBodyLength));
       this.SetProjectProperty(sd, "NormalizeMethod", project.ImageNormalizer.NormalizeMethod);
+      this.SetProjectProperty(sd, "NormalizeReference", ConvInvar.ToString(project.ImageNormalizer.NormalizeReference));
+      this.SetProjectProperty(sd, "NormalizedWidthPx", ConvInvar.ToString(project.ImageNormalizer.NormalizedWidthPx));
+      this.SetProjectProperty(sd, "NormalizedHeightPx", ConvInvar.ToString(project.ImageNormalizer.NormalizedHeightPx));
       this.SetProjectProperty(sd, "MinLevelToSeeElements", ConvInvar.ToString(project.MinLevelToSeeElements));
       this.SetProjectProperty(sd, "MinLevelToSeeExactLocations", ConvInvar.ToString(project.MinLevelToSeeExactLocations));
       this.SetProjectProperty(sd, "Taxa", project.TaxaTree.ToJSON());

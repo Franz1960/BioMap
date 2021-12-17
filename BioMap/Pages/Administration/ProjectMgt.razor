@@ -171,10 +171,28 @@ else
           <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Normalize method"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-                <Select TValue="string" @bind-SelectedValue="SD.CurrentProject.ImageNormalizer.NormalizeMethod">
-                  <SelectItem TValue="string" Value="@("HeadToCloakInPetriDish")">HeadToCloakInPetriDish</SelectItem>
-                  <SelectItem TValue="string" Value="@("HeadToCloakIn50mmCuvette")">HeadToCloakIn50mmCuvette</SelectItem>
-                </Select>
+              <Select TValue="string" @bind-SelectedValue="SD.CurrentProject.ImageNormalizer.NormalizeMethod">
+                <SelectItem TValue="string" Value="@("HeadToCloakInPetriDish")">HeadToCloakInPetriDish</SelectItem>
+                <SelectItem TValue="string" Value="@("HeadToCloakIn50mmCuvette")">HeadToCloakIn50mmCuvette</SelectItem>
+              </Select>
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Presetting for dish diameter"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <NumericEdit TValue="double" Disabled="@(SD.CurrentUser.Level<500)" @bind-Value="SD.CurrentProject.ImageNormalizer.NormalizeReference" Min="10" Max="200" />
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["ID photo width / px"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <NumericEdit TValue="int" Disabled="@(SD.CurrentUser.Level<500)" @bind-Value="SD.CurrentProject.ImageNormalizer.NormalizedWidthPx" Min="100" Max="2000" />
+            </FieldBody>
+          </Field>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["ID photo height / px"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              <NumericEdit TValue="int" Disabled="@(SD.CurrentUser.Level<500)" @bind-Value="SD.CurrentProject.ImageNormalizer.NormalizedHeightPx" Min="100" Max="2000" />
             </FieldBody>
           </Field>
         </CardBody>
