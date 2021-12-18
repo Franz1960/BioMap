@@ -73,7 +73,7 @@ class PrepPic_t {
       if (PrepPic.MeasureData.normalizer.NormalizeMethod == "HeadToCloakInPetriDish") {
         let ptHead = PrepPic.MeasureData.measurePoints[0];
         let ptBack = PrepPic.MeasureData.measurePoints[1];
-        let phi = Math.atan2(ptHead.Y - ptBack.Y, ptHead.X - ptBack.X);
+        let phi = Math.PI / 2 + Math.atan2(ptHead.Y - ptBack.Y, ptHead.X - ptBack.X);
         let ptsOnCircle = PrepPic.MeasureData.normalizePoints;
         PrepPic.drawMarker(ctx, ptHead, MH, phi, 'magenta', 'Kopfspitze');
         PrepPic.drawMarker(ctx, ptBack, MH, phi, 'brown', 'Kloake');
@@ -93,8 +93,9 @@ class PrepPic_t {
         ctx.lineWidth = 4 / PrepPic.Zoom;
         ctx.stroke();
         //
-        let fScale = circle.radius / 500;
-        let fBoxSide = fScale * 600;
+        let fScale = 2 * PrepPic.MeasureData.normalizer.NormalizePixelSize * circle.radius / PrepPic.MeasureData.normalizer.NormalizeReference;
+        let fBoxWidth = fScale * PrepPic.MeasureData.normalizer.NormalizedWidthPx;
+        let fBoxHeight = fScale * PrepPic.MeasureData.normalizer.NormalizedHeightPx;
         let fLength = PrepPic_t.calcDistance(ptHead, ptBack);
         let ptBoxCenter = {
           X: (ptHead.X + ptBack.X) / 2,
@@ -102,7 +103,7 @@ class PrepPic_t {
         };
         ctx.translate(ptBoxCenter.X, ptBoxCenter.Y);
         ctx.rotate(phi);
-        ctx.strokeRect(-fBoxSide / 2, -fBoxSide / 2, fBoxSide, fBoxSide);
+        ctx.strokeRect(-fBoxWidth / 2, -fBoxHeight / 2, fBoxWidth, fBoxHeight);
       } else if (PrepPic.MeasureData.normalizer.NormalizeMethod == "HeadToCloakIn50mmCuvette") {
         let ptHead = PrepPic.MeasureData.measurePoints[0];
         let ptBack = PrepPic.MeasureData.measurePoints[1];
@@ -134,9 +135,9 @@ class PrepPic_t {
         ctx.stroke();
         // Draw box.
         let fNormDistance = PrepPic_t.calcDistance(ptsNormalize[1], ptsNormalize[0]);
-        let fScale = fNormDistance / 500;
-        let fBoxWidth = fScale * 500;
-        let fBoxHeight = fScale * 1000;
+        let fScale = PrepPic.MeasureData.normalizer.NormalizePixelSize * fNormDistance / PrepPic.MeasureData.normalizer.NormalizeReference;
+        let fBoxWidth = fScale * PrepPic.MeasureData.normalizer.NormalizedWidthPx;
+        let fBoxHeight = fScale * PrepPic.MeasureData.normalizer.NormalizedHeightPx;
         let fLength = PrepPic_t.calcDistance(ptHead, ptBack);
         let ptBoxCenter = {
           X: (ptHead.X + ptBack.X) / 2,

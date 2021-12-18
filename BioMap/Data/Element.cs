@@ -184,16 +184,23 @@ namespace BioMap
       }
       return false;
     }
-    public void InitMeasureData(SessionData sd, bool bOnlyIfNotCompatible) {
+    /// <summary>
+    /// Set classification and initialize measure data including normalizer.
+    /// </summary>
+    /// <param name="sd">Session Data.</param>
+    /// <param name="sNewClass">The new classification.</param>
+    /// <param name="bSetNormalizerFromProject">Initialize normalizer from project settings even if normalizer type is not changed.</param>
+    public void InitMeasureData(SessionData sd, string sNewClass, bool bSetNormalizerFromProject) {
       var DS = sd.DS;
       bool bPrevNormed = ElementClassification.IsNormed(this?.Classification?.ClassName);
-      bool bNewNormed = (string.CompareOrdinal(this.MeasureData?.normalizer?.NormalizeMethod, sd.CurrentProject.ImageNormalizer.NormalizeMethod) == 0);
-      if (!bOnlyIfNotCompatible || bNewNormed != bPrevNormed) {
+      bool bNewNormed = ElementClassification.IsNormed(sNewClass);
+      this.Classification.ClassName = sNewClass;
+      if (bSetNormalizerFromProject || bNewNormed != bPrevNormed || this.MeasureData?.normalizer == null) {
         var sSrcFile = DS.GetFilePathForImage(sd.CurrentUser.Project, this.ElementName, true);
         if (System.IO.File.Exists(sSrcFile)) {
           using (var imgSrc = Image.Load(sSrcFile)) {
             imgSrc.Mutate(x => x.AutoOrient());
-            if (ElementClassification.IsNormed(this.Classification?.ClassName)) {
+            if (bNewNormed) {
               var normalizer = sd.CurrentProject.ImageNormalizer;
               this.MeasureData = new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
                 normalizer = normalizer,

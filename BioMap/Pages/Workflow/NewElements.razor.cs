@@ -183,23 +183,11 @@ namespace BioMap.Pages.Workflow
     }
     private async Task newClass_Selected(string sNewClass) {
       if (string.CompareOrdinal(sNewClass, this.Element?.Classification?.ClassName) != 0) {
-        bool bPrevNormed = ElementClassification.IsNormed(this.Element?.Classification?.ClassName);
-        bool bNewNormed = ElementClassification.IsNormed(sNewClass);
-        if (bNewNormed != bPrevNormed) {
-          if (this.Element != null) {
-            this.Element.MeasureData.normalizer =
-              bNewNormed
-              ?
-              SD.CurrentProject.ImageNormalizer
-              :
-              new Blazor.ImageSurveyor.ImageSurveyorNormalizer("CropRectangle")
-              ;
-            this.Element.InitMeasureData(SD, false);
-          }
-        }
-        this.Element.Classification.ClassName = sNewClass;
+        this.Element.InitMeasureData(SD, sNewClass, false);
+        DS.WriteElement(SD,this.Element);
         this.disableSetImage = false;
         await this.LoadElement();
+        this.StateHasChanged();
       }
     }
     private void ElementName_Click(Element el) {
@@ -240,12 +228,11 @@ namespace BioMap.Pages.Workflow
       if (!this.disableSetImage) {
         if (this.Element != null) {
           this.disableSetImage = true;
-          if (this.Element.MeasureData == null) {
-            this.Element.InitMeasureData(SD, false);
+          if (this.Element.MeasureData?.normalizer == null) {
+            this.Element.InitMeasureData(SD, this.Element.Classification.ClassName, false);
           } else if (this.Element.HasImageButNoOrigImage(SD)) {
-            this.Element.MeasureData.normalizePoints = null;
+            this.Element.InitMeasureData(SD, this.Element.Classification.ClassName, false);
           }
-          //this.Element.InitMeasureData(SD, true);
           bool bHasImageButNoOrigImage = (this.Element.MeasureData?.normalizePoints == null);
           if (bHasImageButNoOrigImage) {
             this.Raw = false;
