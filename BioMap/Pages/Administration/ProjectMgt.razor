@@ -273,7 +273,7 @@
                     </a>
                   </TableRowCell>
                   <TableRowCell>
-                    <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<700" Clicked="@((e)=>{ DS.DeleteDoc(SD.CurrentUser.Project,doc.Filename); })">
+                    <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<700" Clicked="@((e)=>{ DS.DeleteConf(SD.CurrentUser.Project,doc.Filename); })">
                       <Icon Name="IconName.Delete"></Icon>
                     </Button>
                   </TableRowCell>
