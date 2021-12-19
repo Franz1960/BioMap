@@ -34,9 +34,7 @@ namespace BioMap
         var document = ds.GetDocs(sProject, id).FirstOrDefault();
         if (!string.IsNullOrEmpty(document.Filename)) {
           Byte[] b = System.IO.File.ReadAllBytes(System.IO.Path.Combine(ds.GetDocsDir(sProject), document.Filename));
-          string sContentType =
-            document.DocType == Document.DocType_en.Pdf ? "application/pdf" :
-            "text/plain";
+          string sContentType = document.ContentType;
           return File(b, sContentType);
         } else {
           return StatusCode(404, $"Document not found: {id}");

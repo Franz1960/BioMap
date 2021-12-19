@@ -47,6 +47,17 @@ namespace BioMap
       string sFilePath = System.IO.Path.Combine(sDir, "temp");
       return sFilePath;
     }
+    public string GetContentFromFileType(string sFileType) {
+      string sLowerType = sFileType.ToLowerInvariant();
+      string sContentType =
+        string.CompareOrdinal(sLowerType, ".pdf") == 0 ? "application/pdf" :
+        string.CompareOrdinal(sLowerType, ".png") == 0 ? "image/png" :
+        string.CompareOrdinal(sLowerType, ".jpg") == 0 ? "image/jpeg" :
+        string.CompareOrdinal(sLowerType, ".jpeg") == 0 ? "image/jpeg" :
+        string.CompareOrdinal(sLowerType, ".mp4") == 0 ? "video/mp4" :
+        "text/plain";
+      return sContentType;
+    }
     public string GetConfDir(string sProject) {
       var sDir = this.GetDataDir(sProject);
       string sFilePath = System.IO.Path.Combine(sDir, "conf");
@@ -60,8 +71,8 @@ namespace BioMap
       if (System.IO.Directory.Exists(sDir)) {
         var aFiles = System.IO.Directory.GetFiles(sDir, sSearchPattern);
         var aDocuments = aFiles.Select(sFile => new Document {
-          DisplayName = System.IO.Path.GetFileNameWithoutExtension(sFile),
-          DocType = (sFile.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) ? Document.DocType_en.Pdf : Document.DocType_en.Unknown),
+          ContentType = this.GetContentFromFileType(System.IO.Path.GetExtension(sFile)),
+          DisplayName = System.IO.Path.GetFileName(sFile),
           Filename = System.IO.Path.GetFileName(sFile),
         });
         return aDocuments.ToArray();
@@ -89,8 +100,8 @@ namespace BioMap
       if (System.IO.Directory.Exists(sDir)) {
         var aFiles = System.IO.Directory.GetFiles(sDir, sSearchPattern);
         var aDocuments = aFiles.Select(sFile => new Document {
-          DisplayName = System.IO.Path.GetFileNameWithoutExtension(sFile),
-          DocType = (sFile.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) ? Document.DocType_en.Pdf : Document.DocType_en.Unknown),
+          ContentType = this.GetContentFromFileType(System.IO.Path.GetExtension(sFile)),
+          DisplayName = System.IO.Path.GetFileName(sFile),
           Filename = System.IO.Path.GetFileName(sFile),
         });
         return aDocuments.ToArray();

@@ -6,13 +6,8 @@ namespace BioMap
 {
   public class Document
   {
-    public enum DocType_en
-    {
-      Unknown = 0,
-      Pdf,
-    }
+    public string ContentType;
     public string DisplayName;
-    public DocType_en DocType;
     public string Filename;
   }
 }

@@ -207,13 +207,13 @@
                     <BarIcon IconName="IconName.Info" />
                     @Localize["About"]..
                   </BarDropdownItem>
-                  @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project))
-                  {
-                    <BarDropdownItem To=@("/api/docs/"+doc.Filename+"?Project="+SD.CurrentUser.Project) Target="Target.Blank">
-                      <BarIcon IconName=@((doc.DocType==Document.DocType_en.Pdf?IconName.FilePdf:IconName.Book)) />
-                      @doc.DisplayName
-                    </BarDropdownItem>
-                  }
+                  <BarDropdownDivider />
+                      @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
+                <BarDropdownItem To=@("/api/docs/"+doc.Filename+"?Project="+SD.CurrentUser.Project) Target="Target.Blank">
+                  <BarIcon IconName=@((doc.ContentType=="application/pdf"?IconName.FilePdf:IconName.Book)) />
+                  @doc.DisplayName
+                </BarDropdownItem>}
+                  <BarDropdownDivider />
                   <BarDropdownItem To="/Help/Impressum">
                     <BarIcon IconName="IconName.Book" />
                     @Localize["Impressum"]

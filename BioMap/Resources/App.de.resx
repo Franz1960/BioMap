@@ -720,8 +720,8 @@
   <data name="Precipitation" xml:space="preserve">
     <value>Niederschlag</value>
   </data>
-  <data name="Presetting for dish diameter" xml:space="preserve">
-    <value>Vorbesetzung für Durchmesser der Petrischale</value>
+  <data name="Presetting for dish diameter or cuvette width" xml:space="preserve">
+    <value>Vorbesetzung für Durchmesser der Petrischale bzw. Breite der Kuvette</value>
   </data>
   <data name="Project" xml:space="preserve">
     <value>Projekt</value>

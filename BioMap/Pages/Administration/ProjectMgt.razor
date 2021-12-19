@@ -172,7 +172,7 @@
             </FieldBody>
           </Field>
           <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Presetting for dish diameter"]</FieldLabel>
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Presetting for dish diameter or cuvette width"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
               <NumericEdit TValue="double" Disabled="@(SD.CurrentUser.Level<500)" @bind-Value="SD.CurrentProject.ImageNormalizer.NormalizeReference" Min="10" Max="200" />
             </FieldBody>
@@ -215,21 +215,23 @@
             <TableHeader>
               <TableRow>
                 <TableHeaderCell>@Localize["Name"]</TableHeaderCell>
-                <TableHeaderCell>@Localize["Type"]</TableHeaderCell>
                 <TableHeaderCell></TableHeaderCell>
               </TableRow>
             </TableHeader>
             <TableBody>
               @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
-                <TableRow>
-                  <TableRowCell>@doc.DisplayName</TableRowCell>
-                  <TableRowCell>@doc.DocType.ToString()</TableRowCell>
-                  <TableRowCell>
-                    <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<700" Clicked="@((e)=>{ DS.DeleteDoc(SD.CurrentUser.Project,doc.Filename); })">
-                      <Icon Name="IconName.Delete"></Icon>
-                    </Button>
-                  </TableRowCell>
-                </TableRow>
+              <TableRow>
+                <TableRowCell>
+                  <a href=@("/api/docs/"+doc.Filename+"?Project="+SD.CurrentUser.Project) target="_blank">
+                    @doc.DisplayName
+                  </a>
+                </TableRowCell>
+                <TableRowCell>
+                  <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<700" Clicked="@((e)=>{ DS.DeleteDoc(SD.CurrentUser.Project,doc.Filename); })">
+                    <Icon Name="IconName.Delete"></Icon>
+                  </Button>
+                </TableRowCell>
+              </TableRow>
               }
             </TableBody>
           </Table>
@@ -259,15 +261,17 @@
             <TableHeader>
               <TableRow>
                 <TableHeaderCell>@Localize["Name"]</TableHeaderCell>
-                <TableHeaderCell>@Localize["Type"]</TableHeaderCell>
                 <TableHeaderCell></TableHeaderCell>
               </TableRow>
             </TableHeader>
             <TableBody>
               @foreach (var doc in DS.GetConf(SD.CurrentUser.Project)) {
                 <TableRow>
-                  <TableRowCell>@doc.DisplayName</TableRowCell>
-                  <TableRowCell>@doc.DocType.ToString()</TableRowCell>
+                  <TableRowCell>
+                    <a href=@("/api/conf/"+doc.Filename+"?Project="+SD.CurrentUser.Project) target="_blank">
+                    @doc.DisplayName
+                    </a>
+                  </TableRowCell>
                   <TableRowCell>
                     <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<700" Clicked="@((e)=>{ DS.DeleteDoc(SD.CurrentUser.Project,doc.Filename); })">
                       <Icon Name="IconName.Delete"></Icon>
@@ -310,6 +314,3 @@
     </ModalBody>
   </ModalContent>
 </Modal>
-
-@code {
-}
