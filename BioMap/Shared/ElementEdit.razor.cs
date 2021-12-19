@@ -37,6 +37,7 @@ namespace BioMap.Shared
 
             //System.Diagnostics.Debug.WriteLine($"ElementEdit.Element({el.ElementName}).Stadium={el.Classification.LivingBeing?.Stadium}");
 
+            this.EditableCreationTime = el.ElementProp.CreationTime;
             SD.SelectedElementName = el.ElementName;
             this.OrigJson = JsonConvert.SerializeObject(el);
             this.hasPhoto = !string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName));
@@ -53,9 +54,6 @@ namespace BioMap.Shared
               }
             }
             this.Properties.Add(new[] { "File name", el.ElementName });
-            if (hasPhoto) {
-              this.Properties.Add(new[] { "Time", ConvInvar.ToString(el.ElementProp.CreationTime) });
-            }
             this.Properties.Add(new[] { "Uploaded", ConvInvar.ToString(el.ElementProp.UploadInfo.Timestamp) });
             this.Properties.Add(new[] { "by", el.ElementProp.UploadInfo.UserId });
             if (this.hasPhoto) {
@@ -68,6 +66,7 @@ namespace BioMap.Shared
     }
     private Element _Element = null;
     private bool _ElementPending = false;
+    private DateTime? EditableCreationTime;
     protected override void OnInitialized() {
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
@@ -84,6 +83,9 @@ namespace BioMap.Shared
     private string OrigJson = null;
     public string[] EditingChangedContent() {
       if (this.Element != null && this.OrigJson != null) {
+        if (this.EditableCreationTime.HasValue) {
+          this.Element.ElementProp.CreationTime = this.EditableCreationTime.Value;
+        }
         string sJson = JsonConvert.SerializeObject(this.Element);
         var saDiff = Utilities.FindDifferingCoreParts(this.OrigJson, sJson);
         return saDiff;
