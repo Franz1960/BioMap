@@ -2,6 +2,36 @@
 
 Map based biological monitoring
 
-BioMap is a one page web application based  on server side Blazor. It uses the https://github.com/stsrki/Blazorise[Blazorise], https://github.com/rungwiroon/BlazorGoogleMaps[BlazorGoogleMaps], https://github.com/SixLabors/ImageSharp[ImageSharp] and https://github.com/mariusmuntean/ChartJs.Blazor[ChartJs.Blazor] libraries.
+BioMap is a one page web application based  on server side Blazor. It uses the https://github.com/stsrki/Blazorise[Blazorise],
+https://github.com/rungwiroon/BlazorGoogleMaps[BlazorGoogleMaps], https://github.com/SixLabors/ImageSharp[ImageSharp] and
+https://github.com/mariusmuntean/ChartJs.Blazor[ChartJs.Blazor] libraries.
 
-The web app has been developed for a nature protection project in Germany. The population of yellow-bellied toads (bombina variegata) is studied in a forest area in Bavaria and observed over a longer period of time. By regularly catching and identifying toads, growth and migration movements of individuals are recorded. The results are processed numerically and graphically.
+The web app has been developed for a nature protection project in Germany. The population of yellow-bellied toads (bombina
+variegata) is studied in a forest area in Bavaria and observed over a longer period of time. By regularly catching and identifying
+toads, growth and migration movements of individuals are recorded. The results are processed numerically and graphically.
+
+== Running Instance
+
+The original web site driven by this app is https://biomap.itools.de[biomap.itools.de]. A couple of projects are hosted here
+including the yellow-bellied toad project near Regensburg, Bavaria. You can register for any of the projects there and even
+create a new project of your own.
+
+=== Create and Manage a new Project
+
+TBD.
+
+==== Use an own Map
+
+You can use an own map image in the project area. Prepare a JPEG image containing the map and supply the coordinates of the map
+corners in a JSON file. The name of the image file has to be *MapImage.jpeg*, the JSON file *MapImageBounds.json*.
+
+.MapImageBounds.json for an area in Bavaria
+[source, json]
+----
+[
+  { "lat": 49.0933, "lng": 12.1472 },
+  { "lat": 49.0253, "lng": 12.2809 }
+]
+----
+
+Replace the coordinates with apropriate values for your map image.
