@@ -142,7 +142,7 @@ namespace BioMap.Pages.Administration
           progressCompletion = (int)Math.Round(((idxFile + 0.5) * 100) / files.Count);
           await this.InvokeAsync(() => { this.StateHasChanged(); });
           try {
-            var docStream = docFile.OpenReadStream(20000000);
+            var docStream = docFile.OpenReadStream(40000000);
             var sDestFilePath = System.IO.Path.Combine(
               bConf_not_Docs ?DS.GetConfDir(SD.CurrentUser.Project) : DS.GetDocsDir(SD.CurrentUser.Project),
               docFile.Name);
