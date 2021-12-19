@@ -70,6 +70,7 @@ namespace BioMap
       var sDir = this.GetConfDir(sProject);
       if (System.IO.Directory.Exists(sDir)) {
         var aFiles = System.IO.Directory.GetFiles(sDir, sSearchPattern);
+        Array.Sort(aFiles);
         var aDocuments = aFiles.Select(sFile => new Document {
           ContentType = this.GetContentFromFileType(System.IO.Path.GetExtension(sFile)),
           DisplayName = System.IO.Path.GetFileName(sFile),
@@ -99,6 +100,7 @@ namespace BioMap
       var sDir = this.GetDocsDir(sProject);
       if (System.IO.Directory.Exists(sDir)) {
         var aFiles = System.IO.Directory.GetFiles(sDir, sSearchPattern);
+        Array.Sort(aFiles);
         var aDocuments = aFiles.Select(sFile => new Document {
           ContentType = this.GetContentFromFileType(System.IO.Path.GetExtension(sFile)),
           DisplayName = System.IO.Path.GetFileName(sFile),
