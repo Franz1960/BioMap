@@ -55,6 +55,27 @@ namespace BioMap
       }
       return sFilePath;
     }
+    public Document[] GetConf(string sProject, string sSearchPattern = "*.*") {
+      var sDir = this.GetConfDir(sProject);
+      if (System.IO.Directory.Exists(sDir)) {
+        var aFiles = System.IO.Directory.GetFiles(sDir, sSearchPattern);
+        var aDocuments = aFiles.Select(sFile => new Document {
+          DisplayName = System.IO.Path.GetFileNameWithoutExtension(sFile),
+          DocType = (sFile.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) ? Document.DocType_en.Pdf : Document.DocType_en.Unknown),
+          Filename = System.IO.Path.GetFileName(sFile),
+        });
+        return aDocuments.ToArray();
+      }
+      return Array.Empty<Document>();
+    }
+    public void DeleteConf(string sProject, string sFilename) {
+      try {
+        var sFilepath = ConfFileController.GetFilePathForConfFile(this, sProject, sFilename);
+        if (System.IO.File.Exists(sFilepath)) {
+          System.IO.File.Delete(sFilepath);
+        }
+      } catch { }
+    }
     public string GetDocsDir(string sProject) {
       var sDir = this.GetDataDir(sProject);
       string sFilePath = System.IO.Path.Combine(sDir, "docs");

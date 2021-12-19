@@ -129,7 +129,7 @@ namespace BioMap.Pages.Administration
         await this.InvokeAsync(() => { progressModalRef.Hide(); this.StateHasChanged(); });
       }
     }
-    private async Task OnInputFileChange(InputFileChangeEventArgs e) {
+    private async Task OnInputFileChange(InputFileChangeEventArgs e, bool bConf_not_Docs) {
       var maxAllowedFiles = 30;
       int nUploadedFiles = 0;
       messages.Clear();
@@ -143,7 +143,9 @@ namespace BioMap.Pages.Administration
           await this.InvokeAsync(() => { this.StateHasChanged(); });
           try {
             var docStream = docFile.OpenReadStream(20000000);
-            var sDestFilePath = System.IO.Path.Combine(DS.GetDocsDir(SD.CurrentUser.Project), docFile.Name);
+            var sDestFilePath = System.IO.Path.Combine(
+              bConf_not_Docs ?DS.GetConfDir(SD.CurrentUser.Project) : DS.GetDocsDir(SD.CurrentUser.Project),
+              docFile.Name);
             using (var destStream = new System.IO.FileStream(sDestFilePath, System.IO.FileMode.Create)) {
               await docStream.CopyToAsync(destStream);
               destStream.Close();

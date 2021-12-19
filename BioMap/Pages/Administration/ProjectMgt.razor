@@ -3,8 +3,7 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-@if (!SD.CurrentUser.MaySeeProject)
-{
+@if (!SD.CurrentUser.MaySeeProject) {
   <Row>
     <Column>
       <Heading Size="HeadingSize.Is4">
@@ -12,9 +11,7 @@
       </Heading>
     </Column>
   </Row>
-}
-else
-{
+} else {
   <Row>
     <Column>
       <Card Margin="Margin.Is2.OnY">
@@ -207,10 +204,10 @@ else
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Add document"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
               @{
-                var addAttr = new Dictionary<string, object>(new KeyValuePair<string, object>[] {
+                var addAttr = new Dictionary<string,object>(new KeyValuePair<string,object>[] {
                   new KeyValuePair<string,object>("multiple","multiple"),
                 });
-                <InputFile AdditionalAttributes="addAttr" OnChange="@OnInputFileChange" />
+            <InputFile AdditionalAttributes="addAttr" OnChange="@((e)=>this.OnInputFileChange(e, false))" />
               }
             </FieldBody>
           </Field>
@@ -223,8 +220,51 @@ else
               </TableRow>
             </TableHeader>
             <TableBody>
-              @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project))
-              {
+              @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
+                <TableRow>
+                  <TableRowCell>@doc.DisplayName</TableRowCell>
+                  <TableRowCell>@doc.DocType.ToString()</TableRowCell>
+                  <TableRowCell>
+                    <Button Color="Color.Light" Disabled="SD.CurrentUser.Level<700" Clicked="@((e)=>{ DS.DeleteDoc(SD.CurrentUser.Project,doc.Filename); })">
+                      <Icon Name="IconName.Delete"></Icon>
+                    </Button>
+                  </TableRowCell>
+                </TableRow>
+              }
+            </TableBody>
+          </Table>
+        </CardBody>
+      </Card>
+    </Column>
+  </Row>
+  <Row>
+    <Column>
+      <Card Margin="Margin.Is2.OnY">
+        <CardHeader>
+          <CardTitle>@Localize["Configuration files"]</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Add file"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+              @{
+                var addAttr = new Dictionary<string,object>(new KeyValuePair<string,object>[] {
+                  new KeyValuePair<string,object>("multiple","multiple"),
+                });
+            <InputFile AdditionalAttributes="addAttr" OnChange="@((e)=>this.OnInputFileChange(e, true))" />
+              }
+            </FieldBody>
+          </Field>
+          <Table Class="table-striped table-sm">
+            <TableHeader>
+              <TableRow>
+                <TableHeaderCell>@Localize["Name"]</TableHeaderCell>
+                <TableHeaderCell>@Localize["Type"]</TableHeaderCell>
+                <TableHeaderCell></TableHeaderCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              @foreach (var doc in DS.GetConf(SD.CurrentUser.Project)) {
                 <TableRow>
                   <TableRowCell>@doc.DisplayName</TableRowCell>
                   <TableRowCell>@doc.DocType.ToString()</TableRowCell>
@@ -253,10 +293,8 @@ else
       <Progress Margin="Margin.Is3.FromBottom">
         <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
       </Progress>
-      @if (messages.Count >= 1)
-      {
-        foreach (var msg in messages)
-        {
+      @if (messages.Count >= 1) {
+        foreach (var msg in messages) {
           <Row Margin="Margin.Is1.OnY">
             <Column>
               @msg

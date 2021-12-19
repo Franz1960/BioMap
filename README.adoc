@@ -34,4 +34,6 @@ corners in a JSON file. The name of the image file has to be *MapImage.jpeg*, th
 ]
 ----
 
-Replace the coordinates with apropriate values for your map image.
+Replace the coordinates with apropriate values for your map image and load the files in "Administration / Project / Configuration
+files" to the server.
+

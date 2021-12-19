@@ -150,6 +150,9 @@
   <data name="Add document" xml:space="preserve">
     <value>Dokument hinzufügen</value>
   </data>
+  <data name="Add file" xml:space="preserve">
+    <value>Datei hinzufügen</value>
+  </data>
   <data name="Add Image" xml:space="preserve">
     <value>Foto hinzufügen</value>
   </data>
@@ -275,6 +278,9 @@
   </data>
   <data name="Conditions" xml:space="preserve">
     <value>Bedingungen</value>
+  </data>
+  <data name="Configuration files" xml:space="preserve">
+    <value>Konfigurationsdateien</value>
   </data>
   <data name="Confirm TAN" xml:space="preserve">
     <value>TAN bestätigen</value>
