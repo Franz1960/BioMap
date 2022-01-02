@@ -1,5 +1,9 @@
 # BioMap
 
+*BioMap has moved to https://gitlab.com/f.x.haering/BioMap[GitLab]*
+
+This site is no longer maintained!
+
 Map based biological monitoring
 
 BioMap is a one page web application based  on server side Blazor. It uses the https://github.com/stsrki/Blazorise[Blazorise],
