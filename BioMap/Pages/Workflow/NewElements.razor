@@ -6,278 +6,312 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<Row Margin="Margin.Is1.OnY">
-  <Column>
-    @if (Element != null)
-    {
-      <Blazor.ImageSurveyor.ImageSurveyor @ref="ImageSurveyor" Style="height:90vh;" />
-    }
-  </Column>
-  <Column ColumnSize="ColumnSize.Is3" Style="background-color: rgba(255,255,255,0.75);">
+<div class="box">
+  <div class="row content">
     <Row Margin="Margin.Is1.OnY">
       <Column>
-        <UserFilter />
+        @if (Element != null) {
+          <Blazor.ImageSurveyor.ImageSurveyor @ref="ImageSurveyor" Style="height:90vh;" />
+        }
       </Column>
-    </Row>
-    <Row Margin="Margin.Is1.OnY">
-      <Column>
-        @Localize["Remaining elements"]: @RemainingElements
-      </Column>
-    </Row>
-    <Row Margin="Margin.Is1.OnY">
-      <Column>
-        <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
-          <Icon Name="IconName.StepBackward"></Icon>
-        </Button>
-      </Column>
-      <Column>
-        <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectNext(true); })" Block="true" Disabled=@(Element!=null && Element.Classification.IsIdPhoto() && string.IsNullOrEmpty(Element?.GenderFeature))>
-          <Icon Name="IconName.Save" />
-          <Icon Name="IconName.StepForward" />
-        </Button>
-      </Column>
-      <Column>
-        <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectNext(false); })" Block="true">
-          <Icon Name="IconName.StepForward"></Icon>
-        </Button>
-      </Column>
-    </Row>
-    <Divider />
-    @if (Element != null)
-    {
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <a href="javascript:void(0);" @onclick="()=>ElementName_Click(Element)">
-            <strong>@Element.ElementName</strong>
-          </a><br />
-          @if (string.IsNullOrEmpty(Element.GetPlaceName())) {
-            <Icon Name="IconName.LocationArrow" />
-            <Select
-              TValue="string"
-              SelectedValue="this.Element.GetPlaceName()"
-              SelectedValueChanged="(value)=>this.SD.SetPlace(this.Element, value)"
-              Disabled="!this.SD.CurrentUser.MayChangeElementPlace(this.Element)"
-              >
-              @foreach (var sPlaceName in this.DS.GetPlaces(this.SD).Select(p=>p.Name).Append(""))
-              {
-                <SelectItem TValue="string" Value="sPlaceName">@sPlaceName</SelectItem>
-              }
-            </Select>
-            <br />
-          }
-          else
-          {
-            <Icon Name="IconName.LocationArrow" /> @Element.GetPlaceName()<br />
-          }
-          <Icon Name="IconName.Clock" /> @Element.GetIsoDateTime()<br />
-          <Icon Name="IconName.User" /> @Element.ElementProp.UploadInfo.UserId
-        </Column>
-      </Row>
-      <Divider />
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
-            <DropdownToggle Color="Color.Primary">
-              @Localize[Element.Classification.ClassName]
-            </DropdownToggle>
-            <DropdownMenu>
-              @foreach (var sClassName in ElementClassification.ClassNames)
-              {
-                <DropdownItem Clicked="@(async (e)=>await newClass_Selected(sClassName))">
-                  @Localize[sClassName]
-                </DropdownItem>
-              }
-            </DropdownMenu>
-          </Dropdown>
-        </Column>
-      </Row>
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <Buttons>
-            @if (string.CompareOrdinal(Element.Classification.ClassName, "Living being") == 0)
-            {
-              <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
-                <DropdownToggle Color="Color.Primary">
-                  @if (string.IsNullOrEmpty(Element.Classification.LivingBeing?.Taxon?.SciName))
-                  {
-                    @Localize["(select)"]
-                  }
-                  else
-                  {
-                    @Element.Classification.LivingBeing?.Taxon?.GetLocalizedName(SD.CurrentCultureName)
-                  }
-                </DropdownToggle>
-                <DropdownMenu>
-                  @foreach (var taxon in SD.CurrentProject.TaxaTree.RootNode.GetChildrenFlatList().Select(node => ((Taxon)node.Data)))
-                  {
-                    <DropdownItem Active="(string.CompareOrdinal(Element.Classification.LivingBeing?.Taxon?.SciName,taxon.SciName)==0)"
-                            Clicked="@((e)=>Element.Classification.LivingBeing=new ElementClassification.LivingBeing_t { Taxon=SD.CurrentProject.GetTaxon(taxon.SciName) })">
-                      @taxon.GetLocalizedName(SD.CurrentCultureName)
-                    </DropdownItem>
-                  }
-                </DropdownMenu>
-              </Dropdown>
-              @if (!string.IsNullOrEmpty(Element.Classification?.LivingBeing?.Taxon?.SciName))
-              {
-                <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
-                  <DropdownToggle Color="Color.Primary">
-                    @Localize[Element.Classification.LivingBeing.Count.ToString()]
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    @foreach (var nCount in new int[] { 1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 100, 150, 200, 500, 1000 })
-                    {
-                      <DropdownItem Active="(Element.Classification.LivingBeing.Count==nCount)"
-                            Clicked="@((e)=>{ Element.Classification.LivingBeing.Count=nCount; })">
-                        @nCount.ToString()
-                      </DropdownItem>
-                    }
-                  </DropdownMenu>
-                </Dropdown>
-                <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
-                  <DropdownToggle Color="Color.Primary">
-                    @if (Element.Classification.LivingBeing.Stadium == (ElementClassification.Stadium)0)
-                    {
-                      @Localize["(select)"]
-                    }
-                    else
-                    {
-                      @Localize[Element.Classification.LivingBeing.Stadium.ToString()]
-                    }
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    @foreach (var enStadium in Enum.GetValues<ElementClassification.Stadium>())
-                    {
-                      <DropdownItem Active="(Element.Classification.LivingBeing.Stadium==enStadium)"
-                            Clicked="@((e)=>{ Element.Classification.LivingBeing.Stadium=enStadium; })">
-                        @Localize[enStadium.ToString()]
-                      </DropdownItem>
-                    }
-                  </DropdownMenu>
-                </Dropdown>
-              }
-            }
-            @if (string.CompareOrdinal(Element.Classification.ClassName, "Habitat") == 0)
-            {
-              @if (Element.Classification.Habitat == null)
-              {
-                Element.Classification.Habitat = new ElementClassification.Habitat_t();
-              }
-              <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
-                <DropdownToggle Color="Color.Primary">
-                  @Element.Classification.Habitat.GetQualityAsSymbols()
-                </DropdownToggle>
-                <DropdownMenu>
-                  @foreach (var nQuality in new int[] { 1, 2, 3, 4, 5 })
-                  {
-                    <DropdownItem Active="(Element.Classification.Habitat.Quality==nQuality)"
-                            Clicked="@((e)=>{ Element.Classification.Habitat.Quality=nQuality; })">
-                      @ElementClassification.Habitat_t.GetQualityAsSymbols(nQuality)
-                    </DropdownItem>
-                  }
-                </DropdownMenu>
-              </Dropdown>
-              @if (SD.CurrentUser.MayChangeElements)
-              {
-                <CheckBox @bind-Checked="Element.Classification.Habitat.Monitoring" LabelText=@Localize["Monitoring"] />
-              }
-            }
-          </Buttons>
-        </Column>
-      </Row>
-      @if (Element != null && Element.Classification.IsIdPhoto())
-      {
+      <Column ColumnSize="ColumnSize.Is3" Style="background-color: rgba(255,255,255,0.75);">
         <Row Margin="Margin.Is1.OnY">
           <Column>
-            <Field Horizontal="true">
-              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is7.OnDesktop">
-                @Localize["Gender features"]
-                @if (!string.IsNullOrEmpty(Element.GetIId()))
-                {
-                  @(" ("+Element.Gender+")")
-                }
-              </FieldLabel>
-              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is5.OnDesktop">
-                <Select TValue="string" @bind-SelectedValue="Element.GenderFeature">
-                  <SelectItem TValue="string" Value="@("")">@Localize["Unknown"]</SelectItem>
-                  <SelectItem TValue="string" Value="@("-")">@Localize["None"]</SelectItem>
-                  @if (SD.CurrentProject.FemaleGenderFeatures)
-                  {
-                    <SelectItem TValue="string" Value="@("f")">@Localize["Female"]</SelectItem>
-                  }
-                  @if (SD.CurrentProject.MaleGenderFeatures)
-                  {
-                    <SelectItem TValue="string" Value="@("m")">@Localize["Male"]</SelectItem>
+            <UserFilter />
+          </Column>
+        </Row>
+        <Row Margin="Margin.Is1.OnY">
+          <Column>
+            @Localize["Remaining elements"]: @RemainingElements
+          </Column>
+        </Row>
+        <Row Margin="Margin.Is1.OnY">
+          <Column>
+            <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
+              <Icon Name="IconName.StepBackward"></Icon>
+            </Button>
+          </Column>
+          <Column>
+            <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectNext(true); })" Block="true" Disabled=@(Element!=null && Element.Classification.IsIdPrimaryPhoto() && string.IsNullOrEmpty(Element?.GenderFeature))>
+              <Icon Name="IconName.Save" />
+              <Icon Name="IconName.StepForward" />
+            </Button>
+          </Column>
+          <Column>
+            <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectNext(false); })" Block="true">
+              <Icon Name="IconName.StepForward"></Icon>
+            </Button>
+          </Column>
+        </Row>
+        <Divider />
+        @if (Element != null) {
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <a href="javascript:void(0);" @onclick="()=>ElementName_Click(Element)">
+                <strong>@Element.ElementName</strong>
+              </a><br />
+              @if (string.IsNullOrEmpty(Element.GetPlaceName())) {
+                <Icon Name="IconName.LocationArrow" />
+                <Select TValue="string"
+                        SelectedValue="this.Element.GetPlaceName()"
+                        SelectedValueChanged="(value)=>this.SD.SetPlace(this.Element, value)"
+                        Disabled="!this.SD.CurrentUser.MayChangeElementPlace(this.Element)">
+                  @foreach (var sPlaceName in this.DS.GetPlaces(this.SD).Select(p => p.Name).Append("")) {
+                    <SelectItem TValue="string" Value="sPlaceName">@sPlaceName</SelectItem>
                   }
                 </Select>
-              </FieldBody>
-            </Field>
-          </Column>
-        </Row>
-      }
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <Field Horizontal="false">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Comment"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
-              <MemoEdit @bind-Text="Element.ElementProp.UploadInfo.Comment" />
-            </FieldBody>
-          </Field>
-        </Column>
-      </Row>
-      <Divider />
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <Button Color="@(Raw?Color.Light:Color.Primary)" Disabled="@(false)" Clicked="@(()=>{ Raw=!Raw; })" Block="true">
-            <Icon Name="IconName.Crop" Float="Float.Left" />
-            @Localize["Display normalized"]
-          </Button>
-        </Column>
-      </Row>
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <Button Color="Color.Light" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await ResetPositions_Clicked(Element); })" Block="true">
-            <Icon Name="IconName.Clear" Float="Float.Left" />
-            @Localize["Reset positions"]
-          </Button>
-        </Column>
-      </Row>
-      @if (Element.HasIndivData())
-      {
-        <Row Margin="Margin.Is1.OnY">
-          <Column>
+                <br />
+              } else {
+                <Icon Name="IconName.LocationArrow" /> @Element.GetPlaceName()
+
+                <br />
+              }
+              <Icon Name="IconName.Clock" /> @Element.GetIsoDateTime()<br />
+              <Icon Name="IconName.User" /> @Element.ElementProp.UploadInfo.UserId
+            </Column>
+          </Row>
+          <Divider />
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
+                <DropdownToggle Color="Color.Primary">
+                  @Localize[Element.Classification.ClassName]
+                </DropdownToggle>
+                <DropdownMenu>
+                  @foreach (var sClassName in ElementClassification.ClassNames) {
+                    <DropdownItem Clicked="@(async (e)=>await newClass_Selected(sClassName))">
+                      @Localize[sClassName]
+                    </DropdownItem>
+                  }
+                </DropdownMenu>
+              </Dropdown>
+            </Column>
+          </Row>
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <Buttons>
+                @if (Element.Classification.IsLivingBeing()) {
+                  <TaxonDropDown @ref="this.taxonDropDown" IncludeCollections="@false" SelectedTaxon="this.Element.Classification.LivingBeing?.Taxon" SelectedTaxonChanged="this.TaxonDropDown_SelectedTaxonChanged" Disabled="!SD.CurrentUser.MayChangeElements" />
+                  @if (!string.IsNullOrEmpty(Element.Classification?.LivingBeing?.Taxon?.SciName)) {
+                    <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
+                      <DropdownToggle Color="Color.Primary">
+                        @Localize[Element.Classification.LivingBeing.Count.ToString()]
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        @foreach (var nCount in new int[] { 1,2,3,4,5,10,15,20,30,40,50,100,150,200,500,1000 }) {
+                          <DropdownItem Active="(Element.Classification.LivingBeing.Count==nCount)"
+                                        Clicked="@((e)=>{ Element.Classification.LivingBeing.Count=nCount; })">
+                            @nCount.ToString()
+                          </DropdownItem>
+                        }
+                      </DropdownMenu>
+                    </Dropdown>
+                    <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
+                      <DropdownToggle Color="Color.Primary">
+                        @if (Element.Classification.LivingBeing.Stadium == (ElementClassification.Stadium)0) {
+                          @Localize["(select)"]
+                        } else {
+                          @Localize[Element.Classification.LivingBeing.Stadium.ToString()]
+                        }
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        @foreach (var enStadium in Enum.GetValues<ElementClassification.Stadium>()) {
+                          <DropdownItem Active="(Element.Classification.LivingBeing.Stadium==enStadium)"
+                                        Clicked="@((e)=>{ Element.Classification.LivingBeing.Stadium=enStadium; })">
+                            @Localize[enStadium.ToString()]
+                          </DropdownItem>
+                        }
+                      </DropdownMenu>
+                    </Dropdown>
+                  }
+                }
+                @if (Element.Classification.IsHabitat()) {
+                  @if (Element.Classification.Habitat == null) {
+                    Element.Classification.Habitat = new ElementClassification.Habitat_t();
+                  }
+                  <Dropdown Disabled="!SD.CurrentUser.MayChangeElements">
+                    <DropdownToggle Color="Color.Primary">
+                      @Element.Classification.Habitat.GetQualityAsSymbols()
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      @foreach (var nQuality in new int[] { 1,2,3,4,5 }) {
+                        <DropdownItem Active="(Element.Classification.Habitat.Quality==nQuality)"
+                                      Clicked="@((e)=>{ Element.Classification.Habitat.Quality=nQuality; })">
+                          @ElementClassification.Habitat_t.GetQualityAsSymbols(nQuality)
+                        </DropdownItem>
+                      }
+                    </DropdownMenu>
+                  </Dropdown>
+                  @if (SD.CurrentUser.MayChangeElements) {
+                    <CheckBox @bind-Checked="Element.Classification.Habitat.Monitoring" LabelText=@Localize["Monitoring"] />
+                  }
+                }
+              </Buttons>
+            </Column>
+          </Row>
+          @if (Element != null && Element.Classification.IsIdPrimaryPhoto()) {
+            <Row Margin="Margin.Is1.OnY">
+              <Column>
+                <Field Horizontal="true">
+                  <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is7.OnDesktop">
+                    @Localize["Gender features"]
+                    @if (!string.IsNullOrEmpty(Element.GetIId())) {
+                      @(" ("+Element.Gender+")")
+                    }
+                  </FieldLabel>
+                  <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is5.OnDesktop">
+                    <Select TValue="string" @bind-SelectedValue="Element.GenderFeature">
+                      <SelectItem TValue="string" Value="@("")">@Localize["Unknown"]</SelectItem>
+                      <SelectItem TValue="string" Value="@("-")">@Localize["None"]</SelectItem>
+                      @if (SD.CurrentProject.FemaleGenderFeatures) {
+                        <SelectItem TValue="string" Value="@("f")">@Localize["Female"]</SelectItem>
+                      }
+                      @if (SD.CurrentProject.MaleGenderFeatures) {
+                        <SelectItem TValue="string" Value="@("m")">@Localize["Male"]</SelectItem>
+                      }
+                    </Select>
+                  </FieldBody>
+                </Field>
+                @if (this.Element.ElementProp?.IndivData != null && this.SD.CurrentProject.DisplayCaptivityBred) {
+                  <Field Horizontal="true">
+                    <CheckBox Checked="this.Element.ElementProp.IndivData.CaptivityBred==1" CheckedChanged="@((e)=>{ this.Element.ElementProp.IndivData.CaptivityBred=(e?1:0); })" LabelText=@Localize["Bred in captivity"] />
+                  </Field>
+                }
+                @if (this.SD.CurrentProject.DisplayMass) {
+                  <Field Horizontal="true">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["Mass"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                      <NumericEdit @bind-Value="Element.ElementProp.IndivData.MeasuredData.Mass" />
+                    </FieldBody>
+                  </Field>
+                }
+                @if (this.Element.ElementProp?.IndivData != null && this.SD.CurrentProject.PhenotypeArray.Length >= 2) {
+                  <Field Horizontal="true">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["Phenotype"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                      <Select TValue="int" @bind-SelectedValue="this.Element.ElementProp.IndivData.PhenotypeIdx">
+                        @foreach (var idx in Enumerable.Range(0,this.SD.CurrentProject.PhenotypeArray.Length)) {
+                          <SelectItem TValue="int" Value="@(idx)">@(this.SD.CurrentProject.PhenotypeArray[idx])</SelectItem>
+                        }
+                      </Select>
+                    </FieldBody>
+                  </Field>
+                }
+                @if (this.Element.ElementProp?.IndivData != null && this.SD.CurrentProject.GenotypeArray.Length >= 2) {
+                  <Field Horizontal="true">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["Genotype"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                      <Select TValue="int" @bind-SelectedValue="this.Element.ElementProp.IndivData.GenotypeIdx">
+                        @foreach (var idx in Enumerable.Range(0,this.SD.CurrentProject.GenotypeArray.Length)) {
+                          <SelectItem TValue="int" Value="@(idx)">@(this.SD.CurrentProject.GenotypeArray[idx])</SelectItem>
+                        }
+                      </Select>
+                    </FieldBody>
+                  </Field>
+                }
+              </Column>
+            </Row>
+          }
+          @if (Element.Classification.IsIdAuxPhoto()) {
             <Field Horizontal="true">
-              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Length"]</FieldLabel>
-              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-                <TextEdit Disabled="true" Text="@(ConvInvar.ToDecimalString(Element.ElementProp?.IndivData?.MeasuredData?.HeadBodyLength,1))" />
+              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">IId</FieldLabel>
+              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+                <NumericEdit @bind-Value="Element.ElementProp.IndivData.IId" />
               </FieldBody>
             </Field>
-          </Column>
-        </Row>
-      }
-      <Divider />
-      <Row Margin="Margin.Is1.OnY">
-        @if (!string.IsNullOrEmpty(PatternImgSrc))
-        {
-          <Column ColumnSize="ColumnSize.Is4">
-            <Image Source="@PatternImgSrc" Style="height:200px;" />
-          </Column>
-          <Column>
-            @this.Element.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
-          </Column>
+          }
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <Field Horizontal="false">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is3.OnDesktop">@Localize["Comment"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is9.OnDesktop">
+                  <MemoEdit @bind-Text="Element.ElementProp.UploadInfo.Comment" />
+                </FieldBody>
+              </Field>
+            </Column>
+          </Row>
+          <Divider />
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <Button Color="@(Raw?Color.Light:Color.Primary)" Disabled="@(false)" Clicked="@(()=>{ Raw=!Raw; })" Block="true">
+                <Icon Name="IconName.Crop" Float="Float.Start" />
+                @Localize["Display normalized"]
+              </Button>
+            </Column>
+          </Row>
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <Button Color="Color.Light" Disabled="@(!SD.CurrentUser.MayChangeElements)" Clicked="@(async (e)=>{ await ResetPositions_Clicked(Element); })" Block="true">
+                <Icon Name="IconName.Clear" Float="Float.Start" />
+                @Localize["Reset positions"]
+              </Button>
+            </Column>
+          </Row>
+          @if (Element.HasIndivData()) {
+            <Row Margin="Margin.Is1.OnY">
+              <Column>
+                <Field Horizontal="true">
+                  <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Length"]</FieldLabel>
+                  <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+                    <TextEdit Disabled="true" Text="@(ConvInvar.ToDecimalString(Element.ElementProp?.IndivData?.MeasuredData?.HeadBodyLength,1))" />
+                  </FieldBody>
+                </Field>
+              </Column>
+            </Row>
+          }
+          <Divider />
+          <Row Margin="Margin.Is1.OnY">
+            @if (!string.IsNullOrEmpty(this.PatternImgSrc)) {
+              <Column ColumnSize="ColumnSize.Is4">
+                <Row>
+                  <Column>
+                    <Image Source="@this.PatternImgSrc" Style="height:200px;border:solid;border-color:limegreen;" />
+                  </Column>
+                </Row>
+                @if (this.Element.MeasureData != null) {
+                  <Row>
+                    <Column>
+                      <Field Horizontal="false">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop" TextAlignment="Blazorise.TextAlignment.End">@Localize["Threshold"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+                          <NumericEdit TValue="float" Disabled="@(SD.CurrentUser.Level<500)" Value="this.Element.MeasureData.Threshold" ValueChanged="@(async (e)=>{this.Element.MeasureData.Threshold=e;this.MeasureDataChanged();})" Min="0.00f" Max="1.00f" />
+                        </FieldBody>
+                      </Field>
+                    </Column>
+                  </Row>
+                  <Row>
+                    <Column>
+                      <Field Horizontal="false">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop" TextAlignment="Blazorise.TextAlignment.End">@Localize["Mode"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+                          <Select TValue="int" Disabled="@(SD.CurrentUser.Level<500)" SelectedValue="this.Element.MeasureData.BinaryThresholdMode" SelectedValueChanged="@(async (e)=>{this.Element.MeasureData.BinaryThresholdMode=e;this.MeasureDataChanged();})">
+                            <SelectItem Value="1">Luminance</SelectItem>
+                            <SelectItem Value="2">Saturation</SelectItem>
+                            <SelectItem Value="3">MaxChroma</SelectItem>
+                          </Select>
+                        </FieldBody>
+                      </Field>
+                    </Column>
+                  </Row>
+                }
+              </Column>
+              <Column>
+                @this.Element.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
+              </Column>
+            }
+          </Row>
+        } else {
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <Alert Color="Color.Warning" Visible="true">
+                @Localize["No more new elements. If you want to process an existing element, select it in \"Lists / All Elements\" and return to this page."]
+              </Alert>
+            </Column>
+          </Row>
         }
-      </Row>
-    }
-    else
-    {
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <Alert Color="Color.Warning" Visible="true">
-            @Localize["No more new elements. If you want to process an existing element, select it in \"Lists / All Elements\" and return to this page."]
-          </Alert>
-        </Column>
-      </Row>
-    }
-  </Column>
-</Row>
+      </Column>
+    </Row>
+  </div>
+</div>
 
 <PhotoPopup @ref="PhotoPopup1" />

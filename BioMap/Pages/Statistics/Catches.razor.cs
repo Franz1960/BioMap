@@ -51,14 +51,26 @@ namespace BioMap.Pages.Statistics
     private TableFromChart _tableFromChartMigrationDistances;
     //
     private string selectedTab = "OverTime";
-
+    //
+    private bool RelativeMigrationCounts {
+      get => this._RelativeMigrationCounts;
+      set {
+        if (value != this._RelativeMigrationCounts) {
+          this._RelativeMigrationCounts = value;
+          this.RefreshData();
+          base.InvokeAsync(this.StateHasChanged);
+        }
+      }
+    }
+    private bool _RelativeMigrationCounts = false;
+    //
     private void OnSelectedTabChanged(string name) {
-      selectedTab = name;
+      this.selectedTab = name;
     }
     //
     protected override void OnInitialized() {
       base.OnInitialized();
-      _configOverTime = new BarConfig {
+      this._configOverTime = new BarConfig {
         Options = new BarOptions {
           Animation = new Animation {
             Duration = 0,
@@ -107,7 +119,7 @@ namespace BioMap.Pages.Statistics
           },
         },
       };
-      _configPerMonth = new BarConfig {
+      this._configPerMonth = new BarConfig {
         Options = new BarOptions {
           Animation = new Animation {
             Duration = 0,
@@ -159,7 +171,7 @@ namespace BioMap.Pages.Statistics
           },
         },
       };
-      _configHeadBodyLength = new BarConfig {
+      this._configHeadBodyLength = new BarConfig {
         Options = new BarOptions {
           Animation = new Animation {
             Duration = 0,
@@ -192,14 +204,14 @@ namespace BioMap.Pages.Statistics
           },
         },
       };
-      _yAxisGenderRatioCnt = new BarLinearCartesianAxis {
+      this._yAxisGenderRatioCnt = new BarLinearCartesianAxis {
         ID = "cnt",
         ScaleLabel = new ScaleLabel {
           Display = true,
         },
         Stacked = true
       };
-      _configGenderRatio = new BarConfig {
+      this._configGenderRatio = new BarConfig {
         Options = new BarOptions {
           Animation = new Animation {
             Duration = 0,
@@ -218,7 +230,7 @@ namespace BioMap.Pages.Statistics
                 },
             },
             YAxes = new List<CartesianAxis> {
-                _yAxisGenderRatioCnt,
+                this._yAxisGenderRatioCnt,
                 new LinearCartesianAxis {
                   ID="ratio",
                   ScaleLabel=new ScaleLabel {
@@ -235,14 +247,14 @@ namespace BioMap.Pages.Statistics
           },
         },
       };
-      _yAxisGenderRatioPerAnnoCnt = new BarLinearCartesianAxis {
+      this._yAxisGenderRatioPerAnnoCnt = new BarLinearCartesianAxis {
         ID = "cnt",
         ScaleLabel = new ScaleLabel {
           Display = true,
         },
         Stacked = true
       };
-      _configGenderRatioPerAnno = new BarConfig {
+      this._configGenderRatioPerAnno = new BarConfig {
         Options = new BarOptions {
           Animation = new Animation {
             Duration = 0,
@@ -261,7 +273,7 @@ namespace BioMap.Pages.Statistics
                 },
             },
             YAxes = new List<CartesianAxis> {
-                _yAxisGenderRatioPerAnnoCnt,
+                this._yAxisGenderRatioPerAnnoCnt,
                 new LinearCartesianAxis {
                   ID="ratio",
                   ScaleLabel=new ScaleLabel {
@@ -278,7 +290,7 @@ namespace BioMap.Pages.Statistics
           },
         },
       };
-      _configMigrationDistances = new BarConfig {
+      this._configMigrationDistances = new BarConfig {
         Options = new BarOptions {
           Animation = new Animation {
             Duration = 0,
@@ -305,46 +317,50 @@ namespace BioMap.Pages.Statistics
                 Stacked = true,
                 Ticks=new LinearCartesianTicks {
                   Min=0,
+                  Max = null,
+                },
+                ScaleLabel = new ScaleLabel {
+                  Display = false,
                 },
               },
             },
           },
         },
       };
-      SD.Filters.FilterChanged += (sender, ev) => {
-        RefreshData();
+      this.SD.Filters.FilterChanged += (sender, ev) => {
+        this.RefreshData();
         base.InvokeAsync(this.StateHasChanged);
       };
-      RefreshData();
+      this.RefreshData();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
       }
-      _tableFromChartOverTime.RefreshData();
-      _tableFromChartPerMonth.RefreshData();
-      _tableFromChartHeadBodyLength.RefreshData();
-      _tableFromChartGenderRatio.RefreshData();
-      _tableFromChartGenderRatioPerAnno.RefreshData();
-      _tableFromChartMigrationDistances.RefreshData();
+      this._tableFromChartOverTime.RefreshData();
+      this._tableFromChartPerMonth.RefreshData();
+      this._tableFromChartHeadBodyLength.RefreshData();
+      this._tableFromChartGenderRatio.RefreshData();
+      this._tableFromChartGenderRatioPerAnno.RefreshData();
+      this._tableFromChartMigrationDistances.RefreshData();
     }
     private void RefreshData() {
-      var aaIndisByIId = DS.GetIndividuals(SD, SD.Filters);
+      Dictionary<int, List<Element>> aaIndisByIId = this.DS.GetIndividuals(this.SD, this.SD.Filters);
       {
-        _configOverTime.Data.Labels.Clear();
-        _configOverTime.Data.Datasets.Clear();
+        this._configOverTime.Data.Labels.Clear();
+        this._configOverTime.Data.Datasets.Clear();
         //
         {
           int nIndex = 0;
-          var indiSpecs = new[] {
-            new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
-            new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
-            new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
+          Tuple<string, Func<Element, bool>>[] indiSpecs = new[] {
+            new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
+            new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
+            new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
           };
           var lColLabels = new List<string>();
-          foreach (var indiSpec in indiSpecs) {
-            foreach (var ea in aaIndisByIId.Values) {
-              foreach (var el in ea) {
+          foreach (Tuple<string, Func<Element, bool>> indiSpec in indiSpecs) {
+            foreach (List<Element> ea in aaIndisByIId.Values) {
+              foreach (Element el in ea) {
                 if (indiSpec.Item2(el)) {
                   string sKey = el.GetIsoDateTime().Substring(0, 7);
                   if (!lColLabels.Contains(sKey)) {
@@ -355,13 +371,13 @@ namespace BioMap.Pages.Statistics
             }
           }
           lColLabels.Sort();
-          foreach (var sColLabel in lColLabels) {
-            _configOverTime.Data.Labels.Add(sColLabel);
+          foreach (string sColLabel in lColLabels) {
+            this._configOverTime.Data.Labels.Add(sColLabel);
           }
-          foreach (var indiSpec in indiSpecs) {
-            var cntCatches = new int[lColLabels.Count];
-            foreach (var ea in aaIndisByIId.Values) {
-              foreach (var el in ea) {
+          foreach (Tuple<string, Func<Element, bool>> indiSpec in indiSpecs) {
+            int[] cntCatches = new int[lColLabels.Count];
+            foreach (List<Element> ea in aaIndisByIId.Values) {
+              foreach (Element el in ea) {
                 if (indiSpec.Item2(el)) {
                   string sKey = el.GetIsoDateTime().Substring(0, 7);
                   cntCatches[lColLabels.IndexOf(sKey)]++;
@@ -374,15 +390,15 @@ namespace BioMap.Pages.Statistics
               BackgroundColor = this.GetColor(nIndex),
             };
             ds.AddRange(cntCatches);
-            _configOverTime.Data.Datasets.Add(ds);
+            this._configOverTime.Data.Datasets.Add(ds);
             nIndex++;
           }
         }
         {
-          var csvContent = (new CsvHelper()).ReadCsv(SD, "MeteoStat Donaustauf.csv");
+          CsvHelper.CsvContent csvContent = (new CsvHelper()).ReadCsv(this.SD, "MeteoStat Donaustauf.csv");
           if (csvContent.Rows.Length >= 1) {
             var dsTemperature = new LineDataset<double>() {
-              Label = Localize["Temperature"],
+              Label = this.Localize["Temperature"],
               BackgroundColor = "rgba(0,0,0,0)",
               BorderWidth = 2,
               PointHoverBorderWidth = 0,
@@ -391,7 +407,7 @@ namespace BioMap.Pages.Statistics
               YAxisId = "tavg",
             };
             var dsPrecipitation = new LineDataset<double>() {
-              Label = Localize["Precipitation"],
+              Label = this.Localize["Precipitation"],
               BackgroundColor = "rgba(0,0,0,0)",
               BorderWidth = 2,
               PointHoverBorderWidth = 0,
@@ -401,13 +417,13 @@ namespace BioMap.Pages.Statistics
             };
             int nColIdx_Temperature = Array.IndexOf(csvContent.Headers, "tavg") - 1;
             int nColIdx_Precipitation = Array.IndexOf(csvContent.Headers, "prcp") - 1;
-            foreach (var sLabel in _configOverTime.Data.Labels) {
+            foreach (string sLabel in this._configOverTime.Data.Labels) {
               int nYear = ConvInvar.ToInt(sLabel.Substring(0, 4));
               int nMonth = ConvInvar.ToInt(sLabel.Substring(5, 2));
               int nCnt = 0;
               double dSum_Temperature = 0;
               double dSum_Precipitation = 0;
-              foreach (var row in csvContent.Rows) {
+              foreach (CsvHelper.CsvContent.Row row in csvContent.Rows) {
                 if (row.DateTime.Year == nYear && row.DateTime.Month == nMonth) {
                   nCnt++;
                   dSum_Temperature += row.Columns[nColIdx_Temperature];
@@ -417,25 +433,25 @@ namespace BioMap.Pages.Statistics
               dsTemperature.Add(dSum_Temperature / nCnt);
               dsPrecipitation.Add(dSum_Precipitation);
             }
-            _configOverTime.Data.Datasets.Insert(0, dsPrecipitation);
-            _configOverTime.Data.Datasets.Insert(0, dsTemperature);
+            this._configOverTime.Data.Datasets.Insert(0, dsPrecipitation);
+            this._configOverTime.Data.Datasets.Insert(0, dsTemperature);
           }
         }
       }
       {
-        _configPerMonth.Data.Labels.Clear();
-        _configPerMonth.Data.Datasets.Clear();
+        this._configPerMonth.Data.Labels.Clear();
+        this._configPerMonth.Data.Datasets.Clear();
         //
         {
           int nIndex = 0;
-          foreach (var indiSpec in new[] {
-            new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
-            new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
-            new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
+          foreach (Tuple<string, Func<Element, bool>> indiSpec in new[] {
+            new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
+            new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
+            new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
           }) {
-            var aCatchCountsPerMonth = new int[12];
-            foreach (var ea in aaIndisByIId.Values) {
-              foreach (var el in ea) {
+            int[] aCatchCountsPerMonth = new int[12];
+            foreach (List<Element> ea in aaIndisByIId.Values) {
+              foreach (Element el in ea) {
                 if (indiSpec.Item2(el)) {
                   aCatchCountsPerMonth[el.ElementProp.CreationTime.Month - 1]++;
                 }
@@ -447,19 +463,19 @@ namespace BioMap.Pages.Statistics
             };
             for (int month = 4; month <= 10; month++) {
               if (nIndex == 0) {
-                _configPerMonth.Data.Labels.Add(month.ToString("00"));
+                this._configPerMonth.Data.Labels.Add(month.ToString("00"));
               }
               ds.Add(aCatchCountsPerMonth[month - 1]);
             }
-            _configPerMonth.Data.Datasets.Add(ds);
+            this._configPerMonth.Data.Datasets.Add(ds);
             nIndex++;
           }
         }
         {
-          var csvContent = (new CsvHelper()).ReadCsv(SD, "MeteoStat Donaustauf.csv");
+          CsvHelper.CsvContent csvContent = (new CsvHelper()).ReadCsv(this.SD, "MeteoStat Donaustauf.csv");
           if (csvContent.Rows.Length >= 1) {
             var dsTemperature = new LineDataset<double>() {
-              Label = Localize["Temperature"],
+              Label = this.Localize["Temperature"],
               BackgroundColor = "rgba(0,0,0,0)",
               BorderWidth = 2,
               PointHoverBorderWidth = 0,
@@ -468,7 +484,7 @@ namespace BioMap.Pages.Statistics
               YAxisId = "tavg",
             };
             var dsPrecipitation = new LineDataset<double>() {
-              Label = Localize["Precipitation"],
+              Label = this.Localize["Precipitation"],
               BackgroundColor = "rgba(0,0,0,0)",
               BorderWidth = 2,
               PointHoverBorderWidth = 0,
@@ -478,12 +494,12 @@ namespace BioMap.Pages.Statistics
             };
             int nColIdx_Temperature = Array.IndexOf(csvContent.Headers, "tavg") - 1;
             int nColIdx_Precipitation = Array.IndexOf(csvContent.Headers, "prcp") - 1;
-            foreach (var sLabel in _configPerMonth.Data.Labels) {
+            foreach (string sLabel in this._configPerMonth.Data.Labels) {
               int nMonth = ConvInvar.ToInt(sLabel);
               int nCnt = 0;
               double dSum_Temperature = 0;
               double dSum_Precipitation = 0;
-              foreach (var row in csvContent.Rows) {
+              foreach (CsvHelper.CsvContent.Row row in csvContent.Rows) {
                 if (row.DateTime.Month == nMonth) {
                   nCnt++;
                   dSum_Temperature += row.Columns[nColIdx_Temperature];
@@ -493,24 +509,24 @@ namespace BioMap.Pages.Statistics
               dsTemperature.Add(dSum_Temperature / nCnt);
               dsPrecipitation.Add(dSum_Precipitation);
             }
-            _configPerMonth.Data.Datasets.Insert(0, dsPrecipitation);
-            _configPerMonth.Data.Datasets.Insert(0, dsTemperature);
+            this._configPerMonth.Data.Datasets.Insert(0, dsPrecipitation);
+            this._configPerMonth.Data.Datasets.Insert(0, dsTemperature);
           }
         }
       }
       {
-        _configHeadBodyLength.Data.Labels.Clear();
-        _configHeadBodyLength.Data.Datasets.Clear();
+        this._configHeadBodyLength.Data.Labels.Clear();
+        this._configHeadBodyLength.Data.Datasets.Clear();
         //
         int nIndex = 0;
-        foreach (var indiSpec in new[] {
-                    new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
-                    new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
-                    new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
+        foreach (Tuple<string, Func<Element, bool>> indiSpec in new[] {
+                    new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
+                    new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
+                    new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
                 }) {
-          var aCatchCountsHeadBodyLength = new int[(int)Math.Ceiling(this.SD.CurrentProject.MaxHeadBodyLength / 2)];
-          foreach (var ea in aaIndisByIId.Values) {
-            foreach (var el in ea) {
+          int[] aCatchCountsHeadBodyLength = new int[(int)Math.Ceiling(this.SD.CurrentProject.MaxHeadBodyLength / 2)];
+          foreach (List<Element> ea in aaIndisByIId.Values) {
+            foreach (Element el in ea) {
               if (indiSpec.Item2(el)) {
                 aCatchCountsHeadBodyLength[Math.Min(aCatchCountsHeadBodyLength.Length - 1, (int)Math.Floor(el.GetHeadBodyLengthMm() / 2))]++;
               }
@@ -522,23 +538,23 @@ namespace BioMap.Pages.Statistics
           };
           for (int idx = (int)Math.Floor(this.SD.CurrentProject.MinHeadBodyLength / 2); idx < aCatchCountsHeadBodyLength.Length; idx++) {
             if (nIndex == 0) {
-              _configHeadBodyLength.Data.Labels.Add((idx * 2).ToString());
+              this._configHeadBodyLength.Data.Labels.Add((idx * 2).ToString());
             }
             ds.Add(aCatchCountsHeadBodyLength[idx]);
           }
-          _configHeadBodyLength.Data.Datasets.Add(ds);
+          this._configHeadBodyLength.Data.Datasets.Add(ds);
           nIndex++;
         }
       }
       {
-        _configGenderRatio.Data.Labels.Clear();
-        _configGenderRatio.Data.Datasets.Clear();
+        this._configGenderRatio.Data.Labels.Clear();
+        this._configGenderRatio.Data.Datasets.Clear();
         //
         {
-          var aFemaleCount = new int[12];
-          var aMaleCount = new int[12];
-          foreach (var ea in aaIndisByIId.Values) {
-            foreach (var el in ea) {
+          int[] aFemaleCount = new int[12];
+          int[] aMaleCount = new int[12];
+          foreach (List<Element> ea in aaIndisByIId.Values) {
+            foreach (Element el in ea) {
               string sGender = el.Gender;
               if (el.GetWinters() >= 1) {
                 if (sGender.StartsWith("f")) {
@@ -550,15 +566,15 @@ namespace BioMap.Pages.Statistics
             }
           }
           var dsFemale = new BarDataset<int>() {
-            Label = Localize["Female"],
+            Label = this.Localize["Female"],
             BackgroundColor = ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200, System.Drawing.Color.Red)),
           };
           var dsMale = new BarDataset<int>() {
-            Label = Localize["Male"],
+            Label = this.Localize["Male"],
             BackgroundColor = ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200, System.Drawing.Color.Blue)),
           };
           var dsRatio = new LineDataset<double>() {
-            Label = Localize["Male"] + " %",
+            Label = this.Localize["Male"] + " %",
             BackgroundColor = "rgba(0,0,0,0)",
             BorderWidth = 2,
             PointHoverBorderWidth = 0,
@@ -567,31 +583,31 @@ namespace BioMap.Pages.Statistics
             YAxisId = "ratio",
           };
           for (int month = 4; month <= 10; month++) {
-            _configGenderRatio.Data.Labels.Add(month.ToString("00"));
+            this._configGenderRatio.Data.Labels.Add(month.ToString("00"));
             dsFemale.Add(-aFemaleCount[month - 1]);
             dsMale.Add(aMaleCount[month - 1]);
             int nSum = aFemaleCount[month - 1] + aMaleCount[month - 1];
             dsRatio.Add(nSum < 10 ? 50 : ((aMaleCount[month - 1] * 100.0) / nSum));
           }
-          var nMaxCnt = Math.Max(-dsFemale.Min(), dsMale.Max());
-          _yAxisGenderRatioCnt.Ticks = new LinearCartesianTicks {
+          int nMaxCnt = Math.Max(-dsFemale.Min(), dsMale.Max());
+          this._yAxisGenderRatioCnt.Ticks = new LinearCartesianTicks {
             Min = -nMaxCnt,
             Max = nMaxCnt,
           };
-          _configGenderRatio.Data.Datasets.Add(dsFemale);
-          _configGenderRatio.Data.Datasets.Add(dsMale);
-          _configGenderRatio.Data.Datasets.Add(dsRatio);
+          this._configGenderRatio.Data.Datasets.Add(dsFemale);
+          this._configGenderRatio.Data.Datasets.Add(dsMale);
+          this._configGenderRatio.Data.Datasets.Add(dsRatio);
         }
       }
       {
-        _configGenderRatioPerAnno.Data.Labels.Clear();
-        _configGenderRatioPerAnno.Data.Datasets.Clear();
+        this._configGenderRatioPerAnno.Data.Labels.Clear();
+        this._configGenderRatioPerAnno.Data.Datasets.Clear();
         //
         {
-          var dictFemaleCount = new Dictionary<int,int>();
-          var dictMaleCount = new Dictionary<int,int>();
-          foreach (var ea in aaIndisByIId.Values) {
-            foreach (var el in ea) {
+          var dictFemaleCount = new Dictionary<int, int>();
+          var dictMaleCount = new Dictionary<int, int>();
+          foreach (List<Element> ea in aaIndisByIId.Values) {
+            foreach (Element el in ea) {
               string sGender = el.Gender;
               if (el.GetWinters() >= 1) {
                 if (sGender.StartsWith("f")) {
@@ -612,15 +628,15 @@ namespace BioMap.Pages.Statistics
             int nYearBegin = Math.Min(dictFemaleCount.Keys.Min(), dictMaleCount.Keys.Min());
             int nYearEnd = Math.Max(dictFemaleCount.Keys.Max(), dictMaleCount.Keys.Max());
             var dsFemale = new BarDataset<int>() {
-              Label = Localize["Female"],
+              Label = this.Localize["Female"],
               BackgroundColor = ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200, System.Drawing.Color.Red)),
             };
             var dsMale = new BarDataset<int>() {
-              Label = Localize["Male"],
+              Label = this.Localize["Male"],
               BackgroundColor = ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200, System.Drawing.Color.Blue)),
             };
             var dsRatio = new LineDataset<double>() {
-              Label = Localize["Male"] + " %",
+              Label = this.Localize["Male"] + " %",
               BackgroundColor = "rgba(0,0,0,0)",
               BorderWidth = 2,
               PointHoverBorderWidth = 0,
@@ -629,29 +645,32 @@ namespace BioMap.Pages.Statistics
               YAxisId = "ratio",
             };
             for (int year = nYearBegin; year <= nYearEnd; year++) {
-              _configGenderRatioPerAnno.Data.Labels.Add(year.ToString("0000"));
-              dsFemale.Add(-dictFemaleCount[year]);
-              dsMale.Add(dictMaleCount[year]);
-              int nSum = dictFemaleCount[year] + dictMaleCount[year];
-              dsRatio.Add(nSum < 10 ? 50 : ((dictMaleCount[year] * 100.0) / nSum));
+              this._configGenderRatioPerAnno.Data.Labels.Add(year.ToString("0000"));
+              int nFemaleCount = dictFemaleCount.GetValueOrDefault(year, 0);
+              int nMaleCount = dictMaleCount.GetValueOrDefault(year, 0);
+              dsFemale.Add(-nFemaleCount);
+              dsMale.Add(nMaleCount);
+              int nSum = nFemaleCount + nMaleCount;
+              dsRatio.Add(nSum < 10 ? 50 : ((nMaleCount * 100.0) / nSum));
             }
-            var nMaxCnt = Math.Max(-dsFemale.Min(), dsMale.Max());
-            _yAxisGenderRatioPerAnnoCnt.Ticks = new LinearCartesianTicks {
+            int nMaxCnt = Math.Max(-dsFemale.Min(), dsMale.Max());
+            this._yAxisGenderRatioPerAnnoCnt.Ticks = new LinearCartesianTicks {
               Min = -nMaxCnt,
               Max = nMaxCnt,
             };
-            _configGenderRatioPerAnno.Data.Datasets.Add(dsFemale);
-            _configGenderRatioPerAnno.Data.Datasets.Add(dsMale);
-            _configGenderRatioPerAnno.Data.Datasets.Add(dsRatio);
+            this._configGenderRatioPerAnno.Data.Datasets.Add(dsFemale);
+            this._configGenderRatioPerAnno.Data.Datasets.Add(dsMale);
+            this._configGenderRatioPerAnno.Data.Datasets.Add(dsRatio);
           }
         }
       }
       {
-        _configMigrationDistances.Data.Labels.Clear();
-        _configMigrationDistances.Data.Datasets.Clear();
+        this._configMigrationDistances.Data.Labels.Clear();
+        this._configMigrationDistances.Data.Datasets.Clear();
         //
         int nIndex = 0;
-        var aDistanceClasses = new double[] { 0, 20, 50, 100, 200, 500, 1000, 2000, 5000 };
+        int nTotalCnt = aaIndisByIId.Values.Where(ea => ea.Count >= 2).Sum(ea => ea.Count - 1);
+        double[] aDistanceClasses = new double[] { 0, 20, 50, 100, 200, 500, 1000, 2000, 5000 };
         var funcGetDistanceClass = new Func<double, int>((dist) => {
           for (int idx = aDistanceClasses.Length - 1; idx >= 0; idx--) {
             if (dist >= aDistanceClasses[idx]) {
@@ -660,18 +679,18 @@ namespace BioMap.Pages.Statistics
           }
           return 0;
         });
-        foreach (var indiSpec in new[] {
-          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
-          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
-          new Tuple<string,Func<Element,bool>>(Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
+        foreach (Tuple<string, Func<Element, bool>> indiSpec in new[] {
+          new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 2+",(el)=>el.GetWinters()>=2),
+          new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 1",(el)=>el.GetWinters()==1),
+          new Tuple<string,Func<Element,bool>>(this.Localize["Hibernations"]+": 0",(el)=>el.GetWinters()==0),
         }) {
-          var countsPerDistanceClass = new int[aDistanceClasses.Length];
-          foreach (var ea in aaIndisByIId.Values) {
+          int[] countsPerDistanceClass = new int[aDistanceClasses.Length];
+          foreach (List<Element> ea in aaIndisByIId.Values) {
             for (int idx = 1; idx < ea.Count; idx++) {
-              var el = ea[idx];
+              Element el = ea[idx];
               if (indiSpec.Item2(el)) {
                 double dDistance = GeoCalculator.GetDistance(ea[idx - 1].ElementProp.MarkerInfo.position, el.ElementProp.MarkerInfo.position);
-                var idxDistanceClass = funcGetDistanceClass(dDistance);
+                int idxDistanceClass = funcGetDistanceClass(dDistance);
                 countsPerDistanceClass[idxDistanceClass]++;
               }
             }
@@ -682,17 +701,53 @@ namespace BioMap.Pages.Statistics
           };
           for (int idxKey = 0; idxKey < aDistanceClasses.Length; idxKey++) {
             if (nIndex == 0) {
-              _configMigrationDistances.Data.Labels.Add(aDistanceClasses[idxKey] + (idxKey < aDistanceClasses.Length - 1 ? ("-" + aDistanceClasses[idxKey + 1]) : "- \u221E"));
+              this._configMigrationDistances.Data.Labels.Add(aDistanceClasses[idxKey] + (idxKey < aDistanceClasses.Length - 1 ? ("-" + aDistanceClasses[idxKey + 1]) : "- \u221E"));
             }
-            ds.Add(countsPerDistanceClass[idxKey]);
+            if (this.RelativeMigrationCounts) {
+              ds.Add((countsPerDistanceClass[idxKey] * 1000) / nTotalCnt);
+            } else {
+              ds.Add(countsPerDistanceClass[idxKey]);
+            }
           }
-          _configMigrationDistances.Data.Datasets.Add(ds);
+          this._configMigrationDistances.Data.Datasets.Add(ds);
           nIndex++;
+        }
+        if (this.RelativeMigrationCounts) {
+          this._configMigrationDistances.Options.Scales.YAxes = new List<CartesianAxis>
+          {
+            new BarLinearCartesianAxis
+            {
+              Stacked = true,
+              Ticks=new LinearCartesianTicks {
+                Min=0,
+                Max = 1000,
+              },
+              ScaleLabel = new ScaleLabel {
+                Display = true,
+                LabelString = "‰",
+              },
+            },
+          };
+        } else {
+          this._configMigrationDistances.Options.Scales.YAxes = new List<CartesianAxis>
+          {
+            new BarLinearCartesianAxis
+            {
+              Stacked = true,
+              Ticks=new LinearCartesianTicks {
+                Min=0,
+                Max = null,
+              },
+              ScaleLabel = new ScaleLabel {
+                Display = false,
+              },
+            },
+          };
         }
       }
     }
     public string GetColor(int nIndex) {
-      return _Colors[nIndex % _Colors.Length];
+      return this._Colors[nIndex % this._Colors.Length];
     }
     private string[] _Colors = new string[] {
       ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200,System.Drawing.Color.Green)),

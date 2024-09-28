@@ -7,7 +7,7 @@
         @Localize["Select location"]
       </ModalTitle>
       <Buttons Role="ButtonsRole.Toolbar">
-        <Buttons Margin="Margin.Is2.FromRight">
+        <Buttons Margin="Margin.Is2.FromEnd">
           <Button Clicked="@((e)=>sizeButtonClicked())"><Icon Name="@sizeButtonIconName" /></Button>
         </Buttons>
       </Buttons>
@@ -17,7 +17,7 @@
     </ModalBody>
     <ModalFooter>
       <Buttons Role="ButtonsRole.Toolbar">
-        <Buttons Margin="Margin.Is2.FromRight">
+        <Buttons Margin="Margin.Is2.FromEnd">
           <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save();Hide(); })">
             <Icon Name="IconName.Save" />
             @Localize["Save"]

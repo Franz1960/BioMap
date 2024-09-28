@@ -4,75 +4,157 @@
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
+@implements IDisposable
 
-<CardDeck>
-  @if (FilteringTarget == Filters.FilteringTargetEnum.Log)
-  {
-    <Card>
-      <CardBody>
-        <LogFilter />
-      </CardBody>
-    </Card>
-  }
-  else
-  @if (FilteringTarget == Filters.FilteringTargetEnum.Notes)
-  {
-    <Card>
-      <CardBody>
-        <NotesFilter />
-      </CardBody>
-    </Card>
-  }
-  else
-  {
-    <Card>
-      <CardBody>
-        <DateFilter />
-        <PlaceFilter />
-      </CardBody>
-    </Card>
-    @if (FilteringTarget == Filters.FilteringTargetEnum.Individuals)
-    {
-      <Card>
-        <CardBody>
-          <IndiFilter />
-          <UserFilter />
-        </CardBody>
-      </Card>
-      <Card>
-        <CardBody>
-          <GenderFilter />
-          <HibernationsFilter />
-          <OnlyFirstIndiFilter />
-          <OnlyLastIndiFilter />
-        </CardBody>
-      </Card>
-    }
-    @if (FilteringTarget == Filters.FilteringTargetEnum.Elements)
-    {
-      <Card>
-        <CardBody>
-          <ClassFilter />
-          <UserFilter />
-        </CardBody>
-      </Card>
-    }
-  }
-</CardDeck>
+<Row>
+  <Column ColumnSize="ColumnSize.Is10">
+    <Button Clicked="@(()=>this.headerVisible = this.SD.ShowFilterSettings = !this.headerVisible)" Size="Size.Small" Width="Width.Is100" Style="margin: 0 auto;display: block;height:24px;z-index:1000;" Color="Color.Light">
+      @if (this.headerVisible) {
+        <Icon Name="IconName.AngleUp" />
+        <Icon Name="IconName.AngleUp" />
+        <Icon Name="IconName.AngleUp" />
+      } else {
+        <Icon Name="IconName.AngleDown" />
+        <Icon Name="IconName.AngleDown" />
+        <Icon Name="IconName.AngleDown" />
+      }
+      <Icon Style="margin-left:8px; margin-right:8px;" Name="IconName.Filter" />
+      @if (this.headerVisible) {
+        <Icon Name="IconName.AngleUp" />
+        <Icon Name="IconName.AngleUp" />
+        <Icon Name="IconName.AngleUp" />
+      } else {
+        <Icon Name="IconName.AngleDown" />
+        <Icon Name="IconName.AngleDown" />
+        <Icon Name="IconName.AngleDown" />
+      }
+    </Button>
+  </Column>
+  <Column>
+    <Button Clicked="@(()=>this.SD.Filters.ClearAllFilters())" Size="Size.ExtraSmall" Width="Width.Is100" Style="margin: 0 auto;display: block;height:24px;z-index:1000;" Color="this.SD.Filters.IsAnyActive(this.SD.CurrentProject) ? Color.Warning : Color.Light">
+      <Icon Name="IconName.Clear" />
+    </Button>
+  </Column>
+</Row>
+<Collapse Visible="@this.headerVisible" Style="display: block;margin: auto;width: 100%;" Background="Background.Light">
+  <CollapseBody>
+    <CardDeck>
+      @if (FilteringTarget == Filters.FilteringTargetEnum.Log) {
+        <Card>
+          <CardBody>
+            <LogFilter />
+          </CardBody>
+        </Card>
+      } else
+      @if (FilteringTarget == Filters.FilteringTargetEnum.Notes) {
+        <Card>
+          <CardBody>
+            <NotesFilter />
+          </CardBody>
+        </Card>
+      } else
+      @if (FilteringTarget == Filters.FilteringTargetEnum.Users) {
+        <Card>
+          <CardBody>
+            <UserFilter />
+          </CardBody>
+        </Card>
+      } else
+      @if (FilteringTarget == Filters.FilteringTargetEnum.Individuals) {
+        <Card>
+          <CardBody>
+            <IndiFilter />
+            @if (this.SD.CurrentProject.DisplayCaptivityBred) {
+              <CaptivityBredFilter />
+            }
+          </CardBody>
+        </Card>
+      } else {
+        <Card>
+          <CardBody>
+            <DateFilter />
+            <PlaceFilter />
+          </CardBody>
+        </Card>
+        @if (FilteringTarget == Filters.FilteringTargetEnum.Catches || FilteringTarget == Filters.FilteringTargetEnum.CatchesForIdentification) {
+          <Card>
+            <CardBody>
+              <IndiFilter />
+              @if (this.SD.CurrentProject.DisplayCaptivityBred) {
+                <CaptivityBredFilter />
+              }
+              @if (this.SD.CurrentProject.PhenotypeArray.Length >= 1) {
+                <PhenotypeFilter />
+              }
+              @if (this.SD.CurrentProject.GenotypeArray.Length >= 1) {
+                <GenotypeFilter />
+              }
+              @if (FilteringTarget == Filters.FilteringTargetEnum.CatchesForIdentification) {
+                <ExpandIfNoUnidentifiedFilter />
+              }
+              <MissingYearsFilter />
+              <UserFilter />
+            </CardBody>
+          </Card>
+          <Card>
+            <CardBody>
+              <Row>
+                <Column>
+                  <GenderFilter />
+                  <HibernationsFilter />
+                  <BodyLengthFilter />
+                  <Row>
+                    <Column>
+                      <OnlyFirstIndiFilter />
+                      <OnlyLastIndiFilter />
+                    </Column>
+                    <Column>
+                      <OnlyWithRecapturesFilter />
+                      <OnlyWithAdultRecapturesFilter />
+                    </Column>
+                  </Row>
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                </Column>
+              </Row>
+            </CardBody>
+          </Card>
+        }
+        @if (FilteringTarget == Filters.FilteringTargetEnum.Elements) {
+          <Card>
+            <CardBody>
+              <ClassFilter />
+              <UserFilter />
+            </CardBody>
+          </Card>
+        }
+      }
+    </CardDeck>
+  </CollapseBody>
+</Collapse>
 
 @code {
   [Parameter]
   public Filters.FilteringTargetEnum FilteringTarget { get; set; }
+
   [Parameter]
-  public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
-  //
-  protected override void OnInitialized()
-  {
+  public bool? InitialHeaderVisible { get; set; } = null;
+
+  private bool headerVisible = true;
+
+  protected override void OnInitialized() {
     SD.Filters.FilteringTarget = this.FilteringTarget;
+    this.headerVisible = this.InitialHeaderVisible ?? this.SD.ShowFilterSettings;
+    SD.Filters.FilterChanged += this.FilterChanged;
   }
-  private async void AnyValueChanged()
-  {
-    await this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
+
+  private void FilterChanged(object sender, EventArgs e) {
     this.StateHasChanged();
+  }
+
+  public void Dispose() {
+    SD.Filters.FilterChanged -= this.FilterChanged;
   }
 }

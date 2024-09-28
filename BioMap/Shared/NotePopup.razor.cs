@@ -41,12 +41,12 @@ namespace BioMap.Shared
       this.modalRef.Hide();
     }
     public void Save() {
-      DS.AddOrUpdateProtocolEntry(SD, ProtocolEntry);
-      if (!string.IsNullOrEmpty(OrigProtocolEntry.Text) && string.CompareOrdinal(OrigProtocolEntry.Text, ProtocolEntry.Text) != 0) {
-        DS.AddLogEntry(SD, "Note changed. " + ConvInvar.ToString(ProtocolEntry.CreationTime) + " / " + ProtocolEntry.Author + ": " + OrigProtocolEntry.Text + " --> " + ProtocolEntry.Text);
-        Changed.InvokeAsync(ProtocolEntry);
-      } else if (string.IsNullOrEmpty(OrigProtocolEntry.Text) && !string.IsNullOrEmpty(ProtocolEntry.Text)) {
-        Changed.InvokeAsync(ProtocolEntry);
+      this.DS.AddOrUpdateProtocolEntry(this.SD, this.ProtocolEntry);
+      if (!string.IsNullOrEmpty(this.OrigProtocolEntry.Text) && string.CompareOrdinal(this.OrigProtocolEntry.Text, this.ProtocolEntry.Text) != 0) {
+        this.DS.AddLogEntry(this.SD, "Note changed. " + ConvInvar.ToString(this.ProtocolEntry.CreationTime) + " / " + this.ProtocolEntry.Author + ": " + this.OrigProtocolEntry.Text + " --> " + this.ProtocolEntry.Text);
+        this.Changed.InvokeAsync(this.ProtocolEntry);
+      } else if (string.IsNullOrEmpty(this.OrigProtocolEntry.Text) && !string.IsNullOrEmpty(this.ProtocolEntry.Text)) {
+        this.Changed.InvokeAsync(this.ProtocolEntry);
       }
     }
     private void sizeButtonClicked() {

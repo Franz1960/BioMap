@@ -17,7 +17,7 @@ namespace BioMap
       this.Data = data;
     }
     public override string ToString() {
-      return "TreeNode(" + this.Data?.InvariantName + ") + " + this.Children.Count+ " children";
+      return "TreeNode(" + this.Data?.InvariantName + ") + " + this.Children.Count + " children";
     }
     public int CompareTo(object obj) {
       string a = this.Data?.InvariantName;
@@ -64,7 +64,7 @@ namespace BioMap
     }
     public void Add(TreeNode childNode) {
       var l = ((List<TreeNode>)this.Children);
-      childNode.Parent=this;
+      childNode.Parent = this;
       l.Add(childNode);
       l.Sort();
     }
@@ -78,7 +78,7 @@ namespace BioMap
     public TreeNode[] Ancestors {
       get {
         var lNodes = new List<TreeNode>();
-        var node = this;
+        TreeNode node = this;
         while (true) {
           node = node.Parent;
           if (node != null && node.Data != null) {
@@ -93,18 +93,18 @@ namespace BioMap
     public TreeNode[] Find(string sInvariantName) {
       var lResult = new List<TreeNode>();
       if (sInvariantName != null) {
-          if (this.Data?.InvariantName == sInvariantName) {
+        if (this.Data?.InvariantName == sInvariantName) {
           lResult.Add(this);
         }
-        foreach (var child in this.Children) {
-          var result = child.Find(sInvariantName);
+        foreach (TreeNode child in this.Children) {
+          TreeNode[] result = child.Find(sInvariantName);
           lResult.AddRange(result);
         }
       }
       return lResult.ToArray();
     }
     public TreeNode FindFirst(string sInvariantName) {
-      var aResult = this.Find(sInvariantName);
+      TreeNode[] aResult = this.Find(sInvariantName);
       if (aResult.Length >= 1) {
         return aResult[0];
       } else {
@@ -113,7 +113,7 @@ namespace BioMap
     }
     public IEnumerable<TreeNode> GetChildrenFlatList() {
       var flatList = new List<TreeNode>();
-      foreach (var childNode in this.Children) {
+      foreach (TreeNode childNode in this.Children) {
         flatList.Add(childNode);
         flatList.AddRange(childNode.GetChildrenFlatList());
       }

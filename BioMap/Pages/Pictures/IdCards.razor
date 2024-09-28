@@ -5,39 +5,62 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
-<Row>
-  <Column ColumnSize="ColumnSize.Is8">
-    <SortAndGroupSettings @ref="this.SortAndGroupSettings1" Context="IdCards" AnyChanged="async () => { this.RefreshData(); }" />
-  </Column>
-  <Column>
-    <a href="/api/print/id-photos?Project=@SD.CurrentUser.Project&User=@SD.CurrentUser.EMail&PermTicket=@SD.CurrentUser.PermTicket" target="_blank">
-      <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<400)"><Icon Name="IconName.Print"></Icon></Button>
-    </a>
-  </Column>
-</Row>
 <PhotoPopup @ref="PhotoPopup1" ElementDeleted="@(() => this.OnElementDeleted())" />
 
-@foreach (var group in this.ElementsByPlaceName) {
-@if (this.SortAndGroupSettings1.GroupByPlace) {
-<div class="row">
-  <h2>@(string.IsNullOrEmpty(group.Key) ? Localize["Outside defined places"] : group.Key)</h2>
-</div>}
-        <div class="row">
-          @foreach (var el in group) {
-  <div class="card" style="width: 240px;">
-    <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">
-      <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
-    </a>
-    <div class="card-footer">
-      <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName())</small>
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Catches" />
+  </div>
+  <div class="row content">
+    <Row>
+      <Column ColumnSize="ColumnSize.Is10">
+        <SortAndGroupSettings @ref="this.SortAndGroupSettings1" Context="IdCards" AnyChanged="async () => { this.RefreshData(); }" />
+      </Column>
+      <Column>
+        <a href="/api/print/id-photos?Project=@SD.CurrentUser.Project&User=@SD.CurrentUser.EMail&PermTicket=@SD.CurrentUser.PermTicket" target="_blank">
+          <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<400)"><Icon Name="IconName.Print"></Icon></Button>
+        </a>
+      </Column>
+    </Row>
+
+    @foreach (var group in this.ElementsByPlaceName) {
+      @if (this.SortAndGroupSettings1.GroupByPlace) {
+        <h2>@(string.IsNullOrEmpty(group.Key) ? Localize["Outside defined places"] : group.Key)</h2>
+      }
+      <div class="row">
+        @foreach (var el in group) {
+          @if (this.SortAndGroupSettings1.DisplayList) {
+            <div style="padding-left:20px;">
+
+              <img src="api/photos/@el.ElementName?@(this.SD.CurrentProject.ImageNormalizer.NormalizedHeightPx > this.SD.CurrentProject.ImageNormalizer.NormalizedWidthPx ? "rotate=-90&" : "")zoom=1&Project=@SD.CurrentUser.Project" style="margin-top:1px;" />
+              <br /><b>#@el.GetIId()</b> (@el.GetIsoDate() / @el.GetHeadBodyLengthNice() / @el.GetGenderFull(this.SD) / @el.GetPlaceName())
+            </div>
+          } else {
+            <div class="card" style="width: 240px;">
+              <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">
+                <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&zoom=@this.ZoomArg(el)&Project=@SD.CurrentUser.Project&ForceOrig=@(this.SortAndGroupSettings1.DisplayOriginalImages ? "1" : "0")" style="max-width:100%;max-height:100%;margin-top:1px;" />
+              </a>
+              <div class="card-footer">
+                <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName())</small>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
+    <div>
+      <Button Color="Color.Primary" Clicked="@((e)=>{ this.DisplayAll=true;this.RefreshData(); })" Block="true" hidden="@this.DisplayAll">
+        <Icon Name="IconName.List"></Icon>
+        @Localize["Display all"]
+      </Button>
     </div>
-  </div>}
-        </div>}
+  </div>
+</div>
 
 @code {
   private List<IGrouping<string,Element>> ElementsByPlaceName { get; } = new List<IGrouping<string,Element>>();
   private SortAndGroupSettings SortAndGroupSettings1;
+  private bool DisplayAll { get; set; } = false;
   private PhotoPopup PhotoPopup1;
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -57,10 +80,24 @@
     if (this.SortAndGroupSettings1 != null) {
       string sOrder = this.SortAndGroupSettings1.SortDown ? "DESC" : "ASC";
       var els =
-        DS.GetElements(SD,SD.Filters,WhereClauses.Is_Individuum,$"indivdata.iid {sOrder},elements.creationtime {sOrder}");
+        DS.GetElements(SD, SD.Filters, WhereClauses.Is_ID_photo, $"indivdata.iid {sOrder},elements.creationtime {sOrder}" + ((this.DisplayAll || this.SortAndGroupSettings1.GroupByPlace) ? "" : " Limit 200"));
       this.ElementsByPlaceName.Clear();
       if (this.SortAndGroupSettings1.GroupByPlace) {
         this.ElementsByPlaceName.AddRange((els.GroupBy(el => el.GetPlaceName()).OrderBy(group => group.Key)));
+        if (!this.DisplayAll) {
+          int nElCnt = 0;
+          int idxLimit = -1;
+          for (int idx = 0; idx < this.ElementsByPlaceName.Count; idx++) {
+            if (nElCnt >= 200) {
+              idxLimit = idx;
+              break;
+            }
+            nElCnt += this.ElementsByPlaceName[idx].Count();
+          }
+          if (idxLimit >= 0) {
+            this.ElementsByPlaceName.RemoveRange(idxLimit, this.ElementsByPlaceName.Count - idxLimit);
+          }
+        }
       } else {
         this.ElementsByPlaceName.AddRange((els.GroupBy(el => "")));
       }
@@ -68,10 +105,17 @@
     }
   }
   private void OnSelectClick(Element el) {
-    this.PhotoPopup1.Show(el);
+    this.PhotoPopup1.Show(el,null,this.SortAndGroupSettings1.DisplayOriginalImages, this.ZoomArg);
   }
   public void OnElementDeleted() {
     this.RefreshData();
     this.StateHasChanged();
+  }
+  private string ZoomArg(Element el) {
+    if (SD.CurrentProject.DisplayIdPhotosZoomed && !this.SortAndGroupSettings1.DisplayOriginalImages) {
+      return SD.GetIdPhotoZoomString(el);
+    } else {
+      return "0";
+    }
   }
 }

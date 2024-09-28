@@ -20,8 +20,10 @@ namespace BioMap
       return "Taxon(" + this.SciName + ") <-- " + this.ParentSciNames;
     }
     public override bool Equals(object obj) {
-      var other = obj as Taxon;
-      return (string.CompareOrdinal(this.SciName,other.SciName) == 0);
+      if (obj is Taxon other) {
+        return (string.CompareOrdinal(this.SciName, other.SciName) == 0);
+      }
+      return false;
     }
     public override int GetHashCode() {
       return this.SciName.GetHashCode();

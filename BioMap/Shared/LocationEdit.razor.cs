@@ -15,9 +15,20 @@ namespace BioMap.Shared
   public partial class LocationEdit : AreaMap
   {
     [Parameter]
-    public LatLngLiteral Location { get; set; } = null;
-    [Parameter]
     public EventCallback<LatLngLiteral> LocationChanged { get; set; }
+    [Parameter]
+    public double Radius { get; set; } = 30;
+    //
+    public LatLngLiteral Location {
+      get => this._Location;
+      set {
+        if (!object.Equals(value, this._Location)) {
+          this._Location = value;
+          this.StateHasChanged();
+        }
+      }
+    }
+    private LatLngLiteral _Location = null;
     //
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
@@ -34,9 +45,9 @@ namespace BioMap.Shared
           await this.googleMap.InteropObject.SetCenter(this.Location);
         }
         var circleOptions = new CircleOptions {
-          Map = googleMap.InteropObject,
+          Map = this.googleMap.InteropObject,
           Center = this.Location,
-          Radius = 30,
+          Radius = this.Radius,
           StrokeColor = "Turquoise",
           StrokeOpacity = 0.8f,
           StrokeWeight = 8,
@@ -48,21 +59,20 @@ namespace BioMap.Shared
       }
     }
     private async Task OnAfterInitAsync() {
-      await this.googleMap.InteropObject.AddListener("center_changed", async () => await OnCenterChanged());
-      //if (this.Location==null) {
-      //  this.Location=new LatLngLiteral(SD.CurrentProject.AoiCenterLng,SD.CurrentProject.AoiCenterLat);
-      //}
+      await this.googleMap.InteropObject.AddListener("center_changed", async () => await this.OnCenterChanged());
     }
     private async Task OnCenterChanged() {
       try {
-        var bounds = await this.googleMap.InteropObject.GetBounds();
-        var fHeight = Math.Abs(bounds.North - bounds.South) * 111000;
-        this.Location = new LatLngLiteral { Lat = (bounds.North + bounds.South) / 2, Lng = (bounds.East + bounds.West) / 2 };
-        if (this.LocationCircle != null) {
-          await this.LocationCircle.SetCenter(this.Location);
-          await this.LocationCircle.SetRadius(fHeight * 0.05);
+        LatLngBoundsLiteral bounds = await this.googleMap.InteropObject.GetBounds();
+        if (bounds != null) {
+          double fHeight = Math.Abs(bounds.North - bounds.South) * 111000;
+          this.Location = new LatLngLiteral { Lat = (bounds.North + bounds.South) / 2, Lng = (bounds.East + bounds.West) / 2 };
+          if (this.LocationCircle != null) {
+            await this.LocationCircle.SetCenter(this.Location);
+            await this.LocationCircle.SetRadius(fHeight * 0.05);
+          }
+          await this.LocationChanged.InvokeAsync(this.Location);
         }
-        await this.LocationChanged.InvokeAsync(this.Location);
       } catch { }
     }
   }

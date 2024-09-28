@@ -29,6 +29,9 @@
                   <BarDropdownItem To="/Maps/AllElements">
                     @Localize["All Elements"]
                   </BarDropdownItem>
+                  <BarDropdownItem To="/Maps/Catches">
+                    @Localize["Catches"]
+                  </BarDropdownItem>
                   <BarDropdownItem To="/Maps/Individuals">
                     @Localize["Individuals"]
                   </BarDropdownItem>
@@ -37,6 +40,9 @@
                   </BarDropdownItem>
                   <BarDropdownItem To="/Maps/HeatMapIndividuals">
                     Heatmap @Localize["Individuals"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Maps/HeatMapStays">
+                    Heatmap @Localize["Stays"]
                   </BarDropdownItem>
                 </BarDropdownMenu>
               </BarDropdown>
@@ -53,6 +59,9 @@
                   </BarDropdownItem>
                   <BarDropdownItem To="/Add/LocElement">
                     @Localize["Located element"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Add/GpxFile">
+                    @Localize["GPX file"]
                   </BarDropdownItem>
                 </BarDropdownMenu>
               </BarDropdown>
@@ -95,6 +104,9 @@
                   <BarDropdownItem To="/Lists/Recaptures">
                     @Localize["Recaptures"]
                   </BarDropdownItem>
+                  <BarDropdownItem To="/Lists/IndividualMigrations">
+                    @Localize["Migrations of Individuals"]
+                  </BarDropdownItem>
                   <BarDropdownItem To="/Lists/Log">
                     @Localize["Log"]
                   </BarDropdownItem>
@@ -117,6 +129,9 @@
                   <BarDropdownItem To="/Pictures/IdCards">
                     @Localize["ID Cards"]
                   </BarDropdownItem>
+                  <BarDropdownItem To="/Pictures/PatternImages">
+                    @Localize["Pattern images"]
+                  </BarDropdownItem>
                 </BarDropdownMenu>
               </BarDropdown>
             </BarItem>
@@ -124,28 +139,6 @@
               <BarDropdown>
                 <BarDropdownToggle>
                   <BarIcon IconName="IconName.ChartPie" />
-                  @Localize["Diagrams"]
-                </BarDropdownToggle>
-                <BarDropdownMenu>
-                  <BarDropdownItem To="/Charts/SizeTimeChart">
-                    @Localize["Length / Time Chart"]
-                  </BarDropdownItem>
-                  <BarDropdownItem To="/Charts/FrequencyByPlace">
-                    @Localize["Frequency by Place / Time Chart"]
-                  </BarDropdownItem>
-                  <BarDropdownItem To="/Charts/NumberYoBChart">
-                    @Localize["Numbers / Year of Birth Chart"]
-                  </BarDropdownItem>
-                  <BarDropdownItem To="/Charts/Summary">
-                    @Localize["Summary"]
-                  </BarDropdownItem>
-                </BarDropdownMenu>
-              </BarDropdown>
-            </BarItem>
-            <BarItem>
-              <BarDropdown>
-                <BarDropdownToggle>
-                  <BarIcon IconName="IconName.List" />
                   @Localize["Statistics"]
                 </BarDropdownToggle>
                 <BarDropdownMenu>
@@ -164,8 +157,22 @@
                   <BarDropdownItem To="/Statistics/PopulationSize">
                     @Localize["Population size"]
                   </BarDropdownItem>
-                  <BarDropdownItem To="/Statistics/ByCategories">
-                    @Localize["ByCategories"]
+                  @if (this.SD.CurrentProject.DisplayMass) {
+                    <BarDropdownItem To="/Statistics/ConditionIndex">
+                      @Localize["Condition index"]
+                    </BarDropdownItem>
+                  }
+                  <BarDropdownItem To="/Statistics/SizeTimeChart">
+                    @Localize["Length / Time Chart"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Statistics/FrequencyByPlace">
+                    @Localize["Frequency by Place / Time Chart"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Statistics/NumberYoBChart">
+                    @Localize["Numbers / Year of Birth Chart"]
+                  </BarDropdownItem>
+                  <BarDropdownItem To="/Statistics/IndividualDev">
+                    @Localize["Development"]
                   </BarDropdownItem>
                 </BarDropdownMenu>
               </BarDropdown>
@@ -208,11 +215,12 @@
                     @Localize["About"]..
                   </BarDropdownItem>
                   <BarDropdownDivider />
-                      @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
-                <BarDropdownItem To=@("/api/docs/"+doc.Filename+"?Project="+SD.CurrentUser.Project) Target="Target.Blank">
-                  <BarIcon IconName=@((doc.ContentType=="application/pdf"?IconName.FilePdf:IconName.Book)) />
-                  @doc.DisplayName
-                </BarDropdownItem>}
+                  @foreach (var doc in DS.GetDocs(SD.CurrentUser.Project)) {
+                    <BarDropdownItem To=@("/api/docs/"+doc.Filename+"?Project="+SD.CurrentUser.Project) Target="Target.Blank">
+                      <BarIcon IconName=@((doc.ContentType=="application/pdf"?IconName.FilePdf:IconName.Book)) />
+                      @doc.DisplayName
+                    </BarDropdownItem>
+                  }
                   <BarDropdownDivider />
                   <BarDropdownItem To="/Help/Impressum">
                     <BarIcon IconName="IconName.Book" />
@@ -239,22 +247,20 @@
     </LayoutSiderContent>
   </LayoutSider>
   <Layout>
-    <LayoutContent Padding="Padding.Is4.OnX">
+    <LayoutContent Padding="Padding.Is4.OnX" Style="overflow:hidden">
       @Body
     </LayoutContent>
   </Layout>
 </Layout>
 
-@code{
+@code {
   [CascadingParameter] protected Theme Theme { get; set; }
 
-  RenderFragment customIcon = (x) => { x.AddMarkupContent(0, "<img src=\"/favicon-96x96.png\" style=\"width:32px; height: 32px\" />"); };
+  RenderFragment customIcon = (x) => { x.AddMarkupContent(0,"<img src=\"/favicon-96x96.png\" style=\"width:32px; height: 32px\" />"); };
 
-  protected override async Task OnInitializedAsync()
-  {
+  protected override async Task OnInitializedAsync() {
     await base.OnInitializedAsync();
-    SD.CurrentProjectChanged += (sender, e) =>
-    {
+    SD.CurrentProjectChanged += (sender,e) => {
       this.StateHasChanged();
     };
   }

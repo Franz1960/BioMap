@@ -10,9 +10,13 @@ namespace BioMap
 {
   public class SessionData
   {
+    public SessionData(DataService ds, Filters filters) {
+      this.DS = ds;
+      this.Filters = filters;
+    }
     public SessionData(DataService ds) {
       this.DS = ds;
-      this.Filters = new Filters(() => CurrentUser);
+      this.Filters = new Filters(() => this.CurrentUser);
     }
     public DataService DS { get; }
     public string CurrentCultureName => System.Globalization.CultureInfo.CurrentCulture.Name;
@@ -24,18 +28,41 @@ namespace BioMap
     public void OnCurrentProjectChanged() {
       Utilities.FireEvent(this.CurrentProjectChanged, this, EventArgs.Empty);
     }
+    public event EventHandler CurrentProjectLoaded;
+    public void OnCurrentProjectLoaded() {
+      if (this.CurrentProject.InitialHistoryYears >= 1 && this.Filters != null) {
+        DateTime dtFrom = DateTime.Now - TimeSpan.FromDays(this.CurrentProject.InitialHistoryYears) * 365;
+        this.Filters.DateFromFilter = new DateTime(dtFrom.Year, dtFrom.Month, 1);
+      }
+      Utilities.FireEvent(this.CurrentProjectLoaded, this, EventArgs.Empty);
+    }
     public string SelectedElementName { get; set; }
+    public IEnumerable<Taxon> MostRecentTaxons => this._MostRecentTaxons;
+    public void AddMostRecentTaxon(Taxon taxon) {
+      if (taxon != null) {
+        if (this._MostRecentTaxons.Contains(taxon)) {
+          this._MostRecentTaxons.Remove(taxon);
+        }
+        this._MostRecentTaxons.Insert(0, taxon);
+        while (this._MostRecentTaxons.Count > 3) {
+          this._MostRecentTaxons.RemoveAt(this._MostRecentTaxons.Count - 1);
+        }
+      }
+    }
+    private readonly List<Taxon> _MostRecentTaxons = new();
     public Filters Filters { get; }
+    public bool ShowFilterSettings { get; set; } = true;
     public bool SizeTimeChartShowVintageBoundaries { get; set; } = true;
     public string SizeTimeChartGrowingCurveMode { get; set; } = "GrowingCurve";
+    public bool IndividualDevLimitToCurrentTimeOfYear { get; set; } = false;
     public bool AlienateLocations { get; set; } = false;
     public double GetSeasonizedTime(DateTime dt) {
       const int DaysBeforeSeason = 90;
       const int DaysInSeason = 183;
       var dtYearBegin = new DateTime(dt.Year, 1, 1);
-      var nDaysInYear = (dt - dtYearBegin).Days;
-      var nDaysInSeason = (int)(Math.Min(DaysInSeason, Math.Max(0, nDaysInYear - DaysBeforeSeason)));
-      var nDaysAfterSeason = (int)Math.Max(0, nDaysInYear - (DaysBeforeSeason + DaysInSeason));
+      int nDaysInYear = (dt - dtYearBegin).Days;
+      int nDaysInSeason = (int)(Math.Min(DaysInSeason, Math.Max(0, nDaysInYear - DaysBeforeSeason)));
+      int nDaysAfterSeason = (int)Math.Max(0, nDaysInYear - (DaysBeforeSeason + DaysInSeason));
       double dResult = dt.Year;
       dResult += (0.05 * Math.Min(nDaysInYear, DaysBeforeSeason)) / DaysBeforeSeason;
       dResult += (0.90 * nDaysInSeason) / DaysInSeason;
@@ -44,12 +71,12 @@ namespace BioMap
     }
     public bool MaySeeElements {
       get {
-        return (CurrentUser.Level >= CurrentProject.MinLevelToSeeElements);
+        return (this.CurrentUser.Level >= this.CurrentProject.MinLevelToSeeElements);
       }
     }
     public bool MaySeeRealLocations {
       get {
-        return (CurrentUser.Level >= CurrentProject.MinLevelToSeeExactLocations && !AlienateLocations);
+        return (this.CurrentUser.Level >= this.CurrentProject.MinLevelToSeeExactLocations && !this.AlienateLocations);
       }
     }
     public void SetPlace(Element el, string sPlaceName) {
@@ -62,7 +89,7 @@ namespace BioMap
       }
     }
     public double GetIdPhotoZoom(Element element) {
-      if (element?.Classification != null && element.Classification.IsIdPhoto()) {
+      if (element?.Classification != null && element.Classification.IsIdAnyPhoto()) {
         return Math.Max(1.0, 0.80 * this.CurrentProject.MaxHeadBodyLength / Math.Max(this.CurrentProject.MinHeadBodyLength, element.GetHeadBodyLengthMm()));
       }
       return 0;

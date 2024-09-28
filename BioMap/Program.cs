@@ -14,15 +14,13 @@ namespace BioMap
   public class Program
   {
     public static void Main(string[] args) {
-      var hostBuilder = CreateHostBuilder(args);
+      IHostBuilder hostBuilder = CreateHostBuilder(args);
       hostBuilder.Build().Run();
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder => {
-                  //webBuilder.UseUrls("http://localhost:5010");
-                  webBuilder.UseStartup<Startup>();
-            });
+            .ConfigureWebHostDefaults(webBuilder =>               //webBuilder.UseUrls("http://localhost:5010");
+              webBuilder.UseStartup<Startup>());
   }
 }

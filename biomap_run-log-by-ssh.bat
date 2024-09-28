@@ -1,2 +1,2 @@
-ssh itools.de -l fh "sudo docker logs biomap_run --follow"
+ssh he.itools.de -l fh "docker logs biomap --follow"
 pause

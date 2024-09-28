@@ -12,7 +12,7 @@
         }
       </ModalTitle>
       <Buttons Role="ButtonsRole.Toolbar">
-        <Buttons Margin="Margin.Is2.FromRight">
+        <Buttons Margin="Margin.Is2.FromEnd">
           <Button Clicked="@((e)=>sizeButtonClicked())"><Icon Name="@sizeButtonIconName" /></Button>
         </Buttons>
       </Buttons>
@@ -25,12 +25,12 @@
     </ModalBody>
     <ModalFooter>
       <Buttons Role="ButtonsRole.Toolbar">
-        <Buttons Margin="Margin.Is2.FromRight">
+        <Buttons Margin="Margin.Is2.FromEnd">
           <Button Color="Color.Warning" Clicked="@((e)=>{ ProtocolEntry.Text=OrigProtocolEntry.Text;Hide(); })">
             @Localize["Close without saving"]
           </Button>
         </Buttons>
-        <Buttons Margin="Margin.Is2.FromRight">
+        <Buttons Margin="Margin.Is2.FromEnd">
           <Button Color="Color.Primary" Clicked="@((e)=>{ Save();Hide(); })">
             <Icon Name="IconName.Save" />
             @Localize["Save"]

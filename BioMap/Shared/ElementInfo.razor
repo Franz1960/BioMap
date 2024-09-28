@@ -6,6 +6,7 @@
   <span>
     <Icon Name="IconName.LocationArrow" /> @Element.GetPlaceName()
     <Icon Name="IconName.Clock" /> @Element.GetIsoDateTime()
+    @(Element.ElementProp.IndivData?.CaptivityBred==1?"(C)":"")
     <b>@Element.Gender</b> @Element.GetHeadBodyLengthNice()
     <Icon Name="IconName.User" /> @Element.ElementProp.UploadInfo.UserId
     @this.IId

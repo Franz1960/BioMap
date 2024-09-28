@@ -1,0 +1,23 @@
+@page "/Maps/HeatMapStays"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using GoogleMapsComponents
+@using GoogleMapsComponents.Maps
+@inherits AreaMap
+
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Users" />
+  </div>
+  <div class="row content">
+    <Row Style="height:100%;">
+      <Column>
+        <GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
+      </Column>
+    </Row>
+    <Row>
+      <Column Margin="Margin.Is4.FromStart">
+        <TimeIntervalSlider @ref="this.TimeIntervalSlider1" AnyChanged="this.TimeIntervalSlider1_AnyChanged" />
+      </Column>
+    </Row>
+  </div>
+</div>

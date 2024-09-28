@@ -13,20 +13,18 @@
 <Row Margin="Margin.Is2.OnY">
   <Column>
     @{
-      var addAttr = new Dictionary<string, object>(new KeyValuePair<string, object>[] {
+      var addAttr = new Dictionary<string,object>(new KeyValuePair<string,object>[] {
     new KeyValuePair<string,object>("accept","image/*"),
     new KeyValuePair<string,object>("multiple","multiple"),
     });
       <InputFile AdditionalAttributes="addAttr" OnChange="@OnInputFileChange" />
     }
-    @if (imageDataUrls.Count > 0)
-    {
+    @if (imageDataUrls.Count > 0) {
       <h4>Images</h4>
 
       <div class="card" style="width:30rem;">
         <div class="card-body">
-          @foreach (var imageDataUrl in imageDataUrls)
-          {
+          @foreach (var imageDataUrl in imageDataUrls) {
             <img class="rounded m-1" src="@imageDataUrl" />
           }
         </div>
@@ -45,10 +43,8 @@
       <Progress Margin="Margin.Is3.FromBottom">
         <ProgressBar Value="progressCompletion">@progressCompletion.ToString()%</ProgressBar>
       </Progress>
-      @if (messages.Count >= 1)
-      {
-        foreach (var msg in messages)
-        {
+      @if (messages.Count >= 1) {
+        foreach (var msg in messages) {
           <Row Margin="Margin.Is1.OnY">
             <Column>
               @msg
@@ -57,7 +53,7 @@
         }
         <Row Margin="Margin.Is2.OnY">
           <Column>
-            <Button Color="Color.Primary" Float="Float.Right" @onclick="()=>progressModalRef.Hide()">@Localize["Close"]</Button>
+            <Button Color="Color.Primary" Float="Float.End" @onclick="()=>progressModalRef.Hide()">@Localize["Close"]</Button>
           </Column>
         </Row>
       }

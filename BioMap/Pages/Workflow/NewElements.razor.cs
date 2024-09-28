@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using BioMap.ImageProc;
 using BioMap.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
+using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.ColorSpaces.Conversion;
@@ -27,35 +29,33 @@ namespace BioMap.Pages.Workflow
     private string PatternImgSrc = "";
     private bool disableSetImage = false;
     private bool elementChanged = false;
-    private bool normImageDirty = false;
     private Element Element {
       get => this._Element;
       set {
         if (value != this._Element) {
           if (this._Element != null) {
-            DS.WriteElement(SD, this._Element);
+            if (this._Element.Gender != "f" && this._Element.Gender != "m") {
+              if (this._Element.TryDetermineGender(this.SD, null, out string sGender)) {
+                this._Element.Gender = sGender;
+              }
+            }
+            this.DS.WriteElement(this.SD, this._Element);
             // Bild normieren.
-            if (this.normImageDirty) {
-              if (this._Element.MeasureData.normalizePoints != null) {
-                var sSrcFile = DS.GetFilePathForImage(SD.CurrentUser.Project, this._Element.ElementName, true);
-                var sDstFile = DS.GetFilePathForImage(SD.CurrentUser.Project, this._Element.ElementName, false);
-                var md = this._Element.MeasureData;
-                (int nWidth, int nHeight) = md.GetNormalizedSize();
+            if (this._Element.MeasureData.normalizePoints != null) {
+              string sSrcFile = this.DS.GetFilePathForImage(this.SD.CurrentUser.Project, this._Element.ElementName, true);
+              string sDstFile = this.DS.GetFilePathForImage(this.SD.CurrentUser.Project, this._Element.ElementName, false);
+              using (var imgSrc = Image.Load(sSrcFile)) {
                 try {
-                  using (var imgSrc = Image.Load(sSrcFile)) {
-                    imgSrc.Mutate(x => x.AutoOrient());
-                    var mNormalize = md.GetNormalizeMatrix();
-                    using (var imgDst = ImageOperations.TransformAndCropOutOfImage(imgSrc, mNormalize, new Size(nWidth, nHeight))) {
-                      imgDst.SaveAsJpeg(sDstFile);
-                    }
-                  }
+                  imgSrc.Mutate(x => x.AutoOrient());
+                  imgSrc.Mutate(x => x.ExtractNormalized(this._Element.MeasureData));
                 } catch { }
+                imgSrc.SaveAsJpeg(sDstFile);
               }
             }
           }
           this._Element = value;
-          SD.SelectedElementName = this._Element?.ElementName;
           if (this._Element != null) {
+            this.SD.SelectedElementName = this._Element?.ElementName;
             this.SelectedElementTime = this._Element.ElementProp.CreationTime;
           }
         };
@@ -63,9 +63,7 @@ namespace BioMap.Pages.Workflow
     }
     private Element _Element = null;
     private bool Raw {
-      get {
-        return this._Raw;
-      }
+      get => this._Raw;
       set {
         if (value != this._Raw) {
           this._Raw = value;
@@ -78,11 +76,11 @@ namespace BioMap.Pages.Workflow
     private bool _Raw = true;
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
-      SD.Filters.FilteringTarget = Filters.FilteringTargetEnum.Elements;
-      SD.Filters.FilterChanged += this.Filters_FilterChanged;
-      await RefreshData();
+      this.SD.Filters.FilteringTarget = Filters.FilteringTargetEnum.Elements;
+      this.SD.Filters.FilterChanged += this.Filters_FilterChanged;
+      await this.RefreshData();
       await this.SelectElement();
-      NM.LocationChanged += NM_LocationChanged;
+      this.NM.LocationChanged += this.NM_LocationChanged;
     }
     private async void Filters_FilterChanged(object sender, EventArgs e) {
       await this.RefreshData();
@@ -92,14 +90,14 @@ namespace BioMap.Pages.Workflow
       this.StateHasChanged();
     }
     private void NM_LocationChanged(object sender, LocationChangedEventArgs e) {
-      NM.LocationChanged -= NM_LocationChanged;
-      SD.Filters.FilterChanged -= this.Filters_FilterChanged;
+      this.NM.LocationChanged -= this.NM_LocationChanged;
+      this.SD.Filters.FilterChanged -= this.Filters_FilterChanged;
       this.Element = null;
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
-        if (IsSpecialAuto) {
+        if (this.IsSpecialAuto) {
           var timer = new System.Timers.Timer(3000);
           timer.Elapsed += async (sender, e) => {
             await this.OnSelectNext(false);
@@ -132,47 +130,58 @@ namespace BioMap.Pages.Workflow
     private async void imageSurveyor_AfterRenderEvent(object sender, EventArgs e) {
       if (this.Element != null) {
         await this.LoadElement();
-        Utilities.CallDelayed(200, this.RefreshPatternImg);
+        await this.RefreshPatternImg();
       }
     }
     private void imageSurveyor_MeasureDataChanged(object sender, Blazor.ImageSurveyor.ImageSurveyorMeasureData measureData) {
-      if (this.Element != null) {
-        Utilities.CallDelayed(200, this.MeasureDataChanged, this.Element, measureData);
+      lock (this.LockMeasureDataProcessing) {
+        if (this.Element != null) {
+          if (this.MeasureDataProcessing_CurrentMeasureData == null) {
+            // No processing in progress.
+            this.MeasureDataProcessing_CurrentMeasureData = measureData;
+            Task.Run(this.MeasureDataChanged);
+          } else {
+            this.MeasureDataProcessing_NextMeasureData = measureData;
+          }
+        }
       }
     }
+    private readonly object LockMeasureDataProcessing = new object();
+    private Blazor.ImageSurveyor.ImageSurveyorMeasureData MeasureDataProcessing_CurrentMeasureData = null;
+    private Blazor.ImageSurveyor.ImageSurveyorMeasureData MeasureDataProcessing_NextMeasureData = null;
     private async Task SelectElement() {
-      this.Element = (await DS.GetElementsAsync(SD, SD.Filters, "elements.name='" + SD.SelectedElementName + "'")).FirstOrDefault();
+      this.Element = (await this.DS.GetElementsAsync(this.SD, this.SD.Filters, "elements.name='" + this.SD.SelectedElementName + "'")).FirstOrDefault();
       if (this.Element == null) {
         await this.OnSelectNext(false);
       }
     }
-    private bool IsSpecialAuto { get => (SD.CurrentUser.Level == 742); }
+    private bool IsSpecialAuto { get => (this.SD.CurrentUser.Level == 742); }
     private async Task RefreshData() {
       var lElements = new List<Element>();
-      if (IsSpecialAuto) {
-        var els = await DS.GetElementsAsync(SD, SD.Filters,
+      if (this.IsSpecialAuto) {
+        Element[] els = await this.DS.GetElementsAsync(this.SD, this.SD.Filters,
           "(((elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND ifnull(indivdata.stddeviation,0)=0))",
           "elements.creationtime ASC");
-        foreach (var el in els) {
-          if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName))) {
+        foreach (Element el in els) {
+          if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(this.DS, this.SD.CurrentUser.Project, el.ElementName))) {
             lElements.Add(el);
           }
         }
       } else {
-        var els = await DS.GetElementsAsync(SD, SD.Filters,
+        Element[] els = await this.DS.GetElementsAsync(this.SD, this.SD.Filters,
           "((elements.classification LIKE '%\"ClassName\":\"New\"%') OR (elements.croppingconfirmed<>1) OR (elements.croppingconfirmed IS NULL))",
           "elements.creationtime ASC");
-        foreach (var el in els) {
-          if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName))) {
+        foreach (Element el in els) {
+          if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(this.DS, this.SD.CurrentUser.Project, el.ElementName))) {
             lElements.Add(el);
           }
         }
         if (lElements.Count < 1) {
-          els = await DS.GetElementsAsync(SD, SD.Filters,
+          els = await this.DS.GetElementsAsync(this.SD, this.SD.Filters,
             "(((elements.classification LIKE '%\"ClassName\":\"ID photo\"%') AND ifnull(indivdata.genderfeature,'')=''))",
             "elements.creationtime ASC");
-          foreach (var el in els) {
-            if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName))) {
+          foreach (Element el in els) {
+            if (!string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(this.DS, this.SD.CurrentUser.Project, el.ElementName))) {
               lElements.Add(el);
             }
           }
@@ -183,8 +192,8 @@ namespace BioMap.Pages.Workflow
     }
     private async Task newClass_Selected(string sNewClass) {
       if (string.CompareOrdinal(sNewClass, this.Element?.Classification?.ClassName) != 0) {
-        this.Element.InitMeasureData(SD, sNewClass, false);
-        DS.WriteElement(SD,this.Element);
+        this.Element.InitMeasureData(this.SD, sNewClass, false);
+        this.DS.WriteElement(this.SD, this.Element);
         this.disableSetImage = false;
         await this.LoadElement();
         this.StateHasChanged();
@@ -222,53 +231,51 @@ namespace BioMap.Pages.Workflow
       }
       this.disableSetImage = false;
       this.elementChanged = true;
-      await this.InvokeAsync(() => { this.StateHasChanged(); });
+      this.StateHasChanged();
     }
     private async Task LoadElement() {
       if (!this.disableSetImage) {
         if (this.Element != null) {
           this.disableSetImage = true;
           if (this.Element.MeasureData?.normalizer == null) {
-            this.Element.InitMeasureData(SD, this.Element.Classification.ClassName, false);
-          } else if (this.Element.HasImageButNoOrigImage(SD)) {
-            this.Element.InitMeasureData(SD, this.Element.Classification.ClassName, false);
+            this.Element.InitMeasureData(this.SD, this.Element.Classification.ClassName, false);
+          } else if (this.Element.HasImageButNoOrigImage(this.SD)) {
+            this.Element.InitMeasureData(this.SD, this.Element.Classification.ClassName, false);
           }
           bool bHasImageButNoOrigImage = (this.Element.MeasureData?.normalizePoints == null);
           if (bHasImageButNoOrigImage) {
             this.Raw = false;
           }
-          var sUrlOrigImage = "api/photos/" + this.Element.ElementName + "?Project=" + SD.CurrentUser.Project + "&ForceOrig=1";
+          string sUrlOrigImage = "api/photos/" + this.Element.ElementName + "?Project=" + this.SD.CurrentUser.Project + "&ForceOrig=1";
           string sUrlImage;
           if (this.Raw) {
             sUrlImage = sUrlOrigImage;
           } else {
             if (bHasImageButNoOrigImage) {
-              sUrlImage = "api/photos/" + this.Element.ElementName + "?Project=" + SD.CurrentUser.Project + "&ForceOrig=0";
+              sUrlImage = "api/photos/" + this.Element.ElementName + "?Project=" + this.SD.CurrentUser.Project + "&ForceOrig=0";
             } else {
-              var md = this.Element.MeasureData;
-              (int nWidth, int nHeight) = md.GetNormalizedSize();
-              var bs = new System.IO.MemoryStream();
-              try {
-                var sSrcFile = DS.GetFilePathForImage(SD.CurrentUser.Project, this.Element.ElementName, true);
-                using (var imgSrc = Image.Load(sSrcFile)) {
+              string sSrcFile = this.DS.GetFilePathForImage(this.SD.CurrentUser.Project, this.Element.ElementName, true);
+              using (var imgSrc = Image.Load(sSrcFile)) {
+                try {
                   imgSrc.Mutate(x => x.AutoOrient());
-                  var mNormalize = md.GetNormalizeMatrix();
-                  using (var imgDst = ImageOperations.TransformAndCropOutOfImage(imgSrc, mNormalize, new Size(nWidth, nHeight))) {
-                    imgDst.SaveAsJpeg(bs);
-                  }
-                }
-              } catch { }
-              sUrlImage = "data:image/png;base64," + Convert.ToBase64String(bs.ToArray());
+                  imgSrc.Mutate(x => x.ExtractNormalized(this.Element.MeasureData));
+                } catch { }
+                var bs = new System.IO.MemoryStream();
+                imgSrc.SaveAsJpeg(bs);
+                sUrlImage = "data:image/png;base64," + Convert.ToBase64String(bs.ToArray());
+              }
             }
           }
           await this.ImageSurveyor.SetImageUrlAsync(sUrlImage, this.Raw, this.Element.MeasureData);
-          this.normImageDirty = false;
         }
       }
     }
-    private void MeasureDataChanged(object[] oaArgs) {
-      var el = (Element)oaArgs[0];
-      var md = (Blazor.ImageSurveyor.ImageSurveyorMeasureData)oaArgs[1];
+    private void MeasureDataChanged() {
+      Element el = this.Element;
+      if (this.MeasureDataProcessing_CurrentMeasureData == null) {
+        this.MeasureDataProcessing_CurrentMeasureData = el.MeasureData;
+      }
+      Blazor.ImageSurveyor.ImageSurveyorMeasureData md = this.MeasureDataProcessing_CurrentMeasureData;
       if (el.ElementProp.IndivData == null) {
         el.ElementProp.IndivData = new Element.IndivData_t {
           MeasuredData = new Element.IndivData_t.MeasuredData_t {
@@ -276,21 +283,39 @@ namespace BioMap.Pages.Workflow
           },
         };
       }
-      if (string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakInPetriDish") == 0) {
-        el.ElementProp.IndivData.MeasuredData.HeadBodyLength = this.SD.CurrentProject.ImageNormalizer.NormalizePixelSize * System.Numerics.Vector2.Distance(md.measurePoints[2], md.measurePoints[3]);
-      } else if (string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0) {
-        el.ElementProp.IndivData.MeasuredData.HeadBodyLength = this.SD.CurrentProject.ImageNormalizer.NormalizePixelSize * System.Numerics.Vector2.Distance(md.measurePoints[2], md.measurePoints[3]);
+      while (true) {
+        if (this.Element == null) {
+          lock (this.LockMeasureDataProcessing) {
+            this.MeasureDataProcessing_CurrentMeasureData = null;
+            this.MeasureDataProcessing_NextMeasureData = null;
+          }
+          break;
+        } else {
+          if (string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakInPetriDish") == 0) {
+            el.ElementProp.IndivData.MeasuredData.HeadBodyLength = md.GetHeadBodyLengthPx(false) * md.normalizer.NormalizePixelSize;
+          } else if (string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0) {
+            el.ElementProp.IndivData.MeasuredData.HeadBodyLength = md.GetHeadBodyLengthPx(false) * md.normalizer.NormalizePixelSize;
+          }
+          el.MeasureData = md;
+          _ = this.RefreshPatternImg();
+        }
+        lock (this.LockMeasureDataProcessing) {
+          if (this.MeasureDataProcessing_NextMeasureData == null) {
+            this.MeasureDataProcessing_CurrentMeasureData = null;
+            break;
+          } else {
+            md = this.MeasureDataProcessing_NextMeasureData;
+            this.MeasureDataProcessing_NextMeasureData = null;
+          }
+        }
       }
-      el.MeasureData = md;
-      this.normImageDirty = true;
-      Utilities.CallDelayed(200, this.RefreshPatternImg);
     }
-    private async void RefreshPatternImg(object[] oaArgs) {
+    private async Task RefreshPatternImg() {
       string sPatternImgSrc = "";
       try {
-        var el = this.Element;
-        if (el != null && ElementClassification.IsNormed(el.Classification.ClassName)) {
-          sPatternImgSrc = Utilities.GetPatternImgSource(el, this.DS, this.SD);
+        Element el = this.Element;
+        if (el != null && el.Classification.IsIdPrimaryPhoto()) {
+          sPatternImgSrc = Utilities.GetPatternImgSource(el, this.DS, this.SD, async polyLines => await this.JSRuntime.InvokeVoidAsync("PrepPic.setPolyLines", JsonConvert.SerializeObject(this.Raw ? polyLines : null)));
         }
       } catch {
       } finally {
@@ -299,14 +324,14 @@ namespace BioMap.Pages.Workflow
       }
     }
     private async Task ResetPositions_Clicked(Element el) {
-      var sFilePath = this.DS.GetFilePathForImage(this.SD.CurrentUser.Project, el.ElementName, true);
+      string sFilePath = this.DS.GetFilePathForImage(this.SD.CurrentUser.Project, el.ElementName, true);
       if (System.IO.File.Exists(sFilePath)) {
         using (var img = Image.Load(sFilePath)) {
           img.Mutate(x => x.AutoOrient());
           int w = img.Width;
           int h = img.Height;
           if (ElementClassification.IsNormed(this.Element?.Classification?.ClassName)) {
-            var normalizer = SD.CurrentProject.ImageNormalizer;
+            Blazor.ImageSurveyor.ImageSurveyorNormalizer normalizer = this.SD.CurrentProject.ImageNormalizer;
             el.MeasureData = new Blazor.ImageSurveyor.ImageSurveyorMeasureData {
               normalizer = normalizer,
               normalizePoints = normalizer.GetDefaultNormalizePoints(w, h).ToArray(),
@@ -325,5 +350,16 @@ namespace BioMap.Pages.Workflow
         await this.LoadElement();
       }
     }
+    private void TaxonDropDown_SelectedTaxonChanged() {
+      if (this.Element.Classification.LivingBeing == null) {
+        this.Element.Classification.LivingBeing = new ElementClassification.LivingBeing_t {
+          Taxon = this.taxonDropDown.SelectedTaxon,
+          Stadium = ElementClassification.Stadium.None,
+        };
+      } else {
+        this.Element.Classification.LivingBeing.Taxon = this.taxonDropDown.SelectedTaxon;
+      }
+    }
+    private TaxonDropDown taxonDropDown;
   }
 }

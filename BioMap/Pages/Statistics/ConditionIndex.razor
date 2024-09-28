@@ -1,0 +1,74 @@
+@page "/Statistics/ConditionIndex"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject IJSRuntime JSRuntime
+@using BioMap
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.BarChart.Axes
+
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Catches" />
+  </div>
+  <div class="row content">
+    <Row>
+      <Column>
+        <h1>@Localize["Condition index"]</h1>
+      </Column>
+      <Column>
+      </Column>
+    </Row>
+    <Row>
+      <Column>
+        <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
+          <Items>
+            <Tab Name="OverTime">@Localize["Over time"]</Tab>
+            <Tab Name="ByPlace">@Localize["By place"]</Tab>
+          </Items>
+          <Content>
+            <TabPanel Name="OverTime">
+              <Row>
+                <Column>
+                  @Localize[""]
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <Chart @ref="_chartJsOverTime" Config="@_configOverTime" Width="600" Height="300" />
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <TableFromChart @ref="_tableFromChartOverTime" RowLabel="@Localize["Time"]" _config="@_configOverTime" />
+                </Column>
+              </Row>
+            </TabPanel>
+            <TabPanel Name="ByPlace">
+              <Row>
+                <Column>
+                  @Localize[""]
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <Chart @ref="_chartJsByPlace" Config="@_configByPlace" Width="600" Height="300" />
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <TableFromChart @ref="_tableFromChartByPlace" RowLabel="@Localize["Place"]" _config="@_configByPlace" />
+                </Column>
+              </Row>
+            </TabPanel>
+          </Content>
+        </Tabs>
+      </Column>
+    </Row>
+  </div>
+</div>

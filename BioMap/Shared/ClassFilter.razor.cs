@@ -18,16 +18,28 @@ namespace BioMap.Shared
   {
     private TaxonDropDown taxonDropDown;
     private ElementClassification Classification = new ElementClassification();
+
     protected override void OnInitialized() {
-      if (!string.IsNullOrEmpty(SD.Filters.ClassFilter)) {
-        this.Classification = JsonConvert.DeserializeObject<ElementClassification>(SD.Filters.ClassFilter);
+      if (!string.IsNullOrEmpty(this.SD.Filters.ClassFilter)) {
+        this.Classification = JsonConvert.DeserializeObject<ElementClassification>(this.SD.Filters.ClassFilter);
       } else {
         this.Classification = new ElementClassification { ClassName = "" };
       }
+      SD.Filters.FilterChanged += this.FilterChanged;
     }
+
+    private void FilterChanged(object sender, EventArgs e) {
+      this.StateHasChanged();
+    }
+
+    public void Dispose() {
+      SD.Filters.FilterChanged -= this.FilterChanged;
+    }
+
     private void Update() {
-      SD.Filters.ClassFilter = JsonConvert.SerializeObject(this.Classification);
+      this.SD.Filters.ClassFilter = JsonConvert.SerializeObject(this.Classification);
     }
+
     private void TaxonDropDown_SelectedTaxonChanged() {
       this.Classification.LivingBeing = new ElementClassification.LivingBeing_t {
         Taxon = this.taxonDropDown.SelectedTaxon,

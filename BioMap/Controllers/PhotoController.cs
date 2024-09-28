@@ -28,11 +28,14 @@ namespace BioMap
     [HttpGet("{id}")]
     public IActionResult GetPhoto(string id) {
       try {
-        bool bForceOrig = (Request.Query.ContainsKey("ForceOrig") && ConvInvar.ToInt(Request.Query["ForceOrig"], 0) == 1);
-        bool bReqThumbnail = Request.Query.ContainsKey("width");
+        DataService ds = this.DS;
+        SessionData sd = ControllerHelper.CreateSessionData(this, ds);
+        bool bForceOrig = (this.Request.Query.ContainsKey("ForceOrig") && ConvInvar.ToInt(this.Request.Query["ForceOrig"], 0) == 1);
+        bool bReqThumbnail = this.Request.Query.ContainsKey("width");
+        bool bIncludeGPS = this.Request.Query.ContainsKey("IncludeGPS") && sd != null && sd.MaySeeRealLocations;
         string sProject = "";
-        if (Request.Query.ContainsKey("Project")) {
-          sProject = Request.Query["Project"];
+        if (this.Request.Query.ContainsKey("Project")) {
+          sProject = this.Request.Query["Project"];
         }
         string sFilePath = GetFilePathForExistingImage(this.DS, sProject, id, bForceOrig);
         if (!string.IsNullOrEmpty(sFilePath)) {
@@ -55,7 +58,9 @@ namespace BioMap
                   int nBigWidth = (int)(dZoom * nOrigWidth);
                   int nBigHeight = (int)(dZoom * nOrigHeight);
                   image.Mutate(x => x.Resize(nBigWidth, nBigHeight));
-                  image.Mutate(x => x.Crop(new Rectangle((nBigWidth - nOrigWidth) / 2, (nBigHeight - nOrigHeight) / 2, nOrigWidth, nOrigHeight)));
+                  if (dZoom > 1) {
+                    image.Mutate(x => x.Crop(new Rectangle((nBigWidth - nOrigWidth) / 2, (nBigHeight - nOrigHeight) / 2, nOrigWidth, nOrigHeight)));
+                  }
                 }
                 //
                 if (nReqWidth != 0) {
@@ -81,21 +86,38 @@ namespace BioMap
                 if (bs.Length < 1) {
                   image.SaveAsJpeg(bs);
                 }
-                return File(bs.ToArray(), "image/jpeg");
+                return this.File(bs.ToArray(), "image/jpeg");
               }
             }
           } catch {
             // System.Drawing does not work on Linux.
           }
-          {
+          if (bIncludeGPS) {
+            using (var image = Image.Load(sFilePath)) {
+              var bs = new MemoryStream();
+              Element el = ds.GetElements(sd, null, "elements.name='" + id + "'")?[0];
+              if (el?.ElementProp?.MarkerInfo?.position != null && image.Metadata?.ExifProfile != null) {
+                LatLng pos = el.ElementProp.MarkerInfo.position;
+                DateTime dt = el.ElementProp.CreationTime;
+                image.Metadata.ExifProfile.SetValue(SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.GPSLatitude, Utilities.LatLngRational_from_double(pos.lat));
+                image.Metadata.ExifProfile.SetValue(SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.GPSLongitude, Utilities.LatLngRational_from_double(pos.lng));
+                image.Metadata.ExifProfile.SetValue(SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.GPSLatitudeRef, "N");
+                image.Metadata.ExifProfile.SetValue(SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.GPSLongitudeRef, "E");
+                image.Metadata.ExifProfile.SetValue(SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.GPSTimestamp, new[] { new Rational(dt.Hour), new Rational(dt.Minute), new Rational(dt.Second) });
+                image.Metadata.ExifProfile.SetValue(SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.GPSDateStamp, dt.ToString("yyyy-MM-dd"));
+              }
+              image.SaveAsJpeg(bs);
+              return this.File(bs.ToArray(), "image/jpeg");
+            }
+          } else {
             Byte[] b = System.IO.File.ReadAllBytes(sFilePath);
-            return File(b, "image/jpeg");
+            return this.File(b, "image/jpeg");
           }
         } else {
-          return StatusCode(404, $"Photo not found: {id}");
+          return this.StatusCode(404, $"Photo not found: {id}");
         }
       } catch (Exception ex) {
-        return StatusCode(500, $"Internal server error: {ex}");
+        return this.StatusCode(500, $"Internal server error: {ex}");
       }
     }
     //[HttpPost]
@@ -125,14 +147,14 @@ namespace BioMap
     //  return BadRequest();
     //}
     private int GetRequestIntParam(string sName, int nDefaultValue) {
-      if (Request.Query.ContainsKey(sName)) {
-        return ConvInvar.ToInt(Request.Query[sName]);
+      if (this.Request.Query.ContainsKey(sName)) {
+        return ConvInvar.ToInt(this.Request.Query[sName]);
       }
       return nDefaultValue;
     }
     private double GetRequestDoubleParam(string sName, double dDefaultValue) {
-      if (Request.Query.ContainsKey(sName)) {
-        return ConvInvar.ToDouble(Request.Query[sName]);
+      if (this.Request.Query.ContainsKey(sName)) {
+        return ConvInvar.ToDouble(this.Request.Query[sName]);
       }
       return dDefaultValue;
     }

@@ -26,9 +26,7 @@ namespace BioMap.Shared
     }
     [Parameter]
     public ElementMarker[] ElementMarkers {
-      get {
-        return this._ElementMarkers;
-      }
+      get => this._ElementMarkers;
       set {
         lock (this.ElementMarkersLock) {
           this._ElementMarkers = value;
@@ -39,7 +37,7 @@ namespace BioMap.Shared
     private ElementMarker[] _ElementMarkers = null;
     public ElementMarker GetMarkerForElement(Element el) {
       if (this.ElementMarkers != null) {
-        foreach (var elm in this.ElementMarkers) {
+        foreach (ElementMarker elm in this.ElementMarkers) {
           if (elm.Element?.ElementName == el?.ElementName) {
             return elm;
           }
@@ -51,23 +49,22 @@ namespace BioMap.Shared
     public PhotoPopup PhotoPopup { get; set; }
     [Parameter]
     public bool DynaZoomed {
-      get {
-        return SD.CurrentUser.Prefs.DynaZoomed;
-      }
+      get => this.SD.CurrentUser.Prefs.DynaZoomed;
       set {
-        SD.CurrentUser.Prefs.DynaZoomed = value;
-        DS.WriteUser(SD, SD.CurrentUser);
-        Task.Run(async () => { await this.RefreshRadii(); });
+        this.SD.CurrentUser.Prefs.DynaZoomed = value;
+        this.DS.WriteUser(this.SD, this.SD.CurrentUser);
+        Task.Run(async () => await this.RefreshRadii());
       }
     }
+    public void SetDynaZoomed(bool value) {
+      this.DynaZoomed = value;
+    }
     [Parameter]
-    public bool DisplayConnectors {
-      get {
-        return SD.CurrentUser.Prefs.DisplayConnectors;
-      }
+    public int DisplayConnectors {
+      get => this.SD.CurrentUser.Prefs.DisplayConnectors;
       set {
-        SD.CurrentUser.Prefs.DisplayConnectors = value;
-        DS.WriteUser(SD, SD.CurrentUser);
+        this.SD.CurrentUser.Prefs.DisplayConnectors = value;
+        this.DS.WriteUser(this.SD, this.SD.CurrentUser);
         this.DelayedStateHasChanged();
       }
     }
@@ -88,9 +85,7 @@ namespace BioMap.Shared
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
         await this.RefreshRadii();
-        await this.googleMap.InteropObject.AddListener("zoom_changed", async () => {
-          await this.RefreshRadii();
-        });
+        await this.googleMap.InteropObject.AddListener("zoom_changed", async () => await this.RefreshRadii());
       }
       if (this.ElementMarkers != null) {
         if (this.AfterRenderUpDownCnt >= 1) {
@@ -105,9 +100,9 @@ namespace BioMap.Shared
           var dictCircles = new Dictionary<string, CircleOptions>();
           var dictConnectors = new Dictionary<string, PolylineOptions>();
           lock (this.ElementMarkersLock) {
-            foreach (var elm in this.ElementMarkers.ToArray()) {
+            foreach (ElementMarker elm in this.ElementMarkers.ToArray()) {
               var circleOptions = new CircleOptions {
-                Map = googleMap.InteropObject,
+                Map = this.googleMap.InteropObject,
                 Center = elm.Position,
                 Radius = elm.Radius * this.RadiusFactor,
                 StrokeColor = elm.Color,
@@ -119,9 +114,9 @@ namespace BioMap.Shared
               };
               dictCircles[elm.Element.ElementName] = circleOptions;
               LatLngBoundsLiteral.CreateOrExtend(ref bounds, elm.Position);
-              if (elm.PrevMarker != null && this.DisplayConnectors) {
+              if (elm.PrevMarker != null && this.DisplayConnectors >= 1) {
                 var connectorOption = new PolylineOptions {
-                  Map = googleMap.InteropObject,
+                  Map = this.googleMap.InteropObject,
                   Geodesic = true,
                   StrokeColor = "#50D020",
                   StrokeOpacity = 0.7f,
@@ -141,14 +136,14 @@ namespace BioMap.Shared
             }
           }
           this.circleList = await CircleList.SyncAsync(this.circleList, this.googleMap.JsRuntime, dictCircles, (ev, sKey, entity) => {
-            var elm = this.GetElementMarker(sKey);
+            ElementMarker elm = this.GetElementMarker(sKey);
             if (elm != null && elm.Element != null) {
               if (this.PhotoPopup != null) {
                 this.PhotoPopup.Show(elm.Element, () => {
                   this.RefreshElementMarkers();
                   // Set below lowest Z index.
                   int? minZIndex = null;
-                  foreach (var elm1 in this.ElementMarkers) {
+                  foreach (ElementMarker elm1 in this.ElementMarkers) {
                     int zIndex = elm1.ZIndex;
                     if (!minZIndex.HasValue || zIndex < minZIndex.Value) {
                       minZIndex = zIndex;
@@ -175,7 +170,7 @@ namespace BioMap.Shared
         }
       }
     }
-    protected virtual void RefreshElementMarkers() {
+    protected virtual void RefreshElementMarkers(bool bSkipDbQuery = false) {
     }
     private double? PrevRadiusFactor = null;
     private async Task RefreshRadii() {
@@ -185,8 +180,8 @@ namespace BioMap.Shared
         //System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff")+": Elapsed");
         if (this.DynaZoomed) {
           try {
-            var bounds = await this.googleMap.InteropObject.GetBounds();
-            var fHeight = Math.Abs(bounds.North - bounds.South) * 111000;
+            LatLngBoundsLiteral bounds = await this.googleMap.InteropObject.GetBounds();
+            double fHeight = Math.Abs(bounds.North - bounds.South) * 111000;
             this.RadiusFactor = fHeight * 0.004;
           } catch { }
         } else {
@@ -197,9 +192,9 @@ namespace BioMap.Shared
             try {
               var dictRadii = new Dictionary<string, double>();
               lock (this.ElementMarkersLock) {
-                var N = this.ElementMarkers.Count();
+                int N = this.ElementMarkers.Count();
                 for (int i = 0; i < N; i++) {
-                  var elm = this.ElementMarkers[i];
+                  ElementMarker elm = this.ElementMarkers[i];
                   dictRadii[elm.Element.ElementName] = this.RadiusFactor * elm.Radius;
                 }
               }
@@ -219,7 +214,7 @@ namespace BioMap.Shared
     }
     public ElementMarker GetElementMarker(string sKey) {
       lock (this.ElementMarkersLock) {
-        foreach (var elm in this.ElementMarkers) {
+        foreach (ElementMarker elm in this.ElementMarkers) {
           if (elm.Element.ElementName == sKey) {
             return elm;
           }

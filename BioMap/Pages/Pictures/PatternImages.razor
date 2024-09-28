@@ -1,0 +1,76 @@
+@page "/Pictures/PatternImages"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+
+<PhotoPopup @ref="PhotoPopup1" ElementDeleted="@(() => this.OnElementDeleted())" />
+
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Catches" />
+  </div>
+  <div class="row content">
+    @foreach (var group in this.ElementsByPlaceName) {
+      <div class="row">
+        @foreach (var el in group) {
+          <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">
+            <div style="padding-left:20px;">
+              <img src="@this.GetPatternImgSrc(el)" style="margin-top:1px;" />
+              <br /><b>#@el.GetIId()</b>
+            </div>
+          </a>
+        }
+      </div>
+    }
+    <div>
+      <Button Color="Color.Primary" Clicked="@((e)=>{ this.DisplayAll=true;this.RefreshData(); })" Block="true" hidden="@this.DisplayAll">
+        <Icon Name="IconName.List"></Icon>
+        @Localize["Display all"]
+      </Button>
+    </div>
+  </div>
+</div>
+
+@code {
+  private List<IGrouping<string,Element>> ElementsByPlaceName { get; } = new List<IGrouping<string,Element>>();
+  private bool DisplayAll { get; set; } = false;
+  private PhotoPopup PhotoPopup1;
+  protected override void OnInitialized() {
+    base.OnInitialized();
+    SD.Filters.FilterChanged += (sender,ev) => {
+      RefreshData();
+      base.InvokeAsync(this.StateHasChanged);
+    };
+    RefreshData();
+  }
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
+    await base.OnAfterRenderAsync(firstRender);
+    if (firstRender) {
+      RefreshData();
+    }
+  }
+  private string GetPatternImgSrc(Element el) {
+    string sPatternImgSrc = string.Empty;
+    if (el != null && ElementClassification.IsNormed(el.Classification.ClassName)) {
+      sPatternImgSrc = Utilities.GetPatternImgSource(el, this.DS, this.SD);
+    }
+    return sPatternImgSrc;
+  }
+  private void RefreshData() {
+    string sOrder = "DESC";
+    var els =
+      DS.GetElements(SD,SD.Filters,WhereClauses.Is_ID_photo,$"indivdata.iid {sOrder},elements.creationtime {sOrder}" + (this.DisplayAll ? "" : " Limit 200"));
+    this.ElementsByPlaceName.Clear();
+    this.ElementsByPlaceName.AddRange((els.GroupBy(el => "")));
+    this.StateHasChanged();
+  }
+  private void OnSelectClick(Element el) {
+    this.PhotoPopup1.Show(el,null,false);
+  }
+  public void OnElementDeleted() {
+    this.RefreshData();
+    this.StateHasChanged();
+  }
+}

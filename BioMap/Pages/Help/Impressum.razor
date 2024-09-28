@@ -17,7 +17,7 @@
       @Localize["Responsible in terms of press law"]:
     </Heading>
     <Paragraph>
-      @((MarkupString)DS.GetLocalizedConfFile("","ResponsiblePerson.html",SD.CurrentCultureName))
+      @((MarkupString)DS.GetLocalizedConfFile(SD.CurrentUser.Project,"ResponsiblePerson.html",SD.CurrentCultureName))
     </Paragraph>
     <Paragraph>
     </Paragraph>

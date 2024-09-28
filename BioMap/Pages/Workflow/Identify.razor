@@ -6,172 +6,202 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<Row Margin="Margin.Is1.OnY">
-  @if (ElementToCompare == null)
-  {
-    <Column ColumnSize="ColumnSize.Is7">
-      <Container Style="height:90vh;overflow-y:scroll;">
-        <Row Margin="Margin.Is1.OnY">
-          <Column>
-            @if (this.Element != null)
-            {
-              <div class="row">
-                @foreach (var el in ElementsToCompare)
-                {
-                  <div @ref=this.dictElementCards[el] class="card" style="width: 240px;">
-                    <a href="javascript:void(0);" @onclick="()=>{ ElementFromList_Clicked(el); }">
-                      <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&zoom=@SD.GetIdPhotoZoomString(el)&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
-                    </a>
-                    <div class="card-footer">
-                      <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName()) @el.CalcSimilarity(Element).ToString("0.000")</small>
-                    </div>
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.CatchesForIdentification" InitialHeaderVisible="@false" />
+  </div>
+  <div class="row content">
+    <Row Margin="Margin.Is1.OnY">
+      @if (ElementToCompare == null) {
+        <Column ColumnSize="ColumnSize.Is7">
+          <Container Style="height:90vh;overflow-y:scroll;">
+            <Row Margin="Margin.Is1.OnY">
+              <Column>
+                @if (this.Element != null) {
+                  <div class="row">
+                    @foreach (var el in ElementsToCompare) {
+                      @if (this.DisplayAll || (this.ElementSimilarities.ContainsKey(el) && this.ElementSimilarities[el] >= - 500)) {
+                        <div @ref=this.dictElementCards[el] class="card" style="width: 240px;">
+                          <a href="javascript:void(0);" @onclick="()=>{ ElementFromList_Clicked(el); }">
+                            <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&zoom=@SD.GetIdPhotoZoomString(el)&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
+                          </a>
+                          <div class="card-footer">
+                            <small><b>@el.GetIId()</b> (@el.GetIsoDate()/@el.Gender/@el.GetHeadBodyLengthMm().ToString("0.0")/@el.GetPlaceName()) @el.CalcSimilarity(this.SD, this.Element).ToString("0.000")</small>
+                          </div>
+                        </div>
+                      }
+                    }
+                  </div>
+                  <div>
+                    <Button Color="Color.Primary" Clicked="@((e)=>{ this.DisplayAll=true; })" Block="true" hidden="@this.DisplayAll">
+                      <Icon Name="IconName.List"></Icon>
+                      @Localize["Display all"]
+                    </Button>
                   </div>
                 }
+              </Column>
+            </Row>
+          </Container>
+        </Column>
+      } else {
+        <Column>
+          <Row Margin="Margin.Is1.OnY">
+            <Column TextAlignment="TextAlignment.End">
+              <img src="api/photos/@ElementToCompare.ElementName?zoom=@SD.GetIdPhotoZoomString(@ElementToCompare)&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
+            </Column>
+          </Row>
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <a href="javascript:void(0);" @onclick="()=>ElementName_Click(ElementToCompare)">
+                <strong>@ElementToCompare.ElementName</strong>
+              </a><br />
+              <ElementInfo Element="this.ElementToCompare" />
+            </Column>
+          </Row>
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-2 order-xl-3" style="float:right;">
+                <Image Source="@PatternCompareImgSrc" Style="height:200px;" />
               </div>
-            }
-          </Column>
-        </Row>
-      </Container>
-    </Column>
-  }
-  else
-  {
-    <Column>
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <img src="api/photos/@ElementToCompare.ElementName?zoom=@SD.GetIdPhotoZoomString(@ElementToCompare)&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
-        </Column>
-      </Row>
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <a href="javascript:void(0);" @onclick="()=>ElementName_Click(ElementToCompare)">
-            <strong>@ElementToCompare.ElementName</strong>
-          </a><br />
-          <ElementInfo Element="this.ElementToCompare" />
-        </Column>
-      </Row>
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-2 order-xl-3" style="float:right;">
-            <Image Source="@PatternCompareImgSrc" Style="height:200px;" />
-          </div>
-          <div class="col-lg-5 order-xl-2" style="min-width:280px">
-            @this.ElementToCompare.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
-          </div>
-          <div class="col-lg-4 order-xl-1">
-            <table class="table-sm" style="text-align:left;">
-              <tbody>
-                <tr>
-                  <td>
-                    @Localize["Distance"]
-                  </td>
-                  <td>
-                    @Element.CalcDistance(this.ElementToCompare,this.Element).Value.ToString("0") m
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    @Localize["Similarity score"]
-                  </td>
-                  <td>
-                    @this.ElementToCompare.CalcSimilarity(Element).ToString("0.000")
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="container" style="min-width:240px">
-              <Row Margin="Margin.Is2.OnY">
-                <Button Color="Color.Primary" Clicked="@(async (e)=>{ PrevElementToCompare=ElementToCompare; ElementToCompare=null; })" Block="true">
-                  <Icon Name="IconName.List"></Icon>
-                  @Localize["Back to list"]
-                </Button>
-              </Row>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Column>
-  }
-  <Column>
-    @if (Element != null) {
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <img src="api/photos/@Element?.ElementName?zoom=@SD.GetIdPhotoZoomString(@Element)&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
-        </Column>
-      </Row>
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <a href="javascript:void(0);" @onclick="()=>ElementName_Click(Element)">
-            <strong>@Element?.ElementName</strong>
-          </a><br />
-          <ElementInfo Element="this.Element" />
-        </Column>
-      </Row>
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-2">
-            <Image Source="@PatternImgSrc" Style="height:200px;" />
-          </div>
-          <div class="col-lg-5" style="min-width:280px">
-            @if (Element != null && Element.HasPhotoData())
-            {
-              @this.Element.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
-            }
-          </div>
-          <div class="col-lg-5">
-            <div class="container" style="min-width:240px">
-              <Row Margin="Margin.Is1.OnY">
-                <UserFilter />
-              </Row>
-              <Row Margin="Margin.Is2.OnY">
-                <Column ColumnSize="ColumnSize.Is6">
-                    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
-                      <Icon Name="IconName.StepBackward"></Icon>
-                    </Button>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is6">
-                    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
-                      <Icon Name="IconName.StepForward"></Icon>
-                    </Button>
-                </Column>
-              </Row>
-              @if (this.Element != null) {
-                <Row Margin="Margin.Is2.OnY">
-                  <Button Color="Color.Primary" Clicked="@(async (e)=>{ await this.CreateNewIId(); })" Block="true">
-                    @(string.Format(Localize["Not found. It's a new individual, create a new IID!"]))<br />
-                  </Button>
-                </Row>
-                @if (this.ElementToCompare != null) {
+              <div class="col-lg-1 order-xl-4" style="float:right;">
+                <Image Source="@PatternMatchingImgSrc" Style="height:200px;" />
+              </div>
+              <div class="col-lg-5 order-xl-2" style="min-width:280px">
+                @this.ElementToCompare.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
+              </div>
+              <div class="col-lg-4 order-xl-1">
+                <table class="table-sm" style="text-align:left;">
+                  <tbody>
+                    <tr>
+                      <td>
+                        @Localize["Distance"]
+                      </td>
+                      <td>
+                        @Element.CalcDistance(this.ElementToCompare,this.Element).Value.ToString("0") m
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        @Localize["Similarity score"]
+                      </td>
+                      <td>
+                        @this.ElementToCompare.CalcSimilarity(this.SD, this.Element).ToString("0.000")
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        @Localize["Pattern matching"]
+                      </td>
+                      <td>
+                        @Utilities.GetPatternMatching(this.ElementToCompare, Element, this.SD).ToString("0.000")
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="container" style="min-width:240px">
                   <Row Margin="Margin.Is2.OnY">
-                    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await this.IdentifyAs(ElementToCompare); })" Block="true">
-                      @(string.Format(Localize["Match! It's the individual #{0}"],this.ElementToCompare.GetIId()))<br />
+                    <Button Color="Color.Primary" Clicked="@(async (e)=>{ PrevElementToCompare=ElementToCompare; ElementToCompare=null; })" Block="true">
+                      <Icon Name="IconName.List"></Icon>
+                      @Localize["Back to list"]
                     </Button>
                   </Row>
-                }
-              }
+                  <Row Margin="Margin.Is2.OnY">
+                    <Column ColumnSize="ColumnSize.Is6">
+                      <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnComparePrev(); })" Block="true">
+                        <Icon Name="IconName.StepBackward"></Icon>
+                      </Button>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is6">
+                      <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnCompareNext(); })" Block="true">
+                        <Icon Name="IconName.StepForward"></Icon>
+                      </Button>
+                    </Column>
+                  </Row>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    }
-    else
-    {
-      <Row Margin="Margin.Is1.OnY">
-        <Column>
-          <Alert Color="Color.Warning" Visible="true">
-            @Localize["No more individuals to identify. If you want to process an individual element, select it in \"Lists / All Individuals\" and return to this page."]
-          </Alert>
         </Column>
-      </Row>
-    }
-  </Column>
-</Row>
+      }
+      <Column>
+        @if (Element != null) {
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <img src="api/photos/@Element?.ElementName?zoom=@SD.GetIdPhotoZoomString(@Element)&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:3px;" />
+            </Column>
+          </Row>
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <a href="javascript:void(0);" @onclick="()=>ElementName_Click(Element)">
+                <strong>@Element?.ElementName</strong>
+              </a><br />
+              <ElementInfo Element="this.Element" />
+            </Column>
+          </Row>
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-2">
+                <Image Source="@PatternImgSrc" Style="height:200px;" />
+              </div>
+              <div class="col-lg-5" style="min-width:280px">
+                @if (Element != null && Element.HasPhotoData()) {
+                  @this.Element.GetTraitTable("table-striped table-sm","text-align:center;",(t)=>Localize[t])
+                }
+              </div>
+              <div class="col-lg-5">
+                <div class="container" style="min-width:240px">
+                  <Row Margin="Margin.Is2.OnY">
+                    <Column ColumnSize="ColumnSize.Is4">
+                      <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectPrev(); })" Block="true">
+                        <Icon Name="IconName.StepBackward"></Icon>
+                      </Button>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4" TextAlignment="TextAlignment.Center">
+                      <Text>@this.ElementToIdentifyPosition</Text>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4">
+                      <Button Color="Color.Primary" Clicked="@(async (e)=>{ await OnSelectNext(); })" Block="true">
+                        <Icon Name="IconName.StepForward"></Icon>
+                      </Button>
+                    </Column>
+                  </Row>
+                  @if (this.Element != null) {
+                    <Row Margin="Margin.Is2.OnY">
+                      <Button Color="Color.Primary" Clicked="@(async (e)=>{ await this.CreateNewIId(); })" Block="true">
+                        @(string.Format(Localize["Not found. It's a new individual, create a new IID!"]))<br />
+                      </Button>
+                    </Row>
+                    @if (this.ElementToCompare != null) {
+                      <Row Margin="Margin.Is2.OnY">
+                        <Button Color="Color.Primary" Clicked="@(async (e)=>{ await this.IdentifyAs(ElementToCompare); })" Block="true">
+                          @(string.Format(Localize["Match! It's the individual #{0}"],this.ElementToCompare.GetIId()))<br />
+                        </Button>
+                      </Row>
+                    }
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        } else {
+          <Row Margin="Margin.Is1.OnY">
+            <Column>
+              <Alert Color="Color.Warning" Visible="true">
+                @Localize["No more individuals to identify. If you want to process an individual element, select it in \"Lists / All Individuals\" and return to this page."]
+              </Alert>
+            </Column>
+          </Row>
+        }
+      </Column>
+    </Row>
+  </div>
+</div>
 
 <PhotoPopup @ref="PhotoPopup1" />
 <Alert @ref="this.Alert1" Color="Color.Danger">
-    <AlertDescription>
-        @Localize["The gender selections of this individual are not consistent."]
-        @Localize["Check the list of individuals and correct the sex."]
-    </AlertDescription>
-    <CloseButton />
+  <AlertDescription>
+    @Localize["The gender selections of this individual are not consistent."]
+    @Localize["Check the list of individuals and correct the sex."]
+  </AlertDescription>
+  <CloseButton />
 </Alert>

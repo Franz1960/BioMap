@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using Newtonsoft.Json;
 
 namespace BioMap
@@ -47,20 +50,23 @@ namespace BioMap
       return dSize;
     }
     /// <summary>
-    /// Calculate the size of a specimen with given parameters at a given moment in time.
+    /// Calculate the number of days in the growing season in a given time span.
     /// </summary>
-    /// <param name="dateTime">
-    /// The moment in time.
+    /// <param name="dtStart">
+    /// Start of time span.
+    /// </param>
+    /// <param name="dtEnd">
+    /// End of time span.
     /// </param>
     /// <returns>
-    /// The calculated size.
+    /// The number of days.
     /// </returns>
-    public double GetSize(DateTime dateTime) {
-      if (dateTime <= this.DateOfBirth) {
-        return 0;
+    public int GetGrowingTimeDays(DateTime dtStart, DateTime dtEnd) {
+      if (dtEnd < dtStart) {
+        throw new ArgumentException($"End time is before start time.");
       } else {
-        var dtX = dateTime;
-        var dtB = this.DateOfBirth;
+        DateTime dtX = dtEnd;
+        DateTime dtB = dtStart;
         int nDaysInFirstSeason;
         int nDaysInLaterSeasons;
         if (dtB.Month >= 13) {
@@ -81,6 +87,24 @@ namespace BioMap
           nDaysInLaterSeasons = Math.Max(0, nEndDayInLastSeason - nStartDayInLastSeason) + (dtX.Year - dtB.Year - 1) * GrowthFunc.SeasonLengthDays;
         }
         int nGrowingTimeDays = nDaysInFirstSeason + nDaysInLaterSeasons;
+        return nGrowingTimeDays;
+      }
+    }
+    /// <summary>
+    /// Calculate the size of a specimen with given parameters at a given moment in time.
+    /// </summary>
+    /// <param name="dateTime">
+    /// The moment in time.
+    /// </param>
+    /// <returns>
+    /// The calculated size. Negative if before date of birth.
+    /// </returns>
+    public double GetSize(DateTime dateTime) {
+      if (dateTime <= this.DateOfBirth) {
+        int nGrowingTimeDays = this.GetGrowingTimeDays(dateTime, this.DateOfBirth);
+        return -0.01 * nGrowingTimeDays * GrowthFunc.HatchSize;
+      } else {
+        int nGrowingTimeDays = this.GetGrowingTimeDays(this.DateOfBirth, dateTime);
         double dGrowingTimeYears = ((double)nGrowingTimeDays) / GrowthFunc.SeasonLengthDays;
         double dSize = GrowthFunc.GetSizeForNetGrowingTime(dGrowingTimeYears);
         return dSize;
@@ -97,6 +121,62 @@ namespace BioMap
     /// </returns>
     public double GetSize(double dYears) {
       return this.GetSize(Utilities.DateTime_from_Years(dYears));
+    }
+    public static GrowthFunc FromCatches(IEnumerable<Element> catches) {
+      var ldaPoints = new List<double[]>();
+      foreach (Element el in catches) {
+        try {
+          double l = el.ElementProp.IndivData.MeasuredData.HeadBodyLength;
+          if (l != 0) {
+            double t = Utilities.Years_from_DateTime(el.ElementProp.CreationTime);
+            ldaPoints.Add(new double[] { t, l });
+          }
+        } catch { }
+      }
+      if (ldaPoints.Count >= 1) {
+        DateTime dtFirstPoint = Utilities.DateTime_from_Years(ldaPoints[0][0]);
+        double? dMinYear = null;
+        double dFirstLength = ldaPoints[0][1];
+        DateTime dtEarliestHatchTimeInFirstYear = new DateTime(dtFirstPoint.Year, 1, 1) + TimeSpan.FromDays(GrowthFunc.SeasonStartDay - GrowthFunc.MaxAddDaysInFirstSeason);
+        double dMaxLengthFirstYear = GrowthFunc.GetSizeForNetGrowingTime(((double)(dtFirstPoint - dtEarliestHatchTimeInFirstYear).Days) / GrowthFunc.SeasonLengthDays);
+        if (dFirstLength < dMaxLengthFirstYear) {
+          dMinYear = Utilities.Years_from_DateTime(new DateTime(dtFirstPoint.Year, 1, 1) + TimeSpan.FromDays(GrowthFunc.SeasonStartDay - GrowthFunc.MaxAddDaysInFirstSeason));
+        }
+        if (!dMinYear.HasValue) {
+          dMinYear = dtFirstPoint.Year - 9;
+        }
+        double dMaxYear = Utilities.Years_from_DateTime(dtFirstPoint);
+        var lsf = new LeastSquareFit();
+        lsf.Optimize(
+          new double[][] { new double[] { dMinYear.Value, dMaxYear } },
+          ldaPoints.ToArray(),
+          (daParams, daaPoints) => {
+            double dyTimeOfBirth = daParams[0];
+            var fg = new GrowthFunc() {
+              DateOfBirth = Utilities.DateTime_from_Years(dyTimeOfBirth),
+            };
+            //System.Diagnostics.Debug.Write(fg.DateOfBirth.ToString()+": ");
+            double dDevSum = 0;
+            for (int i = 0; i < daaPoints.Length; i++) {
+              double dyTime = daaPoints[i][0];
+              double lReal = daaPoints[i][1];
+              double lCalc = fg.GetSize(dyTime);
+              double dDev = lReal - lCalc;
+              dDevSum += (dDev * dDev);
+              //System.Diagnostics.Debug.Write(" Dev="+ConvInvar.ToDecimalString(dDev,5));
+            }
+            //System.Diagnostics.Debug.WriteLine(" DevSum="+ConvInvar.ToDecimalString(dDevSum,5));
+            return dDevSum;
+          },
+          -0.02,
+          0.0001,
+          out double[] daBestParams,
+          LeastSquareFit.Method.Directed);
+        return new GrowthFunc() {
+          DateOfBirth = Utilities.DateTime_from_Years(daBestParams[0]),
+        };
+      }
+      return null;
     }
   }
 }

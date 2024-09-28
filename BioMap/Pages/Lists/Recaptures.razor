@@ -5,101 +5,92 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
-
-<h1>@Localize["Recaptures"]</h1>
-
-<p>Anzahl Individuen: @Individuals.Count</p>
-
 <PhotoPopup @ref="PhotoPopup1" />
 
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th scope="col">IID</th>
-      <th scope="col">@Localize["Vintage"]</th>
-      <th scope="col">@Localize["Gender"]</th>
-      <th scope="col" width="10%">@Localize["Length"]</th>
-      <th scope="col">@Localize["Place"]</th>
-      <th scope="col">ID</th>
-      <th scope="col" width="10%">@Localize["Time"]</th>
-      <th scope="col">@Localize["User"]</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (var iid in SortedIIds)
-    {
-      @if (this.Individuals[iid].Count >= 2 @*&& !ArePlacesConsistent(iid)*@
-     )
-      {
-        <tr style=@GetTrStyle(iid)>
-          <th scope="row">@(iid)</th>
-          <td>
-            @((MarkupString)GetForElements(iid,el => el.GetYearOfBirthAsString(),true))
-            @if (!AreYearsOfBirthConsistent(iid))
-            {
-              <br />
-              <div class="form-group">
-                <input class="form-control" type="number" value="0" @onchange="(e) => inputChanged(e,iid)" />
-              </div>
-            }
-          </td>
-          <td>@((MarkupString)GetForElements(iid,el => el.Gender))</td>
-          <td>@((MarkupString)GetForElements(iid,el => el.GetHeadBodyLengthNice()))</td>
-          <td>@((MarkupString)GetForElements(iid,el => el.GetPlaceName()))</td>
-          <td>
-            @foreach (var el in this.Individuals[iid])
-            {
-              @((MarkupString)this.GetLineBreak(iid))
-              <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">@el.ElementName</a>
-            }
-          </td>
-          <td>@((MarkupString)GetForElements(iid,el => el.GetIsoDate()))</td>
-          <td>@((MarkupString)GetForElements(iid,el => el.ElementProp.UploadInfo.UserId))</td>
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Catches" />
+  </div>
+  <div class="row content">
+    <h1>@Localize["Recaptures"]</h1>
+    <p>Anzahl Individuen: @Individuals.Count</p>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">IID</th>
+          <th scope="col">@Localize["Vintage"]</th>
+          <th scope="col">@Localize["Gender"]</th>
+          <th scope="col" width="10%">@Localize["Length"]</th>
+          <th scope="col">@Localize["Place"]</th>
+          <th scope="col">ID</th>
+          <th scope="col" width="10%">@Localize["Time"]</th>
+          <th scope="col">@Localize["User"]</th>
         </tr>
-      }
-    }
-  </tbody>
-</table>
+      </thead>
+      <tbody>
+        @foreach (var iid in SortedIIds) {
+          @if (this.Individuals[iid].Count >= 2 @*&& !ArePlacesConsistent(iid)*@
+         ) {
+            <tr style=@GetTrStyle(iid)>
+              <th scope="row">@(iid)</th>
+              <td>
+                @((MarkupString)GetForElements(iid,el => el.GetYearOfBirthAsString(),true))
+                @if (!AreYearsOfBirthConsistent(iid)) {
+                  <br />
+                  <div class="form-group">
+                    <input class="form-control" type="number" value="0" @onchange="(e) => inputChanged(e,iid)" />
+                  </div>
+                }
+              </td>
+              <td>@((MarkupString)GetForElements(iid,el => el.Gender))</td>
+              <td>@((MarkupString)GetForElements(iid,el => el.GetHeadBodyLengthNice()))</td>
+              <td>@((MarkupString)GetForElements(iid,el => el.GetPlaceName()))</td>
+              <td>
+                @foreach (var el in this.Individuals[iid]) {
+                  @((MarkupString)this.GetLineBreak(iid))
+                  <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">@el.ElementName</a>
+                }
+              </td>
+              <td>@((MarkupString)GetForElements(iid,el => el.GetIsoDate()))</td>
+              <td>@((MarkupString)GetForElements(iid,el => el.ElementProp.UploadInfo.UserId))</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
 
 @code {
   private PhotoPopup PhotoPopup1;
-  private Dictionary<int, List<Element>> Individuals = new Dictionary<int, List<Element>>();
+  private Dictionary<int,List<Element>> Individuals = new Dictionary<int,List<Element>>();
   private List<int> SortedIIds = new List<int>();
-  protected override void OnInitialized()
-  {
+  protected override void OnInitialized() {
     base.OnInitialized();
-    SD.Filters.FilterChanged += (sender, ev) =>
-    {
+    SD.Filters.FilterChanged += (sender,ev) => {
       RefreshData();
       base.InvokeAsync(this.StateHasChanged);
     };
     RefreshData();
   }
-  private void RefreshData()
-  {
-    this.Individuals = DS.GetIndividuals(SD, SD.Filters, null, true);
+  private void RefreshData() {
+    this.Individuals = DS.GetIndividuals(SD,SD.Filters,null,true);
     var lIIds = new List<int>(this.Individuals.Keys);
-    lIIds.Sort((a, b) =>
-    {
+    lIIds.Sort((a,b) => {
       return -this.Individuals[a].Count.CompareTo(this.Individuals[b].Count);
     });
     this.SortedIIds = lIIds;
   }
-  private string GetForElements(int iid, Func<Element, string> func, bool bAddYoBWarning = false)
-  {
+  private string GetForElements(int iid,Func<Element,string> func,bool bAddYoBWarning = false) {
     var sb = new System.Text.StringBuilder();
     string sPreFix = "";
     string sWarnPostfix = "";
     int? nOrigYoB = null;
-    foreach (var el in this.Individuals[iid])
-    {
-      if (!nOrigYoB.HasValue)
-      {
+    foreach (var el in this.Individuals[iid]) {
+      if (!nOrigYoB.HasValue) {
         nOrigYoB = el.GetYearOfBirth();
       }
-      if (bAddYoBWarning && !object.Equals(nOrigYoB, el.GetYearOfBirth()))
-      {
+      if (bAddYoBWarning && !object.Equals(nOrigYoB,el.GetYearOfBirth())) {
         sWarnPostfix = " !!!";
       }
       sb.Append(sPreFix + func(el) + sWarnPostfix);
@@ -107,113 +98,81 @@
     }
     return sb.ToString();
   }
-  private string GetTrStyle(int iid)
-  {
-    if (this.AreGendersConsistent(iid))
-    {
+  private string GetTrStyle(int iid) {
+    if (this.AreGendersConsistent(iid)) {
       return "";
-    }
-    else
-    {
+    } else {
       return "background-color:orange;";
     }
   }
-  private string GetYoB(int iid)
-  {
-    foreach (var el in this.Individuals[iid])
-    {
+  private string GetYoB(int iid) {
+    foreach (var el in this.Individuals[iid]) {
       int? nElYoB = el.GetYearOfBirth();
-      if (nElYoB.HasValue)
-      {
+      if (nElYoB.HasValue) {
         return ConvInvar.ToString(nElYoB.Value);
       }
     }
     return "";
   }
-  private bool AreYearsOfBirthConsistent(int iid)
-  {
+  private bool AreYearsOfBirthConsistent(int iid) {
     int nYoB = 0;
-    foreach (var el in this.Individuals[iid])
-    {
-      if (nYoB != 0)
-      {
-        if (nYoB != el.GetYearOfBirth().Value)
-        {
+    foreach (var el in this.Individuals[iid]) {
+      if (nYoB != 0) {
+        if (nYoB != el.GetYearOfBirth().Value) {
           return false;
         }
-      }
-      else
-      {
+      } else {
         nYoB = el.GetYearOfBirth().Value;
       }
     }
     return true;
   }
-  private bool AreGendersConsistent(int iid)
-  {
+  private bool AreGendersConsistent(int iid) {
     string sGender = null;
-    foreach (var el in this.Individuals[iid])
-    {
+    foreach (var el in this.Individuals[iid]) {
       string g = el.Gender;
-      if (g == "f" || g == "m")
-      {
-        if (sGender == null)
-        {
+      if (g == "f" || g == "m") {
+        if (sGender == null) {
           sGender = g;
-        }
-        else if (g != sGender)
-        {
+        } else if (g != sGender) {
           return false;
         }
-      }
-      else
-      {
-        if (sGender != null)
-        {
+      } else {
+        if (sGender != null) {
           return false;
         }
       }
     }
     return true;
   }
-  private bool ArePlacesConsistent(int iid)
-  {
+  private bool ArePlacesConsistent(int iid) {
     string sPlace = null;
-    foreach (var el in this.Individuals[iid])
-    {
+    foreach (var el in this.Individuals[iid]) {
       string p = el.GetPlaceName();
-      if (sPlace == null)
-      {
+      if (sPlace == null) {
         sPlace = p;
-      }
-      else if (string.CompareOrdinal(p, sPlace) != 0)
-      {
+      } else if (string.CompareOrdinal(p,sPlace) != 0) {
         return false;
       }
     }
     return true;
   }
-  void inputChanged(ChangeEventArgs e, int iid)
-  {
+  void inputChanged(ChangeEventArgs e,int iid) {
     int nYoB = ConvInvar.ToInt(e.Value.ToString());
-    foreach (var el in this.Individuals[iid])
-    {
-      el.ElementProp.IndivData.DateOfBirth = new DateTime(nYoB, 7, 1);
-      DS.WriteElement(SD, el);
+    foreach (var el in this.Individuals[iid]) {
+      el.ElementProp.IndivData.DateOfBirth = new DateTime(nYoB,7,1);
+      DS.WriteElement(SD,el);
     }
   }
   private int oldIid = 0;
-  private string GetLineBreak(int iid)
-  {
-    if (iid == this.oldIid)
-    {
+  private string GetLineBreak(int iid) {
+    if (iid == this.oldIid) {
       return "<br/>";
     }
     this.oldIid = iid;
     return "";
   }
-  private void OnSelectClick(Element el)
-  {
+  private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);
   }
 }

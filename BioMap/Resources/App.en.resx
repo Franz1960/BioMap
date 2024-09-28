@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BioMap helps monitor yellow-bellied toads." xml:space="preserve">
+    <value>Monitoring of a biological species. Identification of individuals by photos with GPS coordinates. Find a case description for yellow bellied toads in &lt;a href="help/Unkenprojekt_2019-2021.pdf" target="_blank"&gt;this presentation&lt;/a&gt;.</value>
+  </data>
   <data name="DataUsage.DataStorage.Notice01" xml:space="preserve">
     <value>Project-related data is stored indefinitely. The user explicitly agrees to this when signing up to participate in a project. Reason: The integrity of the project data can only be guaranteed if all data is retained indefinitely or at least until the end of the project.</value>
   </data>
@@ -141,6 +144,9 @@
   <data name="Description Numbers / Year of Birth Chart" xml:space="preserve">
     <value>The number of individuals caught at least once in a year, by year class (YoB, Year of Birth).</value>
   </data>
+  <data name="Description_Recatch_by_Petersen" xml:space="preserve">
+    <value>In the Petersen recapture method, catches are considered separately by location and calendar week. Population size N is calculated from two consecutive monitorings A and B: N = n * M / m, where n is the number of individuals and m is the number of recaptures in monitoring B, and M is the number of individuals in monitoring A. For each site, the population size in a given year is calculated as the maximum of all values in that year, and the total population size is calculated as the sum over all sites in that year. If there are no recaptures, the sum of the catches is used. If there is only one monitoring, the number of catches is used.</value>
+  </data>
   <data name="ImpressumNotice01" xml:space="preserve">
     <value>This website is not commercial. It exclusively serves the workflows in nature conservation projects such as "Yellow-bellied toads in the Donaustaufer and Kreuther Forst".</value>
   </data>
@@ -152,6 +158,9 @@
   </data>
   <data name="Intro3" xml:space="preserve">
     <value>Multiple independent projects can be managed in the web app. Each project has its own user management, project area, data area for uploaded images and all other data. All data and images are visible to everyone except for the exact location data; this is removed from the images during upload and stored in a database. Only users with access level 400 or higher will see the exact location data, for all others it will be alienated.</value>
+  </data>
+  <data name="Intro4" xml:space="preserve">
+    <value>The app is open source. The source code is hosted on &lt;a href="https://gitlab.com/f.x.haering/BioMap" target="_blank"&gt;https://gitlab.com/f.x.haering/BioMap&lt;/a&gt; and has MIT license.</value>
   </data>
   <data name="IntroCreateNewProject" xml:space="preserve">
     <value>You can create a new project here. Choose a name that clearly describes your project, preferably in the form "species-area", e.g. "gbu-oberhinkofen" for a project in which yellow-bellied toads are to be monitored in Oberhinkofen.</value>

@@ -1,0 +1,32 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+@implements IDisposable
+
+<Row>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["Years missing"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+        <NumericEdit TValue="float?" @bind-Value="SD.Filters.MissingYearsFilter" />
+      </FieldBody>
+    </Field>
+  </Column>
+</Row>
+
+@code {
+
+  protected override void OnInitialized() {
+    SD.Filters.FilterChanged += this.FilterChanged;
+  }
+
+  private void FilterChanged(object sender, EventArgs e) {
+    this.StateHasChanged();
+  }
+
+  public void Dispose() {
+    SD.Filters.FilterChanged -= this.FilterChanged;
+  }
+}

@@ -4,13 +4,27 @@
 @using GoogleMapsComponents.Maps
 @inherits ElementMap
 
-<Row>
-  <Column>
-    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
-  </Column>
-</Row>
-<Row>
-  <MapSettings AreaMap="this" ShowConnectorSwitch="true" DisplayConnectorsChanged="@((value) => { this.RefreshElementMarkers(); })"/>
-</Row>
 <PhotoPopup @ref="PhotoPopup1" />
-<GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
+
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
+  </div>
+  <div class="row content">
+    <Row>
+      <Column>
+        <MapSettings AreaMap="this" ShowConnectorSwitch="false" />
+      </Column>
+    </Row>
+    <Row Style="height:100%;">
+      <Column>
+        <GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
+      </Column>
+    </Row>
+    <Row>
+      <Column Margin="Margin.Is4.FromStart">
+        <TimeIntervalSlider @ref="this.TimeIntervalSlider1" AnyChanged="this.TimeIntervalSlider1_AnyChanged" HideIntervalSelection="true" PlayDelayMs="500" />
+      </Column>
+    </Row>
+  </div>
+</div>

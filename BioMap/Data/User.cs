@@ -24,23 +24,24 @@ namespace BioMap
       public bool ShowCustomMap;
       public int ShowPlaces;
       public bool DynaZoomed;
-      public bool DisplayConnectors;
+      public int DisplayConnectors;
+      public int TimeIntervalWeeks;
     }
     public readonly Preferences Prefs = new Preferences();
-    public bool MaySeeProject { get => Level >= 200; }
-    public bool MayChangeLocations { get => Level >= 500; }
-    public bool MaySeeOtherUsers { get => Level >= 500; }
-    public bool MayChangeOtherUsers { get => Level >= 600; }
-    public bool MayChangeElements { get => Level >= 500; }
+    public bool MaySeeProject { get => this.Level >= 200; }
+    public bool MayChangeLocations { get => this.Level >= 500; }
+    public bool MaySeeOtherUsers { get => this.Level >= 500; }
+    public bool MayChangeOtherUsers { get => this.Level >= 600; }
+    public bool MayChangeElements { get => this.Level >= 500; }
     public bool MayChangeElementPlace(Element el) {
-      if (Level >= 600 || (Level >= 500 && string.CompareOrdinal(el.ElementProp.UploadInfo.UserId, this.EMail) == 0)) {
+      if (this.Level >= 600 || (this.Level >= 500 && string.CompareOrdinal(el.ElementProp.UploadInfo.UserId, this.EMail) == 0)) {
         return true;
       }
       return false;
     }
-    public bool MayUploadElements { get => Level >= 300; }
+    public bool MayUploadElements { get => this.Level >= 300; }
     public bool MayDeleteElement(Element el) {
-      if (Level >= 500 || string.CompareOrdinal(el.ElementProp.UploadInfo.UserId, EMail) == 0) {
+      if (this.Level >= 500 || string.CompareOrdinal(el.ElementProp.UploadInfo.UserId, this.EMail) == 0) {
         return true;
       }
       return false;

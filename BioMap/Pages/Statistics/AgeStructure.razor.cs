@@ -16,6 +16,8 @@ using ChartJs.Blazor.LineChart;
 using ChartJs.Blazor.Util;
 using GoogleMapsComponents;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -33,22 +35,9 @@ namespace BioMap.Pages.Statistics
     private Chart _chartJsCountByAge;
     private TableFromChart _tableFromChartCountByAge;
     //
-    private int Year {
-      get {
-        return _Year;
-      }
-      set {
-        if (value != _Year) {
-          _Year = value;
-          RefreshData();
-        }
-      }
-    }
-    private int _Year = (DateTime.Now - TimeSpan.FromDays(100)).Year;
-    //
     protected override void OnInitialized() {
       base.OnInitialized();
-      _configCountByAge = new BarConfig {
+      this._configCountByAge = new BarConfig {
         Options = new BarOptions {
           Animation = new Animation {
             Duration = 0,
@@ -67,12 +56,11 @@ namespace BioMap.Pages.Statistics
                 },
             },
             YAxes = new List<CartesianAxis> {
-                new BarLinearCartesianAxis {
+                new LinearCartesianAxis {
                   ID="cnt",
                   ScaleLabel=new ScaleLabel {
                     Display=true,
                   },
-                  Stacked = true,
                   Ticks=new LinearCartesianTicks {
                     Min=0,
                   },
@@ -81,29 +69,36 @@ namespace BioMap.Pages.Statistics
           },
         },
       };
-      SD.Filters.FilterChanged += (sender, ev) => {
-        RefreshData();
-        base.InvokeAsync(this.StateHasChanged);
-      };
-      RefreshData();
+      this.SD.Filters.FilterChanged += this.Filters_FilterChanged;
+      this.NM.LocationChanged += this.NM_LocationChanged;
+      this.RefreshData();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
       }
-      _tableFromChartCountByAge.RefreshData();
+      this._tableFromChartCountByAge.RefreshData();
+    }
+    private async void Filters_FilterChanged(object sender, EventArgs e) {
+      this.RefreshData();
+      base.InvokeAsync(this.StateHasChanged);
+    }
+    private void NM_LocationChanged(object sender, LocationChangedEventArgs e) {
+      this.NM.LocationChanged -= this.NM_LocationChanged;
+      this.SD.Filters.FilterChanged -= this.Filters_FilterChanged;
     }
     private void RefreshData() {
-      var aaIndisByIId = DS.GetIndividuals(SD, SD.Filters);
+      Dictionary<int, List<Element>> aaIndisByIId = this.DS.GetIndividuals(this.SD, this.SD.Filters);
       {
-        _configCountByAge.Data.Labels.Clear();
-        _configCountByAge.Data.Datasets.Clear();
-        //
-        {
+        var lAgeValues = new List<int>();
+        var dictYearToDataset = new Dictionary<int, Dictionary<int, int>>();
+        int nYearMin = this.SD.CurrentProject.StartDate.Value.Year;
+        int nYearMax = DateTime.Now.Year;
+        for (int nYear = nYearMin; nYear <= nYearMax; nYear++) {
           var dictCountsByAge = new Dictionary<int, int>();
-          foreach (var iid in aaIndisByIId.Keys) {
-            foreach (var el in aaIndisByIId[iid]) {
-              if (el.ElementProp.CreationTime.Year == Year) {
+          foreach (int iid in aaIndisByIId.Keys) {
+            foreach (Element el in aaIndisByIId[iid]) {
+              if (el.ElementProp.CreationTime.Year == nYear) {
                 int nWinters = (int)el.GetWinters();
                 if (!dictCountsByAge.ContainsKey(nWinters)) {
                   dictCountsByAge[nWinters] = 0;
@@ -113,22 +108,44 @@ namespace BioMap.Pages.Statistics
               }
             }
           }
-          var lAgeValues = dictCountsByAge.Keys.ToList();
-          lAgeValues.Sort();
-          var ds = new BarDataset<int>() {
-            Label = ConvInvar.ToString(Year),
-            BackgroundColor = this.GetColor(0),
-          };
-          foreach (var nAgeValue in lAgeValues) {
-            _configCountByAge.Data.Labels.Add(ConvInvar.ToString(nAgeValue));
-            ds.Add(dictCountsByAge[nAgeValue]);
+          foreach (int nAge in dictCountsByAge.Keys.ToList()) {
+            if (!lAgeValues.Contains(nAge)) {
+              lAgeValues.Add(nAge);
+            }
           }
-          _configCountByAge.Data.Datasets.Add(ds);
+          dictYearToDataset.Add(nYear, dictCountsByAge);
+        }
+        lAgeValues.Sort();
+        //
+        this._configCountByAge.Data.Labels.Clear();
+        this._configCountByAge.Data.Datasets.Clear();
+        //
+        foreach (int nAgeValue in lAgeValues) {
+          this._configCountByAge.Data.Labels.Add(ConvInvar.ToString(nAgeValue));
+        }
+        for (int nYear = nYearMin; nYear <= nYearMax; nYear++) {
+          var ds = new LineDataset<int>() {
+            Label = this.Localize[ConvInvar.ToString(nYear)],
+            BackgroundColor = "rgba(0,0,0,0)",
+            BorderWidth = 2,
+            PointHoverBorderWidth = 0,
+            BorderColor = this.GetColor(nYear - nYearMin),
+            PointRadius = 3,
+          };
+          var dictCountsByAge = dictYearToDataset[nYear];
+          foreach (int nAgeValue in lAgeValues) {
+            if (dictCountsByAge.TryGetValue(nAgeValue, out int nCount)) {
+              ds.Add(nCount);
+            } else {
+              ds.Add(0);
+            }
+          }
+          this._configCountByAge.Data.Datasets.Add(ds);
         }
       }
     }
     public string GetColor(int nIndex) {
-      return _Colors[nIndex % _Colors.Length];
+      return this._Colors[nIndex % this._Colors.Length];
     }
     private string[] _Colors = new string[] {
       ChartJs.Blazor.Util.ColorUtil.FromDrawingColor(System.Drawing.Color.FromArgb(200,System.Drawing.Color.Green)),

@@ -3,14 +3,18 @@
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
+@implements IDisposable
 
 <Field>
   <Row>
-    <Column ColumnSize="ColumnSize.Is5">
+    <Column ColumnSize="ColumnSize.Is3">
       <Label>@Localize["Individuals"]</Label>
     </Column>
     <Column ColumnSize="ColumnSize.Is3">
       <Switch Color="Color.Warning" TValue="bool" Checked="@GetInvert()" CheckedChanged="@((e)=>InvertedChanged(e))">@Localize["Invert"]</Switch>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is2">
+      <Button Size="Size.Small" Color="Color.Primary" Clicked="@((e)=>TakeSelection())">@Localize["Selection"]</Button>
     </Column>
     <Column ColumnSize="ColumnSize.Is2">
       <Button Size="Size.Small" Color="Color.Primary" Clicked="@((e)=>Clear())">@Localize["Clear"]</Button>
@@ -34,6 +38,28 @@
   [Parameter]
   public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
   //
+
+  protected override void OnInitialized() {
+    SD.Filters.FilterChanged += this.FilterChanged;
+  }
+
+  private void FilterChanged(object sender, EventArgs e) {
+    this.StateHasChanged();
+  }
+
+  public void Dispose() {
+    SD.Filters.FilterChanged -= this.FilterChanged;
+  }
+  private void TakeSelection() {
+    var sbIndis = new System.Text.StringBuilder();
+    foreach (int iid in this.SD.DS.GetIndividuals(this.SD, this.SD.Filters).Keys.ToArray()) {
+      if (sbIndis.Length >= 1) {
+        sbIndis.Append(",");
+      }
+      sbIndis.Append(ConvInvar.ToString(iid));
+    }
+    this.IndiInput_Changed(sbIndis.ToString());
+  }
   private void Clear()
   {
     this.IndiInput_Changed("");

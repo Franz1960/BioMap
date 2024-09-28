@@ -12,31 +12,66 @@
 @using ChartJs.Blazor.BarChart
 @using ChartJs.Blazor.BarChart.Axes
 
-<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
-
-<h1>@Localize["Reproduction"]</h1>
-
-<Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
-  <Items>
-    <Tab Name="ByPlace">@Localize["By place"]</Tab>
-  </Items>
-  <Content>
-    <TabPanel Name="ByPlace">
-      <Row>
-        <Column>
-          @Localize["Individuals are counted only once at each location. Only locations with at least one adult and one hatchling are listed. Reproduction rate is the quotient of hatchlings and adults. Adults are all from 2, hatchlings with 0 hibernations."]
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <Chart @ref="_chartJsByPlace" Config="@_configByPlace" Width="600" Height="300" />
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <TableFromChart @ref="_tableFromChartByPlace" RowLabel="@Localize["Place"]" _config="@_configByPlace" />
-        </Column>
-      </Row>
-    </TabPanel>
-  </Content>
-</Tabs>
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Catches" />
+  </div>
+  <div class="row content">
+    <h1>@Localize["Reproduction"]</h1>
+    <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
+      <Items>
+        <Tab Name="OverTime">@Localize["Over time"]</Tab>
+        <Tab Name="ByPlace">@Localize["By place"]</Tab>
+        <Tab Name="ByPlaceAndTime">@Localize["By place and time"]</Tab>
+      </Items>
+      <Content>
+        <TabPanel Name="OverTime">
+          <Row>
+            <Column>
+              @Localize[""]
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Chart @ref="_chartJsOverTime" Config="@_configOverTime" Width="600" Height="300" />
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <TableFromChart @ref="_tableFromChartOverTime" RowLabel="@Localize["Time"]" _config="@_configOverTime" />
+            </Column>
+          </Row>
+        </TabPanel>
+        <TabPanel Name="ByPlace">
+          <Row>
+            <Column>
+              @Localize["Individuals are counted only once at each location. Only locations with at least one adult and one hatchling are listed. Reproduction rate is the quotient of hatchlings and adults. Adults are all from 2, hatchlings with 0 hibernations."]
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Chart @ref="_chartJsByPlace" Config="@_configByPlace" Width="600" Height="300" />
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <TableFromChart @ref="_tableFromChartByPlace" RowLabel="@Localize["Place"]" _config="@_configByPlace" />
+            </Column>
+          </Row>
+        </TabPanel>
+        <TabPanel Name="ByPlaceAndTime">
+          <Row>
+            <Column>
+              @Localize["Number of juvenile Bombina variegata from live beings, from catches with 0 hibernations including those below minimum length."]
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Chart @ref="_chartJsByPlaceAndTime" Config="@_configByPlaceAndTime" Width="600" Height="300" />
+            </Column>
+          </Row>
+        </TabPanel>
+      </Content>
+    </Tabs>
+  </div>
+</div>

@@ -5,60 +5,61 @@
 
 <NotePopup @ref="refNotePopup" Changed="(pe)=>{ RefreshData();this.StateHasChanged(); }" />
 
-<Row>
-  <Column>
+<div class="box">
+  <div class="row header">
     <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Notes" />
-  </Column>
-</Row>
-<Row>
-  <Column ColumnSize="ColumnSize.Is8">
-    <h1>
-      @Localize["Notes"]
-    </h1>
-  </Column>
-  <Column>
-    <a href="/api/print/notes?Project=@SD.CurrentUser.Project&User=@SD.CurrentUser.EMail&PermTicket=@SD.CurrentUser.PermTicket" target="_blank">
-      <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<400)"><Icon Name="IconName.Print"></Icon></Button>
-    </a>
-  </Column>
-  <Column>
-    <Button Float="Float.Right" Color="Color.Primary" Clicked="@((e)=>{ AddProtocolEntry(); })"><Icon Name="IconName.PlusCircle"></Icon></Button>
-  </Column>
-</Row>
-<Row>
-  <Column>
-    <Table Class="table-striped">
-      <TableHeader>
-        <TableRow>
-          <TableHeaderCell>
-            <th scope="col">@Localize["Time"]<br />@Localize["Author"]</th>
-          </TableHeaderCell>
-          <TableHeaderCell>
-            <th scope="col">@Localize["Text"]</th>
-          </TableHeaderCell>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        @foreach (var idx in Enumerable.Range(0, ProtocolEntries.Length))
-        {
-          <TableRow>
-            <TableRowCell>
-              @ProtocolEntries[idx].CreationTime.ToString("yyyy-MM-dd HH:mm:ss")<br />@ProtocolEntries[idx].Author
-            </TableRowCell>
-            <TableRowCell>
-              @((MarkupString)ProtocolEntries[idx].Text)
-              <Button Float="Float.Right" Color="Color.Light" Clicked="@((e)=>{ refNotePopup.Show(ProtocolEntries[idx]); })"><Icon Name="IconName.Edit"></Icon></Button>
-            </TableRowCell>
-          </TableRow>
-        }
-      </TableBody>
-    </Table>
-  </Column>
-</Row>
-<Row>
-  <Column>
-  </Column>
-</Row>
+  </div>
+  <div class="row content">
+    <Row>
+      <Column ColumnSize="ColumnSize.Is8">
+        <h1>
+          @Localize["Notes"]
+        </h1>
+      </Column>
+      <Column>
+        <a href="/api/print/notes?Project=@SD.CurrentUser.Project&User=@SD.CurrentUser.EMail&PermTicket=@SD.CurrentUser.PermTicket" target="_blank">
+          <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<400)"><Icon Name="IconName.Print"></Icon></Button>
+        </a>
+      </Column>
+      <Column>
+        <Button Float="Float.End" Color="Color.Primary" Clicked="@((e)=>{ AddProtocolEntry(); })"><Icon Name="IconName.PlusCircle"></Icon></Button>
+      </Column>
+    </Row>
+    <Row>
+      <Column>
+        <Table Class="table-striped">
+          <TableHeader>
+            <TableRow>
+              <TableHeaderCell>
+                <th scope="col">@Localize["Time"]<br />@Localize["Author"]</th>
+              </TableHeaderCell>
+              <TableHeaderCell>
+                <th scope="col">@Localize["Text"]</th>
+              </TableHeaderCell>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            @foreach (var idx in Enumerable.Range(0,ProtocolEntries.Length)) {
+              <TableRow>
+                <TableRowCell>
+                  @ProtocolEntries[idx].CreationTime.ToString("yyyy-MM-dd HH:mm:ss")<br />@ProtocolEntries[idx].Author
+                </TableRowCell>
+                <TableRowCell>
+                  @((MarkupString)ProtocolEntries[idx].Text)
+                  <Button Float="Float.End" Color="Color.Light" Clicked="@((e)=>{ refNotePopup.Show(ProtocolEntries[idx]); })"><Icon Name="IconName.Edit"></Icon></Button>
+                </TableRowCell>
+              </TableRow>
+            }
+          </TableBody>
+        </Table>
+      </Column>
+    </Row>
+    <Row>
+      <Column>
+      </Column>
+    </Row>
+  </div>
+</div>
 
 @code {
 }

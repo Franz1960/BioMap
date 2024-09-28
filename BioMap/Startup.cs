@@ -8,6 +8,7 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Localization;
@@ -31,7 +32,11 @@ namespace BioMap
     public void ConfigureServices(IServiceCollection services) {
       services.AddRazorPages();
       services.AddServerSideBlazor();
-      services.AddSingleton<DataService>();
+      services.AddSingleton<CircuitHandler, TrackingCircuitHandler>();
+      services.AddSingleton<DataService>(_ => {
+        string dataDir = this.Configuration["DataDir"];
+        return new DataService(dataDir);
+      });
       services.AddScoped<SessionData>();
       services.AddLocalization(options => options.ResourcesPath = "Resources");
       services.Configure<RequestLocalizationOptions>(options => {
@@ -48,9 +53,9 @@ namespace BioMap
       });
       services.AddControllers();
       services.AddBlazorise(options => {
-        options.ChangeTextOnKeyPress = false; // optional
-        options.DelayTextOnKeyPress = true;
-        options.DelayTextOnKeyPressInterval = 500;
+        options.Immediate = false; // optional
+        options.Debounce = true;
+        options.DebounceInterval = 500;
       });
       services.AddBootstrapProviders();
       services.AddFontAwesomeIcons();
@@ -80,7 +85,7 @@ namespace BioMap
         endpoints.MapControllers();
       });
 
-      var ds = app.ApplicationServices.GetRequiredService<DataService>();
+      DataService ds = app.ApplicationServices.GetRequiredService<DataService>();
       ds.Init();
     }
   }

@@ -70,14 +70,13 @@ namespace Blazor.ImageSurveyor
     public void MeasureData_Changed(string sJsonMeasureData) {
       var md = JsonConvert.DeserializeObject<ImageSurveyorMeasureData>(sJsonMeasureData);
       if (this.Raw) {
-        if (string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakInPetriDish") == 0) {
+        if (string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakInPetriDish") == 0 || string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0) {
           var mNormalize = md.GetNormalizeMatrix();
           md.measurePoints[2] = System.Numerics.Vector2.Transform(md.measurePoints[0], mNormalize);
           md.measurePoints[3] = System.Numerics.Vector2.Transform(md.measurePoints[1], mNormalize);
-        } else if (string.CompareOrdinal(md.normalizer.NormalizeMethod, "HeadToCloakIn50mmCuvette") == 0) {
-          var mNormalize = md.GetNormalizeMatrix();
-          md.measurePoints[2] = System.Numerics.Vector2.Transform(md.measurePoints[0], mNormalize);
-          md.measurePoints[3] = System.Numerics.Vector2.Transform(md.measurePoints[1], mNormalize);
+          for (int i = 4; i < md.measurePoints.Length; i += 2) {
+            md.measurePoints[i + 1] = System.Numerics.Vector2.Transform(md.measurePoints[i], mNormalize);
+          }
         }
       }
       {

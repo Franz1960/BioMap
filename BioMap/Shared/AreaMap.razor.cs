@@ -20,35 +20,37 @@ namespace BioMap.Shared
     [Inject]
     protected SessionData SD { get; set; }
     [Inject]
+    protected NavigationManager NM { get; set; }
+    [Inject]
     protected IJSRuntime JSRuntime { get; set; }
     [Parameter]
     public int ShowPlaces {
-      get {
-        return SD.CurrentUser.Prefs.ShowPlaces;
-      }
+      get => this.SD.CurrentUser.Prefs.ShowPlaces;
       set {
-        SD.CurrentUser.Prefs.ShowPlaces = value;
-        DS.WriteUser(SD, SD.CurrentUser);
+        this.SD.CurrentUser.Prefs.ShowPlaces = value;
+        this.DS.WriteUser(this.SD, this.SD.CurrentUser);
         this.DelayedStateHasChanged();
       }
     }
     private int? PrevShowPlaces = null;
+    public void SetShowPlaces(int value) {
+      this.ShowPlaces = value;
+    }
     [Parameter]
     public bool ShowCustomMap {
-      get {
-        return SD.CurrentUser.Prefs.ShowCustomMap;
-      }
+      get => this.SD.CurrentUser.Prefs.ShowCustomMap;
       set {
-        SD.CurrentUser.Prefs.ShowCustomMap = value;
+        this.SD.CurrentUser.Prefs.ShowCustomMap = value;
         this.DelayedStateHasChanged();
       }
+    }
+    public void SetShowCustomMap(bool value) {
+      this.ShowCustomMap = value;
     }
     //
     [Parameter]
     public bool AoiEditable {
-      get {
-        return this._AoiEditable;
-      }
+      get => this._AoiEditable;
       set {
         this._AoiEditable = value;
         try {
@@ -62,15 +64,15 @@ namespace BioMap.Shared
     }
     private bool _AoiEditable = false;
     public async Task<IEnumerable<LatLngLiteral>> GetAoiPath() {
-      var latLngLiterals = await this.AoiPolygon.GetPath();
+      IEnumerable<LatLngLiteral> latLngLiterals = await this.AoiPolygon.GetPath();
       return latLngLiterals;
     }
     public async Task ClearAoiPath() {
-      var b = await this.googleMap.InteropObject.GetBounds();
+      LatLngBoundsLiteral b = await this.googleMap.InteropObject.GetBounds();
       var path = new List<LatLngLiteral>(new[] {
-        new LatLngLiteral((b.West+b.East)/2,(2*b.North+b.South)/3),
-        new LatLngLiteral((2*b.East+b.West)/3,(b.North+2*b.South)/3),
-        new LatLngLiteral((b.East+2*b.West)/3,(b.North+2*b.South)/3),
+        new LatLngLiteral { Lng = (b.West+b.East)/2, Lat = (2*b.North+b.South)/3 },
+        new LatLngLiteral { Lng = (2*b.East+b.West)/3, Lat = (b.North+2*b.South)/3 },
+        new LatLngLiteral { Lng = (b.East+2*b.West)/3, Lat = (b.North+2*b.South)/3 },
       });
       this.AoiPolygonOptions.Paths = new List<List<LatLngLiteral>>(new[] { path });
       await this.AoiPolygon.SetOptions(this.AoiPolygonOptions);
@@ -91,21 +93,25 @@ namespace BioMap.Shared
       await base.OnInitializedAsync();
       this.mt = new Monitoring(this.SD);
       this.mt.RefreshData();
-      mapOptions = new MapOptions() {
+      this.mapOptions = new MapOptions() {
         Zoom = 12,
-        Center = new LatLngLiteral() {
-          Lat = SD.CurrentProject.AoiCenterLat,
-          Lng = SD.CurrentProject.AoiCenterLng
+        Center = new LatLngLiteral {
+          Lat = this.SD.CurrentProject.AoiCenterLat,
+          Lng = this.SD.CurrentProject.AoiCenterLng
         },
-        MapTypeId = (string.IsNullOrEmpty(SD.CurrentUser.Prefs.MaptypeId) ? MapTypeId.Roadmap : Enum.Parse<MapTypeId>(SD.CurrentUser.Prefs.MaptypeId)),
+        MapTypeId = (string.IsNullOrEmpty(this.SD.CurrentUser.Prefs.MaptypeId) ? MapTypeId.Roadmap : Enum.Parse<MapTypeId>(this.SD.CurrentUser.Prefs.MaptypeId)),
         StreetViewControl = false,
+        MapTypeControlOptions = new MapTypeControlOptions {
+          position = ControlPosition.TopLeft,
+          mapTypeIds = new[] { MapTypeId.Roadmap, MapTypeId.Terrain, MapTypeId.Satellite, MapTypeId.Hybrid },
+        },
       };
-      if (DS.GetAoi(SD) == null) {
-        mapOptions.Center = new LatLngLiteral() {
+      if (this.DS.GetAoi(this.SD) == null) {
+        this.mapOptions.Center = new LatLngLiteral {
           Lat = 49.1433,
           Lng = 12.3847
         };
-        mapOptions.Zoom = 8;
+        this.mapOptions.Zoom = 8;
       }
     }
     //
@@ -113,23 +119,23 @@ namespace BioMap.Shared
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
-        while (googleMap.InteropObject == null) {
+        while (this.googleMap.InteropObject == null) {
           await Task.Delay(100);
         }
         await this.googleMap.InteropObject.AddListener("maptypeid_changed", async () => {
-          var mt = await this.googleMap.InteropObject.GetMapTypeId();
-          SD.CurrentUser.Prefs.MaptypeId = mt.ToString();
-          DS.WriteUser(SD, SD.CurrentUser);
+          MapTypeId mt = await this.googleMap.InteropObject.GetMapTypeId();
+          this.SD.CurrentUser.Prefs.MaptypeId = mt.ToString();
+          this.DS.WriteUser(this.SD, this.SD.CurrentUser);
         });
         #region Add area of interest.
         try {
           var path = new List<LatLngLiteral>();
-          var vertices = DS.GetAoi(SD);
+          IEnumerable<LatLngLiteral> vertices = this.DS.GetAoi(this.SD);
           if (vertices != null) {
             path.AddRange(vertices);
           }
           this.AoiPolygonOptions = new PolygonOptions {
-            Map = googleMap.InteropObject,
+            Map = this.googleMap.InteropObject,
             Editable = this.AoiEditable,
             StrokeColor = "#FF0000",
             StrokeOpacity = 0.8f,
@@ -139,9 +145,9 @@ namespace BioMap.Shared
             ZIndex = -1000000,
             Paths = new List<List<LatLngLiteral>>(new[] { path }),
           };
-          this.AoiPolygon = await Polygon.CreateAsync(googleMap.JsRuntime, this.AoiPolygonOptions);
+          this.AoiPolygon = await Polygon.CreateAsync(this.googleMap.JsRuntime, this.AoiPolygonOptions);
           LatLngBoundsLiteral bounds = null;
-          foreach (var latLng in path) {
+          foreach (LatLngLiteral latLng in path) {
             LatLngBoundsLiteral.CreateOrExtend(ref bounds, latLng);
           }
           this.aoiBounds = bounds;
@@ -152,14 +158,14 @@ namespace BioMap.Shared
         #endregion
         #region Add custom map.
         try {
-          var sFilePathJson = DS.GetDataDir(SD) + "conf/MapImageBounds.json";
-          var sFilePathMapImage = DS.GetDataDir(SD) + "conf/MapImage.jpg";
+          string sFilePathJson = this.DS.GetDataDir(this.SD) + "conf/MapImageBounds.json";
+          string sFilePathMapImage = this.DS.GetDataDir(this.SD) + "conf/MapImage.jpg";
           if (System.IO.File.Exists(sFilePathJson) && System.IO.File.Exists(sFilePathMapImage)) {
-            var sJson = System.IO.File.ReadAllText(sFilePathJson);
-            var bounds = JsonConvert.DeserializeObject<LatLngLiteral[]>(sJson);
-            customMapOverlay = await GroundOverlay.CreateAsync(
-              googleMap.JsRuntime,
-              "/api/conf/MapImage.jpg?Project=" + SD.CurrentUser.Project,
+            string sJson = System.IO.File.ReadAllText(sFilePathJson);
+            LatLngLiteral[] bounds = JsonConvert.DeserializeObject<LatLngLiteral[]>(sJson);
+            this.customMapOverlay = await GroundOverlay.CreateAsync(
+              this.googleMap.JsRuntime,
+              "/api/conf/MapImage.jpg?Project=" + this.SD.CurrentUser.Project,
               new LatLngBoundsLiteral(bounds[0], bounds[1]),
               new GroundOverlayOptions {
                 Opacity = 01,
@@ -168,26 +174,34 @@ namespace BioMap.Shared
         } catch { }
         #endregion
       }
-      if (customMapOverlay != null) {
-        await customMapOverlay.SetMap(ShowCustomMap ? googleMap.InteropObject : null);
+      if (this.customMapOverlay != null) {
+        await this.customMapOverlay.SetMap(this.ShowCustomMap ? this.googleMap.InteropObject : null);
       }
       #region Add places.
       {
         if (!this.PrevShowPlaces.HasValue || this.ShowPlaces != this.PrevShowPlaces || this.refreshPlacesReq) {
-          this.refreshPlacesReq = false;
+          if (this.refreshPlacesReq) {
+            await this.RefreshPlaces();
+            this.refreshPlacesReq = false;
+          }
           LatLngBoundsLiteral bounds = null;
           this.PrevShowPlaces = this.ShowPlaces;
           var dictPlaceCircles = new Dictionary<string, CircleOptions>();
           var dictPlaceMarkers = new Dictionary<string, MarkerOptions>();
           if (this.ShowPlaces >= 1) {
-            foreach (var place in DS.GetPlaces(SD)) {
-              var mtColor = (this.ShowPlaces == 1) ? "Orange" : this.mt.Results?[place.Name]?.PlannedMonitoring?.Color;
+            foreach (Place place in this.DS.GetPlaces(this.SD)) {
+              string mtColor = null;
+              if (this.ShowPlaces == 1) {
+                mtColor = "Orange";
+              } else if (this.mt.Results.TryGetValue(place.Name, out Monitoring.ResultOfPlace rop)) {
+                mtColor = rop?.PlannedMonitoring?.Color;
+              }
               if (string.IsNullOrEmpty(mtColor)) {
                 mtColor = "Grey";
               }
               var circleOptions = new CircleOptions {
-                Map = googleMap.InteropObject,
-                Center = new LatLngLiteral(place.LatLng.lng, place.LatLng.lat),
+                Map = this.googleMap.InteropObject,
+                Center = new LatLngLiteral { Lng = place.LatLng.lng, Lat = place.LatLng.lat },
                 Radius = place.Radius,
                 StrokeColor = mtColor,
                 StrokeOpacity = 0.8f,
@@ -197,8 +211,8 @@ namespace BioMap.Shared
               };
               dictPlaceCircles[place.Name] = circleOptions;
               var markerOptions = new MarkerOptions {
-                Map = googleMap.InteropObject,
-                Position = new LatLngLiteral(place.LatLng.lng, place.LatLng.lat - 0.0000096 * place.Radius),
+                Map = this.googleMap.InteropObject,
+                Position = new LatLngLiteral { Lng = place.LatLng.lng, Lat = place.LatLng.lat - 0.0000096 * place.Radius },
                 Label = new MarkerLabel {
                   Text = place.Name,
                   FontSize = "18px",
@@ -208,7 +222,7 @@ namespace BioMap.Shared
                 Icon = new Symbol { Path = "M -15,10 L 15,10 z", StrokeColor = mtColor, },
               };
               dictPlaceMarkers[place.Name] = markerOptions;
-              LatLngBoundsLiteral.CreateOrExtend(ref bounds, new LatLngLiteral(place.LatLng.lng, place.LatLng.lat));
+              LatLngBoundsLiteral.CreateOrExtend(ref bounds, new LatLngLiteral { Lng = place.LatLng.lng, Lat = place.LatLng.lat });
             }
           }
           this.placeCircleList = await CircleList.SyncAsync(this.placeCircleList, this.googleMap.JsRuntime, dictPlaceCircles);
@@ -227,6 +241,7 @@ namespace BioMap.Shared
     }
     private bool refreshPlacesReq = true;
     public virtual async Task FitBounds(bool bConsiderPlaces = true) {
+      await this.googleMap.InteropObject.SetZoom(8);
       if (!bConsiderPlaces || this.placesBounds == null || this.placesBounds.IsEmpty()) {
         if (this.aoiBounds == null || this.aoiBounds.IsEmpty()) {
           return;
@@ -238,8 +253,8 @@ namespace BioMap.Shared
       }
     }
     public void DelayedStateHasChanged() {
-      Utilities.CallDelayed(900, (oaArgs) => {
-        DS.WriteUser(SD, SD.CurrentUser);
+      Utilities.CallDelayed(100, (oaArgs) => {
+        this.DS.WriteUser(this.SD, this.SD.CurrentUser);
         base.InvokeAsync(this.StateHasChanged).Wait();
       });
     }

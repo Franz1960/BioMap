@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Timers;
 using BioMap.ImageProc;
+using Blazor.ImageSurveyor;
+using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Drawing;
 
 namespace BioMap
 {
@@ -24,6 +28,17 @@ namespace BioMap
       dt += TimeSpan.FromDays((dYears - nYears) * 365);
       return dt;
     }
+    /// <summary>
+    /// Get array of 3 Rational values containing degrees, minutes and seconds for Exif GPS values from a double GPS value.
+    /// </summary>
+    /// <param name="dValue"></param>
+    /// <returns></returns>
+    public static Rational[] LatLngRational_from_double(double dValue) {
+      double deg = (int)dValue;
+      double min = (int)((dValue - deg) * 60);
+      double sec = ((dValue - deg - (min / 60)) * 3600);
+      return new Rational[] { new Rational(deg), new Rational(min), new Rational(sec) };
+    }
     public static double Years_from_DateTime(DateTime dt) {
       double dYears = dt.Year + Math.Min(365, dt.DayOfYear) / 365.001;
       return dYears;
@@ -33,30 +48,51 @@ namespace BioMap
       return 1 - Math.Min(2, Math.Abs(normedDelta));
       //return 1.0 / (1.0 + (normedDelta * normedDelta));
     }
-    public static string GetPatternImgSource(Element el, DataService ds, SessionData sd) {
+    public static string GetPatternImgSource(Element el, DataService ds, SessionData sd, Action<IEnumerable<Vector2[]>> setPolyLines = null) {
       string sPatternImgSrc = "";
       var analyseYellowShare = new AnalyseProcessor();
       var analyseEntropy = new AnalyseProcessor();
-      var sSrcFile = ds.GetFilePathForImage(sd.CurrentUser.Project, el.ElementName, true);
+      string sMeasureDataJson = JsonConvert.SerializeObject(el.MeasureData);
+      PatternImage pi = ds.GetPatternImage(sd, el.ElementName);
+      if (pi != null && string.CompareOrdinal(pi.MeasureDataJson, sMeasureDataJson) == 0) {
+        setPolyLines?.Invoke(null);
+        return pi.DataImageSrc;
+      }
+      string sSrcFile = ds.GetFilePathForImage(sd.CurrentUser.Project, el.ElementName, true);
       if (System.IO.File.Exists(sSrcFile)) {
         using (var imgSrc = Image.Load(sSrcFile)) {
           imgSrc.Mutate(x => x.AutoOrient());
-          var md = el.MeasureData;
-          (int nWidth, int nHeight) = md.GetPatternSize(300);
-          var mPattern = md.GetPatternMatrix(nHeight);
-          using (var imgCropped = ImageOperations.TransformAndCropOutOfImage(imgSrc, mPattern, new Size(nWidth, nHeight))) {
-            imgCropped.Mutate(x => x.MaxChroma(0.10f, new[] { new System.Numerics.Vector2(1, 100) }));
-            imgCropped.Mutate(x => x.ApplyProcessor(analyseYellowShare));
-            var imgEdges = imgCropped.Clone(x => x.DetectEdges());
-            imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
-            var bs = new System.IO.MemoryStream();
-            imgCropped.SaveAsJpeg(bs);
-            sPatternImgSrc = "data:image/png;base64," + Convert.ToBase64String(bs.ToArray());
-            if (el.ElementProp?.IndivData != null) {
-              el.ElementProp.IndivData.MeasuredData.ShareOfBlack = (float)analyseYellowShare.AnalyseData.ShareOfBlack;
-              el.ElementProp.IndivData.MeasuredData.CenterOfMass = (float)(analyseYellowShare.AnalyseData.VerticalCenterOfMass);
-              el.ElementProp.IndivData.MeasuredData.StdDeviation = (float)(analyseYellowShare.AnalyseData.VerticalStdDeviation);
-              el.ElementProp.IndivData.MeasuredData.Entropy = (float)(1 - analyseEntropy.AnalyseData.ShareOfBlack);
+          Blazor.ImageSurveyor.ImageSurveyorMeasureData md = el.MeasureData;
+          if (md != null) {
+            (int nWidth, int nHeight) = md.GetPatternSize(md.PatternHeightPx);
+            float fPatternRelWidth = (md.normalizer.NormalizedWidthPx * md.PatternRelWidth) / (md.normalizer.NormalizedHeightPx);
+            Image imgCropped;
+            Vector2[] spineCurvePoints = md.GetSpineCurvePoints(true);
+            Vector2[] spine = RoundedCurve.GetPolyLineFromRoundedCurve(spineCurvePoints, (spineCurvePoints.Last() - spineCurvePoints.First()).Length() / 3);
+            imgCropped = ImageOperations.TransformCurvedSpineAndCropOutOfImage(imgSrc, spine, fPatternRelWidth, md.PatternRelHeight, new Size(nWidth, nHeight), setPolyLines);
+            try {
+              if (md.BinaryThresholdMode == 1) {
+                imgCropped.Mutate(x => x.BinaryThreshold(md.Threshold, BinaryThresholdMode.Luminance));
+              } else if (md.BinaryThresholdMode == 2) {
+                imgCropped.Mutate(x => x.BinaryThreshold(md.Threshold, BinaryThresholdMode.Saturation));
+              } else {
+                imgCropped.Mutate(x => x.MaxChroma(md.Threshold, new[] { new System.Numerics.Vector2(1, 100) }));
+              }
+              imgCropped.Mutate(x => x.ApplyProcessor(analyseYellowShare));
+              Image imgEdges = imgCropped.Clone(x => x.DetectEdges());
+              imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
+              var bs = new System.IO.MemoryStream();
+              imgCropped.SaveAsJpeg(bs);
+              sPatternImgSrc = "data:image/png;base64," + Convert.ToBase64String(bs.ToArray());
+              if (el.ElementProp?.IndivData != null) {
+                el.ElementProp.IndivData.MeasuredData.ShareOfBlack = (float)analyseYellowShare.AnalyseData.ShareOfBlack;
+                el.ElementProp.IndivData.MeasuredData.CenterOfMass = (float)(analyseYellowShare.AnalyseData.VerticalCenterOfMass);
+                el.ElementProp.IndivData.MeasuredData.StdDeviation = (float)(analyseYellowShare.AnalyseData.VerticalStdDeviation);
+                el.ElementProp.IndivData.MeasuredData.Entropy = (float)(1 - analyseEntropy.AnalyseData.ShareOfBlack);
+              }
+              ds.WritePatternImage(sd, el.ElementName, new PatternImage() { MeasureDataJson = sMeasureDataJson, DataImageSrc = sPatternImgSrc });
+            } finally {
+              imgCropped.Dispose();
             }
           }
         }
@@ -65,13 +101,19 @@ namespace BioMap
         if (System.IO.File.Exists(sSrcFile)) {
           using (var imgSrc = Image.Load(sSrcFile)) {
             imgSrc.Mutate(x => x.AutoOrient());
-            var md = el.MeasureData;
+            ImageSurveyorMeasureData md = el.MeasureData;
             (int nWidth, int nHeight) = md.GetPatternSize(300);
-            var mPattern = md.GetPatternMatrix(nHeight);
-            using (var imgCropped = ImageOperations.TransformAndCropOutOfImage(imgSrc, mPattern, new Size(nWidth, nHeight))) {
-              imgCropped.Mutate(x => x.MaxChroma(0.10f, new[] { new System.Numerics.Vector2(1, 100) }));
+            Matrix3x2 mPattern = md.GetPatternMatrix(nHeight);
+            using (Image imgCropped = ImageOperations.TransformAndCropOutOfImage(imgSrc, mPattern, new Size(nWidth, nHeight))) {
+              if (md.BinaryThresholdMode == 1) {
+                imgCropped.Mutate(x => x.BinaryThreshold(md.Threshold, BinaryThresholdMode.Luminance));
+              } else if (md.BinaryThresholdMode == 2) {
+                imgCropped.Mutate(x => x.BinaryThreshold(md.Threshold, BinaryThresholdMode.Saturation));
+              } else {
+                imgCropped.Mutate(x => x.MaxChroma(md.Threshold, new[] { new System.Numerics.Vector2(1, 100) }));
+              }
               imgCropped.Mutate(x => x.ApplyProcessor(analyseYellowShare));
-              var imgEdges = imgCropped.Clone(x => x.DetectEdges());
+              Image imgEdges = imgCropped.Clone(x => x.DetectEdges());
               imgEdges.Mutate(x => x.ApplyProcessor(analyseEntropy));
               var bs = new System.IO.MemoryStream();
               imgCropped.SaveAsJpeg(bs);
@@ -87,6 +129,49 @@ namespace BioMap
         }
       }
       return sPatternImgSrc;
+    }
+    public static string GetPatternMatchingImgSource(Element elA, Element elB, SessionData sd) {
+      string sPatternImgSrc = "";
+      string sPISrcA = GetPatternImgSource(elA, sd.DS, sd);
+      string sPISrcB = GetPatternImgSource(elB, sd.DS, sd);
+      var analyseYellowShare = new AnalyseProcessor();
+      using (var imgA = Image.Load(Convert.FromBase64String(sPISrcA.Substring(22)))) {
+        using (var imgB = Image.Load(Convert.FromBase64String(sPISrcB.Substring(22)))) {
+          if (imgA != null && imgB != null && imgA.Width == imgB.Width && imgA.Height == imgB.Height) {
+            using (var imgR = new Image<SixLabors.ImageSharp.PixelFormats.L8>(imgA.Width, imgA.Height)) {
+              imgA.Mutate(x => x.ApplyProcessor(new PatternMatchingProcessor(imgB, Point.Empty, 1f)));
+              var bs = new System.IO.MemoryStream();
+              imgA.SaveAsJpeg(bs);
+              sPatternImgSrc = "data:image/png;base64," + Convert.ToBase64String(bs.ToArray());
+            }
+          }
+        }
+      }
+      return sPatternImgSrc;
+    }
+    /// <summary>
+    /// Calculate similarity of image patterns in the range from -1 (no match) to +1 (full match).
+    /// </summary>
+    /// <param name="elA"></param>
+    /// <param name="elB"></param>
+    /// <param name="sd"></param>
+    /// <returns></returns>
+    public static double GetPatternMatching(Element elA, Element elB, SessionData sd) {
+      double dSimilarity = 0;
+      string sPISrcA = GetPatternImgSource(elA, sd.DS, sd);
+      string sPISrcB = GetPatternImgSource(elB, sd.DS, sd);
+      var analyseYellowShare = new AnalyseProcessor();
+      using (var imgA = Image.Load(Convert.FromBase64String(sPISrcA.Substring(22)))) {
+        using (var imgB = Image.Load(Convert.FromBase64String(sPISrcB.Substring(22)))) {
+          if (imgA != null && imgB != null && imgA.Width == imgB.Width && imgA.Height == imgB.Height) {
+            imgA.Mutate(x => x.ApplyProcessor(new PatternMatchingProcessor(imgB, Point.Empty, 1f)));
+            imgA.Mutate(x => x.ApplyProcessor(analyseYellowShare));
+            double dShareOfBlack = analyseYellowShare.AnalyseData.ShareOfBlack;
+            dSimilarity = 2 * dShareOfBlack - 1;
+          }
+        }
+      }
+      return dSimilarity;
     }
     private class DelayedCaller
     {
@@ -188,7 +273,7 @@ namespace BioMap
       }
     }
     public static string Bash(this string cmd) {
-      var escapedArgs = cmd.Replace("\"", "\\\"");
+      string escapedArgs = cmd.Replace("\"", "\\\"");
       var process = new Process() {
         StartInfo = new ProcessStartInfo {
           FileName = "/bin/bash",

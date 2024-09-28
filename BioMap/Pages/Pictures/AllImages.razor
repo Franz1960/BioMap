@@ -5,76 +5,88 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
-<SortAndGroupSettings @ref="this.SortAndGroupSettings1" Context="AllImages" AnyChanged="async () => { this.RefreshData(); }" />
 <PhotoPopup @ref="this.PhotoPopup1" ElementDeleted="@(() => this.OnElementDeleted())" />
 
-@foreach (var group in this.ElementsByPlaceName)
-{
-  @if (this.SortAndGroupSettings1.GroupByPlace)
-  {
-    <div class="row">
-    <h2>@(string.IsNullOrEmpty(group.Key) ? Localize["Outside defined places"] : group.Key)</h2>
-    </div>
-  }
-  <div class="row">
-    @foreach (var el in group)
-    {
-      <div class="card" style="width: 240px;">
-        <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">
-          <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project" style="max-width:100%;max-height:100%;margin-top:1px;" />
-        </a>
-        <div class="card-footer">
-          <small>(@el.GetIsoDate()/@el.GetClassOrIId()/@el.GetPlaceName())</small>
-        </div>
-      </div>
-    }
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
   </div>
-}
+  <div class="row content">
+    <SortAndGroupSettings @ref="this.SortAndGroupSettings1" Context="AllImages" AnyChanged="async () => { this.RefreshData(); }" />
+      @foreach (var group in this.ElementsByPlaceName) {
+        @if (this.SortAndGroupSettings1.GroupByPlace) {
+          <h2>@(string.IsNullOrEmpty(group.Key) ? Localize["Outside defined places"] : group.Key)</h2>
+        }
+        <div class="row">
+          @foreach (var el in group) {
+            <div class="card" style="width: 240px;">
+              <a href="javascript:void(0);" @onclick="() => OnSelectClick(el)">
+                <img class="card-img-top" src="api/photos/@el.ElementName?maxdim=240&Project=@SD.CurrentUser.Project&ForceOrig=@(this.SortAndGroupSettings1.DisplayOriginalImages ? "1" : "0")" style="max-width:100%;max-height:100%;margin-top:1px;" />
+              </a>
+              <div class="card-footer">
+                <small>(@el.GetIsoDate()/@el.GetClassOrIId()/@el.GetPlaceName())</small>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    <div>
+      <Button Color="Color.Primary" Clicked="@((e)=>{ this.DisplayAll=true;this.RefreshData(); })" Block="true" hidden="@this.DisplayAll">
+        <Icon Name="IconName.List"></Icon>
+        @Localize["Display all"]
+      </Button>
+    </div>
+  </div>
+</div>
 
 @code {
   private PhotoPopup PhotoPopup1;
   private SortAndGroupSettings SortAndGroupSettings1;
-  private List<IGrouping<string, Element>> ElementsByPlaceName { get; } = new List<IGrouping<string, Element>>();
-  protected override void OnInitialized()
-  {
+  private bool DisplayAll { get; set; } = false;
+  private List<IGrouping<string,Element>> ElementsByPlaceName { get; } = new List<IGrouping<string,Element>>();
+
+  protected override void OnInitialized() {
     base.OnInitialized();
-    SD.Filters.FilterChanged += (sender, ev) =>
-    {
+    SD.Filters.FilterChanged += (sender,ev) => {
       RefreshData();
-      base.InvokeAsync(this.StateHasChanged);
     };
   }
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
-    if (firstRender)
-    {
+    if (firstRender) {
       RefreshData();
     }
   }
-  private void RefreshData()
-  {
-    if (this.SortAndGroupSettings1 != null)
-    {
+  private void RefreshData() {
+    if (this.SortAndGroupSettings1 != null) {
       var els =
-        DS.GetElements(SD, SD.Filters, "", "elements.creationtime " + (this.SortAndGroupSettings1.SortDown ? "DESC" : "ASC"))
-        .Where(el => !string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS, SD.CurrentUser.Project, el.ElementName)));
+        DS.GetElements(SD, SD.Filters, "", "elements.creationtime " + (this.SortAndGroupSettings1.SortDown ? "DESC" : "ASC") + ((this.DisplayAll || this.SortAndGroupSettings1.GroupByPlace) ? "" : " Limit 200"))
+        .Where(el => !string.IsNullOrEmpty(PhotoController.GetFilePathForExistingImage(DS,SD.CurrentUser.Project,el.ElementName,this.SortAndGroupSettings1.DisplayOriginalImages)));
       this.ElementsByPlaceName.Clear();
-      if (this.SortAndGroupSettings1.GroupByPlace)
-      {
+      if (this.SortAndGroupSettings1.GroupByPlace) {
         this.ElementsByPlaceName.AddRange((els.GroupBy(el => el.GetPlaceName()).OrderBy(group => group.Key)));
-      }
-      else
-      {
+        if (!this.DisplayAll) {
+          int nElCnt = 0;
+          int idxLimit = -1;
+          for (int idx = 0; idx < this.ElementsByPlaceName.Count; idx++) {
+            if (nElCnt >= 200) {
+              idxLimit = idx;
+              break;
+            }
+            nElCnt += this.ElementsByPlaceName[idx].Count();
+          }
+          if (idxLimit >= 0) {
+            this.ElementsByPlaceName.RemoveRange(idxLimit, this.ElementsByPlaceName.Count - idxLimit);
+          }
+        }
+      } else {
         this.ElementsByPlaceName.AddRange((els.GroupBy(el => "")));
       }
       this.StateHasChanged();
     }
   }
-  private void OnSelectClick(Element el)
-  {
-    this.PhotoPopup1.Show(el);
+  private void OnSelectClick(Element el) {
+    this.PhotoPopup1.Show(el,null,this.SortAndGroupSettings1.DisplayOriginalImages);
   }
   public void OnElementDeleted() {
     this.RefreshData();

@@ -5,14 +5,13 @@
 
 
 <Modal @ref="modalRef" Closed="OnClosed">
-  <ModalBackdrop />
   <ModalContent Size="@modalSize" Centered="@centered">
     <ModalHeader>
       <ModalTitle>
         @Title
       </ModalTitle>
       <Buttons Role="ButtonsRole.Toolbar">
-        <Buttons Margin="Margin.Is2.FromRight">
+        <Buttons Margin="Margin.Is2.FromEnd">
           <Button Clicked="@((e)=>sizeButtonClicked())"><Icon Name="@sizeButtonIconName" /></Button>
         </Buttons>
         <CloseButton Clicked="@((e)=>Hide())" />
@@ -23,23 +22,23 @@
     </ModalBody>
     <ModalFooter>
       @*<Buttons Role="ButtonsRole.Toolbar">
-        <Buttons Margin="Margin.Is2.FromRight">
-        <Button Color="Color.Warning" Clicked="@((e)=>{ Hide(); })">
-        @Localize["Close without saving"]
-        </Button>
-        </Buttons>
-        <Buttons Margin="Margin.Is2.FromRight">
-        <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save();Hide(); })">
-        <Icon Name="IconName.Save" />
-        @Localize["Save"]
-        </Button>
-        </Buttons>
-        </Buttons>*@
+      <Buttons Margin="Margin.Is2.FromRight">
+      <Button Color="Color.Warning" Clicked="@((e)=>{ Hide(); })">
+      @Localize["Close without saving"]
+      </Button>
+      </Buttons>
+      <Buttons Margin="Margin.Is2.FromRight">
+      <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save();Hide(); })">
+      <Icon Name="IconName.Save" />
+      @Localize["Save"]
+      </Button>
+      </Buttons>
+      </Buttons>*@
     </ModalFooter>
   </ModalContent>
 </Modal>
 
-@code{
+@code {
   [Parameter]
   public Action ElementDeleted { get; set; }
   //
@@ -52,47 +51,44 @@
   private int? maxHeight = 80;
   public string Title { get; set; }
   public string ElementName { get; set; }
-  public void Show(Element el, Action callbackOnClosed = null)
-  {
+  public void Show(Element el, Action callbackOnClosed = null, bool bDisplayOriginalImage = false, Func<Element, string> getZoom = null) {
     this.ElementEditRef.Element = el;
+    this.ElementEditRef.DisplayOriginalImage = () => bDisplayOriginalImage;
+    this.ElementEditRef.GetZoom = getZoom;
     this.callbackOnClosed = callbackOnClosed;
     this.ElementName = el.ElementName;
     this.Title = el.ElementName;
     this.StateHasChanged();
     this.modalRef.Show();
   }
-  public void OnElementDeleted()
-  {
+  public void OnElementDeleted() {
     this.ElementDeleted?.Invoke();
     this.Hide();
   }
   public void Hide() {
     this.modalRef.Hide();
   }
-  private void sizeButtonClicked()
-  {
-    if (this.modalSize == ModalSize.Default)
-    {
+  private void sizeButtonClicked() {
+    if (this.modalSize == ModalSize.Default) {
       this.modalSize = ModalSize.Large;
       this.sizeButtonIconName = IconName.Compress;
-    }
-    else
-    {
+    } else {
       this.modalSize = ModalSize.Default;
       this.sizeButtonIconName = IconName.Expand;
     }
   }
-  private void OnClosed()
-  {
+  private void OnClosed() {
     var saDiff = this.ElementEditRef.EditingChangedContent();
-    if (saDiff != null)
-    {
+    if (saDiff != null) {
       DS.WriteElement(SD, this.ElementEditRef.Element);
-      string sJson = JsonConvert.SerializeObject(this.ElementEditRef.Element);
-      DS.AddLogEntry(SD, "Changed element " + this.ElementEditRef.Element.ElementName + ": " + saDiff[0] + " --> " + saDiff[1]);
+      string sChangedIId = this.ElementEditRef.EditingChangedIId();
+      if (!string.IsNullOrEmpty(sChangedIId)) {
+        this.DS.AddLogEntry(this.SD, $"Changed IId of {this.ElementEditRef.Element.ElementName}: {sChangedIId}");
+      } else {
+        DS.AddLogEntry(SD, "Changed element " + this.ElementEditRef.Element.ElementName + ": " + saDiff[0] + " --> " + saDiff[1]);
+      }
     }
-    if (this.callbackOnClosed != null)
-    {
+    if (this.callbackOnClosed != null) {
       this.callbackOnClosed();
       this.callbackOnClosed = null;
     }

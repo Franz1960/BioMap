@@ -15,10 +15,22 @@ namespace BioMap
     public static readonly string[] ClassNames = new string[] {
       "New",
       "ID photo",
+      "ID photo dorsal",
+      "ID photo left",
+      "ID photo right",
       "Normalized non-ID photo",
       "Living being",
       "Habitat",
       "Other",
+    };
+    public static readonly string[] IdPrimaryPhotoClassNames = new string[] {
+      "ID photo",
+    };
+    public static readonly string[] IdAuxPhotoClassNames = new string[] {
+      "ID photo dorsal",
+      "ID photo left",
+      "ID photo right",
+      "Normalized non-ID photo",
     };
     public static readonly Dictionary<string, string> ClassColors = new Dictionary<string, string>(new KeyValuePair<string, string>[] {
       new KeyValuePair<string,string>("New","#FFFFFF"),
@@ -67,10 +79,20 @@ namespace BioMap
       }
     }
     public static bool IsNormed(string sClassName) {
-      return (string.CompareOrdinal(sClassName, "ID photo") == 0 || string.CompareOrdinal(sClassName, "Normalized non-ID photo") == 0);
+      return (
+        ElementClassification.IdPrimaryPhotoClassNames.Contains(sClassName)
+        ||
+        ElementClassification.IdAuxPhotoClassNames.Contains(sClassName)
+        );
     }
-    public bool IsIdPhoto() {
-      return (string.CompareOrdinal(this.ClassName, "ID photo") == 0);
+    public bool IsIdPrimaryPhoto() {
+      return ElementClassification.IdPrimaryPhotoClassNames.Contains(this.ClassName);
+    }
+    public bool IsIdAuxPhoto() {
+      return ElementClassification.IdAuxPhotoClassNames.Contains(this.ClassName);
+    }
+    public bool IsIdAnyPhoto() {
+      return this.IsIdPrimaryPhoto() || this.IsIdAuxPhoto();
     }
     public bool IsLivingBeing() {
       return (string.CompareOrdinal(this.ClassName, "Living being") == 0);
@@ -79,7 +101,7 @@ namespace BioMap
       return (string.CompareOrdinal(this.ClassName, "Habitat") == 0);
     }
     public bool IsMonitoring() {
-      return (this.IsIdPhoto() || (this.Habitat != null && this.Habitat.Monitoring));
+      return (this.IsIdPrimaryPhoto() || (this.Habitat != null && this.Habitat.Monitoring));
     }
     public string ClassName = "New";
     public LivingBeing_t LivingBeing;

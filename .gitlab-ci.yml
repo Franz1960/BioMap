@@ -1,0 +1,40 @@
+stages:
+  - build
+  - test
+  - deploy
+
+services:
+  - docker:dind
+variables:
+  CI_PROJECT_NAME: 'biomap'
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_IMAGE_PREFIX: franz1960
+  SDK_IMAGE: 'schroedergroup/p3-sdk:latest'
+
+build:
+  image: ${SDK_IMAGE}
+  stage: build
+  script:
+    - dotnet publish BioMap.sln -o build -c release
+  artifacts:
+    paths:
+      - 'build/'
+    expire_in: 1 week
+
+test:
+  image: ${SDK_IMAGE}
+  stage: test
+  script:
+    - dotnet test BioMap_Test/BioMap_Test.csproj -c debug /p:IsBuildServer=true
+
+deploy:
+  image: docker:stable
+  stage: deploy
+  only:
+    - master
+  script:
+    - echo "Docker container ${DOCKER_IMAGE_PREFIX}/${CI_PROJECT_NAME}:latest"
+    - docker build --no-cache --force-rm -t ${DOCKER_IMAGE_PREFIX}/${CI_PROJECT_NAME}:latest .
+    - docker login -u ${DOCKER_IMAGE_PREFIX} -p ${DOCKERHUB_ACCESS_TOKEN}
+    - docker push ${DOCKER_IMAGE_PREFIX}/${CI_PROJECT_NAME}:latest
+

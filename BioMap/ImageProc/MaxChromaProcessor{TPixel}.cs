@@ -89,7 +89,7 @@ namespace BioMap.ImageProc
       /// <inheritdoc/>
       public void Invoke(int y) {
         Rgba32 rgba = default;
-        Span<TPixel> row = this.source.GetPixelRowSpan(y);
+        Span<TPixel> row = this.source.DangerousGetPixelRowMemory(y).Span;
         ref TPixel rowRef = ref MemoryMarshal.GetReference(row);
         float YCbCr_Achromatic_Cb = 127.5F;
         float YCbCr_Achromatic_Cr = 127.5F;
@@ -116,8 +116,8 @@ namespace BioMap.ImageProc
 
             // Calculate HSL hue value and compare to intervals.
             bool bHueOk = false;
-            var hue = this.colorSpaceConverter.ToHsl(rgba).H;
-            foreach (var iv in this.hueIntervals) {
+            float hue = this.colorSpaceConverter.ToHsl(rgba).H;
+            foreach (Vector2 iv in this.hueIntervals) {
               if (iv.Y < iv.X) {
                 if (hue >= iv.X || hue <= iv.Y) {
                   bHueOk = true;

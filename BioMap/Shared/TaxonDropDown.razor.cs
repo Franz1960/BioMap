@@ -34,6 +34,9 @@ namespace BioMap.Shared
       }
     }
     private Taxon _SelectedTaxon = new Taxon();
+    public void SetSelectedTaxon(Taxon value) {
+      this.SelectedTaxon = value;
+    }
     protected override void OnInitialized() {
     }
     private void Update() {
@@ -47,21 +50,20 @@ namespace BioMap.Shared
             builder2.OpenComponent<Blazorise.Dropdown>();
             builder2.Attribute("ChildContent", (RenderFragment)((builder3) => {
               builder3.OpenComponent<Blazorise.Button>();
-              builder3.Attribute("Color", (string.CompareOrdinal(this.SelectedTaxon?.SciName, taxon.InvariantName) == 0) ? Color.Primary : Color.None);
+              builder3.Attribute("Color", (string.CompareOrdinal(this.SelectedTaxon?.SciName, taxon.InvariantName) == 0) ? Color.Primary : Color.Default);
               builder3.Attribute("Clicked", Microsoft.AspNetCore.Components.EventCallback.Factory.Create(this, () => {
                 this.SelectedTaxon = this.SD.CurrentProject.GetTaxon(taxon.InvariantName);
+                this.SD.AddMostRecentTaxon(this.SelectedTaxon);
                 this.Update();
               }));
-              builder3.Attribute("ChildContent", (RenderFragment)((builder4) => {
-                builder4.AddContent(45, taxon.GetLocalizedName(this.SD.CurrentCultureName));
-              }));
+              builder3.Attribute("ChildContent", (RenderFragment)((builder4) => builder4.AddContent(45, taxon.GetLocalizedName(this.SD.CurrentCultureName))));
               builder3.CloseComponent();
               builder3.OpenComponent<Blazorise.DropdownToggle>();
               builder3.Attribute("Split", true);
               builder3.CloseComponent();
               builder3.OpenComponent<Blazorise.DropdownMenu>();
               builder3.Attribute("ChildContent", (RenderFragment)((builder4) => {
-                foreach (var childNode in treeNode.Children) {
+                foreach (TreeNode childNode in treeNode.Children) {
                   builder4.Content(this.CreateTaxonDropDownItem(childNode, bRecursive));
                 }
               }));
@@ -75,11 +77,10 @@ namespace BioMap.Shared
           builder.Attribute("Active", (string.CompareOrdinal(this.SelectedTaxon?.SciName, taxon.InvariantName) == 0));
           builder.Attribute("Clicked", Microsoft.AspNetCore.Components.EventCallback.Factory.Create<object>(this, (ea) => {
             this.SelectedTaxon = this.SD.CurrentProject.GetTaxon(taxon.InvariantName);
+            this.SD.AddMostRecentTaxon(this.SelectedTaxon);
             this.Update();
           }));
-          builder.Attribute("ChildContent", (RenderFragment)((builder2) => {
-            builder2.AddContent(8, taxon.GetLocalizedName(this.SD.CurrentCultureName));
-          }));
+          builder.Attribute("ChildContent", (RenderFragment)((builder2) => builder2.AddContent(8, taxon.GetLocalizedName(this.SD.CurrentCultureName))));
           builder.CloseComponent();
         }
       };

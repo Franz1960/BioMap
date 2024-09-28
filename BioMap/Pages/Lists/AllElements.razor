@@ -5,23 +5,13 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<Row>
-  <Column>
+<div class="box">
+  <div class="row header">
     <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
-  </Column>
-</Row>
-<Row>
-  <Column>
+  </div>
+  <div class="row content">
     <h1>@Localize["All Elements"]</h1>
-  </Column>
-</Row>
-<Row>
-  <Column>
     <p>Anzahl Elemente: @Elements.Length</p>
-  </Column>
-</Row>
-<Row>
-  <Column>
     <Table Class="table-striped table-sm">
       <TableHeader>
         <TableRow>
@@ -43,8 +33,7 @@
         </TableRow>
       </TableHeader>
       <TableBody>
-        @foreach (var el in Elements)
-        {
+        @foreach (var el in Elements) {
           <TableRow>
             <TableRowCell>
               @Localize[@el.GetClassName()]
@@ -60,7 +49,7 @@
             </TableRowCell>
             <TableRowCell>
               @el.ElementProp.UploadInfo.UserId
-              <Button Float="Float.Right" Color="Color.Light" Disabled="!SD.CurrentUser.MayDeleteElement(el)" Clicked="@((e)=>{ DeleteElement(el); })">
+              <Button Float="Float.End" Color="Color.Light" Disabled="!SD.CurrentUser.MayDeleteElement(el)" Clicked="@((e)=>{ DeleteElement(el); })">
                 <Icon Name="IconName.Delete"></Icon>
               </Button>
             </TableRowCell>
@@ -68,64 +57,52 @@
         }
       </TableBody>
     </Table>
-  </Column>
-</Row>
-<Row>
-  <Column>
-    @if (SD.CurrentUser.Level >= 500)
-    {
+    @if (SD.CurrentUser.Level >= 500) {
       <Button Color="Color.Primary" Clicked="@(async (e)=>DownloadCsv_Clicked())">Download CSV</Button>
     }
-  </Column>
-</Row>
+  </div>
+</div>
 
 <PhotoPopup @ref="PhotoPopup1" ElementDeleted="@(() => this.OnElementDeleted())" />
 
 @code {
   private Element[] Elements = new Element[0];
   private PhotoPopup PhotoPopup1;
-  protected override void OnInitialized()
-  {
+  protected override void OnInitialized() {
     base.OnInitialized();
-    SD.Filters.FilterChanged += (sender, ev) =>
-    {
+    SD.Filters.FilterChanged += (sender,ev) => {
       RefreshData();
       base.InvokeAsync(this.StateHasChanged);
     };
     RefreshData();
   }
-  private void RefreshData()
-  {
-    this.Elements = DS.GetElements(SD, SD.Filters, "", "elements.creationtime DESC");
+  private void RefreshData() {
+    this.Elements = DS.GetElements(SD,SD.Filters,"","elements.creationtime DESC");
   }
-  private void OnSelectClick(Element el)
-  {
+  private void OnSelectClick(Element el) {
     this.PhotoPopup1.Show(el);
   }
-  private void DeleteElement(Element el)
-  {
-    DS.DeleteElement(SD, el);
-    DS.AddLogEntry(SD, "Deleted element " + el.ElementName);
+  private void DeleteElement(Element el) {
+    DS.DeleteElement(SD,el);
+    DS.AddLogEntry(SD,"Deleted element " + el.ElementName);
     RefreshData();
     this.StateHasChanged();
   }
-  private async void DownloadCsv_Clicked()
-  {
+  private async void DownloadCsv_Clicked() {
     var sep = "\t";
     var csv = new System.Text.StringBuilder();
     csv.Append("ElementName" + sep + "TimeStamp" + sep + "Class" + sep + "GpsLat" + sep + "GpsLng" + sep + "Place" + "\n");
-    foreach (var el in DS.GetElements(SD, SD.Filters))
-    {
+    foreach (var el in DS.GetElements(SD,SD.Filters)) {
       var placeName = el.GetPlaceName();
       csv.Append('"' + el.ElementName + '"');
       csv.Append(sep + '"' + el.GetIsoDateTime() + '"');
       csv.Append(sep + '"' + el.GetClassName() + '"');
-      csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat, 12));
-      csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng, 12));
+      csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat,12));
+      csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng,12));
       csv.Append(sep + placeName);
       csv.Append('\n');
     }
-    await JSRuntime.InvokeVoidAsync("DownloadTextFile", "AllElements.csv", csv.ToString());
+    await JSRuntime.InvokeVoidAsync("DownloadTextFile","AllElements.csv",csv.ToString());
   }
   public void OnElementDeleted() {
     this.RefreshData();

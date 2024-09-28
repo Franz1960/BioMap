@@ -23,15 +23,15 @@ namespace BioMap
     }
     //
     public CsvContent ReadCsv(SessionData sd, string sFileName) {
-      var ds = sd.DS;
+      DataService ds = sd.DS;
       var lHeaders = new List<string>();
       var laRows = new List<CsvContent.Row>();
-      var sFilePath = ds.GetDataDir(sd) + "conf/" + sFileName;
+      string sFilePath = ds.GetDataDir(sd) + "conf/" + sFileName;
       if (System.IO.File.Exists(sFilePath)) {
         var sr = new System.IO.StreamReader(sFilePath);
         try {
-          var sLine = sr.ReadLine();
-          lHeaders.AddRange(sLine.Split(new char[] { ',','\t' }, StringSplitOptions.None));
+          string sLine = sr.ReadLine();
+          lHeaders.AddRange(sLine.Split(new char[] { ',', '\t' }, StringSplitOptions.None));
           while (true) {
             sLine = sr.ReadLine();
             if (string.IsNullOrEmpty(sLine)) {
@@ -39,7 +39,7 @@ namespace BioMap
             } else {
               DateTime? dt = null;
               var lRowColumns = new List<double>();
-              foreach (var sCol in sLine.Split(',','\t')) {
+              foreach (string sCol in sLine.Split(',', '\t')) {
                 if (!dt.HasValue) {
                   dt = DateTime.Parse(sCol);
                 } else {

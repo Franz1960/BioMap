@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -135,6 +135,9 @@
   <data name="About" xml:space="preserve">
     <value>Über</value>
   </data>
+  <data name="About BioMap" xml:space="preserve">
+    <value>Über BioMap</value>
+  </data>
   <data name="Access level" xml:space="preserve">
     <value>Zugangsstufe</value>
   </data>
@@ -152,6 +155,9 @@
   </data>
   <data name="Add file" xml:space="preserve">
     <value>Datei hinzufügen</value>
+  </data>
+  <data name="Add GPX file" xml:space="preserve">
+    <value>GPX-Datei hinzufügen</value>
   </data>
   <data name="Add Image" xml:space="preserve">
     <value>Foto hinzufügen</value>
@@ -211,7 +217,10 @@
     <value>Biologie</value>
   </data>
   <data name="BioMap helps monitor yellow-bellied toads." xml:space="preserve">
-    <value>BioMap hilft beim Monitoring von Gelbbauchunken.</value>
+    <value>Monitoring einer biologischen Art mit Identifikation von Individuen an Hand von Fotos mit GPS-Koordinaten. Eine Beschreibung der Methodik am Beispiel von Gelbbauchunken ist in &lt;a href="help/Unkenprojekt_2019-2021.pdf" target="_blank"&gt;dieser Präsentation&lt;/a&gt;.</value>
+  </data>
+  <data name="Bred in captivity" xml:space="preserve">
+    <value>In Gefangenschaft gezüchtet</value>
   </data>
   <data name="by" xml:space="preserve">
     <value>von</value>
@@ -219,11 +228,20 @@
   <data name="By place" xml:space="preserve">
     <value>Nach Ort</value>
   </data>
+  <data name="By place and time" xml:space="preserve">
+    <value>Nach Ort und Zeit</value>
+  </data>
   <data name="ByCategories" xml:space="preserve">
     <value>Nach Kategorien</value>
   </data>
   <data name="Calculate and save metamorphosis time" xml:space="preserve">
     <value>Metamorphosezeitpunkte berechnen und speichern</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Caption" xml:space="preserve">
+    <value>Titel</value>
   </data>
   <data name="Cat." xml:space="preserve">
     <value>Kat.</value>
@@ -276,6 +294,9 @@
   <data name="Comment" xml:space="preserve">
     <value>Kommentar</value>
   </data>
+  <data name="Condition index" xml:space="preserve">
+    <value>Konditionsindex</value>
+  </data>
   <data name="Conditions" xml:space="preserve">
     <value>Bedingungen</value>
   </data>
@@ -296,6 +317,9 @@
   </data>
   <data name="Crop" xml:space="preserve">
     <value>Zuschneiden</value>
+  </data>
+  <data name="Current day of year" xml:space="preserve">
+    <value>Aktueller Tag im Jahr</value>
   </data>
   <data name="Current elements" xml:space="preserve">
     <value>Aktuelle Anzahl von Elementen</value>
@@ -348,8 +372,14 @@
   <data name="Description Numbers / Year of Birth Chart" xml:space="preserve">
     <value>Die Anzahl von Individuen, die in einem Jahr mindestens einmal gefangen wurden, aufgeschlüsselt nach Jahrgängen (YoB, Year of Birth).</value>
   </data>
+  <data name="Description_Recatch_by_Petersen" xml:space="preserve">
+    <value>Bei der Rückfangmethode nach Petersen werden Fänge getrennt nach Orten und Kalenderwochen betrachtet. Die Populationsgröße N wird aus zwei aufeinanderfolgenden Monitorings A und B berechnet: N = n * M / m, wobei n die Anzahl der Individuen und m die Anzahl der Wiederfänge in Monitoring B ist, M die Anzahl der Individuen in Monitoring A. Für jeden Ort wird die Populationsgröße in einem bestimmten Jahr als Maximum aller Werte in diesem Jahr berechnet, die Gesamtpopulationsgröße als Summe über alle Orte in diesem Jahr. Wenn es keine Wiederfänge gibt, wird die Summe der Fänge verwendet. Wenn es nur ein Monitoring gibt, wird die Anzahl der Fänge verwendet.</value>
+  </data>
   <data name="Details" xml:space="preserve">
     <value>Details</value>
+  </data>
+  <data name="Development" xml:space="preserve">
+    <value>Entwicklung</value>
   </data>
   <data name="Diagrams" xml:space="preserve">
     <value>Diagramme</value>
@@ -357,8 +387,23 @@
   <data name="Different Individuals" xml:space="preserve">
     <value>Verschiedene Individuen</value>
   </data>
+  <data name="Display 'Bred in captivity'" xml:space="preserve">
+    <value>'In Gefangenschaft gezüchtet' anzeigen</value>
+  </data>
+  <data name="Display 'Mass (Weight)'" xml:space="preserve">
+    <value>Masse (Gewicht) anzeigen</value>
+  </data>
+  <data name="Display all" xml:space="preserve">
+    <value>Alles anzeigen</value>
+  </data>
+  <data name="Display list" xml:space="preserve">
+    <value>Listenansicht</value>
+  </data>
   <data name="Display normalized" xml:space="preserve">
     <value>Normiert anzeigen</value>
+  </data>
+  <data name="Display original images" xml:space="preserve">
+    <value>Originalbilder anzeigen</value>
   </data>
   <data name="Distance" xml:space="preserve">
     <value>Distanz</value>
@@ -392,6 +437,9 @@
   </data>
   <data name="Expand" xml:space="preserve">
     <value>Erweitern</value>
+  </data>
+  <data name="Expand if no unidentified" xml:space="preserve">
+    <value>Erweitern, wenn keine Unidentifizierten</value>
   </data>
   <data name="Export whole database" xml:space="preserve">
     <value>Ganze Datenbank exportieren</value>
@@ -441,11 +489,26 @@
   <data name="Gender per anno" xml:space="preserve">
     <value>Geschlecht pro Jahr</value>
   </data>
+  <data name="Gender weight" xml:space="preserve">
+    <value>Gewichtung Geschlecht</value>
+  </data>
+  <data name="Genotype" xml:space="preserve">
+    <value>Genotyp</value>
+  </data>
+  <data name="Genotypes (semicolon separated)" xml:space="preserve">
+    <value>Genotypen (strichpunkt-getrennt)</value>
+  </data>
   <data name="German name" xml:space="preserve">
     <value>Deutscher Name</value>
   </data>
+  <data name="GPX file" xml:space="preserve">
+    <value>GPX-Datei</value>
+  </data>
   <data name="Granularity" xml:space="preserve">
     <value>Granularität</value>
+  </data>
+  <data name="Group by Places" xml:space="preserve">
+    <value>Nach Orten gruppieren</value>
   </data>
   <data name="Growing curve" xml:space="preserve">
     <value>Wachstumskurve</value>
@@ -468,6 +531,9 @@
   <data name="Hibernations" xml:space="preserve">
     <value>Überwinterungen</value>
   </data>
+  <data name="Hide catches up to body length" xml:space="preserve">
+    <value>Fänge bis zu dieser Körperlänge ausblenden</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>Startseite</value>
   </data>
@@ -486,8 +552,14 @@
   <data name="ID photo height / px" xml:space="preserve">
     <value>Passfoto Höhe / px</value>
   </data>
+  <data name="ID photo pixel size / mm" xml:space="preserve">
+    <value>Pixelgröße in Passfotos / mm</value>
+  </data>
   <data name="ID photo width / px" xml:space="preserve">
     <value>Passfoto Breite / px</value>
+  </data>
+  <data name="Identification" xml:space="preserve">
+    <value>Identifikation</value>
   </data>
   <data name="Identify" xml:space="preserve">
     <value>Identifizieren</value>
@@ -510,6 +582,9 @@
   <data name="Individuals are counted only once at each location. Only locations with at least one adult and one hatchling are listed. Reproduction rate is the quotient of hatchlings and adults. Adults are all from 2, hatchlings with 0 hibernations." xml:space="preserve">
     <value>Individuen werden an jedem Ort nur einmal gezählt. Nur Orte mit mindestens einem Adulti und einem Hüpferling werden aufgelistet. Die Reproduktionsrate ist der Quotient aus Hüpferlingen und Adulti. Adulti sind alle ab 2, Hüpferlinge mit 0 Überwinterungen.</value>
   </data>
+  <data name="Initial history depth (years)" xml:space="preserve">
+    <value>Voreinstellung historische Daten (Jahre)</value>
+  </data>
   <data name="Insert TAN" xml:space="preserve">
     <value>TAN eingeben</value>
   </data>
@@ -517,13 +592,16 @@
     <value>Intervall</value>
   </data>
   <data name="Intro1" xml:space="preserve">
-    <value>BioMap ist ein Web-App, die für ein Projekt zum Monitoring von Gelbbauchunken entwickelt wurde (und weiterhin wird). Durch die individuelle Erkennung, Längenvermessung und Standorterfassung können Populationsgröße, Altersstruktur, Geschlechterverhältnis, Wandertätigkeit, örtliche Verteilung und Fortpflanzungsaktivität ermittelt werden.</value>
+    <value>BioMap ist eine Web-App, die für ein Projekt zum Monitoring von Gelbbauchunken entwickelt wurde und inzwischen auch für Kammolche verwendet wird. Durch die individuelle Erkennung, Längenvermessung und Standorterfassung können Populationsgröße, Altersstruktur, Geschlechterverhältnis, Wandertätigkeit, örtliche Verteilung und Fortpflanzungsaktivität ermittelt werden.</value>
   </data>
   <data name="Intro2" xml:space="preserve">
     <value>Die Daten werden größtenteils mit Hilfe von Fotos mit Standortdaten erfasst. Gelbbauchunken werden dazu vor Ort so in einer Petrischale fotografiert, dass ihr Bauchmuster sichtbar ist. Die Bilder werden dann in der Web-App so gedreht und mit Hilfe des bekannten Durchmessers der Petrischale normiert, dass ihre Kopf-Rumpf-Länge im Bild vermessen wird. Anschließend wird ihre Identität ermittelt.</value>
   </data>
   <data name="Intro3" xml:space="preserve">
     <value>In der Web-App können mehrere unabhängige Projekte verwaltet werden. Jedes Projekt hat ihre eigene Benutzerverwaltung, ihr Projektgebiet, ihren Datenbereich für hochgeladene Bilder und alle anderen Daten. Alle Daten und Bilder sind für jedermann sichtbar mit Ausnahme der genauen Standortdaten; diese werden beim Hochladen aus den Bildern entfernt und in einer Datenbank gespeichert. Nur Benutzer mit Zugangsstufe 400 oder höher sehen die genauen Standortdaten, für alle anderen werden sie verfremdet.</value>
+  </data>
+  <data name="Intro4" xml:space="preserve">
+    <value>Die App ist quelloffen (Open Source). Der Quellcode wird auf &lt;a href="https://gitlab.com/f.x.haering/BioMap" target="_blank"&gt;https://gitlab.com/f.x.haering/BioMap&lt;/a&gt; verwaltet und steht unter der MIT Lizenz.</value>
   </data>
   <data name="IntroCreateNewProject" xml:space="preserve">
     <value>Sie können hier ein neues Projekt anlegen. Wählen Sie einen Namen, der Ihr Projekt eindeutig beschreibt, am besten in der Form "art-gebiet", also z.B. "gbu-oberhinkofen" für ein Projekt, in dem Gelbbauchunken in Oberhinkofen monitoriert werden sollen.</value>
@@ -549,11 +627,17 @@
   <data name="Length / Time Chart" xml:space="preserve">
     <value>Längen-Zeit-Diagramm</value>
   </data>
+  <data name="Length weight" xml:space="preserve">
+    <value>Gewichtung Länge</value>
+  </data>
   <data name="Level to see elements" xml:space="preserve">
     <value>Zugangsstufe zum Anzeigen der Elemente</value>
   </data>
   <data name="Level to see exact locations" xml:space="preserve">
     <value>Zugangsstufe zum Anzeigen der genauen Positionen</value>
+  </data>
+  <data name="Limit to current day of year" xml:space="preserve">
+    <value>Alles auf aktuellen Tag im Jahr begrenzen</value>
   </data>
   <data name="Lists" xml:space="preserve">
     <value>Listen</value>
@@ -569,6 +653,9 @@
   </data>
   <data name="Location must be in project area." xml:space="preserve">
     <value>Ort muss im Projektgebiet liegen.</value>
+  </data>
+  <data name="Location weight" xml:space="preserve">
+    <value>Gewichtung Ort</value>
   </data>
   <data name="Log" xml:space="preserve">
     <value>Protokoll</value>
@@ -591,6 +678,9 @@
   <data name="Maps" xml:space="preserve">
     <value>Karten</value>
   </data>
+  <data name="Mass" xml:space="preserve">
+    <value>Masse</value>
+  </data>
   <data name="Match! It's the individual #{0}" xml:space="preserve">
     <value>Treffer! Es das Individuum #{0}</value>
   </data>
@@ -599,6 +689,9 @@
   </data>
   <data name="Maximum head body length" xml:space="preserve">
     <value>Maximale Kopf-Rumpf-Länge</value>
+  </data>
+  <data name="Maximum missing years" xml:space="preserve">
+    <value>Jahre, nach denen Individuum nicht mehr gezählt wird</value>
   </data>
   <data name="Measure#To_measure_length" xml:space="preserve">
     <value>Vermessen</value>
@@ -612,11 +705,17 @@
   <data name="Migration distances" xml:space="preserve">
     <value>Wanderdistanzen</value>
   </data>
+  <data name="Migrations of Individuals" xml:space="preserve">
+    <value>Wanderungen von Individuen</value>
+  </data>
   <data name="Minimum head body length" xml:space="preserve">
     <value>Minimale Kopf-Rumpf-Länge</value>
   </data>
   <data name="Missed individuals" xml:space="preserve">
     <value>Vermisste Individuen</value>
+  </data>
+  <data name="Mode" xml:space="preserve">
+    <value>Modus</value>
   </data>
   <data name="Monitored species (scientific name)" xml:space="preserve">
     <value>Zu monitorierende Art (wissenschaftlicher Name)</value>
@@ -626,6 +725,9 @@
   </data>
   <data name="Month" xml:space="preserve">
     <value>Monat</value>
+  </data>
+  <data name="Most recent" xml:space="preserve">
+    <value>Letzte</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
@@ -641,6 +743,9 @@
   </data>
   <data name="New taxon" xml:space="preserve">
     <value>Neues Taxon</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nein</value>
   </data>
   <data name="No more individuals to identify. If you want to process an individual element, select it in &quot;Lists / All Individuals&quot; and return to this page." xml:space="preserve">
     <value>Es müssen keine weiteren Individuen identifiziert werden. Wenn Sie ein einzelnes Element bearbeiten möchten, wählen Sie es in "Listen / Alle Individuen" aus und kehren Sie zu dieser Seite zurück.</value>
@@ -663,6 +768,9 @@
   <data name="Notes" xml:space="preserve">
     <value>Notizen</value>
   </data>
+  <data name="Number of juvenile Bombina variegata from live beings, from catches with 0 hibernations including those below minimum length." xml:space="preserve">
+    <value>Anzahl von juvenilen Bombina variegata aus der Kategorie "Lebewesen" sowie von Fängen mit 0 Überwinterungen einschließlich derer, die die Mindestlänge unterschreiten.</value>
+  </data>
   <data name="Numbers / Year of Birth Chart" xml:space="preserve">
     <value>Anzahl-Jahrgang-Diagramm</value>
   </data>
@@ -675,8 +783,17 @@
   <data name="Only last image" xml:space="preserve">
     <value>Nur letztes Bild</value>
   </data>
+  <data name="Only with adult recapture" xml:space="preserve">
+    <value>Nur mit adultem Wiederfang</value>
+  </data>
+  <data name="Only with recapture" xml:space="preserve">
+    <value>Nur mit Wiederfang</value>
+  </data>
   <data name="Operation in progress.." xml:space="preserve">
     <value>Vorgang läuft..</value>
+  </data>
+  <data name="Origin" xml:space="preserve">
+    <value>Herkunft</value>
   </data>
   <data name="Other" xml:space="preserve">
     <value>Sonstige</value>
@@ -698,6 +815,15 @@
   </data>
   <data name="Parent's scientific name" xml:space="preserve">
     <value>Eltern-Taxon (wiss. Name)</value>
+  </data>
+  <data name="Pattern matching weight" xml:space="preserve">
+    <value>Gewichtung Pattern Matching</value>
+  </data>
+  <data name="Phenotype" xml:space="preserve">
+    <value>Phänotyp</value>
+  </data>
+  <data name="Phenotypes (semicolon separated)" xml:space="preserve">
+    <value>Phänotypen (strichpunkt-getrennt)</value>
   </data>
   <data name="Pictures" xml:space="preserve">
     <value>Bilder</value>
@@ -744,8 +870,20 @@
   <data name="Recaptures" xml:space="preserve">
     <value>Wiederfänge</value>
   </data>
+  <data name="Recatch by Petersen" xml:space="preserve">
+    <value>Rückfang nach Petersen</value>
+  </data>
   <data name="Register" xml:space="preserve">
     <value>Registrieren</value>
+  </data>
+  <data name="Relative" xml:space="preserve">
+    <value>Relativ</value>
+  </data>
+  <data name="Relative pattern height" xml:space="preserve">
+    <value>Relative Höhe des Musters</value>
+  </data>
+  <data name="Relative pattern width" xml:space="preserve">
+    <value>Relative Breite des Musters</value>
   </data>
   <data name="Remaining elements" xml:space="preserve">
     <value>Verbleibende Elemente</value>
@@ -768,6 +906,12 @@
   <data name="Save" xml:space="preserve">
     <value>Speichern</value>
   </data>
+  <data name="Save as GPX file" xml:space="preserve">
+    <value>Speichern als GPX-Datei</value>
+  </data>
+  <data name="Save GPS data in original images" xml:space="preserve">
+    <value>GPS-Daten in Originalbildern speichern</value>
+  </data>
   <data name="Scientific name" xml:space="preserve">
     <value>Wissenschaftlicher Name</value>
   </data>
@@ -782,6 +926,9 @@
   </data>
   <data name="Select project" xml:space="preserve">
     <value>Projekt auswählen</value>
+  </data>
+  <data name="Selection" xml:space="preserve">
+    <value>Auswahl</value>
   </data>
   <data name="Share of yellow" xml:space="preserve">
     <value>Gelbanteil</value>
@@ -810,6 +957,9 @@
   <data name="Similarity score" xml:space="preserve">
     <value>Ähnlichkeitsgrad</value>
   </data>
+  <data name="Slider interval" xml:space="preserve">
+    <value>Intervall Schieberegler</value>
+  </data>
   <data name="Standard deviation" xml:space="preserve">
     <value>Standardabweichung</value>
   </data>
@@ -821,6 +971,9 @@
   </data>
   <data name="Statistics" xml:space="preserve">
     <value>Statistik</value>
+  </data>
+  <data name="Stays" xml:space="preserve">
+    <value>Aufenthalt</value>
   </data>
   <data name="Summary" xml:space="preserve">
     <value>Zusammenfassung</value>
@@ -837,6 +990,9 @@
   <data name="The gender selections of this individual are not consistent." xml:space="preserve">
     <value>Die Auswahl des Geschlechts dieses Individuums ist nicht konsistent.</value>
   </data>
+  <data name="Threshold" xml:space="preserve">
+    <value>Schwellwert</value>
+  </data>
   <data name="Time" xml:space="preserve">
     <value>Zeit</value>
   </data>
@@ -845,6 +1001,9 @@
   </data>
   <data name="Totals" xml:space="preserve">
     <value>Gesamtzahlen</value>
+  </data>
+  <data name="Traits weight" xml:space="preserve">
+    <value>Gewichtung Bildmerkmale</value>
   </data>
   <data name="Tree view" xml:space="preserve">
     <value>Baumansicht</value>
@@ -864,22 +1023,40 @@
   <data name="Vintage" xml:space="preserve">
     <value>Jahrgang</value>
   </data>
+  <data name="weeks" xml:space="preserve">
+    <value>Wochen</value>
+  </data>
   <data name="Welcome to BioMap!" xml:space="preserve">
     <value>Willkommen bei BioMap!</value>
+  </data>
+  <data name="Wild" xml:space="preserve">
+    <value>Wild</value>
   </data>
   <data name="Workflow" xml:space="preserve">
     <value>Arbeitsablauf</value>
   </data>
+  <data name="Write GPS data to all images" xml:space="preserve">
+    <value>GPS Daten in alle Bilder schreiben</value>
+  </data>
   <data name="Year" xml:space="preserve">
     <value>Jahr</value>
   </data>
+  <data name="Years missing" xml:space="preserve">
+    <value>Jahre vermisst</value>
+  </data>
   <data name="Yellow-bellied toad" xml:space="preserve">
     <value>Gelbbauchunke</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
   </data>
   <data name="You can look around the website without registration. However, you will only see alienated location coordinates. If you want to see unaltered data and participate in the project, you are welcome to register." xml:space="preserve">
     <value>Sie können sich ohne Registrierung auf der Webseite umsehen. Sie bekommen allerdings nur verfremdete Ortskoordinaten zu sehen. Wenn Sie unverfälschte Daten sehen wollen und sich am Projekt beteiligen wollen, können Sie sich gerne registrieren.</value>
   </data>
   <data name="{0} files uploaded." xml:space="preserve">
     <value>{0} Dateien hochgeladen.</value>
+  </data>
+  <data name="Pattern images" xml:space="preserve">
+    <value>Muster</value>
   </data>
 </root>

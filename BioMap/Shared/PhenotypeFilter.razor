@@ -1,0 +1,40 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+@implements IDisposable
+
+<Row>
+  <Column>
+    <Field Horizontal="true">
+      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@Localize["Phenotype"]</FieldLabel>
+      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+        <Select TValue="string" @bind-SelectedValue="SD.Filters.PhenotypeFilter">
+          <SelectItem TValue="string" Value="@("")">@Localize["All"]</SelectItem>
+          @foreach (var idx in Enumerable.Range(0,this.SD.CurrentProject.PhenotypeArray.Length)) {
+            <SelectItem TValue="string" Value="@(idx.ToString())">@(this.SD.CurrentProject.PhenotypeArray[idx])</SelectItem>
+          }
+          @foreach (var idx in Enumerable.Range(0,this.SD.CurrentProject.PhenotypeArray.Length)) {
+            <SelectItem TValue="string" Value="@("^" + idx.ToString())">^@(this.SD.CurrentProject.PhenotypeArray[idx])</SelectItem>
+          }
+        </Select>
+      </FieldBody>
+    </Field>
+  </Column>
+</Row>
+
+@code {
+
+  protected override void OnInitialized() {
+    SD.Filters.FilterChanged += this.FilterChanged;
+  }
+
+  private void FilterChanged(object sender, EventArgs e) {
+    this.StateHasChanged();
+  }
+
+  public void Dispose() {
+    SD.Filters.FilterChanged -= this.FilterChanged;
+  }
+}

@@ -12,59 +12,98 @@
 @using ChartJs.Blazor.BarChart
 @using ChartJs.Blazor.BarChart.Axes
 
-<Row>
-  <Column>
-    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
-  </Column>
-</Row>
-<Row>
-  <Column>
-    <h1>@Localize["Population size"]</h1>
-  </Column>
-</Row>
-<Row>
-  <Column>
-    <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
-      <Items>
-        <Tab Name="ByPlace">@Localize["By place"]</Tab>
-        <Tab Name="OverTime">@Localize["Over time"]</Tab>
-      </Items>
-      <Content>
-        <TabPanel Name="ByPlace">
-          <Row>
-            <Column>
-              @Localize[""]
-            </Column>
-          </Row>
-          <Row>
-            <Column>
-              <Chart @ref="_chartJsByPlace" Config="@_configByPlace" Width="600" Height="300" />
-            </Column>
-          </Row>
-          <Row>
-            <Column>
-              <TableFromChart @ref="_tableFromChartByPlace" RowLabel="@Localize["Place"]" _config="@_configByPlace" />
-            </Column>
-          </Row>
-        </TabPanel>
-        <TabPanel Name="OverTime">
-          <Row>
-            <Column>
-              @Localize[""]
-            </Column>
-          </Row>
-          <Row>
-            <Column>
-              <Chart @ref="_chartJsOverTime" Config="@_configOverTime" Width="600" Height="300" />
-            </Column>
-          </Row>
-          <Row>
-            <Column>
-              <TableFromChart @ref="_tableFromChartOverTime" RowLabel="@Localize["Time"]" _config="@_configOverTime" />
-            </Column>
-          </Row>
-        </TabPanel>
-      </Content>
-    </Tabs>
-  </Column>
-</Row>
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Catches" />
+  </div>
+  <div class="row content">
+    <Row>
+      <Column>
+        <h1>@Localize["Population size"]</h1>
+      </Column>
+      <Column>
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Maximum missing years"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
+            <NumericEdit @bind-Value="this.VanishAfterYearsMissing" Min="1" Max="99" />
+          </FieldBody>
+        </Field>
+      </Column>
+    </Row>
+    <Row>
+      <Column>
+        <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
+          <Items>
+            <Tab Name="OverTime">@Localize["Over time"]</Tab>
+            <Tab Name="ByPlace">@Localize["By place"]</Tab>
+            <Tab Name="ByRecatch">@Localize["Recatch by Petersen"]</Tab>
+          </Items>
+          <Content>
+            <TabPanel Name="OverTime">
+              <Row>
+                <Column>
+                  @Localize[""]
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <Chart @ref="_chartJsOverTime" Config="@_configOverTime" Width="600" Height="300" />
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <TableFromChart @ref="_tableFromChartOverTime" RowLabel="@Localize["Time"]" _config="@_configOverTime" />
+                </Column>
+              </Row>
+            </TabPanel>
+            <TabPanel Name="ByPlace">
+              <Row>
+                <Column>
+                  @Localize[""]
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <Chart @ref="_chartJsByPlace" Config="@_configByPlace" Width="600" Height="300" />
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <TableFromChart @ref="_tableFromChartByPlace" RowLabel="@Localize["Place"]" _config="@_configByPlace" />
+                </Column>
+              </Row>
+            </TabPanel>
+            <TabPanel Name="ByRecatch">
+              <Row>
+                <Column>
+                  @Localize[""]
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <Chart @ref="_chartJsByRecatch" Config="@_configByRecatch" Width="600" Height="300" />
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <TableFromChart @ref="_tableFromChartByRecatch" RowLabel="@Localize["Time"]" _config="@_configByRecatch" />
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  @Localize["By place"]
+                  <TableFromData @ref="_tableFromDataByRecatch" ColumnHeaders="@RecatchData_ColumnHeaders" Rows="@RecatchData_Rows" />
+                </Column>
+              </Row>
+            </TabPanel>
+          </Content>
+        </Tabs>
+      </Column>
+    </Row>
+    <Row>
+      <Column>
+        @Localize["Description_Recatch_by_Petersen"]
+      </Column>
+    </Row>
+  </div>
+</div>

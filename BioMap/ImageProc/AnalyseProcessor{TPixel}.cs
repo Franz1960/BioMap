@@ -63,8 +63,8 @@ namespace BioMap.ImageProc
       }
       this.definition.AnalyseData.VerticalProfile = lVerticalProfile.ToArray();
       this.definition.AnalyseData.ShareOfBlack = fBlackTotal / fPixelArea;
-      var mom1 = mom1Sum / fBlackTotal;
-      var mom2 = mom2Sum / fBlackTotal;
+      double mom1 = mom1Sum / fBlackTotal;
+      double mom2 = mom2Sum / fBlackTotal;
       this.definition.AnalyseData.VerticalCenterOfMass = mom1 / yCenter;
       this.definition.AnalyseData.VerticalStdDeviation = Math.Sqrt(mom2 - mom1 * mom1) / yCenter;
     }
@@ -112,7 +112,7 @@ namespace BioMap.ImageProc
       /// <inheritdoc/>
       public void Invoke(int y) {
         Rgba32 rgba = default;
-        Span<TPixel> row = this.source.GetPixelRowSpan(y);
+        Span<TPixel> row = this.source.DangerousGetPixelRowMemory(y).Span;
         ref TPixel rowRef = ref MemoryMarshal.GetReference(row);
 
         {

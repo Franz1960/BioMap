@@ -10,21 +10,35 @@
 <Dropdown Disabled="@this.Disabled">
   <DropdownToggle Color="Color.Primary">
     @if (string.IsNullOrEmpty(this.SelectedTaxon?.SciName)) {
-@Localize["(select)"] } else {
-@this.SelectedTaxon?.GetLocalizedName(SD.CurrentCultureName)}
+      @Localize["(select)"]
+    } else {
+      @this.SelectedTaxon?.GetLocalizedName(SD.CurrentCultureName)
+    }
   </DropdownToggle>
   <DropdownMenu>
     <DropdownItem Active="(string.IsNullOrEmpty(this.SelectedTaxon?.SciName))"
                   Clicked="@((e)=>{ this.SelectedTaxon=new Taxon(); this.Update(); })">
       @Localize["(select)"]
     </DropdownItem>
+    @foreach (var taxon in SD.MostRecentTaxons) {
+      var treeNode = new TreeNode(taxon);
+      @if (treeNode?.Data?.InvariantName != null && !treeNode.Data.InvariantName.StartsWith("(")) {
+        @this.CreateTaxonDropDownItem(treeNode, true)
+      }
+    }
     @foreach (var treeNode in SD.CurrentProject.TaxaTree.RootNode.Children) {
-@if (treeNode?.Data?.InvariantName != null && !treeNode.Data.InvariantName.StartsWith("(")) {
-@this.CreateTaxonDropDownItem(treeNode,true)}}
-@if (this.IncludeCollections) {
-    @foreach (var treeNode in SD.CurrentProject.TaxaTree.RootNode.Children) {
-@if (treeNode?.Data?.InvariantName != null && treeNode.Data.InvariantName.StartsWith("(") && treeNode.HasChildren) {
-@foreach (var treeNode2 in treeNode.Children) {
-@this.CreateTaxonDropDownItem(treeNode2,false)}}}}
+      @if (treeNode?.Data?.InvariantName != null && !treeNode.Data.InvariantName.StartsWith("(")) {
+        @this.CreateTaxonDropDownItem(treeNode, true)
+      }
+    }
+    @if (this.IncludeCollections) {
+      @foreach (var treeNode in SD.CurrentProject.TaxaTree.RootNode.Children) {
+        @if (treeNode?.Data?.InvariantName != null && treeNode.Data.InvariantName.StartsWith("(") && treeNode.HasChildren) {
+          @foreach (var treeNode2 in treeNode.Children) {
+            @this.CreateTaxonDropDownItem(treeNode2, false)
+          }
+        }
+      }
+    }
   </DropdownMenu>
 </Dropdown>

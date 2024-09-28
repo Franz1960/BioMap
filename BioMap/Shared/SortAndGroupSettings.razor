@@ -9,18 +9,21 @@
   <span style="margin-right: 12px;">
     <Button Size="Blazorise.Size.Small" Color="Color.Primary" Clicked="() => { this.SortDown^=true; }">
       <Icon Name="IconName.Clock" Style="padding-right: 10px;" />
-      @if (this.SortDown)
-      {
+      @if (this.SortDown) {
         <Icon Name="IconName.ArrowDown" />
-      }
-      else
-      {
+      } else {
         <Icon Name="IconName.ArrowUp" />
       }
     </Button>
   </span>
   <span style="margin-right: 12px;">
     <CheckBox @bind-Checked="this.GroupByPlace" LabelText=@Localize["Group by Places"] />
+  </span>
+  <span style="margin-right: 12px;">
+    <CheckBox @bind-Checked="this.DisplayOriginalImages" LabelText=@Localize["Display original images"] />
+  </span>
+  <span style="margin-right: 12px;">
+      <CheckBox @bind-Checked="this.DisplayList" LabelText=@Localize["Display list"] />
   </span>
 </Row>
 
@@ -35,6 +38,7 @@
         this._Context = value;
         this._SortDown = ConvInvar.ToInt(this.SD.DS.GetUserProperty(this.SD, $"SnGS.{this.Context}.SortDown", "0")) != 0;
         this._GroupByPlace = ConvInvar.ToInt(this.SD.DS.GetUserProperty(this.SD, $"SnGS.{this.Context}.GroupByPlace", "0")) != 0;
+        this._DisplayOriginalImages= ConvInvar.ToInt(this.SD.DS.GetUserProperty(this.SD,$"SnGS.{this.Context}.DisplayOriginalImages","0")) != 0;
         this.StateHasChanged();
       }
     }
@@ -74,6 +78,34 @@
     }
   }
   private bool _GroupByPlace = false;
+  public bool DisplayOriginalImages {
+    get => this._DisplayOriginalImages;
+    set {
+      if (value != this._DisplayOriginalImages) {
+        this._DisplayOriginalImages = value;
+        if (this.Context != null) {
+          this.SD.DS.SetUserProperty(this.SD,$"SnGS.{this.Context}.DisplayOriginalImages",this.DisplayOriginalImages ? "1" : "0");
+        }
+        this.StateHasChanged();
+        this.AnyChanged.InvokeAsync();
+      }
+    }
+  }
+  private bool _DisplayOriginalImages = false;
+  public bool DisplayList {
+    get => this._DisplayList;
+    set {
+      if (value != this._DisplayList) {
+        this._DisplayList = value;
+        if (this.Context != null) {
+          this.SD.DS.SetUserProperty(this.SD,$"SnGS.{this.Context}.DisplayList",this.DisplayList ? "1" : "0");
+        }
+        this.StateHasChanged();
+        this.AnyChanged.InvokeAsync();
+      }
+    }
+  }
+  private bool _DisplayList = false;
   [Parameter]
   public EventCallback AnyChanged { get; set; }
 }

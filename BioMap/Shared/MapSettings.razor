@@ -14,14 +14,14 @@
         @Localize["Fit visible area"]
       </Button>
     </span>
-    <span style="margin-right: 12px;">
-      <CheckBox Checked="this.AreaMap.ShowCustomMap" CheckedChanged="@((e)=>{ this.AreaMap.ShowCustomMap=e; })" LabelText=@Localize["Show custom map"] />
+    <span style="margin: auto 12px auto 0px;border-left-style: hidden;border-width: thin;padding-left: 5px;">
+      <CheckBox Checked="this.AreaMap.ShowCustomMap" CheckedChanged="@((e)=>{ this.AreaMap.SetShowCustomMap(e); })" LabelText=@Localize["Show custom map"] />
     </span>
-    <span style="margin-right: 5px;">
+    <span style="margin: auto 5px auto 0px;border-left-style: solid;border-width: thin;padding-left: 5px;">
       @Localize["Places"]:
     </span>
-    <span style="margin-right: 12px;">
-      <RadioGroup TValue="int" @bind-CheckedValue="this.AreaMap.ShowPlaces">
+    <span style="margin: auto 12px auto 0px;border-left-style: hidden;border-width: thin;padding-left: 5px;">
+        <RadioGroup TValue="int" CheckedValue="this.AreaMap.ShowPlaces" CheckedValueChanged="@((e)=>{ this.AreaMap.SetShowPlaces(e); })">
         <Radio TValue="int" Value="@(0)">@Localize["No"]</Radio>
         <Radio TValue="int" Value="@(1)">@Localize["Yes"]</Radio>
         <Radio TValue="int" Value="@(2)">@Localize["Monitoring"]</Radio>
@@ -29,14 +29,19 @@
     </span>
     @if (this.ElementMap != null)
     {
-      <span style="margin-right: 12px;">
-        <CheckBox Checked="this.ElementMap.DynaZoomed" CheckedChanged="(e)=>this.ElementMap.DynaZoomed=e" LabelText=@Localize["Dyn. zoom"] />
+      <span style="margin: auto 12px auto 0px;border-left-style: solid;border-width: thin;padding-left: 5px;">
+        <CheckBox Checked="this.ElementMap.DynaZoomed" CheckedChanged="(e)=>this.ElementMap.SetDynaZoomed(e)" LabelText=@Localize["Dyn. zoom"] />
       </span>
     }
     @if (this.ShowConnectorSwitch)
     {
-      <span style="margin-right: 0px;">
-        <CheckBox Checked="SD.CurrentUser.Prefs.DisplayConnectors" CheckedChanged="(e)=>{ SD.CurrentUser.Prefs.DisplayConnectors=e; SD.DS.WriteUser(SD,SD.CurrentUser); this.DisplayConnectorsChanged.InvokeAsync(e); this.AreaMap.Invalidate(); }" LabelText=@Localize["Show movements"] />
+      <span style="margin: auto 12px auto 0px;border-left-style: solid;border-width: thin;padding-left: 5px;">
+        <RadioGroup TValue="int" CheckedValue="SD.CurrentUser.Prefs.DisplayConnectors" CheckedValueChanged="(e)=>{ SD.CurrentUser.Prefs.DisplayConnectors=e; SD.DS.WriteUser(SD,SD.CurrentUser); this.DisplayConnectorsChanged.InvokeAsync(e); this.AreaMap.Invalidate(); }">
+          @Localize["Show movements"]:
+          <Radio TValue="int" Value="@(0)">@Localize["No"]</Radio>
+          <Radio TValue="int" Value="@(1)">@Localize["Most recent"]</Radio>
+          <Radio TValue="int" Value="@(2)">@Localize["All"]</Radio>
+        </RadioGroup>
       </span>
     }
   }
@@ -61,5 +66,5 @@
   [Parameter]
   public bool ShowConnectorSwitch { get; set; } = false;
   [Parameter]
-  public EventCallback<bool> DisplayConnectorsChanged { get; set; }
+  public EventCallback<int> DisplayConnectorsChanged { get; set; }
 }

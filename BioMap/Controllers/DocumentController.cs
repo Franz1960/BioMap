@@ -16,7 +16,7 @@ namespace BioMap
     }
     private readonly DataService DS;
     public static string GetFilePathForExistingDocument(DataService ds, string sProject, string id) {
-      var sDocsDir = ds.GetDocsDir(sProject);
+      string sDocsDir = ds.GetDocsDir(sProject);
       string sFilePath = System.IO.Path.Combine(sDocsDir, id);
       if (System.IO.File.Exists(sFilePath)) {
         return sFilePath;
@@ -25,22 +25,22 @@ namespace BioMap
     }
     [HttpGet("{id}")]
     public IActionResult GetDocument(string id) {
-      var ds = this.DS;
+      DataService ds = this.DS;
       try {
         string sProject = "";
-        if (Request.Query.ContainsKey("Project")) {
-          sProject = Request.Query["Project"];
+        if (this.Request.Query.ContainsKey("Project")) {
+          sProject = this.Request.Query["Project"];
         }
-        var document = ds.GetDocs(sProject, id).FirstOrDefault();
+        Document document = ds.GetDocs(sProject, id).FirstOrDefault();
         if (!string.IsNullOrEmpty(document.Filename)) {
           Byte[] b = System.IO.File.ReadAllBytes(System.IO.Path.Combine(ds.GetDocsDir(sProject), document.Filename));
           string sContentType = document.ContentType;
-          return File(b, sContentType);
+          return this.File(b, sContentType);
         } else {
-          return StatusCode(404, $"Document not found: {id}");
+          return this.StatusCode(404, $"Document not found: {id}");
         }
       } catch (Exception ex) {
-        return StatusCode(500, $"Internal server error: {ex}");
+        return this.StatusCode(500, $"Internal server error: {ex}");
       }
     }
   }

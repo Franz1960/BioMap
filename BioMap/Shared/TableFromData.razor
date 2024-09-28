@@ -1,0 +1,50 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject DataService DS
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.BarChart.Axes
+@using BioMap
+
+<table class="table table-sm table-striped text-right">
+  @if (ColumnHeaders != null)
+  {
+    <thead>
+      <tr>
+        @foreach (var columnHeader in this.ColumnHeaders)
+        {
+          <th scope="col">@columnHeader</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var idxRow in Enumerable.Range(0, this.Rows.Count()))
+      {
+        <tr>
+          @foreach (var idxCol in Enumerable.Range(0, this.Rows.ElementAt(idxRow).Count()))
+          {
+            <td scope="col">@this.Rows.ElementAt(idxRow).ElementAt(idxCol)</td>
+          }
+        </tr>
+      }
+    </tbody>
+  }
+</table>
+
+@code {
+  [Parameter]
+  public IEnumerable<string> ColumnHeaders { get; set; } = null;
+  [Parameter]
+  public IEnumerable<IEnumerable<string>> Rows { get; set; } = null;
+  //
+  protected override async Task OnInitializedAsync()
+  {
+    await base.OnInitializedAsync();
+  }
+  public void RefreshData()
+  {
+    this.InvokeAsync(() => this.StateHasChanged());
+  }
+}

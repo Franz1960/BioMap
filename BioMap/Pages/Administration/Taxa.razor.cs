@@ -43,14 +43,14 @@ namespace BioMap.Pages.Administration
     //
     protected override void OnInitialized() {
       base.OnInitialized();
-      NM.LocationChanged += NM_LocationChanged;
-      RefreshData();
+      this.NM.LocationChanged += this.NM_LocationChanged;
+      this.RefreshData();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
         if (this.SelectedNode == null) {
-          var node = SD.CurrentProject.TaxaTree.RootNode.FindFirst(SD.CurrentProject.SpeciesSciName);
+          TreeNode node = this.SD.CurrentProject.TaxaTree.RootNode.FindFirst(this.SD.CurrentProject.SpeciesSciName);
           this.treeView.SelectNode(node);
           this.EnsureSelectedVisible();
           this.StateHasChanged();
@@ -58,8 +58,8 @@ namespace BioMap.Pages.Administration
       }
     }
     private void NM_LocationChanged(object sender, LocationChangedEventArgs e) {
-      NM.LocationChanged -= NM_LocationChanged;
-      DS.WriteProject(SD, SD.CurrentProject);
+      this.NM.LocationChanged -= this.NM_LocationChanged;
+      this.DS.WriteProject(this.SD, this.SD.CurrentProject);
     }
     private void RefreshData() {
     }
@@ -68,7 +68,7 @@ namespace BioMap.Pages.Administration
       if (taxon == null) {
         return "(null)";
       } else {
-        string sLocalName = taxon.GetLocalizedName(SD.CurrentCultureName);
+        string sLocalName = taxon.GetLocalizedName(this.SD.CurrentCultureName);
         if (sLocalName == taxon.InvariantName || string.IsNullOrEmpty(sLocalName)) {
           return taxon.InvariantName;
         } else {
@@ -78,9 +78,9 @@ namespace BioMap.Pages.Administration
     }
     private void EnsureSelectedVisible() {
       this.treeView.ExpandedNodes.Clear();
-      var nodes = SD.CurrentProject.TaxaTree.RootNode.Find(this.SelectedNode?.Data?.InvariantName);
-      foreach (var node in SD.CurrentProject.TaxaTree.RootNode.Find(this.SelectedNode?.Data?.InvariantName)) {
-        foreach (var ancestor in node.Ancestors) {
+      TreeNode[] nodes = this.SD.CurrentProject.TaxaTree.RootNode.Find(this.SelectedNode?.Data?.InvariantName);
+      foreach (TreeNode node in this.SD.CurrentProject.TaxaTree.RootNode.Find(this.SelectedNode?.Data?.InvariantName)) {
+        foreach (TreeNode ancestor in node.Ancestors) {
           if (!this.treeView.ExpandedNodes.Contains(ancestor)) {
             this.treeView.ExpandedNodes.Add(ancestor);
           }
@@ -88,56 +88,66 @@ namespace BioMap.Pages.Administration
       }
     }
     private async Task Save_Clicked() {
-      var taxaTree = SD.CurrentProject.TaxaTree;
-      TreeNode node = taxaTree.RootNode.FindFirst(this.EditedTaxon.SciName);
-      if (node?.Data is Taxon nodeTaxon) {
-        nodeTaxon.CopyFrom(this.EditedTaxon);
-      } else {
-        nodeTaxon = Taxon.Clone(this.EditedTaxon);
-        taxaTree.RootNode.Add(new TreeNode(nodeTaxon));
-      }
-      string sSelectedSciName = nodeTaxon.SciName;
-      taxaTree.FromTaxaList(taxaTree.ToTaxaList());
-      DS.WriteProject(SD,SD.CurrentProject);
-      this.SelectedNode = taxaTree.RootNode.FindFirst(sSelectedSciName);
-      this.EnsureSelectedVisible();
-      this.StateHasChanged();
+      await Task.Run(() => {
+        TaxaTree taxaTree = this.SD.CurrentProject.TaxaTree;
+        TreeNode node = taxaTree.RootNode.FindFirst(this.EditedTaxon.SciName);
+        if (node?.Data is Taxon nodeTaxon) {
+          nodeTaxon.CopyFrom(this.EditedTaxon);
+        } else {
+          nodeTaxon = Taxon.Clone(this.EditedTaxon);
+          taxaTree.RootNode.Add(new TreeNode(nodeTaxon));
+        }
+        string sSelectedSciName = nodeTaxon.SciName;
+        taxaTree.FromTaxaList(taxaTree.ToTaxaList());
+        this.DS.WriteProject(this.SD, this.SD.CurrentProject);
+        this.SelectedNode = taxaTree.RootNode.FindFirst(sSelectedSciName);
+        this.EnsureSelectedVisible();
+        this.StateHasChanged();
+      });
     }
     private async Task NewTaxon_Clicked() {
-      this.EditedTaxon.CopyFrom(null);
-      if (this.SelectedNode?.Data is Taxon selectedTaxon) {
-        this.EditedTaxon.ParentSciNames = selectedTaxon.SciName;
-      }
-      this.StateHasChanged();
+      await Task.Run(() => {
+        this.EditedTaxon.CopyFrom(null);
+        if (this.SelectedNode?.Data is Taxon selectedTaxon) {
+          this.EditedTaxon.ParentSciNames = selectedTaxon.SciName;
+        }
+        this.StateHasChanged();
+      });
     }
     private async Task Delete_Clicked() {
-      var taxaTree = SD.CurrentProject.TaxaTree;
-      string sSelectedSciName = this.SelectedNode?.Parent?.Data?.InvariantName;
-      taxaTree.RootNode.Remove(this.SelectedNode);
-      taxaTree.FromTaxaList(taxaTree.ToTaxaList());
-      DS.WriteProject(SD,SD.CurrentProject);
-      this.SelectedNode = taxaTree.RootNode.FindFirst(sSelectedSciName);
-      this.EnsureSelectedVisible();
-      this.StateHasChanged();
+      await Task.Run(() => {
+        TaxaTree taxaTree = this.SD.CurrentProject.TaxaTree;
+        string sSelectedSciName = this.SelectedNode?.Parent?.Data?.InvariantName;
+        taxaTree.RootNode.Remove(this.SelectedNode);
+        taxaTree.FromTaxaList(taxaTree.ToTaxaList());
+        this.DS.WriteProject(this.SD, this.SD.CurrentProject);
+        this.SelectedNode = taxaTree.RootNode.FindFirst(sSelectedSciName);
+        this.EnsureSelectedVisible();
+        this.StateHasChanged();
+      });
     }
     private async Task Expand_Clicked() {
-      this.treeView.ExpandedNodes.Clear();
-      foreach (var node in SD.CurrentProject.TaxaTree.RootNode.GetChildrenFlatList()) {
-        if (node.HasChildren) {
-          this.treeView.ExpandedNodes.Add(node);
+      await Task.Run(() => {
+        this.treeView.ExpandedNodes.Clear();
+        foreach (TreeNode node in this.SD.CurrentProject.TaxaTree.RootNode.GetChildrenFlatList()) {
+          if (node.HasChildren) {
+            this.treeView.ExpandedNodes.Add(node);
+          }
         }
-      }
-      this.StateHasChanged();
+        this.StateHasChanged();
+      });
     }
     private async Task SaveJSON_Clicked() {
-      var taxaTree = SD.CurrentProject.TaxaTree;
-      try {
-        string sJson = this.TaxaJSON;
-        var taxaList = JsonConvert.DeserializeObject<IEnumerable<Taxon>>(sJson);
-        taxaTree.FromTaxaList(taxaList);
-        DS.WriteProject(SD, SD.CurrentProject);
-      } catch {
-      }
+      await Task.Run(() => {
+        TaxaTree taxaTree = this.SD.CurrentProject.TaxaTree;
+        try {
+          string sJson = this.TaxaJSON;
+          IEnumerable<Taxon> taxaList = JsonConvert.DeserializeObject<IEnumerable<Taxon>>(sJson);
+          taxaTree.FromTaxaList(taxaList);
+          this.DS.WriteProject(this.SD, this.SD.CurrentProject);
+        } catch {
+        }
+      });
     }
   }
 }

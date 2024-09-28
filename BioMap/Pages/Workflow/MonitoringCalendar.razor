@@ -6,79 +6,69 @@
 @using System.Globalization
 @using BioMap
 
-<Row>
-  <Column>
-    <h1>@Localize["Monitoring Calendar"]</h1>
-  </Column>
-  <Column>
-    <Field Horizontal="true">
-      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Year"]</FieldLabel>
-      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-        <NumericEdit @bind-Value="mt.Year" />
-      </FieldBody>
-    </Field>
-  </Column>
-</Row>
-
-<table class="table table-striped table-sm">
-  <thead>
-    <tr>
-      <th scope="col">@Localize["Place"]</th>
-      @foreach (var kw in Enumerable.Range(mt.kwMin,mt.kwMax-mt.kwMin+1)) {
-        @if (kw==mt.kwNow)
-        {
-        <th scope="col" style="background-color:orange">@kw</th>
+<div class="box">
+  <div class="row content">
+    <Row>
+      <Column>
+        <h1>@Localize["Monitoring Calendar"]</h1>
+      </Column>
+      <Column>
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Year"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <NumericEdit @bind-Value="mt.Year" />
+          </FieldBody>
+        </Field>
+      </Column>
+    </Row>
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th scope="col">@Localize["Place"]</th>
+          @foreach (var kw in Enumerable.Range(Monitoring.kwMin,Monitoring.kwMax-Monitoring.kwMin+1)) {
+            @if (kw==mt.kwNow) {
+              <th scope="col" style="background-color:orange">@kw</th>
+            } else {
+              <th scope="col">@kw</th>
+            }
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var sPlacename in mt.PlaceNames) {
+          <tr>
+            <td scope="row"><b>@sPlacename</b></td>
+            @foreach (var kw in Enumerable.Range(Monitoring.kwMin,Monitoring.kwMax - Monitoring.kwMin + 1)) {
+              @if (mt.Results[sPlacename].Results.ContainsKey(kw)) {
+                <td>
+                  @(mt.Results[sPlacename].Results[kw].Catches + "/" + mt.Results[sPlacename].Results[kw].ReCatches)
+                </td>
+              } else if (mt.Results[sPlacename].PlannedMonitoring == null) {
+                <td>
+                </td>
+              } else if (kw == mt.Results[sPlacename].PlannedMonitoring.Week && !string.IsNullOrEmpty(mt.Results[sPlacename].PlannedMonitoring.Color)) {
+                <td style="background-color:@mt.Results[sPlacename].PlannedMonitoring.Color;">
+                  <Select TValue="string" SelectedValue="@mt.Results[sPlacename].PlannedMonitoring.GetState(this.SD)" SelectedValueChanged="@(async (e)=>{ mt.SetPlannedMonitoring(this.SD,sPlacename,kw,e); })">
+                    <SelectItem TValue="string" Value=@("empty")></SelectItem>
+                    <SelectItem TValue="string" Value=@("conditionally")>Übernehme ich, wenn kein Anderer will</SelectItem>
+                    <SelectItem TValue="string" Value=@("definitely")>Übernehme ich sicher</SelectItem>
+                    @if (!string.IsNullOrEmpty(mt.Results[sPlacename].PlannedMonitoring.UserId)) {
+                      <SelectItem TValue="string" Value=@("conditionallyByOther") Disabled="true">Würde @mt.Results[sPlacename].PlannedMonitoring.UserId übernehmen</SelectItem>
+                      <SelectItem TValue="string" Value=@("definitelyByOther") Disabled="true">Hat @mt.Results[sPlacename].PlannedMonitoring.UserId übernommen</SelectItem>
+                    }
+                  </Select>
+                </td>
+              } else {
+                <td>
+                </td>
+              }
+            }
+          </tr>
         }
-        else
-        {
-          <th scope="col">@kw</th>
-        }
-      }
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (var sPlacename in mt.PlaceNames)
-    {
-      <tr>
-        <td scope="row"><b>@sPlacename</b></td>
-        @foreach (var kw in Enumerable.Range(mt.kwMin, mt.kwMax - mt.kwMin + 1))
-        {
-          @if (mt.Results[sPlacename].Results.ContainsKey(kw))
-          {
-            <td>
-              @(mt.Results[sPlacename].Results[kw].Catches + "/" + mt.Results[sPlacename].Results[kw].ReCatches)
-            </td>
-          }
-          else if (mt.Results[sPlacename].PlannedMonitoring == null)
-          {
-            <td>
-              
-            </td>
-          }
-          else if (kw == mt.Results[sPlacename].PlannedMonitoring.Week && !string.IsNullOrEmpty(mt.Results[sPlacename].PlannedMonitoring.Color))
-          {
-            <td style="background-color:@mt.Results[sPlacename].PlannedMonitoring.Color;">
-              <Select TValue="string" SelectedValue="@mt.Results[sPlacename].PlannedMonitoring.GetState(this.SD)" SelectedValueChanged="@(async (e)=>{ mt.SetPlannedMonitoring(this.SD,sPlacename,kw,e); })">
-                <SelectItem TValue="string" Value=@("empty")></SelectItem>
-                <SelectItem TValue="string" Value=@("conditionally")>Übernehme ich, wenn kein Anderer will</SelectItem>
-                <SelectItem TValue="string" Value=@("definitely")>Übernehme ich sicher</SelectItem>
-                @if (!string.IsNullOrEmpty(mt.Results[sPlacename].PlannedMonitoring.UserId)) {
-                  <SelectItem TValue="string" Value=@("conditionallyByOther") Disabled="true">Würde @mt.Results[sPlacename].PlannedMonitoring.UserId übernehmen</SelectItem>
-                  <SelectItem TValue="string" Value=@("definitelyByOther") Disabled="true">Hat @mt.Results[sPlacename].PlannedMonitoring.UserId übernommen</SelectItem>
-                }
-              </Select>
-            </td>
-          }
-          else
-          {
-            <td>
-            </td>
-          }
-        }
-      </tr>
-    }
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 @code {
 }

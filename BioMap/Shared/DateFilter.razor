@@ -4,6 +4,7 @@
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
+@implements IDisposable
 
 <Row>
   <Column>
@@ -41,4 +42,16 @@
 </Row>
 
 @code {
+
+  protected override void OnInitialized() {
+    SD.Filters.FilterChanged += this.FilterChanged;
+  }
+
+  private void FilterChanged(object sender, EventArgs e) {
+    this.StateHasChanged();
+  }
+
+  public void Dispose() {
+    SD.Filters.FilterChanged -= this.FilterChanged;
+  }
 }

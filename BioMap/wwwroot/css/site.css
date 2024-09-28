@@ -5,5 +5,31 @@
   --b-bar-dark-color: #fff;
   --b-bar-dropdown-dark-background: #226d27;
   --b-bar-dropdown-dark-color: #fff;
-  
 }
+
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 99%;
+  padding: 0 1% 0 1%;
+}
+
+.box .row {
+}
+
+  .box .row.header {
+    flex: none;
+    display: unset;
+    width: 100%;
+  }
+
+  .box .row.content {
+    flex: 1 1 auto;
+    display: unset;
+    overflow: auto;
+  }
+
+  .box .row.footer {
+    flex: 0 1 40px;
+    display: unset;
+  }

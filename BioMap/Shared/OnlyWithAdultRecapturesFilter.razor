@@ -1,0 +1,31 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@using Microsoft.AspNetCore.Components.Forms
+@inject SessionData SD
+@inject IJSRuntime JSRuntime
+@using BioMap
+@implements IDisposable
+
+<CheckBox Checked="@SD.Filters.OnlyWithAdultRecapturesFilter" LabelText=@Localize["Only with adult recapture"] OnAnyChangedCallback="@CheckBox_CheckedChanged" />
+
+@code {
+  [Parameter]
+  public EventCallback<EventArgs> OnAnyChangedCallback { get; set; }
+  //
+  private void CheckBox_CheckedChanged(ChangeEventArgs e)
+  {
+    SD.Filters.OnlyWithAdultRecapturesFilter = bool.Parse(e.Value.ToString());
+    this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
+  }
+
+  protected override void OnInitialized() {
+    SD.Filters.FilterChanged += this.FilterChanged;
+  }
+
+  private void FilterChanged(object sender, EventArgs e) {
+    this.StateHasChanged();
+  }
+
+  public void Dispose() {
+    SD.Filters.FilterChanged -= this.FilterChanged;
+  }
+}

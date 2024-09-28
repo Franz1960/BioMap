@@ -1,0 +1,22 @@
+@page "/Statistics/FrequencyByPlace"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject IJSRuntime JSRuntime
+@using BioMap
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.Util
+
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Catches" />
+  </div>
+  <div class="row content">
+    <h1>@Localize["Frequency by Place / Time Chart"]</h1>
+    <ChartJs.Blazor.Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+  </div>
+</div>

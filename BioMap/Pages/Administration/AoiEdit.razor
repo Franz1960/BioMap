@@ -1,75 +1,70 @@
 @page "/Maps/AoiEdit"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
-@inject NavigationManager NM
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
 @using GoogleMapsComponents
 @using GoogleMapsComponents.Maps
 @inherits ElementMap
 
-<Row Margin="Margin.Is1.OnY">
-  <Column>
-    <CheckBox Checked="ShowCustomMap" CheckedChanged="@((e)=>{ ShowCustomMap=e; })" LabelText=@Localize["Show custom map"] />
-  </Column>
-  <Column>
-@*    <CheckBox Checked="ShowPlaces" CheckedChanged="@((e)=>{ ShowPlaces=e; })" LabelText=@Localize["Show places"] />
-*@  </Column>
-  <Column>
-    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Clear_Clicked(); })"><Blazorise.Icon Name="IconName.Clear" /> @Localize["Clear"]</Button>
-  </Column>
-  @*<Column>
-    <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save_Clicked(); })">@Localize["Save"]</Button>
-    </Column>*@
-</Row>
-<GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
+<div class="box">
+  <div class="row header">
+    <Row Margin="Margin.Is1.OnY">
+      <Column>
+        <CheckBox Checked="ShowCustomMap" CheckedChanged="@((e)=>{ ShowCustomMap=e; })" LabelText=@Localize["Show custom map"] />
+      </Column>
+      <Column>
+        @*    <CheckBox Checked="ShowPlaces" CheckedChanged="@((e)=>{ ShowPlaces=e; })" LabelText=@Localize["Show places"] />
+        *@
+      </Column>
+      <Column>
+        <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Clear_Clicked(); })"><Blazorise.Icon Name="IconName.Clear" /> @Localize["Clear"]</Button>
+      </Column>
+      @*<Column>
+      <Button Color="Color.Primary" Clicked="@(async (e)=>{ await Save_Clicked(); })">@Localize["Save"]</Button>
+      </Column>*@
+    </Row>
+  </div>
+  <div class="row content">
+    <GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
+  </div>
+</div>
 
-@code{
-  protected override async Task OnInitializedAsync()
-  {
+@code {
+  protected override async Task OnInitializedAsync() {
     await base.OnInitializedAsync();
     base.AoiEditable = true;
     NM.LocationChanged += NM_LocationChanged;
   }
-  private void NM_LocationChanged(object sender, LocationChangedEventArgs e)
-  {
+  private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
     NM.LocationChanged -= NM_LocationChanged;
     //this.Save_Clicked();
   }
   private System.Timers.Timer Timer;
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
-    if (firstRender)
-    {
+    if (firstRender) {
       var vertices = DS.GetAoi(SD);
-      if (vertices == null)
-      {
+      if (vertices == null) {
         await base.ClearAoiPath();
       }
       this.Timer = new System.Timers.Timer(2000);
-      this.Timer.Elapsed += async (sender, e) =>
-      {
-        try
-        {
+      this.Timer.Elapsed += async (sender,e) => {
+        try {
           this.Timer.Stop();
           await this.Save_Clicked();
           this.Timer.Start();
-        }
-        catch { }
+        } catch { }
       };
       this.Timer.Start();
     }
   }
-  private async Task Clear_Clicked()
-  {
+  private async Task Clear_Clicked() {
     await base.ClearAoiPath();
   }
-  private async Task Save_Clicked()
-  {
+  private async Task Save_Clicked() {
     var latLngLiterals = await base.GetAoiPath();
-    if (latLngLiterals != null && latLngLiterals.Count() >= 3)
-    {
-      DS.WriteAoi(SD, latLngLiterals);
+    if (latLngLiterals != null && latLngLiterals.Count() >= 3) {
+      DS.WriteAoi(SD,latLngLiterals);
     }
   }
 }

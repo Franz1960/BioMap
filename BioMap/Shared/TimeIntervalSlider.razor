@@ -1,0 +1,33 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+
+<Row>
+    @if (!this.HideIntervalSelection) {
+        <span style="margin: auto 5px auto 0px;border-left-style: hidden;border-width: thin;padding-left: 5px;">
+            @Localize["Slider interval"]:
+        </span>
+        <span style="margin: auto 12px auto 0px;border-left-style: hidden;border-width: thin;padding-left: 5px;">
+            <Select @bind-SelectedValue="this.TimeIntervalWeeks">
+                <SelectItem Value="0">@Localize["(select)"]</SelectItem>
+                <SelectItem Value="6">6 @Localize["weeks"]</SelectItem>
+                <SelectItem Value="12">12 @Localize["weeks"]</SelectItem>
+                <SelectItem Value="26">26 @Localize["weeks"]</SelectItem>
+                <SelectItem Value="52">52 @Localize["weeks"]</SelectItem>
+            </Select>
+        </span>
+    }
+    <span style="margin: auto 12px auto 0px;border-left-style: hidden;border-width: thin;padding-left: 5px;">
+        <Button Size="Blazorise.Size.Small" Color="Color.Primary" Clicked="async ()=>await this.PlayIntervalSlider()" Disabled="(this.TimeIntervalWeeks < 2 && !this.HideIntervalSelection)">
+            <Blazorise.Icon Name="IconName.Play"></Blazorise.Icon>
+        </Button>
+    </span>
+    <span style="margin: auto 12px 30px 0px;border-left-style: hidden;border-width: thin;padding-left: 5px;width: 60%;">
+        <div style="position: relative;">
+            <Slider @ref="this.IntervalSlider" TValue="int" Value="this.Week" ValueChanged="(n)=>{this.Week=n;this.StopPlaying();}" Min="this.MinWeek" Max="this.MaxWeek" Disabled="(this.TimeIntervalWeeks < 2 && !this.HideIntervalSelection)">
+                @foreach (int nWeek in this.YearByWeek.Keys) {
+                    int nPosX = ((nWeek-this.MinWeek)*100)/(this.MaxWeek-this.MinWeek);
+                    <p style="position: absolute;top: 12px;left: @nPosX%;text-align: center;">@this.YearByWeek[nWeek]</p>
+                }
+            </Slider>
+        </div>
+    </span>
+</Row>

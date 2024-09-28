@@ -4,135 +4,144 @@
 @inject DataService DS
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
+@inject CircuitHandler CircuitHandler
 @using BioMap
 
-<Row>
-  <Column>
-    <Card Margin="Margin.Is4.OnY">
-      <CardHeader>
-        <CardTitle>@Localize["Register"]</CardTitle>
-      </CardHeader>
-      <CardBody>
-        <Validations @ref="validations" Mode="ValidationMode.Manual">
-          <Validation Validator="@ValidationRule.IsEmail">
+<div class="box">
+  <div class="row content">
+    <Row>
+      <Column>
+        <Card Margin="Margin.Is4.OnY">
+          <CardHeader>
+            <CardTitle>@Localize["Register"]</CardTitle>
+          </CardHeader>
+          <CardBody>
+            <Validations @ref="validations" Mode="ValidationMode.Manual">
+              <Validation Validator="@ValidationRule.IsEmail">
+                <Field Horizontal="true">
+                  <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["EMail address"]</FieldLabel>
+                  <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Role="TextRole.Email" Placeholder="myname@example.com" @bind-Text="SD.CurrentUser.EMail">
+                      <Feedback>
+                        <ValidationError />
+                      </Feedback>
+                    </TextEdit>
+                  </FieldBody>
+                </Field>
+              </Validation>
+              <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Field Horizontal="true">
+                  <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["Full name"]</FieldLabel>
+                  <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Placeholder="John Doe" @bind-Text="SD.CurrentUser.FullName">
+                      <Feedback>
+                        <ValidationError />
+                      </Feedback>
+                    </TextEdit>
+                  </FieldBody>
+                </Field>
+              </Validation>
+            </Validations>
             <Field Horizontal="true">
-              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["EMail address"]</FieldLabel>
+              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
+                <Button Color="Color.Primary" Disabled="TanRequested" Clicked="@(async (e)=>await this.RequestTAN_Clicked())">
+                  @Localize["Request TAN"]
+                  @if (TanRequested) {
+                    <BarIcon IconName="IconName.Check" />
+                  }
+                </Button>
+              </FieldLabel>
               <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <TextEdit Role="TextRole.Email" Placeholder="myname@example.com" @bind-Text="SD.CurrentUser.EMail">
-                  <Feedback>
-                    <ValidationError />
-                  </Feedback>
+                <TextEdit Placeholder=@Localize["Insert TAN"] @bind-Text="TAN">
                 </TextEdit>
               </FieldBody>
             </Field>
-          </Validation>
-          <Validation Validator="@ValidationRule.IsNotEmpty">
             <Field Horizontal="true">
-              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["Full name"]</FieldLabel>
+              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
+                <Check TValue="bool" @bind-Checked="UserAcknowledgeTerms">
+                  <ChildContent>
+                    @Localize["I confirm that I have read and agree with the privacy policy."]
+                  </ChildContent>
+                </Check>
+              </FieldLabel>
               <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <TextEdit Placeholder="John Doe" @bind-Text="SD.CurrentUser.FullName">
-                  <Feedback>
-                    <ValidationError />
-                  </Feedback>
-                </TextEdit>
+                <Button Color="Color.Primary" Disabled="TanConfirmed || !UserAcknowledgeTerms || TAN==null || TAN.Trim().Length!=9" Clicked="@((e) => ConfirmTAN_Clicked())">
+                  @Localize["Confirm TAN"]
+                  @if (TanConfirmed) {
+                    <BarIcon IconName="IconName.Check" />
+                  }
+                </Button>
               </FieldBody>
             </Field>
-          </Validation>
-        </Validations>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
-            <Button Color="Color.Primary" Disabled="TanRequested" Clicked="@((e)=>RequestTAN_Clicked())">
-              @Localize["Request TAN"]
-              @if (TanRequested)
-              {
-                <BarIcon IconName="IconName.Check" />
-              }
-            </Button>
-          </FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-            <TextEdit Placeholder=@Localize["Insert TAN"] @bind-Text="TAN">
-            </TextEdit>
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">
-            <Check TValue="bool" @bind-Checked="UserAcknowledgeTerms">
-              <ChildContent>
-                @Localize["I confirm that I have read and agree with the privacy policy."]
-              </ChildContent>
-            </Check>
-          </FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-            <Button Color="Color.Primary" Disabled="TanConfirmed || !UserAcknowledgeTerms || TAN==null || TAN.Trim().Length!=9" Clicked="@((e) => ConfirmTAN_Clicked())">
-              @Localize["Confirm TAN"]
-              @if (TanConfirmed)
-              {
-                <BarIcon IconName="IconName.Check" />
-              }
-            </Button>
-          </FieldBody>
-        </Field>
-        <Field Horizontal="true">
-          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["Access level"]</FieldLabel>
-          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-            <TextEdit Text="@SD.CurrentUser.Level.ToString()" Plaintext="true" ReadOnly="true" />
-          </FieldBody>
-        </Field>
-      </CardBody>
-    </Card>
-  </Column>
-</Row>
-@if (SD.CurrentUser.MaySeeOtherUsers)
-{
-  <Row>
-    <Column>
-      <Card Margin="Margin.Is4.OnY">
-        <CardHeader>
-          <CardTitle>@Localize["Users"]</CardTitle>
-        </CardHeader>
-        <CardBody>
-          <table class="table table-sm">
-            <thead>
-              <tr>
-                <th scope="col">@Localize["EMail address"]</th>
-                <th scope="col">@Localize["Access level"]</th>
-                <th scope="col">@Localize["Full name"]</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach (var user in AllUsers)
-              {
-                <tr>
-                  <th scope="row">@user.EMail</th>
-                  <td>
-                    <NumericEdit TValue="int" Disabled="!SD.CurrentUser.MayChangeOtherUsers" @bind-Value="user.Level" Min="100" Max="700" />
-                  </td>
-                  <td>
-                    <TextEdit Disabled="!SD.CurrentUser.MayChangeOtherUsers" @bind-Value="user.FullName" />
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </CardBody>
-      </Card>
-    </Column>
-  </Row>
-}
+            <Field Horizontal="true">
+              <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@Localize["Access level"]</FieldLabel>
+              <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Text="@SD.CurrentUser.Level.ToString()" Plaintext="true" ReadOnly="true" />
+              </FieldBody>
+            </Field>
+          </CardBody>
+        </Card>
+      </Column>
+    </Row>
+    @if (SD.CurrentUser.MaySeeOtherUsers) {
+      <Row>
+        <Column>
+          <Card Margin="Margin.Is4.OnY">
+            <CardHeader>
+              <CardTitle>@Localize["Users"]</CardTitle>
+            </CardHeader>
+            <CardBody>
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">@Localize["EMail address"]</th>
+                    <th scope="col">@Localize["Access level"]</th>
+                    <th scope="col">@Localize["Full name"]</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @foreach (var user in AllUsers) {
+                    <tr>
+                      <th scope="row">@user.EMail</th>
+                      <td>
+                        <NumericEdit TValue="int" Disabled="!SD.CurrentUser.MayChangeOtherUsers" @bind-Value="user.Level" Min="100" Max="700" />
+                      </td>
+                      <td>
+                        <TextEdit Disabled="!SD.CurrentUser.MayChangeOtherUsers" @bind-Value="user.FullName" />
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </CardBody>
+          </Card>
+        </Column>
+      </Row>
+      <Row>
+        <Column>
+          <Card Margin="Margin.Is4.OnY">
+            <CardHeader>
+              <CardTitle>@Localize["Connections"]</CardTitle>
+            </CardHeader>
+            <CardBody>
+              <p>Current connections: @(((TrackingCircuitHandler)CircuitHandler).ConnectedCircuitsCount)</p>
+            </CardBody>
+          </Card>
+        </Column>
+      </Row>
+    }
+  </div>
+</div>
 
 @code {
   private Validations validations;
   private string TAN;
-  private bool UserAcknowledgeTerms
-  {
-    get
-    {
+  private bool UserAcknowledgeTerms {
+    get {
       return _UserAcknowledgeTerms;
     }
-    set
-    {
-      if (value != _UserAcknowledgeTerms)
-      {
+    set {
+      if (value != _UserAcknowledgeTerms) {
         _UserAcknowledgeTerms = value;
         this.StateHasChanged();
       }
@@ -143,68 +152,59 @@
   private bool TanRequested = false;
   private bool TanConfirmed = false;
 
-  private async void RequestTAN_Clicked()
-  {
-    if (validations.ValidateAll())
-    {
-      validations.ClearAll();
+  private async Task RequestTAN_Clicked() {
+    if (await validations.ValidateAll()) {
+      await validations.ClearAll();
       var sEMail = SD.CurrentUser.EMail?.Trim().ToLowerInvariant();
       SD.CurrentUser.EMail = sEMail;
-      SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie", "Project");
-      await JSRuntime.InvokeVoidAsync("setCookie", new[] { "UserId", sEMail });
-      TanRequested = DS.RequestTAN(SD, SD.CurrentUser.FullName?.Trim());
-      if (TanRequested)
-      {
-        DS.AddLogEntry(SD, "TAN requested.");
+      SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie","Project");
+      await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserId",sEMail });
+      this.TanRequested = await DS.RequestTAN(SD,SD.CurrentUser.FullName?.Trim());
+      if (this.TanRequested) {
+        DS.AddLogEntry(SD,"TAN requested.");
       }
     }
     this.StateHasChanged();
   }
-  private async void ConfirmTAN_Clicked()
-  {
-    if (validations.ValidateAll())
-    {
-      validations.ClearAll();
-      string sPermTicket = DS.ConfirmTAN(SD, TAN?.Trim());
-      SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie", "Project");
-      await JSRuntime.InvokeVoidAsync("setCookie", new[] { "UserPermTicket." + SD.CurrentUser.Project, sPermTicket });
-      SD.CurrentUser.Level = DS.GetUserLevel(SD, sPermTicket);
-      if (SD.CurrentUser.Level >= 100)
-      {
+  private async void ConfirmTAN_Clicked() {
+    if (await validations.ValidateAll()) {
+      await validations.ClearAll();
+      string sPermTicket = DS.ConfirmTAN(SD,TAN?.Trim());
+      SD.CurrentUser.Project = await JSRuntime.InvokeAsync<string>("getCookie","Project");
+      await JSRuntime.InvokeVoidAsync("setCookie",new[] { "UserPermTicket." + SD.CurrentUser.Project,sPermTicket });
+      SD.CurrentUser.Level = DS.GetUserLevel(SD,sPermTicket);
+      if (SD.CurrentUser.Level >= 100) {
         TanConfirmed = true;
-        DS.AddLogEntry(SD, "TAN confirmed with " + TAN + ". Level " + SD.CurrentUser.Level + " returned.");
+        DS.AddLogEntry(SD,"TAN confirmed with " + TAN + ". Level " + SD.CurrentUser.Level + " returned.");
       }
     }
     this.StateHasChanged();
   }
   private User[] AllUsers = new User[0];
-  protected override void OnInitialized()
-  {
+  protected override void OnInitialized() {
     base.OnInitialized();
     NM.LocationChanged += NM_LocationChanged;
+    ((TrackingCircuitHandler)CircuitHandler).ConnectedCircuitsCountChanged += this.ConnectedCircuitsCountChanged;
     RefreshData();
   }
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
+  protected override async Task OnAfterRenderAsync(bool firstRender) {
     await base.OnAfterRenderAsync(firstRender);
-    if (firstRender)
-    {
+    if (firstRender) {
     }
-    if (SD.CurrentUser.Level >= 700 && DS.GetAoi(SD) == null)
-    {
+    if (SD.CurrentUser.Level >= 700 && DS.GetAoi(SD) == null) {
       NM.NavigateTo("/Maps/AoiEdit");
     }
   }
-  private void NM_LocationChanged(object sender, LocationChangedEventArgs e)
-  {
+  private void NM_LocationChanged(object sender,LocationChangedEventArgs e) {
     NM.LocationChanged -= NM_LocationChanged;
-    foreach (var user in this.AllUsers)
-    {
-      DS.WriteUser(SD, user);
+    foreach (var user in this.AllUsers) {
+      DS.WriteUser(SD,user);
     }
   }
-  private void RefreshData()
-  {
+  private async void ConnectedCircuitsCountChanged(object sender,EventArgs e) {
+    await this.InvokeAsync(() => this.StateHasChanged());
+  }
+  private void RefreshData() {
     this.AllUsers = DS.GetAllUsers(SD);
     this.StateHasChanged();
   }

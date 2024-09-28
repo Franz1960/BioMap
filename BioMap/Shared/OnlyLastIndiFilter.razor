@@ -3,6 +3,7 @@
 @inject SessionData SD
 @inject IJSRuntime JSRuntime
 @using BioMap
+@implements IDisposable
 
 <CheckBox Checked="@SD.Filters.OnlyLastIndiFilter" LabelText=@Localize["Only last image"] OnAnyChangedCallback="@CheckBox_CheckedChanged" />
 
@@ -16,4 +17,15 @@
     this.OnAnyChangedCallback.InvokeAsync(EventArgs.Empty);
   }
 
+  protected override void OnInitialized() {
+    SD.Filters.FilterChanged += this.FilterChanged;
+  }
+
+  private void FilterChanged(object sender, EventArgs e) {
+    this.StateHasChanged();
+  }
+
+  public void Dispose() {
+    SD.Filters.FilterChanged -= this.FilterChanged;
+  }
 }

@@ -17,40 +17,50 @@ namespace BioMap.Pages.Maps
   public partial class HeatMapIndividuals : AreaMap
   {
     private HeatmapLayer heatmapLayer = null;
+    private TimeIntervalSlider TimeIntervalSlider1 = null;
     //
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
-      SD.Filters.FilterChanged += async (sender, ev) => {
-        await this.RefreshHeatMap();
-      };
+      this.SD.Filters.FilterChanged += async (sender, ev) => await this.RefreshHeatMap();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
       if (firstRender) {
-        await CreateHeatmapLayer();
+        await this.CreateHeatmapLayer();
       }
     }
+    private async Task TimeIntervalSlider1_AnyChanged(EventArgs e) {
+      await this.RefreshHeatMap();
+    }
     private async Task CreateHeatmapLayer() {
-      heatmapLayer = await HeatmapLayer.CreateAsync(googleMap.JsRuntime, new HeatmapLayerOptions {
-        Map = googleMap.InteropObject,
+      this.heatmapLayer = await HeatmapLayer.CreateAsync(this.googleMap.JsRuntime, new HeatmapLayerOptions {
+        Map = this.googleMap.InteropObject,
         Dissipating = true,
         Radius = 50,
-        MaxIntesity = 60,
+        MaxIntensity = 60,
       });
-      await RefreshHeatMap();
+      await this.RefreshHeatMap();
     }
     private async Task RefreshHeatMap() {
-      if (heatmapLayer != null) {
+      if (this.heatmapLayer != null) {
         var lPoints = new List<LatLngLiteral>();
-        if (SD.CurrentUser.Level >= 0) {
-          foreach (var indi in DS.GetIndividuals(SD, SD.Filters).Values) {
-            foreach (var el in indi) {
-              var latLng = new LatLngLiteral(el.ElementProp.MarkerInfo.position.lng, el.ElementProp.MarkerInfo.position.lat);
+        if (this.SD.CurrentUser.Level >= 0) {
+          string sAddWhereClause = null;
+          if (this.TimeIntervalSlider1.TimeIntervalWeeks >= 1) {
+            DateTime dtCenter = this.SD.CurrentProject.StartDate.Value + TimeSpan.FromDays(7 * this.TimeIntervalSlider1.Week);
+            TimeSpan tsInterval = TimeSpan.FromDays(7 * this.TimeIntervalSlider1.TimeIntervalWeeks);
+            string sIntervalA = ConvInvar.ToIsoDateTime(dtCenter - tsInterval / 2);
+            string sIntervalB = ConvInvar.ToIsoDateTime(dtCenter + tsInterval / 2);
+            sAddWhereClause = $"elements.creationtime>='{sIntervalA}' AND elements.creationtime<'{sIntervalB}'";
+          }
+          foreach (List<Element> indi in this.DS.GetIndividuals(this.SD, this.SD.Filters, sAddWhereClause).Values) {
+            foreach (Element el in indi) {
+              var latLng = new LatLngLiteral { Lng = el.ElementProp.MarkerInfo.position.lng, Lat = el.ElementProp.MarkerInfo.position.lat };
               lPoints.Add(latLng);
             }
           }
         }
-        await heatmapLayer.SetData(lPoints.ToArray());
+        await this.heatmapLayer.SetData(lPoints.ToArray());
       }
     }
   }

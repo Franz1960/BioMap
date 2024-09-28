@@ -18,10 +18,7 @@ namespace BioMap.Pages.Maps
     private PhotoPopup PhotoPopup1;
     protected override async Task OnInitializedAsync() {
       await base.OnInitializedAsync();
-      SD.Filters.FilterChanged += (sender, ev) =>
-      {
-        this.RefreshElementMarkers();
-      };
+      this.SD.Filters.FilterChanged += (sender, ev) => this.RefreshElementMarkers();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender) {
       await base.OnAfterRenderAsync(firstRender);
@@ -30,22 +27,22 @@ namespace BioMap.Pages.Maps
         this.RefreshElementMarkers();
       }
     }
-    protected override void RefreshElementMarkers() {
+    protected override void RefreshElementMarkers(bool bSkipDbQuery = false) {
       var lElementMarkers = new List<ElementMarker>();
-      if (SD.CurrentUser.Level >= 0) {
-        foreach (var el in DS.GetElements(SD, SD.Filters)) {
-          var latLng = new LatLngLiteral(el.ElementProp.MarkerInfo.position.lng, el.ElementProp.MarkerInfo.position.lat);
-          var symbolProps = el.GetSymbolProperties();
+      if (this.SD.CurrentUser.Level >= 0) {
+        foreach (Element el in this.DS.GetElements(this.SD, this.SD.Filters)) {
+          var latLng = new LatLngLiteral { Lng = el.ElementProp.MarkerInfo.position.lng, Lat = el.ElementProp.MarkerInfo.position.lat };
+          Element.SymbolProperties symbolProps = el.GetSymbolProperties(this.SD);
           string color = symbolProps.BgColor;
           if (el.Classification?.LivingBeing?.Taxon is Taxon taxon) {
-            if (SD.CurrentProject.TaxaTree.RootNode.FindFirst(taxon.InvariantName) is TreeNode taxonNode) {
+            if (this.SD.CurrentProject.TaxaTree.RootNode.FindFirst(taxon.InvariantName) is TreeNode taxonNode) {
               var t = taxonNode.Ancestors.Append(taxonNode).Reverse().FirstOrDefault(n => !string.IsNullOrEmpty((n.Data as Taxon)?.Color))?.Data as Taxon;
               if (t != null) {
                 color = t.Color;
               }
             }
           }
-          var elm = base.GetMarkerForElement(el);
+          ElementMarker elm = base.GetMarkerForElement(el);
           if (elm == null) {
             elm = new ElementMarker {
               Position = latLng,

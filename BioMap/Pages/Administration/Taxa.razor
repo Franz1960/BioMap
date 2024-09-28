@@ -13,127 +13,130 @@
 @using ChartJs.Blazor.BarChart
 @using ChartJs.Blazor.BarChart.Axes
 
-<h1>@Localize["Taxa"]</h1>
-
-<Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
-  <Items>
-    <Tab Name="Tree"><Icon Name="IconName.Tree" /> @Localize["Tree view"]</Tab>
-    <Tab Name="JSON" Clicked="() => { this.TaxaJSON = SD.CurrentProject.TaxaTree.ToJSON(); }"><Icon Name="IconName.Code" /> JSON</Tab>
-  </Items>
-  <Content>
-    <TabPanel Name="Tree" Border="Border.Light">
-      <Row>
-        @if (this.EditedTaxon!=null) {
-        <Column>
-          <Field Horizontal="false">
-            <FieldLabel>@Localize["Parent's scientific name"]</FieldLabel>
-            <FieldBody>
-              <TextEdit @bind-Text="this.EditedTaxon.ParentSciNames">
-              </TextEdit>
-            </FieldBody>
-          </Field>
-        </Column>
-        <Column>
-          <Field Horizontal="false">
-            <FieldLabel>@Localize["Scientific name"]</FieldLabel>
-            <FieldBody>
-              <TextEdit @bind-Text="this.EditedTaxon.SciName">
-              </TextEdit>
-            </FieldBody>
-          </Field>
-        </Column>
-        <Column>
-          <Field Horizontal="false">
-            <FieldLabel>@Localize["English name"]</FieldLabel>
-            <FieldBody>
-              <TextEdit @bind-Text="this.EditedTaxon.Name_en">
-              </TextEdit>
-            </FieldBody>
-          </Field>
-        </Column>
-        <Column>
-          <Field Horizontal="false">
-            <FieldLabel>@Localize["German name"]</FieldLabel>
-            <FieldBody>
-              <TextEdit @bind-Text="this.EditedTaxon.Name_de">
-              </TextEdit>
-            </FieldBody>
-          </Field>
-        </Column>
-        <Column ColumnSize="ColumnSize.Is1">
-          <Field Horizontal="false">
-            <FieldLabel>@Localize["Color"]</FieldLabel>
-            <FieldBody>
-              <ColorEdit @bind-Color="this.EditedTaxon.Color">
-              </ColorEdit>
-            </FieldBody>
-          </Field>
-        </Column>
-        <Column ColumnSize="ColumnSize.Is2">
-          <Row Margin="Margin.Is2">
-            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Save_Clicked(); })">
-              <Icon Name="IconName.Save" />
-              @Localize["Save"]
-            </Button>
+<div class="box">
+  <div class="row content">
+    <h1>@Localize["Taxa"]</h1>
+    <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
+      <Items>
+        <Tab Name="Tree"><Icon Name="IconName.Tree" /> @Localize["Tree view"]</Tab>
+        <Tab Name="JSON" Clicked="() => { this.TaxaJSON = SD.CurrentProject.TaxaTree.ToJSON(); }"><Icon Name="IconName.Code" /> JSON</Tab>
+      </Items>
+      <Content>
+        <TabPanel Name="Tree" Border="Border.Light">
+          <Row>
+            @if (this.EditedTaxon!=null) {
+              <Column>
+                <Field Horizontal="false">
+                  <FieldLabel>@Localize["Parent's scientific name"]</FieldLabel>
+                  <FieldBody>
+                    <TextEdit @bind-Text="this.EditedTaxon.ParentSciNames">
+                    </TextEdit>
+                  </FieldBody>
+                </Field>
+              </Column>
+              <Column>
+                <Field Horizontal="false">
+                  <FieldLabel>@Localize["Scientific name"]</FieldLabel>
+                  <FieldBody>
+                    <TextEdit @bind-Text="this.EditedTaxon.SciName">
+                    </TextEdit>
+                  </FieldBody>
+                </Field>
+              </Column>
+              <Column>
+                <Field Horizontal="false">
+                  <FieldLabel>@Localize["English name"]</FieldLabel>
+                  <FieldBody>
+                    <TextEdit @bind-Text="this.EditedTaxon.Name_en">
+                    </TextEdit>
+                  </FieldBody>
+                </Field>
+              </Column>
+              <Column>
+                <Field Horizontal="false">
+                  <FieldLabel>@Localize["German name"]</FieldLabel>
+                  <FieldBody>
+                    <TextEdit @bind-Text="this.EditedTaxon.Name_de">
+                    </TextEdit>
+                  </FieldBody>
+                </Field>
+              </Column>
+              <Column ColumnSize="ColumnSize.Is1">
+                <Field Horizontal="false">
+                  <FieldLabel>@Localize["Color"]</FieldLabel>
+                  <FieldBody>
+                    <ColorEdit @bind-Color="this.EditedTaxon.Color">
+                    </ColorEdit>
+                  </FieldBody>
+                </Field>
+              </Column>
+              <Column ColumnSize="ColumnSize.Is2">
+                <Row Margin="Margin.Is2">
+                  <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Save_Clicked(); })">
+                    <Icon Name="IconName.Save" />
+                    @Localize["Save"]
+                  </Button>
+                </Row>
+              </Column>
+            }
           </Row>
-        </Column>
-        }
-      </Row>
-      <Row>
-        <Column ColumnSize="ColumnSize.Is4">
-          <Row Margin="Margin.Is2">
-            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await NewTaxon_Clicked(); })">
-              <Icon Name="IconName.Star" />
-              @Localize["New taxon"]
-            </Button>
+          <Row>
+            <Column ColumnSize="ColumnSize.Is4">
+              <Row Margin="Margin.Is2">
+                <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await NewTaxon_Clicked(); })">
+                  <Icon Name="IconName.Star" />
+                  @Localize["New taxon"]
+                </Button>
+              </Row>
+              <Row Margin="Margin.Is2">
+                <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Delete_Clicked(); })">
+                  <Icon Name="IconName.Delete" />
+                  @Localize["Delete"]
+                </Button>
+              </Row>
+              <Row Margin="Margin.Is2">
+                <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Expand_Clicked(); })">
+                  <Icon Name="IconName.Expand" />
+                  @Localize["Expand"]
+                </Button>
+              </Row>
+            </Column>
+            <Column>
+              <TreeView @ref="treeView" Nodes="SD.CurrentProject.TaxaTree.RootNode.Children"
+                        GetChildNodes="@(node => node.Children)"
+                        HasChildNodes="@(node => node.HasChildren)"
+              @bind-SelectedNode="SelectedNode"
+              @bind-ExpandedNodes="ExpandedNodes">
+                <NodeContent>
+                  <Icon Name="@(context.HasChildren ? IconName.Folder : string.IsNullOrEmpty(((Taxon)context.Data).SciName) ? IconName.Star : IconName.Dog)" />
+                  @this.GetNiceNodeName(context)
+                </NodeContent>
+              </TreeView>
+            </Column>
           </Row>
-          <Row Margin="Margin.Is2">
-            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Delete_Clicked(); })">
-              <Icon Name="IconName.Delete" />
-              @Localize["Delete"]
-            </Button>
+        </TabPanel>
+        <TabPanel Name="JSON">
+          <Row>
+            <Column>
+            </Column>
           </Row>
-          <Row Margin="Margin.Is2">
-            <Button Color="Color.Primary" Block="true" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await Expand_Clicked(); })">
-              <Icon Name="IconName.Expand" />
-              @Localize["Expand"]
-            </Button>
+          <Row>
+            <Column>
+              <MemoEdit @bind-Text="this.TaxaJSON" Style="min-height:80vh"></MemoEdit>
+            </Column>
           </Row>
-        </Column>
-        <Column>
-          <TreeView @ref="treeView" Nodes="SD.CurrentProject.TaxaTree.RootNode.Children"
-                    GetChildNodes="@(node => node.Children)"
-                    HasChildNodes="@(node => node.HasChildren)"
-                    @bind-SelectedNode="SelectedNode"
-                    @bind-ExpandedNodes="ExpandedNodes">
-            <NodeContent>
-              <Icon Name="@(context.HasChildren ? IconName.Folder : string.IsNullOrEmpty(((Taxon)context.Data).SciName) ? IconName.Star : IconName.Dog)" />
-              @this.GetNiceNodeName(context)
-            </NodeContent>
-          </TreeView>
-        </Column>
-      </Row>
-    </TabPanel>
-    <TabPanel Name="JSON">
-      <Row>
-        <Column>
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <MemoEdit @bind-Text="this.TaxaJSON" Style="min-height:80vh"></MemoEdit>
-        </Column>
-      </Row>
-      <Row>
-        <Column ColumnSize="ColumnSize.Is4">
-          <Row Margin="Margin.Is2">
-            <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await SaveJSON_Clicked(); })">
-              <Icon Name="IconName.Save" />
-              @Localize["Save"]
-            </Button>
+          <Row>
+            <Column ColumnSize="ColumnSize.Is4">
+              <Row Margin="Margin.Is2">
+                <Button Color="Color.Primary" Disabled="@(SD.CurrentUser.Level<100)" Clicked="@(async (e)=>{ await SaveJSON_Clicked(); })">
+                  <Icon Name="IconName.Save" />
+                  @Localize["Save"]
+                </Button>
+              </Row>
+            </Column>
           </Row>
-        </Column>
-      </Row>
-    </TabPanel>
-  </Content>
-</Tabs>
+        </TabPanel>
+      </Content>
+    </Tabs>
+  </div>
+</div>

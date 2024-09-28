@@ -4,12 +4,20 @@
 @using GoogleMapsComponents.Maps
 @inherits AreaMap
 
-<Row>
-  <Column>
+<div class="box">
+  <div class="row header">
     <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Elements" />
-  </Column>
-</Row>
-<Row>
-  <MapSettings AreaMap="this"/>
-</Row>
-<GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
+  </div>
+  <div class="row content">
+    <Row Style="height:100%;">
+      <Column>
+        <GoogleMap @ref="@googleMap" Id="googleMap" Options="@mapOptions" Height="100%"></GoogleMap>
+      </Column>
+    </Row>
+    <Row>
+      <Column Margin="Margin.Is4.FromStart">
+        <TimeIntervalSlider @ref="this.TimeIntervalSlider1" AnyChanged="this.TimeIntervalSlider1_AnyChanged" />
+      </Column>
+    </Row>
+  </div>
+</div>

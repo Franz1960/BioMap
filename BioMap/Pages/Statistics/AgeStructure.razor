@@ -1,6 +1,7 @@
 @page "/Statistics/AgeStructure"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NM
 @using BioMap
 @using BioMap.Shared
 @using ChartJs.Blazor.Common.Enums
@@ -13,40 +14,34 @@
 @using ChartJs.Blazor.BarChart
 @using ChartJs.Blazor.BarChart.Axes
 
-<Row>
-  <Column>
-    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
-  </Column>
-</Row>
-<Row>
-  <Column>
-    <h1>@Localize["Age structure"]</h1>
-  </Column>
-  <Column>
-    <Field Horizontal="true">
-      <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Year"]</FieldLabel>
-      <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
-        <NumericEdit @bind-Value="Year" />
-      </FieldBody>
-    </Field>
-  </Column>
-</Row>
-<Row>
-  <Column>
-    @Localize["Frequency of age of individuals caught at least once in that year."]
-  </Column>
-</Row>
-<Row>
-  <Column>
-    <Column>
-      <Chart @ref="_chartJsCountByAge" Config="@_configCountByAge" Width="600" Height="300" />
-    </Column>
-  </Column>
-</Row>
-<Row>
-  <Column>
-    <Column>
-      <TableFromChart @ref="_tableFromChartCountByAge" RowLabel="@Localize["Age / years"]" _config="@_configCountByAge" />
-    </Column>
-  </Column>
-</Row>
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Catches" />
+  </div>
+  <div class="row content">
+    <Row>
+      <Column>
+        <h1>@Localize["Age structure"]</h1>
+      </Column>
+    </Row>
+    <Row>
+      <Column>
+        @Localize["Frequency of age of individuals caught at least once in that year."]
+      </Column>
+    </Row>
+    <Row>
+      <Column>
+        <Column>
+          <Chart @ref="_chartJsCountByAge" Config="@_configCountByAge" Width="600" Height="300" />
+        </Column>
+      </Column>
+    </Row>
+    <Row>
+      <Column>
+        <Column>
+          <TableFromChart @ref="_tableFromChartCountByAge" RowLabel="@Localize["Age / years"]" _config="@_configCountByAge" />
+        </Column>
+      </Column>
+    </Row>
+  </div>
+</div>

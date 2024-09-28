@@ -12,8 +12,8 @@ namespace BioMap
       this.SD = sd;
     }
     private SessionData SD { get; }
-    public readonly int kwMin = 16;
-    public readonly int kwMax = 39;
+    public static readonly int kwMin = 15;
+    public static readonly int kwMax = 39;
     public int kwNow { get; private set; } = 0;
     public class Result
     {
@@ -46,13 +46,11 @@ namespace BioMap
     public Dictionary<string, ResultOfPlace> Results { get; } = new Dictionary<string, ResultOfPlace>();
     public string[] PlaceNames { get; private set; }
     public int Year {
-      get {
-        return _Year;
-      }
+      get => this._Year;
       set {
-        if (value != _Year) {
-          _Year = value;
-          RefreshData();
+        if (value != this._Year) {
+          this._Year = value;
+          this.RefreshData();
           Utilities.FireEvent(this.DataChanged, this, EventArgs.Empty);
         }
       }
@@ -61,24 +59,24 @@ namespace BioMap
     public event EventHandler DataChanged;
     public void RefreshData() {
       DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
-      var dtNow = DateTime.Now;
+      DateTime dtNow = DateTime.Now;
       this.kwNow = dfi.Calendar.GetWeekOfYear(dtNow, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
       this.Results.Clear();
-      foreach (var place in this.SD.DS.GetPlaces(this.SD)) {
+      foreach (Place place in this.SD.DS.GetPlaces(this.SD)) {
         int kw_MostRecent = 0;
         var dictResults = new Dictionary<int, Result>();
-        foreach (var el in this.SD.DS.GetElements(this.SD, null, WhereClauses.Is_FromPlace(place.Name))) {
+        foreach (Element el in this.SD.DS.GetElements(this.SD, null, WhereClauses.Is_FromPlace(place.Name))) {
           int y = el.ElementProp.CreationTime.Year;
           int kw = dfi.Calendar.GetWeekOfYear(el.ElementProp.CreationTime, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
-          if (y == this.Year && kw >= kwMin && kw <= kwMax) {
+          if (y == this.Year && kw >= Monitoring.kwMin && kw <= Monitoring.kwMax) {
             if (el.Classification.IsMonitoring()) {
               if (!dictResults.TryGetValue(kw, out Result result)) {
                 result = new Result();
                 dictResults[kw] = result;
               }
-              if (el.Classification.IsIdPhoto()) {
+              if (el.Classification.IsIdPrimaryPhoto()) {
                 result.Catches++;
-                var prevCatches = this.SD.DS.GetElements(this.SD, null, "indivdata.iid=" + el.GetIId() + " AND elements.creationtime<'" + el.GetIsoDateTime() + "'");
+                Element[] prevCatches = this.SD.DS.GetElements(this.SD, null, "indivdata.iid=" + el.GetIId() + " AND elements.creationtime<'" + el.GetIsoDateTime() + "'");
                 if (prevCatches.Length >= 1) {
                   result.ReCatches++;
                 }
@@ -98,6 +96,9 @@ namespace BioMap
             if (!string.IsNullOrEmpty(user) && (kw == pm.Week)) {
               pm.UserId = user;
               pm.Definitely = (value == "definitely");
+              if (pm.UserId == this.SD.CurrentUser.EMail) {
+                pm.Color = (pm.Week == this.kwNow) ? "fuchsia" : (pm.Week == this.kwNow + 1) ? "aqua" : string.Empty;
+              }
             }
           }
         }

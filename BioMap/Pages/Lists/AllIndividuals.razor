@@ -5,74 +5,93 @@
 @inject IJSRuntime JSRuntime
 @using BioMap
 
-<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
-
-<p>Anzahl Individuen: @Individuals.Count</p>
-
 <PhotoPopup @ref="PhotoPopup1" ElementDeleted="@(() => this.OnElementDeleted())" />
 
-<table class="table table-striped table-sm">
-  <thead>
-    <tr>
-      <th scope="col">IID</th>
-      <th scope="col">@Localize["Metamorphosis"]</th>
-      <th scope="col">@Localize["Gender"]</th>
-      <th scope="col" width="10%">@Localize["Length"]</th>
-      <th scope="col">@Localize["Place"]</th>
-      <th scope="col">ID</th>
-      <th scope="col" width="10%">@Localize["Time"]</th>
-      <th scope="col">@Localize["User"]</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (var iid in Individuals.Keys) {
-<tr style=@GetTrStyle(iid)>
-  <td scope="row">@(iid)</td>
-  <td>
-    @if (AreDatesOfBirthConsistent(iid)) {@(Individuals[iid][0].GetDateOfBirthAsString()) } else { @((MarkupString)GetForElements(iid,el=>el.GetDateOfBirthAsString(),true))}
-  </td>
-  <td>@((MarkupString)GetForElements(iid,el=>el.GetGenderFull(this.SD)))</td>
-  <td>@((MarkupString)GetForElements(iid,el=>el.GetHeadBodyLengthNice()))</td>
-  <td>@((MarkupString)GetForElements(iid,el=>el.GetPlaceName()))</td>
-  <td>
-    @foreach (var el in this.Individuals[iid]) {@((MarkupString)this.GetLineBreak(iid))
-                <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a>}
-  </td>
-  <td>@((MarkupString)GetForElements(iid,el=>el.GetIsoDate()))</td>
-  <td>@((MarkupString)GetForElements(iid,el=>el.ElementProp.UploadInfo.UserId))</td>
-</tr>
-}
-  </tbody>
-</table>
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Catches" />
+  </div>
+  <div class="row content">
+    <Row>
+      <Column>
+        <p>Anzahl Individuen: @Individuals.Count</p>
+      </Column>
+      <Column>
+      </Column>
+      @if (SD.CurrentUser.Level >= 500) {
+        <Column>
+          <Button Color="Color.Primary" Clicked="@(async (e)=>DownloadCsv_Clicked())">Download CSV</Button>
+        </Column>
+        <Column>
+          <Button Color="Color.Primary" Clicked="@(async (e)=>ConsolidateGenders_Clicked())">@Localize["Consolidate genders"]</Button>
+        </Column>
+      }
+    </Row>
 
-@if (SD.CurrentUser.Level >= 500) {
-<Row>
-  <Column>
-    <Button Color="Color.Primary" Clicked="@(async (e)=>DownloadCsv_Clicked())">Download CSV</Button>
-  </Column>
-  <Column>
-    <Button Color="Color.Primary" Clicked="@(async (e)=>ConsolidateGenders_Clicked())">@Localize["Consolidate genders"]</Button>
-  </Column>
-  <Column>
-  </Column>
-  <Column>
-  </Column>
-</Row>}
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th scope="col">IID</th>
+          <th scope="col">@Localize["Metamorphosis"]</th>
+          <th scope="col">@Localize["Gender"]</th>
+          <th scope="col" width="7%" style="text-align:end;">@Localize["Length"]</th>
+          @if (this.SD.CurrentProject.DisplayMass) {
+            <th scope="col" width="7%" style="text-align:end;">@Localize["Mass"]</th>
+          }
+          <th scope="col">@Localize["Place"]</th>
+          <th scope="col">ID</th>
+          <th scope="col" width="10%">@Localize["Time"]</th>
+          <th scope="col">@Localize["User"]</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var iid in Individuals.Keys) {
+          <tr style=@GetTrStyle(iid)>
+            <td scope="row">@(iid)</td>
+            <td>
+              @if (AreDatesOfBirthConsistent(iid)) {
+                @(Individuals[iid][0].GetDateOfBirthAsString())
+              } else {
+                @((MarkupString)GetForElements(iid, el => el.GetDateOfBirthAsString(), true))
+              }
+              @(Individuals[iid][0]?.ElementProp?.IndivData?.CaptivityBred == 1 ? " (C)" : "")
+            </td>
+            <td>@((MarkupString)GetForElements(iid, el => el.GetGenderFull(this.SD)))</td>
+            <td style="text-align:end;">@((MarkupString)GetForElements(iid, el => el.GetHeadBodyLengthNice()))</td>
+            @if (this.SD.CurrentProject.DisplayMass) {
+              <td style="text-align:end;">@((MarkupString)GetForElements(iid, el => el.GetMassNice()))</td>
+            }
+            <td>@((MarkupString)GetForElements(iid, el => el.GetPlaceName()))</td>
+            <td>
+              @foreach (var el in this.Individuals[iid]) {
+                @((MarkupString)this.GetLineBreak(iid))
+                <a href="javascript:void(0);" @onclick="()=>OnSelectClick(el)">@el.ElementName</a>
+              }
+            </td>
+            <td>@((MarkupString)GetForElements(iid, el => el.GetIsoDate()))</td>
+            <td>@((MarkupString)GetForElements(iid, el => el.ElementProp.UploadInfo.UserId))</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
 
-@code { private PhotoPopup PhotoPopup1;
-  private Dictionary<int,List<Element>> Individuals = new Dictionary<int,List<Element>>();
+@code {
+  private PhotoPopup PhotoPopup1;
+  private Dictionary<int, List<Element>> Individuals = new Dictionary<int, List<Element>>();
   protected override void OnInitialized() {
     base.OnInitialized();
-    SD.Filters.FilterChanged += (sender,ev) => {
+    SD.Filters.FilterChanged += (sender, ev) => {
       RefreshData();
       base.InvokeAsync(this.StateHasChanged);
     };
     RefreshData();
   }
   private void RefreshData() {
-    this.Individuals = DS.GetIndividuals(SD,SD.Filters,null,true);
+    this.Individuals = DS.GetIndividuals(SD, SD.Filters, null, true);
   }
-  private string GetForElements(int iid,Func<Element,string> func,bool bAddYoBWarning = false) {
+  private string GetForElements(int iid, Func<Element, string> func, bool bAddYoBWarning = false) {
     var sb = new System.Text.StringBuilder();
     string sPreFix = "";
     string sWarnPostfix = "";
@@ -81,7 +100,7 @@
       if (!nOrigYoB.HasValue) {
         nOrigYoB = el.GetYearOfBirth();
       }
-      if (bAddYoBWarning && !object.Equals(nOrigYoB,el.GetYearOfBirth())) {
+      if (bAddYoBWarning && !object.Equals(nOrigYoB, el.GetYearOfBirth())) {
         sWarnPostfix = " !!!";
       }
       sb.Append(sPreFix + func(el) + sWarnPostfix);
@@ -150,58 +169,77 @@
   private async void DownloadCsv_Clicked() {
     var sep = "\t";
     var csv = new System.Text.StringBuilder();
-    csv.Append("IId" + sep + "TimeStamp" + sep + "GpsLat" + sep + "GpsLng" + sep + "Gender" + sep + "Length" + sep + "Traits" + sep + "Distance" + sep + "Place" + sep + "ElementName" + "\n");
-    foreach (var aIndis in DS.GetIndividuals(SD,SD.Filters,null,true)) {
-      for (int idxEl = 0;idxEl < aIndis.Value.Count;idxEl++) {
+    csv.Append("IId" + sep + "TimeStamp" + sep + "GpsLat" + sep + "GpsLng" + sep + "Gender" + sep + "Length");
+    if (SD.CurrentProject.DisplayMass) {
+      csv.Append(sep + "Mass");
+    }
+    if (SD.CurrentProject.GenotypeArray.Length >= 2) {
+      csv.Append(sep + "Genotype");
+    }
+    if (SD.CurrentProject.PhenotypeArray.Length >= 2) {
+      csv.Append(sep + "Phenotype");
+    }
+    csv.Append(sep + "Distance" + sep + "Place" + sep + "ElementName" + "\n");
+    foreach (var aIndis in DS.GetIndividuals(SD, SD.Filters, null, true)) {
+      for (int idxEl = 0; idxEl < aIndis.Value.Count; idxEl++) {
         var el = aIndis.Value[idxEl];
         var placeName = el.GetPlaceName();
-        var sbTraits = new System.Text.StringBuilder();
-        foreach (var trait in el.ElementProp.IndivData.TraitValues) {
-          if (sbTraits.Length > 0) {
-            sbTraits.Append(",");
-          }
-          sbTraits.Append(trait.Value);
-        }
         string sDistance = "";
         if (idxEl >= 1) {
-          double dDistance = GeoCalculator.GetDistance(aIndis.Value[idxEl - 1].ElementProp.MarkerInfo.position,el.ElementProp.MarkerInfo.position);
-          sDistance = ConvInvar.ToDecimalString(dDistance,0);
+          double dDistance = GeoCalculator.GetDistance(aIndis.Value[idxEl - 1].ElementProp.MarkerInfo.position, el.ElementProp.MarkerInfo.position);
+          sDistance = ConvInvar.ToDecimalString(dDistance, 0);
         }
         csv.Append(el.GetIId());
         csv.Append(sep + '"' + el.GetIsoDateTime() + '"');
-        csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat,12));
-        csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng,12));
+        csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lat, 12));
+        csv.Append(sep + ConvInvar.ToDecimalString(el.ElementProp.MarkerInfo.position.lng, 12));
         csv.Append(sep + el.Gender);
-        csv.Append(sep + ConvInvar.ToDecimalString(el.GetHeadBodyLengthMm(),1));
-        csv.Append(sep + '"' + sbTraits.ToString() + '"');
+        csv.Append(sep + ConvInvar.ToDecimalString(el.GetHeadBodyLengthMm(), 1));
+        if (SD.CurrentProject.DisplayMass) {
+          csv.Append(sep + ConvInvar.ToDecimalString(el.GetMass(), 1));
+        }
+        if (SD.CurrentProject.GenotypeArray.Length >= 2) {
+          csv.Append(sep + '"' + (el.ElementProp.IndivData.GenotypeIdx < 0 ? "" : SD.CurrentProject.GenotypeArray[el.ElementProp.IndivData.GenotypeIdx]) + '"');
+        }
+        if (SD.CurrentProject.PhenotypeArray.Length >= 2) {
+          csv.Append(sep + '"' + (el.ElementProp.IndivData.PhenotypeIdx < 0 ? "" : SD.CurrentProject.PhenotypeArray[el.ElementProp.IndivData.PhenotypeIdx]) + '"');
+        }
         csv.Append(sep + sDistance);
         csv.Append(sep + placeName);
         csv.Append(sep + '"' + el.ElementName + '"');
         csv.Append('\n');
       }
     }
-    await JSRuntime.InvokeVoidAsync("DownloadTextFile","Individuals.csv",csv.ToString());
+    await JSRuntime.InvokeVoidAsync("DownloadTextFile", "Individuals.csv", csv.ToString());
   }
   private async void ConsolidateGenders_Clicked() {
-    foreach (var aIndis in DS.GetIndividuals(SD,SD.Filters,null,true)) {
-      string sGender = null;
-      for (int idxEl = aIndis.Value.Count-1;idxEl>=0;idxEl--) {
+    foreach (var aIndis in DS.GetIndividuals(SD, SD.Filters, null, true)) {
+      string sGenderFeature = null;
+      bool bContradiction = false;
+      for (int idxEl = aIndis.Value.Count - 1; idxEl >= 0; idxEl--) {
         var el = aIndis.Value[idxEl];
-        if (el.Gender=="f" || el.Gender=="m") {
-          sGender = el.Gender;
-          break;
+        if (el.GenderFeature == "f" || el.GenderFeature == "m") {
+          if (sGenderFeature == null) {
+            sGenderFeature = el.GenderFeature;
+          } else if (el.GenderFeature != sGenderFeature) {
+            bContradiction = true;
+          }
         }
       }
-      if (sGender==null) {
-        sGender="j";
-      }
-      for (int idxEl = 0;idxEl < aIndis.Value.Count; idxEl++) {
-        var el = aIndis.Value[idxEl];
-        if (el.Gender != sGender) {
-          el.Gender = sGender;
-          this.SD.DS.WriteElement(this.SD,el);
+      if (!bContradiction) {
+        if (sGenderFeature != null) {
+          for (int idxEl = 0; idxEl < aIndis.Value.Count; idxEl++) {
+            var el = aIndis.Value[idxEl];
+            if (el.Gender != sGenderFeature) {
+              this.DS.AddLogEntry(this.SD, $"Gender consolidation: #{el.ElementProp.IndivData.IId} ({el.ElementName}) {el.Gender} --> {sGenderFeature}");
+              el.Gender = sGenderFeature;
+              this.SD.DS.WriteElement(this.SD, el);
+            }
+          }
         }
       }
+      this.RefreshData();
+      this.StateHasChanged();
     }
   }
   public void OnElementDeleted() {

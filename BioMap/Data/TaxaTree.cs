@@ -24,7 +24,7 @@ namespace BioMap
         if (taxon.ParentSciNameArray.Length == 0) {
           this.RootNode.Add(node);
         } else {
-          foreach (var sParentSciName in taxon.ParentSciNameArray) {
+          foreach (string sParentSciName in taxon.ParentSciNameArray) {
             foreach (TreeNode parentNode in flatNodeList.ToArray()) {
               if (string.CompareOrdinal(sParentSciName, parentNode.Data.InvariantName) == 0) {
                 if (!lSciNamesInUse.Contains(taxon.SciName)) {
@@ -65,7 +65,7 @@ namespace BioMap
       return result;
     }
     public string ToJSON() {
-      var sJson = JsonConvert.SerializeObject(this.ToTaxaList());
+      string sJson = JsonConvert.SerializeObject(this.ToTaxaList());
       return sJson;
     }
     public string[] GetSciNamesOfSubTree(string sSubTreeSciName) {

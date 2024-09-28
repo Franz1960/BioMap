@@ -1,0 +1,43 @@
+@page "/Statistics/IndividualDev"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
+@inject IJSRuntime JSRuntime
+@using BioMap
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.BarChart.Axes
+
+<div class="box">
+  <div class="row content">
+    <h1>@Localize["Development"]</h1>
+    <Row>
+      <Column ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">
+        <Field Horizontal="true">
+          <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">@Localize["Current day of year"]</FieldLabel>
+          <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is6.OnDesktop">
+            <NumericEdit ShowStepButtons="false" @bind-Value="this.CurrentDayOfYear" @onfocusout="(e)=>{ RefreshData(); }" />
+          </FieldBody>
+        </Field>
+      </Column>
+      <Column ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">
+        <CheckBox Checked="@SD.IndividualDevLimitToCurrentTimeOfYear" LabelText=@Localize["Limit to current day of year"] OnAnyChangedCallback="@CheckBoxLimitToCurrentTimeOfYear_CheckedChanged" />
+      </Column>
+    </Row>
+    <Row>
+      <Column>
+        <Card>
+          <CardTitle>
+            @Localize["Different Individuals"]
+          </CardTitle>
+          <CardBody>
+            <Chart @ref="_chartJs" Config="@_config" Width="600" Height="300" />
+          </CardBody>
+        </Card>
+      </Column>
+    </Row>
+  </div>
+</div>

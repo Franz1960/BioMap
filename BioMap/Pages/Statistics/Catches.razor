@@ -1,4 +1,4 @@
-@page "/Statistics/Catches"
+﻿@page "/Statistics/Catches"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<App> Localize
 @inject IJSRuntime JSRuntime
 @using BioMap
@@ -13,121 +13,130 @@
 @using ChartJs.Blazor.BarChart
 @using ChartJs.Blazor.BarChart.Axes
 
-<FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Individuals" />
+<div class="box">
+  <div class="row header">
+    <FilterSettings FilteringTarget="@Filters.FilteringTargetEnum.Catches" />
+  </div>
+  <div class="row content">
 
-<h1>@Localize["Catches"]</h1>
+    <h1>@Localize["Catches"]</h1>
 
-<Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
-  <Items>
-    <Tab Name="OverTime">@Localize["Catch numbers over time"]</Tab>
-    <Tab Name="PerMonth">@Localize["Catch numbers per month"]</Tab>
-    <Tab Name="HeadBodyLength">@Localize["Head-body-length of all catches"]</Tab>
-    <Tab Name="GenderRatio">@Localize["Gender"]</Tab>
-    <Tab Name="GenderRatioPerAnno">@Localize["Gender per anno"]</Tab>
-    <Tab Name="MigrationDistances">@Localize["Migration distances"]</Tab>
-  </Items>
-  <Content>
-    <TabPanel Name="OverTime">
-      <Row>
-        <Column>
-          @Localize["Die Fangzahlen pro Monat, aufgeschlüsselt nach dem Alter (Überwinterungen) der gefangenen Individuen. Zusätzlich sind Monatsmittelwerte von Temperatur und Niederschlagsmenge angegeben."]
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <Chart @ref="_chartJsOverTime" Config="@_configOverTime" Width="600" Height="300" />
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <TableFromChart @ref="_tableFromChartOverTime" RowLabel="@Localize["Month"]" _config="@_configOverTime" />
-        </Column>
-      </Row>
-    </TabPanel>
-    <TabPanel Name="PerMonth">
-      <Row>
-        <Column>
-          @Localize["Catch numbers per month summed over all years, broken down by age (overwintering) of individuals caught. In addition, monthly mean values of temperature and precipitation are given."]
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <Chart @ref="_chartJsPerMonth" Config="@_configPerMonth" Width="600" Height="300" />
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <TableFromChart @ref="_tableFromChartPerMonth" RowLabel="@Localize["Month"]" _config="@_configPerMonth" />
-        </Column>
-      </Row>
-    </TabPanel>
-    <TabPanel Name="HeadBodyLength">
-      <Row>
-        <Column>
-          @Localize["The frequency distribution of head-torso lengths of all catches, broken down by age (overwintering) of the individuals caught."]
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <Chart @ref="_chartJsHeadBodyLength" Config="@_configHeadBodyLength" Width="600" Height="300" />
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <TableFromChart @ref="_tableFromChartHeadBodyLength" RowLabel="@(Localize["Length"]+" / mm")" _config="@_configHeadBodyLength" />
-        </Column>
-      </Row>
-    </TabPanel>
-    <TabPanel Name="GenderRatio">
-      <Row>
-        <Column>
-          @Localize["Catch numbers per month summed over all years. Only individuals with the sex information 'f' or 'm' and 1+ hibernations are counted. If the total is less than 10, the percentage value is set to 50% to avoid outliers."]
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <Chart @ref="_chartJsGenderRatio" Config="@_configGenderRatio" Width="600" Height="300" />
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <TableFromChart @ref="_tableFromChartGenderRatio" RowLabel="@(Localize["Month"])" _config="@_configGenderRatio" />
-        </Column>
-      </Row>
-    </TabPanel>
-    <TabPanel Name="GenderRatioPerAnno">
-      <Row>
-        <Column>
-          @Localize["Catch numbers per year. Only individuals with the sex information 'f' or 'm' and 1+ hibernations are counted."]
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <Chart @ref="_chartJsGenderRatioPerAnno" Config="@_configGenderRatioPerAnno" Width="600" Height="300" />
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <TableFromChart @ref="_tableFromChartGenderRatioPerAnno" RowLabel="@(Localize["Month"])" _config="@_configGenderRatioPerAnno" />
-        </Column>
-      </Row>
-    </TabPanel>
-    <TabPanel Name="MigrationDistances">
-      <Row>
-        <Column>
-          @Localize["Frequency distribution of migratory distances of all captures, broken down by age (overwintering) of individuals captured. The migration distance is measured from the previous catch of the same individual."]
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <Chart @ref="_chartJsMigrationDistances" Config="@_configMigrationDistances" Width="600" Height="300" />
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <TableFromChart @ref="_tableFromChartMigrationDistances" RowLabel="@(Localize["Distance"]+" / m")" _config="@_configMigrationDistances" />
-        </Column>
-      </Row>
-    </TabPanel>
-  </Content>
-</Tabs>
+    <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" Pills="true">
+      <Items>
+        <Tab Name="OverTime">@Localize["Catch numbers over time"]</Tab>
+        <Tab Name="PerMonth">@Localize["Catch numbers per month"]</Tab>
+        <Tab Name="HeadBodyLength">@Localize["Head-body-length of all catches"]</Tab>
+        <Tab Name="GenderRatio">@Localize["Gender"]</Tab>
+        <Tab Name="GenderRatioPerAnno">@Localize["Gender per anno"]</Tab>
+        <Tab Name="MigrationDistances">@Localize["Migration distances"]</Tab>
+      </Items>
+      <Content>
+        <TabPanel Name="OverTime">
+          <Row>
+            <Column>
+              @Localize["Die Fangzahlen pro Monat, aufgeschlüsselt nach dem Alter (Überwinterungen) der gefangenen Individuen. Zusätzlich sind Monatsmittelwerte von Temperatur und Niederschlagsmenge angegeben."]
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Chart @ref="_chartJsOverTime" Config="@_configOverTime" Width="600" Height="300" />
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <TableFromChart @ref="_tableFromChartOverTime" RowLabel="@Localize["Month"]" _config="@_configOverTime" />
+            </Column>
+          </Row>
+        </TabPanel>
+        <TabPanel Name="PerMonth">
+          <Row>
+            <Column>
+              @Localize["Catch numbers per month summed over all years, broken down by age (overwintering) of individuals caught. In addition, monthly mean values of temperature and precipitation are given."]
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Chart @ref="_chartJsPerMonth" Config="@_configPerMonth" Width="600" Height="300" />
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <TableFromChart @ref="_tableFromChartPerMonth" RowLabel="@Localize["Month"]" _config="@_configPerMonth" />
+            </Column>
+          </Row>
+        </TabPanel>
+        <TabPanel Name="HeadBodyLength">
+          <Row>
+            <Column>
+              @Localize["The frequency distribution of head-torso lengths of all catches, broken down by age (overwintering) of the individuals caught."]
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Chart @ref="_chartJsHeadBodyLength" Config="@_configHeadBodyLength" Width="600" Height="300" />
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <TableFromChart @ref="_tableFromChartHeadBodyLength" RowLabel="@(Localize["Length"]+" / mm")" _config="@_configHeadBodyLength" />
+            </Column>
+          </Row>
+        </TabPanel>
+        <TabPanel Name="GenderRatio">
+          <Row>
+            <Column>
+              @Localize["Catch numbers per month summed over all years. Only individuals with the sex information 'f' or 'm' and 1+ hibernations are counted. If the total is less than 10, the percentage value is set to 50% to avoid outliers."]
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Chart @ref="_chartJsGenderRatio" Config="@_configGenderRatio" Width="600" Height="300" />
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <TableFromChart @ref="_tableFromChartGenderRatio" RowLabel="@(Localize["Month"])" _config="@_configGenderRatio" />
+            </Column>
+          </Row>
+        </TabPanel>
+        <TabPanel Name="GenderRatioPerAnno">
+          <Row>
+            <Column>
+              @Localize["Catch numbers per year. Only individuals with the sex information 'f' or 'm' and 1+ hibernations are counted."]
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Chart @ref="_chartJsGenderRatioPerAnno" Config="@_configGenderRatioPerAnno" Width="600" Height="300" />
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <TableFromChart @ref="_tableFromChartGenderRatioPerAnno" RowLabel="@(Localize["Month"])" _config="@_configGenderRatioPerAnno" />
+            </Column>
+          </Row>
+        </TabPanel>
+        <TabPanel Name="MigrationDistances">
+          <Row>
+            <Column>
+              @Localize["Frequency distribution of migratory distances of all captures, broken down by age (overwintering) of individuals captured. The migration distance is measured from the previous catch of the same individual."]
+            </Column>
+            <Column ColumnSize="ColumnSize.Is3">
+              <CheckBox @bind-Checked="@RelativeMigrationCounts" LabelText=@Localize["Relative"] />
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Chart @ref="_chartJsMigrationDistances" Config="@_configMigrationDistances" Width="600" Height="300" />
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <TableFromChart @ref="_tableFromChartMigrationDistances" RowLabel="@(Localize["Distance"]+" / m")" _config="@_configMigrationDistances" />
+            </Column>
+          </Row>
+        </TabPanel>
+      </Content>
+    </Tabs>
+  </div>
+</div>

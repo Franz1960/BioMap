@@ -69,7 +69,7 @@ namespace BioMap
         double dCurrentStepSize = dStartStepSize;
         daBestParams = (double[])daCurrentParams.Clone();
         double dBestSquareSum = double.MaxValue;
-        var daParamInterval =
+        double[] daParamInterval =
           (dCurrentStepSize < 0)
           ?
           new[] { daaParamRanges[0][1], daaParamRanges[0][0] }

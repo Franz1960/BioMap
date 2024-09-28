@@ -16,7 +16,7 @@ namespace BioMap
     }
     private readonly DataService DS;
     public static string GetFilePathForConfFile(DataService ds, string sProject, string id) {
-      var sConfDir = ds.GetConfDir(sProject);
+      string sConfDir = ds.GetConfDir(sProject);
       string sFilePath = System.IO.Path.Combine(sConfDir, id);
       if (System.IO.File.Exists(sFilePath)) {
         return sFilePath;
@@ -25,22 +25,22 @@ namespace BioMap
     }
     [HttpGet("{id}")]
     public IActionResult GetFile(string id) {
-      var ds = this.DS;
+      DataService ds = this.DS;
       try {
         string sProject = "";
-        if (Request.Query.ContainsKey("Project")) {
-          sProject = Request.Query["Project"];
+        if (this.Request.Query.ContainsKey("Project")) {
+          sProject = this.Request.Query["Project"];
         }
         string sFilePath = GetFilePathForConfFile(ds, sProject, id);
         if (System.IO.File.Exists(sFilePath)) {
           byte[] b = System.IO.File.ReadAllBytes(sFilePath);
           string sContentType = MimeMapping.MimeUtility.GetMimeMapping(sFilePath);
-          return File(b, sContentType);
+          return this.File(b, sContentType);
         } else {
-          return StatusCode(404, $"Document not found: {id}");
+          return this.StatusCode(404, $"Document not found: {id}");
         }
       } catch (Exception ex) {
-        return StatusCode(500, $"Internal server error: {ex}");
+        return this.StatusCode(500, $"Internal server error: {ex}");
       }
     }
   }

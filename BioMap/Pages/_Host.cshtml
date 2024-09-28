@@ -9,7 +9,7 @@
 }
 
 <!DOCTYPE html>
-<html lang="@CultureInfo.CurrentCulture.Name">
+<html lang="@CultureInfo.CurrentCulture?.Name">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,7 +17,7 @@
   <base href="~/" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
 
   <link href="_content/Blazorise/blazorise.css" rel="stylesheet" />
@@ -25,19 +25,16 @@
   <link href="_content/Blazorise.TreeView/blazorise.treeview.css" rel="stylesheet" />
   @*<link href="_content/Blazorise.Sidebar/blazorise.sidebar.css" rel="stylesheet" />*@
   <!-- -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAj_oZeq6z3BnWFtE2Fwmh8RmquS5ar5xA&libraries=geometry&libraries=visualization"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAj_oZeq6z3BnWFtE2Fwmh8RmquS5ar5xA&v=3&libraries=geometry&libraries=visualization"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-  <script src="_content/BlazorGoogleMaps/objectManager.js"></script>
+  <script src="_content/BlazorGoogleMaps/js/objectManager.js"></script>
   <script src="_content/ImageSurveyor/gl-matrix-min.js"></script>
   <script src="_content/ImageSurveyor/jsInterop.js"></script>
   <script language="javascript" type="text/javascript" src="lib/fhlib/fhutils.js"></script>
+  <script language="javascript" type="text/javascript" src="lib/fhlib/curve.min.js"></script>
   <script language="javascript" type="text/javascript" src="scripts/cookies.js"></script>
   <script language="javascript" type="text/javascript" src="scripts/element.js"></script>
-  @*<script language="javascript" type="text/javascript" src="scripts/place.js"></script>
-    <script language="javascript" type="text/javascript" src="scripts/preppic.js"></script>
-    <script language="javascript" type="text/javascript" src="scripts/identify.js"></script>
-    <script language="javascript" type="text/javascript" src="scripts/geolocation.js"></script>*@
   <!-- Some styling -->
   <link href="css/site.css" rel="stylesheet" />
 </head>
@@ -50,11 +47,11 @@
 
   @{
     this.HttpContext.Response.Cookies.Append(
-      CookieRequestCultureProvider.DefaultCookieName,
-      CookieRequestCultureProvider.MakeCookieValue(
-      new RequestCulture(
-      CultureInfo.CurrentCulture,
-      CultureInfo.CurrentUICulture)));
+    CookieRequestCultureProvider.DefaultCookieName,
+    CookieRequestCultureProvider.MakeCookieValue(
+    new RequestCulture(
+    CultureInfo.CurrentCulture,
+    CultureInfo.CurrentUICulture)));
   }
 
   <!-- inside of body section and after the div/app tag  -->
@@ -62,20 +59,17 @@
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 
-  <script src="_content/Blazorise/blazorise.js"></script>
-  <script src="_content/Blazorise.Bootstrap/blazorise.bootstrap.js"></script>
-
-  @*<div id="blazor-error-ui">
-    <environment include="Staging,Production">
-    An error has occurred. This application may no longer respond until reloaded.
-    </environment>
-    <environment include="Development">
-    An unhandled exception has occurred. See browser dev tools for details.
-    </environment>
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-    </div>*@
-
+  @*  <div id="blazor-error-ui">
+  <environment include="Staging,Production">
+  An error has occurred. This application may no longer respond until reloaded.
+  </environment>
+  <environment include="Development">
+  An unhandled exception has occurred. See browser dev tools for details.
+  </environment>
+  <a href="" class="reload">Reload</a>
+  <a class="dismiss">🗙</a>
+  </div>
+  *@
   <dialog id="imgUploadDialog">
     <content>
       <div>
@@ -144,7 +138,7 @@
     function UploadImageFiles_Click(idInput) {
       document.getElementById(idInput).click();
     }
-    function UploadImageFiles(evt,sProject) {
+    function UploadImageFiles(evt, sProject) {
       //alert("UploadImageFiles() called.");
       const files = evt.target.files; // FileList object
       for (var iFile = 0; iFile < files.length; iFile++) {

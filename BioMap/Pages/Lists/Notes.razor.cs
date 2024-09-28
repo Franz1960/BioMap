@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Components;
 using BioMap.Shared;
+using Microsoft.AspNetCore.Components;
 
 namespace BioMap.Pages.Lists
 {
@@ -19,8 +19,7 @@ namespace BioMap.Pages.Lists
     private ProtocolEntry[] ProtocolEntries = new ProtocolEntry[0];
     protected override void OnInitialized() {
       base.OnInitialized();
-      this.SD.Filters.FilterChanged += (sender, ev) =>
-      {
+      this.SD.Filters.FilterChanged += (sender, ev) => {
         this.RefreshData();
         base.InvokeAsync(this.StateHasChanged);
       };

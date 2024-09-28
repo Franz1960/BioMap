@@ -1,9 +1,5 @@
 # BioMap
 
-*BioMap has moved to https://gitlab.com/f.x.haering/BioMap[GitLab]*
-
-This site is no longer maintained!
-
 Map based biological monitoring
 
 BioMap is a one page web application based  on server side Blazor. It uses the https://github.com/stsrki/Blazorise[Blazorise],
@@ -19,6 +15,8 @@ toads, growth and migration movements of individuals are recorded. The results a
 The original web site driven by this app is https://biomap.itools.de[biomap.itools.de]. A couple of projects are hosted here
 including the yellow-bellied toad project near Regensburg, Bavaria. You can register for any of the projects there and even
 create a new project of your own.
+
+You can use a Docker image on your own web server.
 
 === Create and Manage a new Project
 

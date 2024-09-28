@@ -37,6 +37,8 @@ namespace Blazor.ImageSurveyor
     public double NormalizePixelSize;
     public int NormalizedWidthPx;
     public int NormalizedHeightPx;
+    public float PatternRelWidth = 0.30f;
+    public float PatternRelHeight = 0.80f;
     //
     public string ToJson() {
       return JsonConvert.SerializeObject(this);
